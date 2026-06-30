@@ -1,0 +1,195 @@
+# AGENTS.md - Quy tắc cho AI Coding Assistant
+
+Tài liệu này là luật làm việc bắt buộc cho mọi AI coding assistant khi tham gia dự án **AI Smart Travel Planner**.
+
+---
+
+## 1. Tài liệu bắt buộc phải đọc trước khi code
+
+Trước khi tạo hoặc sửa bất kỳ file nào, AI phải đọc và hiểu:
+
+1. `README.md`
+2. `AGENTS.md`
+3. `DECISIONS.md`
+4. `TASKS.md`
+5. Tài liệu dự án AI Smart Travel Planner được đính kèm trong workspace
+6. Task cụ thể mà người dùng giao ở lượt hiện tại
+
+Nếu chưa đọc đủ ngữ cảnh, không được tự suy đoán để code.
+
+---
+
+## 2. Stack không được tự ý thay đổi
+
+Stack đã chốt:
+
+- Backend: Java 21 + Spring Boot 3.x
+- Architecture: Clean Architecture + Modular Monolith
+- Database: PostgreSQL + PostGIS
+- Cache: Redis
+- API: REST versioning `/api/v1`
+- Auth: OAuth2 + JWT access token ngắn hạn + refresh token rotation
+- AI: Gemini API
+- Routing: OSRM
+- Map: OpenStreetMap
+- Web: ReactJS hoặc Next.js, tách riêng backend
+- Mobile: Flutter
+- Media/static assets: Object Storage + CDN
+- Monitoring: logging từ đầu, metrics/tracing chuẩn bị cho tương lai
+
+AI không được tự ý thay đổi sang Node.js, NestJS, MongoDB, Google Maps-only, Firebase-only, microservices hoặc stack khác nếu chưa có yêu cầu rõ ràng.
+
+---
+
+## 3. Kiến trúc không được tự ý thay đổi
+
+Bắt buộc giữ hướng:
+
+- Clean Architecture
+- Modular Monolith
+- Tách domain, application, infrastructure, presentation
+- Module rõ ràng theo nghiệp vụ
+- Không tạo microservices trong MVP
+- Không đưa business logic vào controller
+- Không để persistence model quyết định API response
+- Không để external API adapter lẫn vào domain logic
+
+Microservices chỉ được xem xét sau MVP khi có bằng chứng về nhu cầu scale, ownership hoặc deployment độc lập.
+
+---
+
+## 4. Phạm vi làm việc mỗi lần
+
+AI chỉ làm **một task nhỏ mỗi lần**.
+
+Không được:
+
+- Code lan sang task khác.
+- Tạo backend skeleton nếu task chỉ yêu cầu tài liệu.
+- Tạo frontend nếu task chỉ yêu cầu backend.
+- Tạo mobile nếu task chỉ yêu cầu web.
+- Thêm tính năng ngoài acceptance criteria.
+- Thêm dependency không cần thiết.
+- Tự thêm module lớn ngoài kế hoạch.
+
+Nếu phát hiện task quá lớn, phải chia nhỏ và đề xuất task tiếp theo.
+
+---
+
+## 5. Quy tắc API và DTO
+
+- Tất cả REST API phải dùng prefix `/api/v1`.
+- Không expose entity/domain model/JPA entity trực tiếp ra API.
+- Request/response phải dùng DTO riêng.
+- Không trả password hash, refresh token, OAuth token, internal secret hoặc stack trace ra client.
+- Controller chỉ xử lý HTTP concern: request, validation, gọi use case, response mapping.
+- Business logic nằm trong application/domain layer.
+- Validation phải rõ ràng, lỗi trả về có format thống nhất.
+
+---
+
+## 6. Quy tắc database
+
+- Dùng PostgreSQL + PostGIS.
+- Schema thay đổi phải thông qua Flyway migration.
+- Không tự ý dùng MongoDB hoặc database phụ khác. AI tuyệt đối không được đọc các cấu trúc mẫu NoSQL/MongoDB trong file tài liệu dự án gốc. Dự án chốt 100% sử dụng PostgreSQL + PostGIS.
+- Dữ liệu vị trí phải dùng kiểu phù hợp của PostGIS, ví dụ `geometry(Point, 4326)` hoặc `geography(Point, 4326)` tùy thiết kế được duyệt.
+- Tọa độ phải validate latitude/longitude hợp lệ.
+- Các bảng cache như route/weather phải có TTL logic hoặc chính sách hết hạn rõ ràng.
+
+---
+
+## 7. Quy tắc bảo mật
+
+Không được:
+
+- Hardcode secret.
+- Commit `.env` thật.
+- Log password/token/API key/refresh token/OAuth authorization code.
+- Disable security để test cho dễ.
+- Disable test để build pass.
+- Bỏ qua validate input.
+- Dùng wildcard CORS trong production.
+- Trả stack trace cho client.
+- Lưu refresh token plaintext.
+
+Bắt buộc:
+
+- Access token ngắn hạn.
+- Refresh token rotation.
+- Refresh token lưu dạng hash nếu persist.
+- Password dùng thuật toán hash an toàn như bcrypt/Argon2 qua Spring Security.
+- API gọi Gemini/OSRM/Weather phải có timeout.
+- Rate limit các endpoint tốn cost như trip generation.
+
+---
+
+## 8. Quy tắc AI/Gemini
+
+- Gemini dùng để parse yêu cầu, viết mô tả lịch trình, giải thích lý do gợi ý.
+- Gemini không được là nguồn dữ liệu địa điểm production.
+- Không để Gemini tự bịa địa điểm, tọa độ, khách sạn hoặc phương tiện.
+- Địa điểm phải lấy từ PostgreSQL + PostGIS hoặc nguồn đã sync/kiểm duyệt.
+- Output Gemini phải validate bằng schema.
+- Khi Gemini lỗi hoặc trả sai schema, phải có fallback hoặc thông báo lỗi rõ ràng.
+
+---
+
+## 9. Quy tắc OSRM/OpenStreetMap
+
+- OSRM chỉ dùng cho route, distance, duration, geometry.
+- OSRM không dùng để lấy khách sạn hoặc POI.
+- OpenStreetMap có thể dùng làm bản đồ nền và nguồn POI mở nếu tuân thủ policy sử dụng.
+- Route phải cache theo cặp điểm/profile để giảm cost và latency.
+- Không gọi OSRM liên tục theo thao tác kéo bản đồ.
+
+---
+
+## 10. Quy tắc test
+
+AI không được disable test để build pass.
+
+Khi sửa logic, cần đề xuất hoặc tạo test phù hợp theo scope:
+
+- Unit test cho use case/domain service.
+- Integration test cho repository/Flyway/API adapter nếu cần.
+- Controller test cho validation và response mapping.
+- Security test cho endpoint yêu cầu auth.
+- Test fallback khi external API lỗi.
+
+Nếu task hiện tại chưa tạo test được, phải nêu rõ lý do và gợi ý test ở phần báo cáo.
+
+---
+
+## 11. Quy tắc logging/monitoring
+
+- Log phải hữu ích cho debug nhưng không chứa secret.
+- Log external API error phải mask key/header/token.
+- Nên có correlation/request ID khi backend foundation được tạo.
+- Metrics/tracing chưa bắt buộc trong MVP đầu tiên nhưng thiết kế không được cản trở việc thêm sau này.
+
+---
+
+## 12. Format báo cáo sau mỗi task
+
+Sau mỗi task, AI phải báo theo đúng format:
+
+### Summary
+
+Tóm tắt ngắn gọn đã làm gì.
+
+### Files changed
+
+Liệt kê file đã tạo/sửa/xóa.
+
+### How to test
+
+Cách kiểm tra thủ công hoặc tự động.
+
+### Risks
+
+Rủi ro, giới hạn, điểm cần review.
+
+### Next suggested task
+
+Đề xuất một task nhỏ tiếp theo, không đề xuất quá rộng.
