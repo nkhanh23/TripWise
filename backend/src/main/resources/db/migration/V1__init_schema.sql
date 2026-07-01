@@ -1,0 +1,23 @@
+-- V1__init_schema.sql
+-- Khởi tạo schema database cơ sở cho dự án
+
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
+    role VARCHAR(50) DEFAULT 'USER',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS route_cache (
+    id BIGSERIAL PRIMARY KEY,
+    cache_key VARCHAR(255) NOT NULL UNIQUE,
+    geometry TEXT NOT NULL,
+    distance_meters DOUBLE PRECISION NOT NULL,
+    duration_seconds DOUBLE PRECISION NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

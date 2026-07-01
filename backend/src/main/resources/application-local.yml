@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/tripwise
+    username: tripwise_user
+    password: tripwise_local_password
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    root: INFO
+    com.tripwise: DEBUG

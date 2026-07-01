@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: tripwise_user
       POSTGRES_PASSWORD: tripwise_local_password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata-local:/var/lib/postgresql/data
     networks:

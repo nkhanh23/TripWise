@@ -1,0 +1,35 @@
+# Gradle / build outputs
+.gradle/
+**/.gradle/
+build/
+**/build/
+bin/
+**/bin/
+
+# Java
+*.class
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker local data
+pgdata-local/
+redisdata-local/
+miniodata-local/
+
+backend/gradle.properties
