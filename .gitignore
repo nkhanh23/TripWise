@@ -1,4 +1,9 @@
-# Gradle / build outputs
+# Gradle / Maven build
+target/
+**/target/
+backend/gradle.properties
+
+# Backend build (Legacy Gradle)
 .gradle/
 **/.gradle/
 build/

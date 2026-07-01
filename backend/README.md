@@ -1,13 +1,14 @@
 # TripWise Backend
 
 Đây là phần mã nguồn backend của hệ thống lập lịch du lịch thông minh **TripWise**, sử dụng Java 21, Spring Boot 3.x và Gradle.
+Đây là phần mã nguồn backend của hệ thống lập lịch du lịch thông minh **TripWise**, sử dụng Java 21, Spring Boot 3.x và Maven.
 
 ---
 
 ## 1. Stack công nghệ chính
 - **Java**: Phiên bản 21
 - **Framework**: Spring Boot 3.2.x
-- **Build Tool**: Gradle
+- **Build Tool**: Maven Wrapper (included)
 - **Database**: PostgreSQL + PostGIS (chạy qua Docker local)
 - **Cache**: Redis (chạy qua Docker local)
 - **Migration**: Flyway
@@ -22,17 +23,25 @@ Từ thư mục gốc dự án `TripWise/`, chạy lệnh:
 docker compose up -d
 ```
 
-### Bước 2: Chạy ứng dụng Spring Boot
+### Bước 2: Run Backend
 ```bash
-./gradlew bootRun
+# Windows
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local
+
+# Linux/macOS
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 Ứng dụng sẽ khởi động tại cổng `8080` (hoặc cổng được định cấu hình trong biến môi trường `PORT`).
 
 ---
 
-## 3. Cách chạy kiểm thử tự động (Test Suite)
+## 3. Testing
 ```bash
-./gradlew test
+# Windows
+.\mvnw.cmd test
+
+# Linux/macOS
+./mvnw test
 ```
 *Lưu ý: Đảm bảo Docker Desktop đang bật vì một số integration test có thể sử dụng Testcontainers.*
 
