@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TripWise - Place Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "secondary-container": "#b8f24a",
+                      "inverse-on-surface": "#eef0ff",
+                      "secondary": "#486800",
+                      "on-error-container": "#93000a",
+                      "primary": "#0056c5",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary-container": "#fffbff",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-surface": "#131b2e",
+                      "inverse-primary": "#b0c6ff",
+                      "tertiary-container": "#a36700",
+                      "surface-container": "#eaedff",
+                      "secondary-fixed-dim": "#a0d831",
+                      "outline-variant": "#c2c6d7",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed": "#ffddb8",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#dae2fd",
+                      "on-secondary-container": "#4c6c00",
+                      "on-primary-fixed": "#001945",
+                      "surface-container-high": "#e2e7ff",
+                      "inverse-surface": "#283044",
+                      "on-primary-fixed-variant": "#00429b",
+                      "on-secondary-fixed": "#131f00",
+                      "secondary-fixed": "#bbf54d",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#b0c6ff",
+                      "on-surface-variant": "#424654",
+                      "surface-container-highest": "#dae2fd",
+                      "outline": "#727786",
+                      "on-secondary-fixed-variant": "#354e00",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "surface-container-low": "#f2f3ff",
+                      "on-primary-container": "#fefcff",
+                      "on-background": "#131b2e",
+                      "surface": "#faf8ff",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "tertiary": "#825100",
+                      "surface-tint": "#0058ca",
+                      "background": "#faf8ff",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#d2d9f4",
+                      "primary-fixed": "#d9e2ff",
+                      "primary-container": "#166ef1",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-tight": "4px",
+                      "component-gap": "12px",
+                      "app-margin": "24px",
+                      "gutter": "16px",
+                      "container-padding": "32px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "display-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "stats-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "display-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.03em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "stats-md": [
+                              "14px",
+                              {
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for neatness */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md relative overflow-hidden h-screen w-screen selection:bg-primary-container selection:text-on-primary-container">
+<!-- Blurred Background Context -->
+<div class="absolute inset-0 z-0">
+<!-- We use an iframe or simply an image overlay to simulate the background screen -->
+<img alt="Dashboard Preview" class="w-full h-full object-cover blur-[2px] opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqqHz-UQLbnSJ_HrwQyU-41fFmhcXcDR1H-J6sSQptpZ8vgpmQJZJBKky4iX5v1BWmbxh8LLmUZ3ZQcwMn37hQdZTR-TiWIXvzs8XBAowWnNEojrJL3o6VB3_DEzrz_x7-SlIl8JbtSZ2R9DhD_wo978Ma5v1Pr3m0cUCHlxgQz1B6ikvH1KeXx-5gm-Q5o-xLggI4PFr95Vcp7FGhwGkx_R3IQSTMgrOorzVGSR0T1iDKQNueC65qS2SUw8D72kddb87p8onRFUrQ"/>
+<div class="absolute inset-0 bg-on-background/30 backdrop-blur-sm"></div>
+</div>
+<!-- Main Side Sheet Overlay -->
+<div class="absolute top-0 right-0 h-screen w-[420px] bg-surface-container-lowest rounded-l-[32px] shadow-[0px_8px_24px_rgba(15,23,42,0.08)] z-50 flex flex-col transform transition-transform duration-300 translate-x-0" id="side-sheet">
+<!-- Sticky Header -->
+<div class="sticky top-0 z-10 bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/30 px-6 py-4 flex items-center justify-between rounded-tl-[32px]">
+<button aria-label="Close" class="p-2 -ml-2 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant flex items-center justify-center group">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">close</span>
+</button>
+<div class="flex items-center gap-3">
+<button aria-label="Save" class="p-2 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant flex items-center justify-center group">
+<span class="material-symbols-outlined group-hover:text-error transition-colors">favorite</span>
+</button>
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                    Thêm vào chuyến đi
+                </button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- Hero Image -->
+<div class="relative w-full h-[240px]">
+<img class="w-full h-full object-cover" data-alt="A sweeping, high-quality photograph of Thap Ba Ponagar in Nha Trang. The ancient Cham temple complex, built of red brick, stands majestically on a small hill under a clear, bright blue sky. Warm sunlight illuminates the intricate architectural details and weathering of the towers. The scene is vibrant, realistic, and captures the historical significance of the site. A highly professional travel photography style with vibrant colors and sharp focus, maintaining a premium light-mode UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEZT82AmFA4NCq89ORcQ4Aqsm6gOcM1OsU-cQV_3EK6aIc1nwNGjd6u3t8rxn1OPlKBkzuBikpS5GM3b3zE3-LUFF6q-giJApkLgzKJw-HilcQ3W7FA9lBH4ueBarItvt61JC967x8IfO33ae3VcrPXUCJuOqnitHeg3gEz9pLdqj2uO7dSYrnHinr4MekkR_-171lPHFdq-3G_JN-xNNlnX6orNRYsoqbLn4nxfEnMN6yHqBgx31mR6cLb9go0Ty4AomcJlsJ3C0b"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-4 left-6 right-6">
+<span class="bg-surface-container-lowest/20 backdrop-blur-md text-on-primary border border-on-primary/30 font-label-sm text-label-sm px-2.5 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">history_edu</span>
+                        Di tích lịch sử văn hoá Chăm
+                    </span>
+</div>
+</div>
+<div class="px-6 py-6 flex flex-col gap-6">
+<!-- Core Info -->
+<div class="flex flex-col gap-2">
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">Tháp Bà Ponagar</h1>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="font-stats-md text-stats-md">4.8</span>
+<span class="text-tertiary-fixed-dim text-sm">⭐</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm ml-1">(1,240 đánh giá)</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="text-on-surface-variant font-body-sm text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">museum</span>
+                            Điểm tham quan / Văn hoá
+                        </div>
+</div>
+<!-- Tags -->
+<div class="flex flex-wrap gap-2 mt-3">
+<span class="bg-surface-container px-3 py-1.5 rounded-full text-on-surface font-label-md text-label-md whitespace-nowrap">Di tích cổ</span>
+<span class="bg-surface-container px-3 py-1.5 rounded-full text-on-surface font-label-md text-label-md whitespace-nowrap">Ngắm cảnh sông</span>
+<span class="bg-surface-container px-3 py-1.5 rounded-full text-on-surface font-label-md text-label-md whitespace-nowrap">Gần trung tâm</span>
+<span class="bg-secondary-container/30 border border-secondary/20 px-3 py-1.5 rounded-full text-on-secondary-container font-label-md text-label-md whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                            Đề xuất AI
+                        </span>
+</div>
+</div>
+<!-- Description -->
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Quần thể đền tháp Chăm Pa cổ kính được xây dựng từ thế kỷ thứ 8 đến thế kỷ 13. Nằm trên đỉnh một ngọn đồi nhỏ cao khoảng 10-12m so với mực nước biển, bên cửa sông Cái tại Nha Trang.
+                    </p>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-outline-variant/30"></div>
+<!-- Metadata Grid -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface border border-outline-variant/40 rounded-xl p-3 flex flex-col gap-1.5 hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">schedule</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Thời lượng gợi ý</span>
+<span class="font-stats-md text-stats-md text-on-surface">1.5 - 2 giờ</span>
+</div>
+<div class="bg-surface border border-outline-variant/40 rounded-xl p-3 flex flex-col gap-1.5 hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">confirmation_number</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Giá vé tham quan</span>
+<span class="font-stats-md text-stats-md text-on-surface">30,000 VND</span>
+</div>
+<div class="bg-surface border border-outline-variant/40 rounded-xl p-3 flex flex-col gap-1.5 hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">nest_clock_farsight_analog</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Giờ mở cửa</span>
+<span class="font-stats-md text-stats-md text-on-surface">06:00 - 18:00</span>
+</div>
+<div class="bg-surface border border-outline-variant/40 rounded-xl p-3 flex flex-col gap-1.5 hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">two_wheeler</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Phương tiện phù hợp</span>
+<span class="font-stats-md text-stats-md text-on-surface">Xe máy / Ô tô</span>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-outline-variant/30"></div>
+<!-- Map Snippet -->
+<div class="flex flex-col gap-3">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Vị trí</h3>
+<div class="bg-surface border border-outline-variant/40 rounded-xl overflow-hidden hover:border-primary/50 transition-colors group cursor-pointer">
+<div class="h-32 w-full bg-surface-container relative">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist digital map snippet centered on Nha Trang, Vietnam. The map uses a light mode, high-contrast style typical of modern premium navigation apps, featuring soft grays, whites, and subtle blue water accents. A distinct, glowing primary-blue pin marker indicates the location of Thap Ba Ponagar." data-location="Nha Trang" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhDG2gzyt1dwJLSGETvUNFi0mdvTee6TQ5o0BLi8ta0YbgUpK8Gyw74CFnpxww8ovXbTIaXjXT-hey0HOBhtFJin6HefmJAWLvG8WNb-9ci1rKg3LGZ4nq7y_lXhi8Vhs99oAdoi-7mQgICEw6oBlID9VvOkvRSYsJfroghp4FJky2dwMdD5mepIwraEUOShPnRYQuFVFlEDOtoAEpWqu5RQI-KZglE3FNgwyeacR9uNGkzd4mHXryxTIqsEJbT-JLUnisg8ioxaRo"/>
+<div class="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-t-xl"></div>
+</div>
+<div class="p-3 flex items-start gap-3 bg-surface-container-lowest">
+<span class="material-symbols-outlined text-primary mt-0.5">location_on</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-body-md text-body-md text-on-surface">Đường 2 Tháng 4, Vĩnh Phước, Nha Trang</span>
+<span class="font-body-sm text-body-sm text-primary group-hover:underline">Mở bản đồ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Actions -->
+<div class="absolute bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/30 p-4 px-6 flex flex-col gap-3 shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
+<button class="w-full bg-secondary-container hover:bg-secondary-fixed text-on-secondary-container font-label-md text-label-md py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.98]">
+                Thêm vào lịch trình ngày 1
+                <span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+<button class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors active:scale-[0.98]">
+                Xem trên Google Maps
+                <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,596 @@
+{
+  "project": {
+    "name": "TripWise Trip Detail + Map View",
+    "path": "c:\\Users\\PC\\Documents\\TripWise\\tripwise-trip-detail-map-view",
+    "operation": "create",
+    "deviceType": "desktop",
+    "language": "en",
+    "dashboardMode": false,
+    "replicationMode": null,
+    "sourceUrl": null,
+    "visualSpecExcerpt": null,
+    "styleDefinitionBrief": "Premium travel-tech cockpit UI with a warm outer frame, cool clean core, HUD map overlays, and a calm itinerary-to-map focus loop.",
+    "designRead": "Trip planner detail screen / self-serve travelers / warm cockpit precision / high density / avoid generic flat admin UI",
+    "designDials": {
+      "layoutVariance": 2,
+      "motionIntensity": 2,
+      "visualDensity": 4
+    },
+    "styleContinuityAnchors": {
+      "colorSystem": {
+        "primaryColorRole": "Bright blue is reserved for route focus, selected timeline rows, active navigation, and primary CTA moments.",
+        "brandHuePolicy": "Warm beige outer canvas frames a cool neutral shell; no extra brand accent hue beyond semantic warning and error tags.",
+        "stateColors": "Lime for optimized, amber for rain risk, red for over budget or route failure."
+      },
+      "shapeSystem": "Large shell radius around 30px, cards at 16px, controls at 12px, and pill tags for compact cockpit readability.",
+      "typographySystem": "Inter-led dashboard typography with bold 22-24px titles, 14px body copy, and 11-12px micro labels using tabular numerals.",
+      "spacingSystem": "Tight premium density with 8-12px internal rhythm inside cards and 16-24px shell padding so the left panel feels like an instrument cluster.",
+      "componentLanguage": "Crisp stats blocks, segmented day tabs, list-forward timeline rows, semi-opaque map HUD cards, and minimal icon chrome.",
+      "surfaceAndDepth": "Soft premium shadows, subtle borders, and layered white-on-cool panels inside a warm outer frame.",
+      "imageryAndIconography": "Map-first vector treatment with OSM-like roads, numbered blue markers, and compact transport/weather glyphs rather than decorative photos.",
+      "interactionTone": "Fast calm transitions, obvious selection states, smooth focus movement, and no flashy motion."
+    },
+    "specsConstraints": null,
+    "sharedProjectShellContract": {
+      "navigationShell": "Icon-only sidebar on desktop state pages, no heavyweight top app bar, and map-first mobile chrome with floating HUD surfaces.",
+      "primaryColorSystem": "Use #2F7BFF for selected states, route geometry, marker emphasis, and the primary action only.",
+      "typographySystem": "Inter with tabular numerals, bold condensed hierarchy, and slate-toned supporting text.",
+      "radiusScale": "30px shell, 16px cards, 12px controls, pill tags.",
+      "surfaceDepthModel": "Warm page background outside, cool neutral shell inside, white cards, subtle bezel border, and stronger map-overlay depth.",
+      "ctaStyle": "Compact rounded blue buttons with minimal icon pairing and muted secondary controls.",
+      "alignmentRules": "Three-zone desktop split with sidebar + left trip panel + right map panel; map overlays keep safe areas clear."
+    },
+    "generationTree": {
+      "root": {
+        "nodeId": "gen-project-shell",
+        "kind": "project-shell",
+        "pageIds": [
+          "page-trip-detail-map-view",
+          "page-trip-detail-empty-state",
+          "page-trip-detail-loading-state",
+          "page-trip-detail-route-unavailable",
+          "page-trip-detail-map-mobile"
+        ],
+        "output": "partials/project-shell.html",
+        "sharedRegions": [
+          "warm canvas frame",
+          "cool rounded device shell",
+          "radius and shadow discipline"
+        ],
+        "privateRegions": [],
+        "mutableSlots": [
+          "pageTitle",
+          "stateMode",
+          "deviceMode"
+        ],
+        "status": "generated",
+        "children": [
+          {
+            "nodeId": "gen-trip-detail-desktop-shell",
+            "kind": "shared-branch",
+            "pageIds": [
+              "page-trip-detail-map-view",
+              "page-trip-detail-empty-state",
+              "page-trip-detail-loading-state",
+              "page-trip-detail-route-unavailable"
+            ],
+            "output": "partials/trip-detail-desktop-shell.html",
+            "sharedRegions": [
+              "icon sidebar",
+              "sticky trip header",
+              "sticky day tabs",
+              "map HUD overlay placement"
+            ],
+            "privateRegions": [],
+            "mutableSlots": [
+              "leftPanelState",
+              "timelineContent",
+              "routeMode"
+            ],
+            "status": "generated",
+            "children": [
+              {
+                "nodeId": "gen-trip-detail-map-view",
+                "kind": "page-leaf",
+                "pageIds": [
+                  "page-trip-detail-map-view"
+                ],
+                "output": "pages/trip-detail-map-view.html",
+                "sharedRegions": [],
+                "privateRegions": [
+                  "selected day content",
+                  "selected route segment",
+                  "instruction card"
+                ],
+                "mutableSlots": [
+                  "selectedDay",
+                  "selectedTimelineRow"
+                ],
+                "status": "planned",
+                "children": []
+              },
+              {
+                "nodeId": "gen-trip-detail-empty-state",
+                "kind": "page-leaf",
+                "pageIds": [
+                  "page-trip-detail-empty-state"
+                ],
+                "output": "pages/trip-detail-empty-state.html",
+                "sharedRegions": [],
+                "privateRegions": [
+                  "empty panel content",
+                  "empty map HUD state"
+                ],
+                "mutableSlots": [
+                  "leftPanelState"
+                ],
+                "status": "planned",
+                "children": []
+              },
+              {
+                "nodeId": "gen-trip-detail-loading-state",
+                "kind": "page-leaf",
+                "pageIds": [
+                  "page-trip-detail-loading-state"
+                ],
+                "output": "pages/trip-detail-loading-state.html",
+                "sharedRegions": [],
+                "privateRegions": [
+                  "skeleton panel content",
+                  "loading route HUD state"
+                ],
+                "mutableSlots": [
+                  "leftPanelState"
+                ],
+                "status": "planned",
+                "children": []
+              },
+              {
+                "nodeId": "gen-trip-detail-route-unavailable",
+                "kind": "page-leaf",
+                "pageIds": [
+                  "page-trip-detail-route-unavailable"
+                ],
+                "output": "pages/trip-detail-route-unavailable.html",
+                "sharedRegions": [],
+                "privateRegions": [
+                  "warning banner",
+                  "route unavailable fallback map state"
+                ],
+                "mutableSlots": [
+                  "routeMode"
+                ],
+                "status": "planned",
+                "children": []
+              }
+            ]
+          },
+          {
+            "nodeId": "gen-trip-detail-map-mobile",
+            "kind": "page-leaf",
+            "pageIds": [
+              "page-trip-detail-map-mobile"
+            ],
+            "output": "pages/trip-detail-map-mobile.html",
+            "sharedRegions": [],
+            "privateRegions": [
+              "mobile map-first HUD",
+              "bottom sheet itinerary"
+            ],
+            "mutableSlots": [
+              "sheetState",
+              "selectedTimelineRow"
+            ],
+            "status": "planned",
+            "children": []
+          }
+        ]
+      }
+    }
+  },
+  "designSource": {
+    "operatingMode": "free-explore",
+    "libraryIdentity": {
+      "name": null,
+      "id": null,
+      "version": null,
+      "scope": null,
+      "path": null,
+      "versionSource": null
+    },
+    "cssFilePath": "c:\\Users\\PC\\Documents\\TripWise\\tripwise-trip-detail-map-view\\colors_and_type.css",
+    "brandPrefix": "tw",
+    "themeMode": "light",
+    "designDecisionSummary": "Warm Trek-inspired cockpit shell with split-screen trip intelligence and a cool, HUD-like map surface.",
+    "componentContractKind": "compact-json",
+    "forbiddenInventedComponents": [],
+    "allowedComponents": [
+      "navigation",
+      "sidebar",
+      "tag",
+      "card",
+      "segmented-control",
+      "timeline",
+      "search",
+      "map-overlay",
+      "button"
+    ],
+    "styleConstraints": {
+      "radiusMax": 30,
+      "spacingBase": 4,
+      "fontSizeBody": 14,
+      "fontSizeMin": 11,
+      "controlHeightDefault": 44,
+      "controlHeightLarge": 52
+    },
+    "productContext": {
+      "kitType": "travel-tech-cockpit-screen",
+      "productType": "AI smart travel planner with itinerary and live route focus"
+    },
+    "actualTokenNameReference": [
+      {
+        "semanticPurpose": "Outer canvas",
+        "tokenName": "--tw-canvas"
+      },
+      {
+        "semanticPurpose": "App shell",
+        "tokenName": "--tw-shell"
+      },
+      {
+        "semanticPurpose": "Panel surface",
+        "tokenName": "--tw-panel"
+      },
+      {
+        "semanticPurpose": "Primary accent",
+        "tokenName": "--tw-primary"
+      },
+      {
+        "semanticPurpose": "Primary soft background",
+        "tokenName": "--tw-primary-soft"
+      },
+      {
+        "semanticPurpose": "Lime status",
+        "tokenName": "--tw-secondary-tag"
+      },
+      {
+        "semanticPurpose": "Text color",
+        "tokenName": "--tw-text"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "nodeId": "page-trip-detail-map-view",
+      "slug": "trip-detail-map-view",
+      "title": "Trip Detail + Map View",
+      "htmlSrc": "pages/trip-detail-map-view.html",
+      "pageIndex": 1,
+      "stateGroupId": "trip-detail-map-states",
+      "stateRole": "base",
+      "baseStatePageId": null,
+      "sharedShellContract": [
+        "warm outer canvas and light neutral device shell",
+        "desktop icon sidebar with active Trips state",
+        "sticky trip header and sticky day tabs",
+        "split left itinerary panel and right map panel",
+        "HUD search bar, nearest label, and instruction card geometry"
+      ],
+      "mutableRegions": [
+        "selected day state",
+        "selected timeline item",
+        "route segment emphasis",
+        "instruction card content"
+      ],
+      "derivedFromHtmlSrc": null,
+      "derivationType": "original",
+      "sourcePageId": null,
+      "sourceHtmlSrc": null,
+      "pageType": "information-dense",
+      "businessScenario": "Desktop split-screen trip management for a saved multi-day journey.",
+      "visualNorthStar": "A premium travel cockpit where the itinerary cluster and route map feel locked into the same live guidance system.",
+      "compositionPattern": "dense left instrumentation plus expansive right command surface",
+      "continuityAnchors": [
+        "warm frame around a cool core shell",
+        "blue route and selected-state discipline",
+        "compact stats cards with tabular numerals",
+        "semi-opaque map HUD overlays"
+      ],
+      "libraryRestraintMode": false,
+      "uiKitPath": null,
+      "componentPlan": [
+        "sidebar",
+        "sticky-header",
+        "stat-grid",
+        "timeline",
+        "search",
+        "instruction-card"
+      ],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false,
+      "qualityRisks": [
+        "long trip title wrapping",
+        "sticky header plus sticky tabs spacing",
+        "overlay safe areas against map attribution"
+      ],
+      "generationNodeId": "gen-trip-detail-map-view",
+      "generationPath": [
+        "gen-project-shell",
+        "gen-trip-detail-desktop-shell",
+        "gen-trip-detail-map-view"
+      ],
+      "inheritedFragments": [
+        "partials/project-shell.html",
+        "partials/trip-detail-desktop-shell.html"
+      ],
+      "privateRegions": [
+        "selected day content",
+        "selected route segment",
+        "instruction card"
+      ],
+      "mutableSlots": [
+        "selectedDay",
+        "selectedTimelineRow"
+      ]
+    },
+    {
+      "nodeId": "page-trip-detail-empty-state",
+      "slug": "trip-detail-empty-state",
+      "title": "Trip Detail + Empty State",
+      "htmlSrc": "pages/trip-detail-empty-state.html",
+      "pageIndex": 2,
+      "stateGroupId": "trip-detail-map-states",
+      "stateRole": "derived",
+      "baseStatePageId": "page-trip-detail-map-view",
+      "sharedShellContract": [
+        "identical desktop shell as the base page",
+        "same sticky header and map overlay positions",
+        "same split layout and bezel treatment"
+      ],
+      "mutableRegions": [
+        "left panel body content",
+        "map marker and route visibility",
+        "primary CTA emphasis"
+      ],
+      "derivedFromHtmlSrc": "pages/trip-detail-map-view.html",
+      "derivationType": "original",
+      "sourcePageId": "page-trip-detail-map-view",
+      "sourceHtmlSrc": "pages/trip-detail-map-view.html",
+      "pageType": "information-dense",
+      "businessScenario": "Empty trip fallback when the itinerary has not been generated yet.",
+      "visualNorthStar": "Keep the cockpit shell alive while replacing the busy itinerary cluster with a calm create-trip prompt.",
+      "compositionPattern": "dense shell with calm empty center",
+      "continuityAnchors": [
+        "identical shell; only the stateful content differs",
+        "warm frame around a cool core shell",
+        "semi-opaque map HUD overlays"
+      ],
+      "libraryRestraintMode": false,
+      "uiKitPath": null,
+      "componentPlan": [
+        "sidebar",
+        "sticky-header",
+        "empty-card",
+        "search"
+      ],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false,
+      "qualityRisks": [
+        "empty state must still feel premium",
+        "map should not feel dead without route geometry"
+      ],
+      "generationNodeId": "gen-trip-detail-empty-state",
+      "generationPath": [
+        "gen-project-shell",
+        "gen-trip-detail-desktop-shell",
+        "gen-trip-detail-empty-state"
+      ],
+      "inheritedFragments": [
+        "partials/project-shell.html",
+        "partials/trip-detail-desktop-shell.html"
+      ],
+      "privateRegions": [
+        "empty panel content",
+        "empty map HUD state"
+      ],
+      "mutableSlots": [
+        "leftPanelState"
+      ]
+    },
+    {
+      "nodeId": "page-trip-detail-loading-state",
+      "slug": "trip-detail-loading-state",
+      "title": "Trip Detail + Loading State",
+      "htmlSrc": "pages/trip-detail-loading-state.html",
+      "pageIndex": 3,
+      "stateGroupId": "trip-detail-map-states",
+      "stateRole": "derived",
+      "baseStatePageId": "page-trip-detail-map-view",
+      "sharedShellContract": [
+        "identical desktop shell as the base page",
+        "same sticky header and map overlay positions",
+        "same split layout and bezel treatment"
+      ],
+      "mutableRegions": [
+        "left panel skeleton content",
+        "loading copy and progress chips",
+        "map placeholder route emphasis"
+      ],
+      "derivedFromHtmlSrc": "pages/trip-detail-map-view.html",
+      "derivationType": "original",
+      "sourcePageId": "page-trip-detail-map-view",
+      "sourceHtmlSrc": "pages/trip-detail-map-view.html",
+      "pageType": "information-dense",
+      "businessScenario": "Loading state while the planner refreshes route and itinerary details.",
+      "visualNorthStar": "Turn waiting into a polished cockpit standby mode with structured skeletons and restrained progress messaging.",
+      "compositionPattern": "dense shell with skeletal instrumentation",
+      "continuityAnchors": [
+        "identical shell; only the stateful content differs",
+        "blue route discipline even in placeholders",
+        "semi-opaque map HUD overlays"
+      ],
+      "libraryRestraintMode": false,
+      "uiKitPath": null,
+      "componentPlan": [
+        "sidebar",
+        "sticky-header",
+        "skeleton-stats",
+        "timeline-skeleton",
+        "search"
+      ],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false,
+      "qualityRisks": [
+        "skeletons should feel intentional",
+        "loading copy should not overwhelm the shell"
+      ],
+      "generationNodeId": "gen-trip-detail-loading-state",
+      "generationPath": [
+        "gen-project-shell",
+        "gen-trip-detail-desktop-shell",
+        "gen-trip-detail-loading-state"
+      ],
+      "inheritedFragments": [
+        "partials/project-shell.html",
+        "partials/trip-detail-desktop-shell.html"
+      ],
+      "privateRegions": [
+        "skeleton panel content",
+        "loading route HUD state"
+      ],
+      "mutableSlots": [
+        "leftPanelState"
+      ]
+    },
+    {
+      "nodeId": "page-trip-detail-route-unavailable",
+      "slug": "trip-detail-route-unavailable",
+      "title": "Trip Detail + Route Unavailable",
+      "htmlSrc": "pages/trip-detail-route-unavailable.html",
+      "pageIndex": 4,
+      "stateGroupId": "trip-detail-map-states",
+      "stateRole": "derived",
+      "baseStatePageId": "page-trip-detail-map-view",
+      "sharedShellContract": [
+        "identical desktop shell as the base page",
+        "same sticky header and map overlay positions",
+        "same split layout and bezel treatment"
+      ],
+      "mutableRegions": [
+        "warning tag and banner treatment",
+        "route line visibility",
+        "instruction card fallback content"
+      ],
+      "derivedFromHtmlSrc": "pages/trip-detail-map-view.html",
+      "derivationType": "original",
+      "sourcePageId": "page-trip-detail-map-view",
+      "sourceHtmlSrc": "pages/trip-detail-map-view.html",
+      "pageType": "information-dense",
+      "businessScenario": "Fallback state when routing fails but trip stops remain visible.",
+      "visualNorthStar": "Preserve calm confidence by showing markers and schedule continuity while explaining that only the route layer is unavailable.",
+      "compositionPattern": "dense shell with resilient fallback messaging",
+      "continuityAnchors": [
+        "identical shell; only the stateful content differs",
+        "warning accents stay contained to banners and tags",
+        "semi-opaque map HUD overlays"
+      ],
+      "libraryRestraintMode": false,
+      "uiKitPath": null,
+      "componentPlan": [
+        "sidebar",
+        "sticky-header",
+        "warning-banner",
+        "timeline",
+        "search",
+        "instruction-card"
+      ],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false,
+      "qualityRisks": [
+        "warning state must not feel broken",
+        "marker-only map still needs depth and clarity"
+      ],
+      "generationNodeId": "gen-trip-detail-route-unavailable",
+      "generationPath": [
+        "gen-project-shell",
+        "gen-trip-detail-desktop-shell",
+        "gen-trip-detail-route-unavailable"
+      ],
+      "inheritedFragments": [
+        "partials/project-shell.html",
+        "partials/trip-detail-desktop-shell.html"
+      ],
+      "privateRegions": [
+        "warning banner",
+        "route unavailable fallback map state"
+      ],
+      "mutableSlots": [
+        "routeMode"
+      ]
+    },
+    {
+      "nodeId": "page-trip-detail-map-mobile",
+      "slug": "trip-detail-map-mobile",
+      "title": "Trip Detail + Map View Mobile",
+      "htmlSrc": "pages/trip-detail-map-mobile.html",
+      "pageIndex": 5,
+      "stateGroupId": null,
+      "stateRole": null,
+      "baseStatePageId": null,
+      "sharedShellContract": [],
+      "mutableRegions": [],
+      "derivedFromHtmlSrc": null,
+      "derivationType": "original",
+      "sourcePageId": null,
+      "sourceHtmlSrc": null,
+      "pageType": "information-dense",
+      "businessScenario": "Mobile map-first trip detail with a draggable bottom sheet itinerary.",
+      "visualNorthStar": "A calm hand-held navigation surface where the map stays dominant and the itinerary behaves like a layered guidance tray.",
+      "compositionPattern": "full-screen map backdrop with stacked floating HUD and bottom sheet",
+      "continuityAnchors": [
+        "warm frame and cool surface palette",
+        "blue route and selected-state discipline",
+        "semi-opaque HUD surfaces",
+        "compact tabular stats"
+      ],
+      "libraryRestraintMode": false,
+      "uiKitPath": null,
+      "componentPlan": [
+        "search",
+        "summary-card",
+        "bottom-sheet",
+        "timeline",
+        "instruction-card"
+      ],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "miniProgramStyle": false,
+      "qualityRisks": [
+        "bottom sheet should not overpower the map",
+        "touch targets must stay generous"
+      ],
+      "generationNodeId": "gen-trip-detail-map-mobile",
+      "generationPath": [
+        "gen-project-shell",
+        "gen-trip-detail-map-mobile"
+      ],
+      "inheritedFragments": [
+        "partials/project-shell.html"
+      ],
+      "privateRegions": [
+        "mobile map-first HUD",
+        "bottom sheet itinerary"
+      ],
+      "mutableSlots": [
+        "sheetState",
+        "selectedTimelineRow"
+      ]
+    }
+  ],
+  "assets": [],
+  "wiringPlan": [],
+  "hiddenInteractionPlan": []
+}

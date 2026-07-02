@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TripWise - AI Planner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf8ff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-secondary-fixed": "#131f00",
+                        "on-secondary-container": "#4c6c00",
+                        "on-primary-fixed": "#001945",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-tertiary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#00429b",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary": "#486800",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#0058ca",
+                        "surface-container": "#eaedff",
+                        "secondary-container": "#b8f24a",
+                        "outline-variant": "#c2c6d7",
+                        "background": "#faf8ff",
+                        "tertiary-container": "#a36700",
+                        "surface-variant": "#dae2fd",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#424654",
+                        "on-primary-container": "#fefcff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-bright": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "surface-container-low": "#f2f3ff",
+                        "primary": "#0056c5",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#a0d831",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#131b2e",
+                        "secondary-fixed": "#bbf54d",
+                        "inverse-primary": "#b0c6ff",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#825100",
+                        "on-surface": "#131b2e",
+                        "primary-fixed": "#d9e2ff",
+                        "primary-container": "#166ef1",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "outline": "#727786"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-tight": "4px",
+                        "gutter": "16px",
+                        "container-padding": "32px",
+                        "app-margin": "24px",
+                        "component-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "stats-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "display-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "stats-md": ["14px", { "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F6E3D3; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        
+        .shadow-shell { box-shadow: 0 18px 50px rgba(15,23,42,0.14); }
+        .panel-border { border: 1px solid #E2E8F0; }
+        
+        /* Custom scrollbar for textareas/lists if needed */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c2c6d7; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #727786; }
+    </style>
+</head>
+<body class="min-h-screen text-on-surface antialiased p-app-margin md:p-8 flex items-center justify-center font-body-md overflow-x-hidden">
+<!-- App Shell Container -->
+<div class="bg-surface w-full max-w-[1440px] h-[921px] min-h-[800px] rounded-[32px] shadow-shell flex overflow-hidden relative">
+<!-- SideNavBar (Shared Component Blueprint) -->
+<nav class="hidden md:flex flex-col items-center bg-surface border-r border-outline-variant w-[80px] h-full py-app-margin z-50 shrink-0">
+<!-- Brand Avatar -->
+<div class="mb-8 flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-display-md text-display-md mb-2">
+                    T
+                </div>
+</div>
+<!-- Tabs -->
+<div class="flex flex-col gap-4 w-full px-2">
+<!-- Home (Inactive) -->
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center justify-center p-3 transition-all hover:scale-105 hover:bg-surface-container rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:fill">home</span>
+<span class="font-label-sm text-label-sm mt-1 hidden lg:block opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-4 bg-inverse-surface text-inverse-on-surface px-2 py-0.5 rounded whitespace-nowrap">Home</span>
+</a>
+<!-- Plan (Active) -->
+<a class="bg-primary-container text-on-primary-container rounded-xl flex flex-col items-center justify-center p-3 transition-all scale-95 duration-150 ease-in-out relative" href="#">
+<span class="material-symbols-outlined fill">edit_calendar</span>
+<!-- Tooltip (Optional, for clarity) -->
+<span class="font-label-sm text-label-sm mt-1 absolute -right-12 top-1/2 -translate-y-1/2 bg-inverse-surface text-inverse-on-surface px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none">Plan</span>
+</a>
+<!-- Trips (Inactive) -->
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center justify-center p-3 transition-all hover:scale-105 hover:bg-surface-container rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:fill">map</span>
+</a>
+<!-- Favorites (Inactive) -->
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center justify-center p-3 transition-all hover:scale-105 hover:bg-surface-container rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:fill">favorite</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-4 w-full px-2">
+<!-- Settings (Inactive) -->
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center justify-center p-3 transition-all hover:scale-105 hover:bg-surface-container rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:fill">settings</span>
+</a>
+<div class="w-8 h-[1px] bg-outline-variant mx-auto my-2"></div>
+<!-- Help -->
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center justify-center p-2 transition-all rounded-xl group" href="#" title="Help">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</a>
+<!-- Logout -->
+<a class="text-on-surface-variant hover:text-error flex flex-col items-center justify-center p-2 transition-all rounded-xl group" href="#" title="Logout">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-background relative">
+<!-- Header -->
+<header class="px-container-padding pt-container-padding pb-gutter border-b border-outline-variant/30 flex justify-between items-end shrink-0 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface">Lên kế hoạch với AI 🪄</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
+                        Điều chỉnh các tuỳ chọn và để trí tuệ nhân tạo thiết kế chuyến đi tối ưu nhất cho bạn.
+                    </p>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<div class="flex-1 overflow-y-auto p-container-padding">
+<div class="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-app-margin">
+<!-- Left Column: Preference Form (7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-component-gap">
+<div class="bg-surface-container-lowest panel-border rounded-2xl p-6 h-full shadow-sm transition-transform hover:scale-[1.005] duration-300">
+<h2 class="font-display-sm text-display-sm text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span>
+                                Tuỳ chọn chuyến đi
+                            </h2>
+<form class="space-y-6">
+<!-- Destination -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Điểm đến</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2.5 border-outline-variant bg-surface rounded-xl font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow" readonly="" type="text" value="Nha Trang, Vietnam"/>
+</div>
+</div>
+<!-- Date Range & Travelers Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Date Range -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Thời gian</label>
+<div class="flex items-center gap-2">
+<div class="relative flex-1 group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</div>
+<input class="block w-full pl-9 pr-2 py-2 border-outline-variant bg-surface rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary" type="text" value="12/07/2026"/>
+</div>
+<span class="text-on-surface-variant">-</span>
+<div class="relative flex-1 group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</div>
+<input class="block w-full pl-9 pr-2 py-2 border-outline-variant bg-surface rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary" type="text" value="14/07/2026"/>
+</div>
+</div>
+<p class="font-label-sm text-label-sm text-tertiary mt-2">⚠️ MVP hỗ trợ lịch trình tối đa 3 ngày.</p>
+</div>
+<!-- Travelers Stepper -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Số người</label>
+<div class="flex items-center justify-between border border-outline-variant rounded-xl p-1 bg-surface">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<div class="flex flex-col items-center justify-center">
+<span class="font-stats-md text-stats-md text-on-surface">2</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Couple</span>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Budget -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Ngân sách</label>
+<div class="flex p-1 bg-surface-container rounded-xl border border-outline-variant">
+<button class="flex-1 py-2 px-4 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" type="button">Tiết kiệm</button>
+<button class="flex-1 py-2 px-4 rounded-lg bg-surface-container-lowest shadow-sm font-label-md text-label-md text-primary ring-1 ring-black/5 transition-all" type="button">Tiêu chuẩn</button>
+<button class="flex-1 py-2 px-4 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors" type="button">Thoải mái</button>
+</div>
+</div>
+<!-- Travel Style -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Phong cách du lịch</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border border-primary bg-primary-container/10 text-primary font-label-md text-label-md flex items-center gap-1 transition-colors hover:bg-primary-container/20" type="button">
+                                            Foodie
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-secondary bg-secondary-container/20 text-on-secondary-container font-label-md text-label-md flex items-center gap-1 transition-colors hover:bg-secondary-container/30" type="button">
+                                            Check-in
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-primary bg-primary-container/10 text-primary font-label-md text-label-md flex items-center gap-1 transition-colors hover:bg-primary-container/20" type="button">
+                                            Culture
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                                            Chill/Relaxing
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                                            Nature
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                                            Adventure
+                                        </button>
+</div>
+</div>
+<!-- Transportation -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Phương tiện di chuyển</label>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-primary bg-primary-container/5 text-primary transition-all hover:bg-primary-container/10" type="button">
+<span class="material-symbols-outlined mb-1 text-[24px]">two_wheeler</span>
+<span class="font-label-sm text-label-sm">Xe máy</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline-variant bg-surface text-on-surface-variant transition-all hover:bg-surface-container hover:border-outline" type="button">
+<span class="material-symbols-outlined mb-1 text-[24px]">directions_walk</span>
+<span class="font-label-sm text-label-sm">Đi bộ</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline-variant bg-surface text-on-surface-variant transition-all hover:bg-surface-container hover:border-outline" type="button">
+<span class="material-symbols-outlined mb-1 text-[24px]">directions_car</span>
+<span class="font-label-sm text-label-sm">Ô tô</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline-variant bg-surface text-on-surface-variant transition-all hover:bg-surface-container hover:border-outline" type="button">
+<span class="material-symbols-outlined mb-1 text-[24px]">directions_bus</span>
+<span class="font-label-sm text-label-sm">Xe bus công cộng</span>
+</button>
+</div>
+</div>
+<!-- Food -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Sở thích ẩm thực</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border border-primary bg-primary-container/10 text-primary font-label-md text-label-md flex items-center gap-1 transition-colors hover:bg-primary-container/20" type="button">
+                                            Hải sản
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-secondary bg-secondary-container/20 text-on-secondary-container font-label-md text-label-md flex items-center gap-1 transition-colors hover:bg-secondary-container/30" type="button">
+                                            Ẩm thực địa phương
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                                            Ăn vặt đường phố
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                                            Quán cafe
+                                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors" type="button">
+                                            Ăn chay
+                                        </button>
+</div>
+</div>
+<!-- Special Notes -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Lưu ý đặc biệt</label>
+<textarea class="block w-full p-3 border-outline-variant bg-surface rounded-xl font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary resize-none transition-shadow" rows="2">Tránh đi bộ ngoài trời vào buổi trưa nắng nóng.</textarea>
+</div>
+</form>
+</div>
+</div>
+<!-- Right Column: AI Insight & Preview (5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-component-gap">
+<!-- AI Summary Card (Soft Green / Lime) -->
+<div class="bg-[#f7fceb] border border-[#d6eb9a] rounded-2xl p-4 flex gap-3 items-start relative overflow-hidden">
+<!-- Subtle bg effect -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+<div class="w-8 h-8 shrink-0 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-secondary-fixed-variant leading-relaxed">
+<span class="font-label-md">AI đã hiểu yêu cầu của bạn:</span> Chuyến đi 3 ngày tại Nha Trang bằng xe máy dành cho cặp đôi, thích khám phá văn hoá, ẩm thực địa phương và hải sản.
+                                </p>
+</div>
+</div>
+<!-- Draft Itinerary Preview Widget -->
+<div class="bg-surface-container-lowest panel-border rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+<h3 class="font-display-sm text-display-sm text-on-surface flex items-center gap-2">
+                                📋 Bản nháp lịch trình dự kiến
+                            </h3>
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant/50">
+<button class="px-4 py-2 font-label-md text-label-md text-primary border-b-2 border-primary">Ngày 1</button>
+<button class="px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Ngày 2</button>
+<button class="px-4 py-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Ngày 3</button>
+</div>
+<!-- Timeline -->
+<div class="relative pl-4 border-l-2 border-outline-variant/30 space-y-4 py-2">
+<div class="relative">
+<div class="absolute w-2.5 h-2.5 bg-surface border-2 border-outline rounded-full -left-[21px] top-1"></div>
+<p class="font-body-sm text-body-sm text-on-surface"><span class="font-label-md w-12 inline-block">Sáng:</span> Tháp Bà Ponagar</p>
+</div>
+<div class="relative">
+<div class="absolute w-2.5 h-2.5 bg-surface border-2 border-outline rounded-full -left-[21px] top-1"></div>
+<p class="font-body-sm text-body-sm text-on-surface"><span class="font-label-md w-12 inline-block">Trưa:</span> Bún sứa Năm Beo</p>
+</div>
+<div class="relative">
+<div class="absolute w-2.5 h-2.5 bg-surface border-2 border-outline rounded-full -left-[21px] top-1"></div>
+<p class="font-body-sm text-body-sm text-on-surface"><span class="font-label-md w-12 inline-block">Chiều:</span> Chợ Đầm</p>
+</div>
+<div class="relative">
+<div class="absolute w-2.5 h-2.5 bg-surface border-2 border-outline rounded-full -left-[21px] top-1"></div>
+<p class="font-body-sm text-body-sm text-on-surface"><span class="font-label-md w-12 inline-block">Tối:</span> Hải sản Bờ kè</p>
+</div>
+</div>
+</div>
+<!-- AI Advice List -->
+<div class="bg-surface-container-lowest panel-border rounded-2xl p-5 shadow-sm">
+<h3 class="font-display-sm text-display-sm text-on-surface flex items-center gap-2 mb-3">
+                                💡 Gợi ý tối ưu hoá
+                            </h3>
+<ul class="space-y-2">
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-start gap-2">
+<span class="text-secondary-fixed-dim font-bold">✓</span>
+<span>Ưu tiên di tích lịch sử ngoài trời vào buổi sáng để tránh nắng nóng.</span>
+</li>
+<li class="font-body-sm text-body-sm text-on-surface-variant flex items-start gap-2">
+<span class="text-secondary-fixed-dim font-bold">✓</span>
+<span>Route di chuyển đã được tối ưu OSRM theo trục đường chính Trần Phú.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action Banner -->
+<div class="bg-inverse-surface text-inverse-on-surface p-4 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 rounded-b-[32px] md:rounded-none relative z-20">
+<div class="flex items-center gap-3 max-w-2xl">
+<span class="material-symbols-outlined text-inverse-primary animate-pulse">timer</span>
+<p class="font-body-sm text-body-sm opacity-90">
+                        Thời gian xử lý dự kiến: ~15 giây. Hệ thống sẽ tối ưu hóa bản đồ lộ trình sau khi tạo.
+                    </p>
+</div>
+<button class="bg-primary text-on-primary hover:bg-primary-fixed-variant transition-colors px-6 py-3 rounded-xl font-label-md text-label-md flex items-center gap-2 shadow-sm shrink-0">
+                    Tạo lịch trình chính thức ⚡
+                    <span class="material-symbols-outlined text-[18px]">stars</span>
+</button>
+</div>
+</main>
+</div>
+</body></html>

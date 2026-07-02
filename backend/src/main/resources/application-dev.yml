@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${DEV_DB_URL:jdbc:postgresql://localhost:5433/tripwise_dev}
+    username: ${DEV_DB_USERNAME:tripwise_dev}
+    password: ${DEV_DB_PASSWORD:dev_password}
+  data:
+    redis:
+      host: ${DEV_REDIS_HOST:localhost}
+      port: ${DEV_REDIS_PORT:6379}
+
+tripwise:
+  jwt:
+    secret: ${DEV_JWT_SECRET:dev_jwt_secret_key_for_development_environment}
+    access-token-expiration: PT15M
+
+logging:
+  level:
+    root: INFO
+    com.tripwise: DEBUG

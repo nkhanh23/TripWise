@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TripWise - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#00429b",
+                        "on-primary-container": "#fefcff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-secondary-container": "#4c6c00",
+                        "secondary-fixed-dim": "#a0d831",
+                        "on-surface-variant": "#424654",
+                        "tertiary": "#825100",
+                        "tertiary-container": "#a36700",
+                        "surface-dim": "#d2d9f4",
+                        "secondary": "#486800",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eaedff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-container-low": "#f2f3ff",
+                        "surface-bright": "#faf8ff",
+                        "surface": "#faf8ff",
+                        "surface-container-highest": "#dae2fd",
+                        "secondary-fixed": "#bbf54d",
+                        "outline-variant": "#c2c6d7",
+                        "surface-tint": "#0058ca",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e2e7ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-tertiary-container": "#fffbff",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-background": "#131b2e",
+                        "primary": "#0056c5",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "background": "#faf8ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#b8f24a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary-fixed": "#131f00",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "inverse-primary": "#b0c6ff",
+                        "outline": "#727786",
+                        "on-primary-fixed": "#001945",
+                        "surface-variant": "#dae2fd",
+                        "inverse-surface": "#283044",
+                        "on-surface": "#131b2e",
+                        "primary-fixed": "#d9e2ff",
+                        "primary-container": "#166ef1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-tight": "4px",
+                        "component-gap": "12px",
+                        "gutter": "16px",
+                        "container-padding": "32px",
+                        "app-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter", "sans-serif"],
+                        "display-md": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "stats-md": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "display-sm": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "display-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "stats-md": ["14px", { "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                },
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F6E3D3; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .bento-card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0px 8px 24px rgba(15, 23, 42, 0.08);
+            border: 1px solid #E2E8F0;
+            transition: transform 0.2s ease-in-out;
+        }
+        .bento-card:hover {
+            transform: scale(1.02);
+        }
+        .app-shell {
+            background-color: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 18px 50px rgba(15,23,42,0.14);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-app-margin text-on-surface font-body-md">
+<!-- App Shell Container -->
+<div class="app-shell w-full max-w-7xl h-[921px] flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col items-center py-app-margin docked left-0 h-full w-20 z-10 shrink-0">
+<!-- Brand Logo -->
+<div class="mb-12 flex flex-col items-center">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary text-3xl font-black">flight_takeoff</span>
+<span class="font-label-sm text-label-sm font-bold text-primary dark:text-inverse-primary mt-1">TripWise</span>
+</div>
+<!-- Nav Links -->
+<ul class="flex flex-col gap-4 w-full px-2">
+<li>
+<a aria-label="Home" class="flex flex-col items-center justify-center p-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-105 transition-transform duration-200">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+</li>
+<li>
+<a aria-current="page" aria-label="Dashboard" class="flex flex-col items-center justify-center p-2 text-primary dark:text-inverse-primary bg-primary-container/20 rounded-xl hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:scale-105 transition-transform duration-200" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dashboard</span>
+</a>
+</li>
+<li>
+<a aria-label="Saved Trips" class="flex flex-col items-center justify-center p-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-105 transition-transform duration-200">auto_awesome_motion</span>
+<span class="font-label-sm text-label-sm mt-1 text-center">Saved Trips</span>
+</a>
+</li>
+<li>
+<a aria-label="Map" class="flex flex-col items-center justify-center p-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-105 transition-transform duration-200">map</span>
+<span class="font-label-sm text-label-sm mt-1">Map</span>
+</a>
+</li>
+<li>
+<a aria-label="Settings" class="flex flex-col items-center justify-center p-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-105 transition-transform duration-200">settings</span>
+<span class="font-label-sm text-label-sm mt-1">Settings</span>
+</a>
+</li>
+</ul>
+<!-- Avatar -->
+<div class="mt-auto pt-4">
+<img alt="User profile" class="w-10 h-10 rounded-full object-cover border-2 border-surface-container-highest" data-alt="A small circular avatar placeholder image for a user profile in a modern web application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_zpLvbk3-oKaZgMtHkvtq74zqCHGSGK5ipUagQa5mmAbVH1I_X9jAm1Or52WypCRkPXPRyZ0gmPpYLj2e8C1IKogqagyLyIy0r4E_VBO9weMqXBxmGZ0JGoPyN1_vCs-6sM2qPnhyqY3JqZA-MxhzvnpHLs0BWLMr_rJQmfGpUG1hNUv6Viv6ZgblXmesueDNWaWFmoNEV2PUfcsby98DNNh31edSK4ypgPJw6oj6mo0vRfmi6CII_7wUNspp7tEFccNBZFdlCVw7"/>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full bg-background overflow-y-auto">
+<!-- Top Header -->
+<header class="px-container-padding py-gutter flex justify-between items-center bg-transparent shrink-0">
+<div>
+<h1 class="font-display-lg text-display-lg font-black text-on-surface">Chào Khánh! 👋</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Chúc bạn có những chuyến hành trình tuyệt vời.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        New Trip
+                    </button>
+<button class="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-secondary-fixed transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Import Route
+                    </button>
+</div>
+</header>
+<!-- Dashboard Grid -->
+<div class="px-container-padding pb-container-padding flex-1">
+<div class="grid grid-cols-12 gap-gutter h-full">
+<!-- Left Column (8 cols) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+<!-- Hero Draft Card -->
+<div class="bento-card p-6 flex flex-col relative overflow-hidden group">
+<!-- Background texture/image hint -->
+<div class="absolute inset-0 z-0 opacity-10 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A beautiful, vibrant aerial view of Nha Trang beach in Vietnam during sunrise. Soft golden lighting on the blue ocean and white sand, creating a calming, premium travel aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHykHBa7aTu-VTxK7w2eB7Sou-mJ2OWuUaQd5OytZvMiOPFftX1LK11smF9XRmRqWgtENl0PIKDPE1RdsY3L4L2KC2G-6ulYrSD8sdN7ncHTYFu-Td4-Jo6Gf0Eh-ctv6ANnEjjR4DjJ4EG6ZmpGicPrgW4IG3Jpmm1FzhQZKeqOObarAvEGDC4JDO3kr_3QNB3tJxLnaEchYxNMiL405Q0C7z_8pPkfKOro7K1EC-xiwEb_vA40IV54cy1G6J_WAOQ5ChvQ2VU7sn')"></div>
+<div class="relative z-10 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<h2 class="font-display-sm text-display-sm text-on-surface">Chuyến đi Nha Trang đang lập dở</h2>
+<span class="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-2 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">edit_note</span>
+                                        Draft
+                                    </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Đã chọn ngày (12/07 - 14/07), chưa chọn ngân sách...</p>
+<div class="mt-auto">
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant mb-2">
+<span>Tiến độ hoàn thiện</span>
+<span>60%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 mb-6 overflow-hidden">
+<div class="bg-primary h-2 rounded-full" style="width: 60%"></div>
+</div>
+<div class="flex gap-3">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors shadow-md">
+                                            Tiếp tục thiết lập
+                                        </button>
+<button class="border border-outline-variant text-on-surface-variant font-label-md text-label-md px-5 py-2.5 rounded-lg hover:bg-surface-container transition-colors">
+                                            Xoá bản nháp
+                                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Trips List -->
+<div class="flex flex-col flex-1">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-display-sm text-display-sm text-on-surface">Chuyến đi gần đây</h3>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Trip Item 1 -->
+<div class="bento-card p-4 flex items-center justify-between group cursor-pointer hover:border-primary/30">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">landscape</span>
+</div>
+<div>
+<h4 class="font-stats-md text-stats-md text-on-surface group-hover:text-primary transition-colors">Đà Lạt Mộng Mơ</h4>
+<div class="flex items-center gap-3 mt-1 font-label-sm text-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">route</span> 12km</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">pin_drop</span> 4 spots</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="bg-primary-container/20 text-primary font-label-sm text-label-sm px-2.5 py-1 rounded-md font-medium border border-primary/20">Planned</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Trip Item 2 -->
+<div class="bento-card p-4 flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">beach_access</span>
+</div>
+<div>
+<h4 class="font-stats-md text-stats-md text-on-surface">Phú Quốc Summer</h4>
+<div class="flex items-center gap-3 mt-1 font-label-sm text-label-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">route</span> 45km</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">pin_drop</span> 12 spots</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="bg-surface-variant text-on-surface-variant font-label-sm text-label-sm px-2.5 py-1 rounded-md font-medium">Completed</span>
+<span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (4 cols) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<!-- AI Suggestions Bento -->
+<div class="bento-card p-5 bg-gradient-to-br from-[#faf8ff] to-[#f2f3ff] relative overflow-hidden">
+<!-- Subtle AI flair -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-secondary-container/20 rounded-full blur-2xl"></div>
+<h3 class="font-stats-md text-stats-md text-on-surface mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary font-medium">lightbulb</span>
+                                AI Smart Suggestions
+                            </h3>
+<div class="space-y-3 relative z-10">
+<div class="bg-white p-3 rounded-lg border border-outline-variant/30 text-sm">
+<p class="font-body-sm text-body-sm text-on-surface mb-2">Dự báo mưa tại Nha Trang vào ngày 13/07. Cân nhắc dời lịch trình biển sang 14/07?</p>
+<div class="flex gap-2">
+<button class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-3 py-1.5 rounded-md hover:bg-secondary-fixed transition-colors">Áp dụng</button>
+<button class="text-on-surface-variant font-label-sm text-label-sm px-3 py-1.5 hover:bg-surface-container-highest rounded-md transition-colors">Bỏ qua</button>
+</div>
+</div>
+<div class="bg-white p-3 rounded-lg border border-outline-variant/30 text-sm">
+<p class="font-body-sm text-body-sm text-on-surface">Bạn thường thích nghỉ ngơi 3 ngày cuối tuần. Có muốn thêm 1 ngày cho chuyến đi này?</p>
+</div>
+</div>
+</div>
+<!-- Weather Brief -->
+<div class="bento-card p-5 flex items-center justify-between">
+<div>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Weather Brief</h3>
+<div class="font-stats-md text-stats-md text-on-surface">Nha Trang</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-1">Tomorrow: 30°C</div>
+</div>
+<div class="flex items-center gap-2 text-primary font-display-md text-display-md">
+                                29°C <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+</div>
+</div>
+<!-- Quick Actions Grid -->
+<div class="grid grid-cols-2 gap-3">
+<button class="bento-card p-4 flex flex-col items-center justify-center gap-2 text-on-surface hover:text-primary hover:border-primary/30 transition-colors h-24">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">search</span>
+<span class="font-label-sm text-label-sm">Tìm địa điểm</span>
+</button>
+<button class="bento-card p-4 flex flex-col items-center justify-center gap-2 text-on-surface hover:text-primary hover:border-primary/30 transition-colors h-24">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">explore</span>
+<span class="font-label-sm text-label-sm">Xem bản đồ</span>
+</button>
+<button class="bento-card p-4 flex flex-col items-center justify-center gap-2 text-on-surface hover:text-primary hover:border-primary/30 transition-colors h-24">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">tune</span>
+<span class="font-label-sm text-label-sm">Cài đặt sở thích</span>
+</button>
+<button class="bento-card p-4 flex flex-col items-center justify-center gap-2 text-on-surface hover:text-primary hover:border-primary/30 transition-colors h-24">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant">pie_chart</span>
+<span class="font-label-sm text-label-sm">Thống kê chi phí</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

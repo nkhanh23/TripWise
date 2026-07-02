@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TripWise - Trip Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-background": "#131b2e",
+                        "secondary": "#486800",
+                        "tertiary": "#825100",
+                        "surface-container-low": "#f2f3ff",
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-primary": "#b0c6ff",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#166ef1",
+                        "background": "#faf8ff",
+                        "on-surface-variant": "#424654",
+                        "surface": "#faf8ff",
+                        "primary": "#0056c5",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#eaedff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-fixed": "#bbf54d",
+                        "on-primary-fixed": "#001945",
+                        "surface-bright": "#faf8ff",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-container-highest": "#dae2fd",
+                        "on-secondary-container": "#4c6c00",
+                        "surface-dim": "#d2d9f4",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#fefcff",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#dae2fd",
+                        "on-primary-fixed-variant": "#00429b",
+                        "tertiary-container": "#a36700",
+                        "surface-container-high": "#e2e7ff",
+                        "on-surface": "#131b2e",
+                        "outline": "#727786",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "inverse-surface": "#283044",
+                        "primary-fixed": "#d9e2ff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "tertiary-fixed": "#ffddb8",
+                        "secondary-fixed-dim": "#a0d831",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "surface-tint": "#0058ca",
+                        "on-secondary-fixed": "#131f00",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#b8f24a",
+                        "outline-variant": "#c2c6d7",
+                        "canvas": "#F6E3D3",
+                        "brand-blue": "#2F7BFF",
+                        "brand-lime": "#B8F24A"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "2rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "app-margin": "24px",
+                        "component-gap": "12px",
+                        "stack-tight": "4px",
+                        "container-padding": "32px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter", "sans-serif"],
+                        "label-md": ["Inter", "sans-serif"],
+                        "display-sm": ["Inter", "sans-serif"],
+                        "display-lg": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "stats-md": ["Inter", "sans-serif"],
+                        "display-md": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "display-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "stats-md": ["14px", { "fontWeight": "600" }],
+                        "display-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .cockpit-shadow { box-shadow: 0 18px 50px rgba(15,23,42,0.14); }
+        .panel-border { border: 1px solid #E2E8F0; }
+        .glass-hud { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); }
+        
+        /* Map Mock Styles */
+        .mock-map-bg {
+            background-color: #f0f4f8;
+            background-image: 
+                radial-gradient(#d1d5db 1px, transparent 1px),
+                radial-gradient(#d1d5db 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        .route-line {
+            position: absolute;
+            width: 140px;
+            height: 4px;
+            background-color: #2F7BFF;
+            box-shadow: 0 0 8px rgba(47, 123, 255, 0.6);
+            transform-origin: left center;
+        }
+    </style>
+</head>
+<body class="bg-canvas h-full p-app-margin font-sans text-on-surface antialiased flex">
+<!-- Shell Container -->
+<div class="flex-1 bg-surface rounded-3xl cockpit-shadow overflow-hidden flex relative ring-1 ring-black/5">
+<!-- SideNavBar (Predicted JSON) -->
+<nav class="docked h-full w-[280px] left-0 top-0 border-r border-outline-variant bg-surface flex flex-col py-container-padding shrink-0 hidden md:flex z-20">
+<div class="px-gutter mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">explore</span>
+</div>
+<div>
+<h1 class="font-display-md text-display-md text-primary tracking-tight">TripWise</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Premium Travel Tech</p>
+</div>
+</div>
+<ul class="flex flex-col gap-1 px-4">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold bg-surface-container-highest border-l-4 border-primary hover:bg-surface-container-high transition-colors scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+<span>Planner</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span>Saved Trips</span>
+</a>
+</li>
+<li class="mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-medium hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 relative">
+<!-- TopNavBar (Predicted JSON) -->
+<header class="flex justify-between items-center h-16 px-gutter bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm z-20 shrink-0">
+<div class="flex-1 flex items-center gap-4">
+<div class="relative w-64 max-w-md hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full pl-9 pr-4 py-2 rounded-lg bg-surface-container-low border border-outline-variant text-body-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow" placeholder="Search destinations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-component-gap">
+<button class="px-4 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant border border-outline-variant hover:bg-surface-container-low transition-colors">
+                        Share
+                    </button>
+<button class="px-4 py-2 rounded-lg font-label-md text-label-md bg-[#B8F24A] text-on-background hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">bolt</span>
+                        Optimize Route
+                    </button>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up professional headshot of a young asian woman smiling, bright studio lighting, soft focus background, wearing a casual white shirt. The image should match a clean, modern UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvBdxVbTJF1wSE757akg4YMnNajkEuTuyXcMXt6i-dekFtCQrPlPRxrXK5ZH25V_iqXUohgF6NbL1-i4DbRs_h99NCzSFRoskrS4jNwI21vug2lHqS8FvdglNo1Z21C9YQBK4WeIt3FLmFpydHxWNFASOZeZ6gTdqU_AOrUj356j5QzIri8wQv8nRSRpBZk_PkF8oxRtWZhskmzEx4HwofrBV2FgTxYMpzO-gkulW61JqSB53fqeXPXhuMFoAzaIytPPd7P6ndlAPA"/>
+</button>
+</div>
+</header>
+<!-- Workspace Split -->
+<main class="flex-1 flex overflow-hidden">
+<!-- Left Panel (Itinerary Details) -->
+<section class="w-[480px] bg-surface flex flex-col border-r border-outline-variant z-10 shrink-0 overflow-y-auto custom-scrollbar relative">
+<!-- Sticky Header -->
+<div class="sticky top-0 bg-surface/95 backdrop-blur-sm z-10 px-6 pt-6 pb-4 border-b border-outline-variant shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-1">Nha Trang Trip</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">3 Days 2 Nights (12/07 - 14/07)</p>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-2.5 py-1 rounded-full border border-brand-blue text-brand-blue font-label-sm text-label-sm flex items-center gap-1 bg-brand-blue/5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Đã lên kế hoạch
+                            </span>
+<span class="px-2.5 py-1 rounded-full bg-brand-lime text-on-background font-label-sm text-label-sm flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span> Đã tối ưu
+                            </span>
+<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span> Nguy cơ mưa
+                            </span>
+</div>
+<!-- Summary Stats Bezel -->
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl border border-outline-variant">
+<div class="flex flex-col items-center flex-1 border-r border-outline-variant last:border-0">
+<span class="material-symbols-outlined text-on-surface-variant text-lg mb-1">route</span>
+<span class="font-stats-md text-stats-md">25 km</span>
+</div>
+<div class="flex flex-col items-center flex-1 border-r border-outline-variant last:border-0">
+<span class="material-symbols-outlined text-on-surface-variant text-lg mb-1">two_wheeler</span>
+<span class="font-stats-md text-stats-md">Motorbike</span>
+</div>
+<div class="flex flex-col items-center flex-1 border-r border-outline-variant last:border-0">
+<span class="material-symbols-outlined text-amber-500 text-lg mb-1" style="font-variation-settings: 'FILL' 1;">sunny</span>
+<span class="font-stats-md text-stats-md">29°C</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<span class="material-symbols-outlined text-on-surface-variant text-lg mb-1">payments</span>
+<span class="font-stats-md text-stats-md">$220</span>
+</div>
+</div>
+</div>
+<!-- Day Tabs -->
+<div class="px-6 border-b border-outline-variant bg-surface sticky top-[196px] z-10">
+<div class="flex gap-6">
+<button class="py-3 font-label-md text-label-md text-brand-blue border-b-2 border-brand-blue font-bold">Day 1</button>
+<button class="py-3 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Day 2</button>
+<button class="py-3 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Day 3</button>
+</div>
+</div>
+<!-- Vertical Timeline -->
+<div class="p-6 flex-1">
+<div class="relative pl-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant/50">
+<!-- Stop 1 -->
+<div class="relative mb-6 group cursor-pointer">
+<div class="absolute -left-[30px] top-1 w-4 h-4 rounded-full bg-brand-blue border-[3px] border-surface z-10 group-hover:scale-125 transition-transform"></div>
+<div class="bg-surface rounded-xl panel-border p-4 hover:shadow-md hover:scale-[1.02] transition-all duration-200">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display-sm text-display-sm text-on-surface">Tháp Bà Ponagar</h3>
+<span class="font-stats-md text-stats-md text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded">08:00</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Di tích lịch sử</p>
+<div class="w-full h-24 rounded-lg overflow-hidden bg-surface-container-low border border-outline-variant">
+<img alt="Tháp Bà Ponagar" class="w-full h-full object-cover" data-alt="Ancient Cham temple towers of Ponagar in Nha Trang, Vietnam, warm morning sunlight highlighting the red brick textures, clear blue sky, photorealistic, cinematic wide shot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMc_fER3_Tegt69rgFLeAqQstKiqbVflvP4rrVtdBfY2Zad6Hq8vrlFGzCOGz13odD_IAuWF0GHXPqvP-zxwLaRrO3Kja2W_pS_9sZEFj0eCY2Oy7ihEGUACZ9nzFynh4jQ14fuUIewWSYBRkcvlDsOZjOHt1e6Jk7WARJlIsNXVoSfgu_bUrCw3aqaNDCCAcRaB5cg2OqXn9V1fFJA5MGQVEfh2tQyab9rrvpJ7iu0LDkectl0-jxfLWDcRxyZ6_1qCrOZSA1jOxB"/>
+</div>
+</div>
+</div>
+<!-- Transfer 1 -->
+<div class="relative mb-6 pl-4 py-2">
+<div class="absolute -left-[20px] top-1/2 -translate-y-1/2 text-outline-variant bg-surface py-1">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant font-label-sm text-label-sm bg-surface-container-low/50 inline-flex px-3 py-1.5 rounded-md border border-outline-variant/50">
+<span class="material-symbols-outlined text-[16px]">two_wheeler</span>
+<span>Di chuyển bằng xe máy • 1.2 km • 10 phút</span>
+</div>
+</div>
+<!-- Stop 2 -->
+<div class="relative mb-6 group cursor-pointer">
+<div class="absolute -left-[30px] top-1 w-4 h-4 rounded-full bg-white border-[2px] border-outline-variant z-10 group-hover:border-brand-blue transition-colors"></div>
+<div class="bg-surface rounded-xl panel-border p-4 hover:shadow-md hover:scale-[1.02] transition-all duration-200">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display-sm text-display-sm text-on-surface">Chợ Đầm</h3>
+<span class="font-stats-md text-stats-md text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">11:30</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Mua sắm &amp; Ẩm thực</p>
+</div>
+</div>
+<!-- Transfer 2 -->
+<div class="relative mb-6 pl-4 py-2">
+<div class="absolute -left-[20px] top-1/2 -translate-y-1/2 text-outline-variant bg-surface py-1">
+<span class="material-symbols-outlined text-sm">more_vert</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant font-label-sm text-label-sm bg-surface-container-low/50 inline-flex px-3 py-1.5 rounded-md border border-outline-variant/50">
+<span class="material-symbols-outlined text-[16px]">directions_car</span>
+<span>Di chuyển đến nhà hàng Bờ Kè • 3.4 km • 15 phút</span>
+</div>
+</div>
+<!-- Stop 3 -->
+<div class="relative mb-6 group cursor-pointer">
+<div class="absolute -left-[30px] top-1 w-4 h-4 rounded-full bg-white border-[2px] border-outline-variant z-10 group-hover:border-brand-blue transition-colors"></div>
+<div class="bg-surface rounded-xl panel-border p-4 hover:shadow-md hover:scale-[1.02] transition-all duration-200">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-display-sm text-display-sm text-on-surface">Hải sản Gió Biển</h3>
+<span class="font-stats-md text-stats-md text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">18:00</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ăn uống</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Optimization Card -->
+<div class="p-6 mt-auto border-t border-outline-variant bg-surface sticky bottom-0 z-10">
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<!-- Mock Circular Progress -->
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-outline-variant/30" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-brand-lime" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="92, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="absolute font-stats-md text-[10px] text-on-background">92%</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">AI Optimization Score</p>
+<p class="font-body-sm text-body-sm text-brand-lime font-medium">Highly Efficient Route</p>
+</div>
+</div>
+<button class="font-label-md text-label-md text-brand-blue hover:underline">Details</button>
+</div>
+</div>
+</section>
+<!-- Right Panel (Map View) -->
+<section class="flex-1 relative bg-surface-dim overflow-hidden mock-map-bg flex items-center justify-center" data-location="Nha Trang">
+<!-- Full height map placeholder image acting as base -->
+<div class="absolute inset-0 opacity-40 mix-blend-multiply pointer-events-none" data-alt="High contrast stylized digital map of Nha Trang coastline, minimal UI style, light mode, muted blues and greens, showing roads and topographical features subtly." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBax06s_wRlhWfPbJ78s7WdQNJM7ni5LYFkuSI66bkc8B3j5tCs39BEGVzTYKJt287OyIgTDeU2cdUGAyRw6D2J1bkPh4RVAS16NER93ZBrsAaFCXShXLYSOJw5Zoqw0DJEJEVFugzS6WhJDs8CykVw3qQb13O2FYgEfs82qrvfhVChPNWHRQFPyuN47UYb3Fkd_XFHuZLkpoEF3aZ7shYtGUL9eWQ_vrl6OPG24UY9bPdjylUxcSFMTFWI5yUj67h94GXVffcVH3Xd')"></div>
+<!-- HUD Elements -->
+<!-- Search Bar Float -->
+<div class="absolute top-6 left-6 z-10">
+<div class="glass-hud panel-border rounded-full flex items-center px-4 py-2 shadow-sm">
+<span class="material-symbols-outlined text-on-surface-variant mr-2 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48 p-0 text-on-surface placeholder:text-on-surface-variant/70" placeholder="Find nearby places..." type="text"/>
+<button class="ml-2 w-6 h-6 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Stops Counter -->
+<div class="absolute top-6 right-6 z-10">
+<div class="glass-hud panel-border rounded-full px-4 py-2 shadow-sm flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
+<span class="font-label-md text-label-md text-on-surface">03 Stops Selected</span>
+</div>
+</div>
+<!-- Map Markers & Route (Mocked positioning) -->
+<div class="relative w-full h-full max-w-3xl max-h-[600px]">
+<!-- Route Lines -->
+<div class="route-line top-[32%] left-[25%] rotate-[15deg]"></div>
+<div class="route-line top-[45%] left-[55%] rotate-[65deg] w-[180px]"></div>
+<!-- Pin 1 -->
+<div class="absolute top-[30%] left-[25%] -translate-x-1/2 -translate-y-1/2 z-20 group cursor-pointer">
+<div class="w-10 h-10 bg-brand-blue text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white relative z-10 group-hover:scale-110 transition-transform">
+<span class="font-stats-md text-stats-md">1</span>
+</div>
+<!-- Pulse effect -->
+<div class="absolute inset-0 bg-brand-blue rounded-full animate-ping opacity-30"></div>
+<!-- Tooltip -->
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 glass-hud px-3 py-1 rounded-lg panel-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+<span class="font-label-sm text-label-sm font-semibold">Tháp Bà Ponagar</span>
+</div>
+</div>
+<!-- Pin 2 -->
+<div class="absolute top-[45%] left-[55%] -translate-x-1/2 -translate-y-1/2 z-20 group cursor-pointer">
+<div class="w-10 h-10 bg-white text-on-surface rounded-full flex items-center justify-center shadow-lg border-2 border-brand-blue relative z-10 group-hover:scale-110 transition-transform">
+<span class="font-stats-md text-stats-md">2</span>
+</div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 glass-hud px-3 py-1 rounded-lg panel-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+<span class="font-label-sm text-label-sm font-semibold">Chợ Đầm</span>
+</div>
+</div>
+<!-- Pin 3 -->
+<div class="absolute top-[75%] left-[65%] -translate-x-1/2 -translate-y-1/2 z-20 group cursor-pointer">
+<div class="w-10 h-10 bg-white text-on-surface rounded-full flex items-center justify-center shadow-lg border-2 border-brand-blue relative z-10 group-hover:scale-110 transition-transform">
+<span class="font-stats-md text-stats-md">3</span>
+</div>
+<div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 glass-hud px-3 py-1 rounded-lg panel-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+<span class="font-label-sm text-label-sm font-semibold">Hải sản Gió Biển</span>
+</div>
+</div>
+<!-- User Location Marker -->
+<div class="absolute top-[38%] left-[40%] -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="w-4 h-4 bg-brand-blue border-2 border-white rounded-full shadow-md"></div>
+<div class="w-12 h-12 bg-brand-blue/20 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+</div>
+</div>
+<!-- Floating Directions Card -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-[400px]">
+<div class="glass-hud rounded-2xl p-4 panel-border shadow-lg flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">turn_right</span>
+</div>
+<div class="flex-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Directions Guide</p>
+<p class="font-stats-md text-stats-md text-on-surface leading-tight">
+                                    Turn right in <span class="text-brand-blue">30m</span> to reach Tháp Bà Ponagar
+                                </p>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors border border-outline-variant shrink-0">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<!-- Map Controls (Zoom/Location) -->
+<div class="absolute right-6 bottom-8 flex flex-col gap-2 z-10">
+<button class="w-10 h-10 rounded-lg glass-hud panel-border shadow-sm flex items-center justify-center hover:bg-surface transition-colors text-on-surface">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+<div class="glass-hud panel-border rounded-lg shadow-sm flex flex-col overflow-hidden mt-2 text-on-surface">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface transition-colors border-b border-outline-variant/50">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+<style>
+        /* Custom scrollbar for left panel to keep the sleek look */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(114, 119, 134, 0.2);
+            border-radius: 10px;
+        }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(114, 119, 134, 0.4);
+        }
+    </style>
+</body></html>

@@ -8,6 +8,20 @@ spring:
       host: localhost
       port: 6379
 
+tripwise:
+  jwt:
+    secret: change_me_32_bytes_minimum_access_secret_for_local_only
+    access-token-expiration: PT15M
+    refresh-token-expiration: P7D
+  gemini:
+    api-key: ${GEMINI_API_KEY:dummy-api-key-for-local-development}
+  osrm:
+    api-url: ${OSRM_API_URL:https://router.project-osrm.org}
+    timeout: ${OSRM_TIMEOUT:3s}
+  weather:
+    api-url: ${WEATHER_API_URL:https://api.open-meteo.com}
+    timeout: ${WEATHER_TIMEOUT:3s}
+
 logging:
   level:
     root: INFO

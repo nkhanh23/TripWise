@@ -1,6 +1,8 @@
 # AGENTS.md - Quy tắc cho AI Coding Assistant
 
 Tài liệu này là luật làm việc bắt buộc cho mọi AI coding assistant khi tham gia dự án **AI Smart Travel Planner**.
+AI không được dựa vào trí nhớ từ lần chạy trước.  
+Trước mỗi task mới, AI phải đọc lại tài liệu bắt buộc, roadmap, source code liên quan và test liên quan.
 
 ---
 
@@ -14,6 +16,10 @@ Trước khi tạo hoặc sửa bất kỳ file nào, AI phải đọc và hiể
 4. `TASKS.md`
 5. Tài liệu dự án AI Smart Travel Planner được đính kèm trong workspace
 6. Task cụ thể mà người dùng giao ở lượt hiện tại
+7. `docs/08-project-roadmap/phases.md`
+8. Toàn bộ các file `.md` trong thư mục `docs/`
+9. Source code liên quan trực tiếp đến task hiện tại
+10. Test code liên quan trực tiếp đến task hiện tại
 
 Nếu chưa đọc đủ ngữ cảnh, không được tự suy đoán để code.
 
@@ -23,12 +29,13 @@ Nếu chưa đọc đủ ngữ cảnh, không được tự suy đoán để cod
 
 Stack đã chốt:
 
-- Backend: Java 21 + Spring Boot 3.x
+- Backend: Java 21 + Spring Boot 3.2.5
+- Build tool: Maven + Maven Wrapper
 - Architecture: Clean Architecture + Modular Monolith
 - Database: PostgreSQL + PostGIS
 - Cache: Redis
 - API: REST versioning `/api/v1`
-- Auth: OAuth2 + JWT access token ngắn hạn + refresh token rotation
+- Auth: Email/password + OAuth2 + JWT access token ngắn hạn + refresh token rotation
 - AI: Gemini API
 - Routing: OSRM
 - Map: OpenStreetMap
@@ -178,18 +185,146 @@ Sau mỗi task, AI phải báo theo đúng format:
 
 Tóm tắt ngắn gọn đã làm gì.
 
+### Phase completed
+
+Phase nào trong roadmap đã được thực hiện.
+
+### Roadmap context
+
+Ghi rõ:
+
+- Phase trước là gì
+- Phase hiện tại là gì
+- Phase sau là gì
+
 ### Files changed
 
 Liệt kê file đã tạo/sửa/xóa.
+
+### Database migration created
+
+Nếu có migration mới, ghi rõ tên file migration.  
+Nếu không có, ghi: Không có.
+
+### Endpoints created/changed
+
+Nếu có API mới hoặc API bị thay đổi, liệt kê endpoint.  
+Nếu không có, ghi: Không có.
 
 ### How to test
 
 Cách kiểm tra thủ công hoặc tự động.
 
-### Risks
+### Test result
 
-Rủi ro, giới hạn, điểm cần review.
+Ghi rõ test đã chạy và kết quả.
 
-### Next suggested task
+Ví dụ:
 
-Đề xuất một task nhỏ tiếp theo, không đề xuất quá rộng.
+```cmd
+cd backend
+.\mvnw.cmd test
+```
+
+---
+
+## 13. Quy tắc roadmap phase
+
+Trước mỗi task, AI phải đọc `docs/08-project-roadmap/phases.md`.
+
+AI phải:
+
+- Xác định phase hiện tại được yêu cầu
+- Xác định phase trước và phase sau
+- Chỉ thực hiện đúng phase được yêu cầu
+- Không tự ý làm phase trước
+- Không tự ý làm phase sau
+- Không gộp nhiều phase trong một lần
+- Nếu phase hiện tại phụ thuộc vào phase trước nhưng code chưa có, phải báo lại trước khi sửa lớn
+
+AI chỉ được tick `[x]` trong roadmap khi người dùng yêu cầu hoặc khi task yêu cầu cập nhật roadmap.
+
+---
+
+## 14. Quy tắc reread context
+
+AI không được dựa vào trí nhớ từ lần chạy trước.
+
+Trước khi sửa code, AI phải đọc lại:
+
+- `AGENTS.md`
+- `README.md`
+- `DECISIONS.md` nếu có
+- `TASKS.md` nếu có
+- `docs/08-project-roadmap/phases.md`
+- toàn bộ file `.md` trong `docs/`
+- `backend/README.md`
+- `backend/pom.xml`
+- `backend/src/main/resources/application.yml`
+- `backend/src/main/resources/application-local.yml`
+- `backend/src/main/resources/db/migration/`
+- source code liên quan trực tiếp đến task hiện tại
+- test code liên quan trực tiếp đến task hiện tại
+
+Nếu chưa đọc đủ ngữ cảnh, AI không được tự suy đoán để code.
+
+---
+
+## 15. Quy tắc Maven và Git hygiene
+
+Dự án backend dùng Maven + Maven Wrapper.
+
+Được commit:
+
+- `backend/pom.xml`
+- `backend/mvnw`
+- `backend/mvnw.cmd`
+- `backend/.mvn/wrapper/maven-wrapper.properties`
+- `backend/.mvn/wrapper/maven-wrapper.jar`
+
+Không được commit:
+
+- `target/`
+- `build/`
+- `bin/`
+- `.gradle/`
+- `.env`
+- `.env.*`
+- file chứa local path hoặc secret thật
+- `gradle.properties` nếu chứa đường dẫn máy local
+
+Sau mỗi task backend, AI phải đảm bảo chạy được:
+
+Windows:
+
+```cmd
+cd backend
+.\mvnw.cmd test
+```
+
+Linux/macOS:
+
+```bash
+cd backend
+./mvnw test
+```
+
+## 16. Quy tắc thiết kế cho hệ thống nhiều người dùng
+
+AI phải thiết kế code theo hướng có thể mở rộng:
+
+- Không query toàn bộ bảng nếu dữ liệu có thể lớn
+- List API phải có pagination/filter/sort nếu phù hợp
+- Tránh N+1 query
+- Chú ý index database, unique constraint, foreign key
+- External API phải có timeout và error handling
+- Dữ liệu gọi lặp lại nhiều lần nên cân nhắc cache nếu phase yêu cầu
+- Không thêm cache ngoài scope nếu chưa được yêu cầu
+- Không đưa logic nặng vào controller
+- Transaction boundary phải rõ ràng
+- Không thiết kế làm cản trở việc thêm metrics, tracing, monitoring sau này
+- Với API tốn chi phí như Gemini/trip generation, phải cân nhắc rate limit/cache khi đến đúng phase
+
+```
+
+```

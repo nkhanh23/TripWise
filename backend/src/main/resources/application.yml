@@ -22,9 +22,10 @@ spring:
       connection-timeout: 20000
 
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none # Dùng Flyway quản lý schema
+      ddl-auto: none
     show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
       hibernate:
@@ -59,3 +60,37 @@ logging:
   level:
     root: INFO
     com.tripwise: ${LOG_LEVEL_TRIPWISE:INFO}
+
+tripwise:
+  jwt:
+    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:PT15M}
+    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:P7D}
+  gemini:
+    api-key: ${GEMINI_API_KEY:dummy-api-key-to-prevent-startup-failure}
+    api-url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta}
+    model: ${GEMINI_MODEL:gemini-1.5-flash}
+    timeout: ${GEMINI_TIMEOUT:30s}
+  osrm:
+    api-url: ${OSRM_API_URL:https://router.project-osrm.org}
+    timeout: ${OSRM_TIMEOUT:3s}
+  weather:
+    api-url: ${WEATHER_API_URL:https://api.open-meteo.com}
+    timeout: ${WEATHER_TIMEOUT:3s}
+  rate-limit:
+    enabled: ${RATE_LIMIT_ENABLED:true}
+    login:
+      capacity: ${AUTH_LOGIN_RATE_LIMIT_CAPACITY:5}
+      window: ${AUTH_LOGIN_RATE_LIMIT_WINDOW:PT1M}
+    register:
+      capacity: ${AUTH_REGISTER_RATE_LIMIT_CAPACITY:3}
+      window: ${AUTH_REGISTER_RATE_LIMIT_WINDOW:PT1M}
+  scoring:
+    weight:
+      interest: ${TRIPWISE_SCORING_WEIGHT_INTEREST:4.0}
+      budget: ${TRIPWISE_SCORING_WEIGHT_BUDGET:3.0}
+      rating: ${TRIPWISE_SCORING_WEIGHT_RATING:2.0}
+      distance: ${TRIPWISE_SCORING_WEIGHT_DISTANCE:1.0}
+    distance:
+      max-meters: ${TRIPWISE_SCORING_DISTANCE_MAX_METERS:15000.0}
+  itinerary:
+    places-per-day: ${TRIPWISE_ITINERARY_PLACES_PER_DAY:4}

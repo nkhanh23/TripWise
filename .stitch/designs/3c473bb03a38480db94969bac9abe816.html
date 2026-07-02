@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TripWise - Lập lịch du lịch bằng AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b0c6ff",
+                        "surface-dim": "#d2d9f4",
+                        "secondary-fixed": "#bbf54d",
+                        "surface-variant": "#dae2fd",
+                        "secondary-container": "#b8f24a",
+                        "on-secondary-container": "#4c6c00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#00429b",
+                        "tertiary-container": "#a36700",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-container-high": "#e2e7ff",
+                        "outline": "#727786",
+                        "on-error": "#ffffff",
+                        "primary-container": "#166ef1",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "on-primary-container": "#fefcff",
+                        "inverse-primary": "#b0c6ff",
+                        "on-secondary-fixed": "#131f00",
+                        "surface-container-low": "#f2f3ff",
+                        "primary": "#0056c5",
+                        "surface": "#faf8ff",
+                        "on-surface-variant": "#424654",
+                        "inverse-surface": "#283044",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#486800",
+                        "on-surface": "#131b2e",
+                        "on-background": "#131b2e",
+                        "primary-fixed": "#d9e2ff",
+                        "outline-variant": "#c2c6d7",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-tint": "#0058ca",
+                        "error-container": "#ffdad6",
+                        "background": "#faf8ff",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#825100",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-container": "#eaedff",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container-highest": "#dae2fd",
+                        "on-primary-fixed": "#001945",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "secondary-fixed-dim": "#a0d831",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "app-margin": "24px",
+                        "stack-tight": "4px",
+                        "component-gap": "12px",
+                        "container-padding": "32px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-sm": ["Inter"],
+                        "stats-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "display-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "stats-md": ["14px", { "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "display-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "display-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background: linear-gradient(135deg, #F6E3D3 0%, #F7D9C4 100%);
+            min-height: 100vh;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="text-on-surface antialiased overflow-x-hidden font-body-md">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md dark:bg-surface-dim/80 border-b border-outline-variant dark:border-outline shadow-sm transition-all duration-300" id="main-header">
+<div class="flex justify-between items-center h-20 px-app-margin max-w-7xl mx-auto">
+<div class="flex items-center gap-2 cursor-pointer scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary font-display-md" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="font-display-md text-display-md font-bold text-primary dark:text-primary-fixed">TripWise</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Features</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">How it works</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Destinations</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Pricing</a>
+</nav>
+<button class="bg-primary text-on-primary font-label-md px-6 py-3 rounded-full hover:bg-surface-tint transition-colors shadow-sm active:scale-95">
+                Get Started
+            </button>
+</div>
+</header>
+<!-- Main Content Shell -->
+<main class="pt-28 pb-20 px-app-margin max-w-7xl mx-auto flex flex-col gap-24">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[819px]">
+<!-- Left Column: Copy & Input -->
+<div class="flex flex-col gap-6 z-10">
+<div class="inline-flex items-center gap-2 bg-white/50 backdrop-blur px-4 py-2 rounded-full border border-white/60 w-fit">
+<span class="material-symbols-outlined text-secondary-container bg-secondary rounded-full p-1 text-[16px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-sm text-label-sm text-on-surface">AI-Powered Travel Planner</span>
+</div>
+<h1 class="text-[48px] leading-[56px] font-bold tracking-tight text-on-surface">
+                    Lập lịch du lịch bằng AI, nhìn route trực quan trên bản đồ.
+                </h1>
+<p class="font-display-sm text-display-sm text-on-surface-variant font-normal max-w-lg">
+                    Chỉ cần cho chúng tôi biết bạn muốn đi đâu, TripWise sẽ tạo một lịch trình chi tiết và tối ưu nhất cho bạn trong vài giây.
+                </p>
+<div class="bg-surface rounded-2xl p-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] border border-outline-variant mt-4">
+<label class="font-label-md text-label-md text-on-surface mb-2 block">Bạn muốn đi đâu?</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-xl p-4 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary focus:bg-white transition-all resize-none h-32 placeholder:text-outline" placeholder="Vd: Nha Trang 3 ngày 2 đêm, thích hải sản, ngân sách vừa phải..."></textarea>
+<div class="flex flex-wrap gap-2 mt-4">
+<button class="px-3 py-1.5 bg-surface-container-high rounded-full font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-variant transition-colors">Đà Lạt 2 ngày</button>
+<button class="px-3 py-1.5 bg-surface-container-high rounded-full font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-variant transition-colors">Phú Quốc gia đình</button>
+<button class="px-3 py-1.5 bg-surface-container-high rounded-full font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-variant transition-colors">Sapa cuối tuần</button>
+</div>
+<button class="w-full mt-6 bg-primary text-on-primary font-display-sm text-display-sm py-4 rounded-xl hover:bg-surface-tint transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">flight_takeoff</span>
+                        Tạo lịch trình ngay
+                    </button>
+</div>
+</div>
+<!-- Right Column: App Mockup -->
+<div class="relative w-full aspect-square lg:aspect-auto lg:h-[700px] flex items-center justify-center">
+<!-- Decorative background blobs -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-primary-container/20 to-secondary-container/20 blur-3xl rounded-full -z-10"></div>
+<!-- The App Shell Mockup -->
+<div class="w-full max-w-[800px] h-full max-h-[700px] bg-surface rounded-[32px] shadow-[0_24px_60px_rgba(15,23,42,0.15)] border border-outline-variant overflow-hidden flex flex-col relative transform rotate-1 hover:rotate-0 transition-transform duration-500 ease-out">
+<!-- Mockup Header -->
+<div class="h-14 border-b border-outline-variant bg-surface-container-lowest flex items-center px-4 justify-between">
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary-fixed-dim"></div>
+<div class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></div>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container py-1 px-4 rounded-md">tripwise.ai/nha-trang-3-days</div>
+<div class="w-16"></div>
+</div>
+<!-- Mockup Body (Split Screen) -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Panel: Timeline -->
+<div class="w-[340px] border-r border-outline-variant bg-surface-container-lowest flex flex-col overflow-y-auto">
+<div class="p-4 border-b border-outline-variant sticky top-0 bg-surface-container-lowest/90 backdrop-blur z-10">
+<h3 class="font-display-sm text-display-sm font-bold text-on-surface">Nha Trang Trip</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">3 Ngày • 2 Đêm</p>
+<div class="mt-4 flex gap-2">
+<div class="flex-1 bg-secondary-container text-on-secondary-container rounded-lg p-2 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-label-sm text-label-sm">AI Optimized</span>
+</div>
+</div>
+</div>
+<!-- Timeline items -->
+<div class="p-4 flex flex-col gap-4 relative">
+<div class="absolute left-[27px] top-6 bottom-6 w-[2px] bg-outline-variant"></div>
+<!-- Day 1 -->
+<div class="font-label-md text-label-md text-on-surface mt-2">Ngày 1</div>
+<!-- Node 1 -->
+<div class="relative pl-10">
+<div class="absolute left-[7px] top-4 w-3 h-3 rounded-full bg-primary border-2 border-surface"></div>
+<div class="bg-surface rounded-xl p-3 border border-outline-variant shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-sm text-label-sm text-primary">09:00 AM</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">flight_land</span>
+</div>
+<h4 class="font-stats-md text-stats-md text-on-surface">Đến Sân bay Cam Ranh</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Xe đưa đón về khách sạn trung tâm.</p>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="relative pl-10">
+<div class="absolute left-[7px] top-4 w-3 h-3 rounded-full bg-surface border-2 border-outline"></div>
+<div class="bg-surface rounded-xl p-3 border border-outline-variant shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-sm text-label-sm text-primary">11:30 AM</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">restaurant</span>
+</div>
+<h4 class="font-stats-md text-stats-md text-on-surface">Ăn trưa Hải Sản Tây Balo</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-1">Quán bình dân, đồ tươi sống.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Map -->
+<div class="flex-1 relative bg-surface-container">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A highly detailed, modern, light-mode digital map interface of a coastal city, similar to Google Maps but with a cleaner, premium UI aesthetic. The map shows streets, water bodies in a calm blue, and landmasses in soft beige/gray. Several crisp blue marker pins are scattered along the coastline connected by a subtle dashed route line. The lighting is bright and technical." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCaf4Up7B291RnrDurYcGkoT8FZdLaEgYNI6gSttq1lew1kZyJ7cyfksnF5TgmrkUY0m5j6Eod7cbYWHu-FfTBXubcj4U_HtU_cBkis535x-iJVgDFRyxR7xtv1xyy_23a5HUqM91qXn4rn743IQLrTG_gjBMZAeIU53DgIR6C9EEI3b_Xy5rM87SLZmXOLHOkd0N0f2a4qFJIyACUenh3XDe2ATD5meVEKDFVHunX1PLCDOCNHDXd85MJyOncBcNyngV0QYKfjyQh')"></div>
+<!-- Map Overlay Controls -->
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="glass-panel p-3 rounded-2xl flex flex-col gap-2">
+<button class="w-10 h-10 bg-surface rounded-full flex items-center justify-center shadow-sm text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-surface rounded-full flex items-center justify-center shadow-sm text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary shadow-lg rounded-full px-6 py-3 flex items-center gap-2 hover:bg-surface-tint transition-colors">
+<span class="material-symbols-outlined">navigation</span>
+<span class="font-label-md text-label-md">Start Route</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-12">
+<div class="text-center mb-12">
+<h2 class="font-display-lg text-display-lg font-bold text-on-surface">Tính năng nổi bật</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4 max-w-2xl mx-auto">Thiết kế như một buồng lái kỹ thuật số, cung cấp mọi thông tin bạn cần cho một chuyến đi hoàn hảo.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+<!-- Feature 1 -->
+<div class="bg-surface rounded-2xl p-6 border border-outline-variant hover:-translate-y-1 transition-transform duration-300 shadow-sm hover:shadow-md">
+<div class="w-12 h-12 bg-primary-container text-primary rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]">view_timeline</span>
+</div>
+<h3 class="font-display-sm text-display-sm font-bold text-on-surface mb-2">Timeline</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Lịch trình chi tiết từng giờ, dễ dàng kéo thả để điều chỉnh kế hoạch theo ý muốn.</p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface rounded-2xl p-6 border border-outline-variant hover:-translate-y-1 transition-transform duration-300 shadow-sm hover:shadow-md">
+<div class="w-12 h-12 bg-primary-container text-primary rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]">map</span>
+</div>
+<h3 class="font-display-sm text-display-sm font-bold text-on-surface mb-2">Map</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Xem trực quan lộ trình di chuyển, tối ưu hóa quãng đường giữa các điểm đến.</p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface rounded-2xl p-6 border border-outline-variant hover:-translate-y-1 transition-transform duration-300 shadow-sm hover:shadow-md">
+<div class="w-12 h-12 bg-primary-container text-primary rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]">partly_cloudy_day</span>
+</div>
+<h3 class="font-display-sm text-display-sm font-bold text-on-surface mb-2">Weather</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Tích hợp dự báo thời tiết tại điểm đến để chuẩn bị trang phục phù hợp.</p>
+</div>
+<!-- Feature 4 -->
+<div class="bg-surface rounded-2xl p-6 border border-outline-variant hover:-translate-y-1 transition-transform duration-300 shadow-sm hover:shadow-md">
+<div class="w-12 h-12 bg-primary-container text-primary rounded-xl flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+</div>
+<h3 class="font-display-sm text-display-sm font-bold text-on-surface mb-2">Budget</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Dự toán chi phí chính xác dựa trên lựa chọn di chuyển và ăn uống của bạn.</p>
+</div>
+</div>
+</section>
+<!-- Popular Destinations -->
+<section class="py-12">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-display-lg text-display-lg font-bold text-on-surface">Điểm đến phổ biến</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Được tối ưu bởi AI của chúng tôi</p>
+</div>
+<button class="text-primary font-label-md hover:underline flex items-center gap-1">
+                    Xem tất cả <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Dest 1 -->
+<div class="group relative h-[400px] rounded-[32px] overflow-hidden cursor-pointer shadow-md">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" data-alt="A breathtaking, vibrant, high-resolution photograph of Nha Trang beach in Vietnam during golden hour. The pristine blue water gently laps against the white sand, with lush green palm trees framing the scene. A modern coastal city skyline is visible in the soft background. The lighting is warm, inviting, and highly saturated, fitting a premium travel interface aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDiBm1d7Hx9zrDJUoHbV5H3B27bwDlschyGDt3Iv7g07T5D5UfT7zEr2dulc7-4V_9KPrTR6Eq9SG_2Mdh5kOE9kLTIyepxWVVdethIWrM3YH8BQNsD-RRltYzZFEUUnQ-2HS3VwNfbERgSS2XMWpOU0jRq0eENYniirWZBMzFIR3DHoQg3vt1FfXsagGWNPhgo2TZdecqen7TDS8ZWItntJ2nsfL3eueUX0yIYgteIZnNI6A8l6vgqu7LFGaaLxmyefWac__bzJMfD')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 right-0 p-8">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span> 98% Match
+                            </span>
+</div>
+<h3 class="font-display-lg text-display-lg font-bold text-white mb-2">Nha Trang</h3>
+<div class="flex gap-4 text-white/80 font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">sunny</span> Thời tiết đẹp</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">restaurant</span> Hải sản tươi</span>
+</div>
+</div>
+</div>
+<!-- Dest 2 -->
+<div class="group relative h-[400px] rounded-[32px] overflow-hidden cursor-pointer shadow-md">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" data-alt="A stunning, moody, high-resolution photograph of Da Lat city in Vietnam at dawn, enveloped in a soft, atmospheric mist. Pine trees dominate the foreground, framing a view of French-colonial architecture in the valley. The lighting is cool and serene, with hints of warm sunlight breaking through the fog. The aesthetic is calm, premium, and evocative." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6Cyqyyc5xjHdUTXAoHY9hs5T0mUgN5xaSVeVGECDr4BgACIdFsQ_w37xzBG_JbpO5F-_wvBUrZK1-YkcEwmnTc_chU29gCTGU4pbvh_fQx9WTZBSARs65O9pPXCAYeXGSbjXTmrZicYGmsWm6Wa4hmiciJ4kYWnz3OeCwZjIj_E12pprA2zdcHHf2bhAofJG6yolPehty7a2viNU6nPpSynjF6ecuSCy34MfYe7VVSNqB0qdJZ1X7jjySrepflfanZV_xLBVMzLfL')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute bottom-0 left-0 right-0 p-8">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span> 95% Match
+                            </span>
+</div>
+<h3 class="font-display-lg text-display-lg font-bold text-white mb-2">Đà Lạt</h3>
+<div class="flex gap-4 text-white/80 font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">ac_unit</span> Không khí lạnh</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">local_cafe</span> Cà phê ngon</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="bg-surface rounded-[32px] p-12 text-center shadow-[0_18px_50px_rgba(15,23,42,0.08)] border border-outline-variant relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-container/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+<h2 class="font-display-lg text-display-lg font-bold text-on-surface relative z-10">Sẵn sàng cho chuyến đi tiếp theo?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-4 max-w-xl mx-auto relative z-10">
+                Để AI của TripWise giúp bạn lên kế hoạch hoàn hảo trong vài giây. Bắt đầu miễn phí ngay hôm nay.
+            </p>
+<button class="mt-8 bg-primary text-on-primary font-display-sm text-display-sm px-8 py-4 rounded-xl hover:bg-surface-tint transition-transform hover:scale-105 active:scale-95 shadow-md relative z-10">
+                Tạo lịch trình miễn phí
+            </button>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline w-full rounded-t-xl mt-12">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter px-app-margin py-container-padding max-w-7xl mx-auto">
+<div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="font-display-sm text-display-sm font-bold text-on-surface dark:text-on-surface">TripWise</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 TripWise AI. All rights reserved.</p>
+</div>
+<div class="flex flex-col gap-2">
+<a class="font-body-sm text-body-sm text-on-surface-variant opacity-80 hover:opacity-100 hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Product</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant opacity-80 hover:opacity-100 hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Features</a>
+</div>
+<div class="flex flex-col gap-2">
+<a class="font-body-sm text-body-sm text-on-surface-variant opacity-80 hover:opacity-100 hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Destinations</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant opacity-80 hover:opacity-100 hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Privacy</a>
+</div>
+<div class="flex flex-col gap-2">
+<a class="font-body-sm text-body-sm text-on-surface-variant opacity-80 hover:opacity-100 hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Terms</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to handle header shadow on scroll for a premium feel
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-md');
+                header.classList.remove('shadow-sm');
+            } else {
+                header.classList.remove('shadow-md');
+                header.classList.add('shadow-sm');
+            }
+        });
+    </script>
+</body></html>

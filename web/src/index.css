@@ -1,0 +1,284 @@
+@import "tailwindcss";
+
+/* ============================================
+   TRIPWISE DESIGN SYSTEM v2
+   Kinetic Typography × Retro Cartoon Travel
+   ============================================ */
+
+@theme {
+  /* ── BACKGROUND / SURFACE ── */
+  --color-canvas:       #F7E7C6;   /* Warm Parchment Cream – outer bg */
+  --color-canvas-alt:   #F3C99B;   /* Peachy Retro Beige – gradient/section */
+  --color-surface:      #FFF6DE;   /* Vanilla Paper – app shell / card */
+  --color-panel:        #FFFDF3;   /* Soft Cream White – card content */
+  --color-ink:          #111111;   /* Cartoon Ink Black – border / shadow */
+
+  /* ── BRAND ACCENTS ── */
+  --color-brand:        #20A7D8;   /* Punchy Cyan Blue – CTA / route */
+  --color-brand-dark:   #087CA7;   /* Deep Cartoon Blue – hover/pressed */
+  --color-brand-soft:   #D6F1FB;   /* Light Cyan – tag info bg */
+  --color-red:          #E6392E;   /* Rubber Hose Red – alert / danger CTA */
+  --color-red-soft:     #FFDDDB;   /* Light Red – error bg */
+  --color-yellow:       #FFD166;   /* Vintage Poster Yellow – highlight */
+  --color-yellow-soft:  #FFF3C4;   /* Light Yellow – selected bg */
+  --color-lime:         #B8F24A;   /* Arcade Lime – success */
+  --color-lime-soft:    #EDFCC8;   /* Light Lime – success bg */
+  --color-orange:       #F77F00;   /* Travel Ticket Orange – badge / accent */
+  --color-orange-soft:  #FFE7C2;   /* Light Orange – badge bg */
+
+  /* ── TEXT ── */
+  --color-text-primary:   #111111;  /* Ink Black */
+  --color-text-secondary: #3A2F2A;  /* Warm Charcoal */
+  --color-text-muted:     #7A6A58;  /* Dusty Brown */
+  --color-text-inverse:   #FFF6DE;  /* Cream White – on dark bg */
+
+  /* ── STROKES / BORDERS ── */
+  --color-stroke-ink:   #111111;   /* Primary comic border */
+  --color-stroke-soft:  #D8B98A;   /* Vintage Sepia */
+  --color-stroke-light: #EBD8B7;   /* Paper divider */
+
+  /* ── LEGACY ALIASES (keep backward compat) ── */
+  --color-surface-container-lowest: #FFFDF3;
+  --color-on-background:            #111111;
+  --color-surface-container-highest:#F3C99B;
+  --color-background:               #F7E7C6;
+  --color-outline:                  #7A6A58;
+  --color-on-surface-variant:       #3A2F2A;
+  --color-on-primary:               #FFF6DE;
+  --color-on-error:                 #FFF6DE;
+  --color-surface-bright:           #FFF6DE;
+  --color-secondary-fixed:          #B8F24A;
+  --color-primary-container:        #087CA7;
+  --color-inverse-surface:          #111111;
+  --color-primary:                  #20A7D8;
+  --color-secondary:                #B8F24A;
+  --color-error:                    #E6392E;
+  --color-on-secondary:             #111111;
+  --color-on-primary-container:     #FFF6DE;
+  --color-secondary-container:      #B8F24A;
+  --color-on-secondary-container:   #111111;
+  --color-surface-container-low:    #FFF6DE;
+  --color-surface-container:        #F7E7C6;
+  --color-outline-variant:          #EBD8B7;
+  --color-primary-fixed:            #D6F1FB;
+  --color-surface:                  #FFF6DE;
+  --color-on-surface:               #111111;
+  --color-tripwise-blue:            #20A7D8;
+  --color-tripwise-lime:            #B8F24A;
+  --color-surface-container-high:   #F3C99B;
+  --color-on-surface-variant:       #3A2F2A;
+  --color-tertiary:                 #F77F00;
+
+  /* ── SPACING ── */
+  --spacing-stack-tight:       4px;
+  --spacing-container-padding: 32px;
+  --spacing-gutter:            16px;
+  --spacing-component-gap:     12px;
+  --spacing-app-margin:        24px;
+
+  /* ── BORDER RADIUS ── */
+  --radius-card:   20px;
+  --radius-panel:  24px;
+  --radius-button: 16px;
+  --radius-pill:   9999px;
+  --radius-input:  12px;
+  --radius-modal:  24px;
+  --radius-tiny:   8px;
+
+  /* ── TYPOGRAPHY ── */
+  --font-display: 'Luckiest Guy', 'Bangers', 'Impact', system-ui, sans-serif;
+  --font-body:    'Be Vietnam Pro', 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+/* ============================================
+   GLOBAL RESET & BASE
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-canvas);
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   COMIC SHADOW UTILITIES
+   ============================================ */
+
+.shadow-comic-sm { box-shadow: 2px 2px 0 #111111; }
+.shadow-comic     { box-shadow: 4px 4px 0 #111111; }
+.shadow-comic-md  { box-shadow: 4px 4px 0 #111111; }
+.shadow-comic-lg  { box-shadow: 6px 6px 0 #111111; }
+.shadow-comic-xl  { box-shadow: 8px 8px 0 #111111; }
+.shadow-comic-brand { box-shadow: 4px 4px 0 #20A7D8; }
+.shadow-comic-red   { box-shadow: 4px 4px 0 #E6392E; }
+
+/* ============================================
+   KINETIC TYPOGRAPHY UTILITIES
+   ============================================ */
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body-ui {
+  font-family: var(--font-body);
+}
+
+.text-shadow-comic {
+  text-shadow: 4px 5px 0 #111111;
+}
+
+.text-shadow-comic-red {
+  text-shadow: 2px 2px 0 #E6392E, 4px 4px 0 #111111;
+}
+
+.text-shadow-comic-cyan {
+  text-shadow: 2px 2px 0 #20A7D8, 4px 4px 0 #111111;
+}
+
+/* ============================================
+   BORDER UTILITIES
+   ============================================ */
+
+.border-ink       { border: 2px solid #111111; }
+.border-ink-thick { border: 3px solid #111111; }
+
+/* ============================================
+   PAPER GRAIN NOISE OVERLAY (CSS-only)
+   ============================================ */
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-1px, 1px); }
+  40%  { transform: translate(1px, -1px); }
+  60%  { transform: translate(-1px, -1px); }
+  80%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+.film-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: grain 0.4s steps(1) infinite;
+}
+
+/* ============================================
+   BUTTON BASE TRANSITIONS
+   ============================================ */
+
+.btn-comic {
+  transition: transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 120ms ease;
+}
+
+.btn-comic:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #111111;
+}
+
+.btn-comic:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #111111;
+}
+
+/* ============================================
+   CARD HOVER LIFT
+   ============================================ */
+
+.card-lift {
+  transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 240ms ease;
+}
+
+.card-lift:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0 #111111;
+}
+
+/* ============================================
+   BOUNCE KEYFRAMES
+   ============================================ */
+
+@keyframes bounceIn {
+  0%   { transform: scale(0.6) translateY(10px); opacity: 0; }
+  60%  { transform: scale(1.1); opacity: 1; }
+  80%  { transform: scale(0.95); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0.8) rotate(-3deg); opacity: 0; }
+  70%  { transform: scale(1.08) rotate(1deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes markerBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.35) translateY(-4px); }
+  60%  { transform: scale(0.95) translateY(0); }
+  80%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-8px); }
+}
+
+@keyframes routeDraw {
+  from { stroke-dashoffset: 1000; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.animate-bounce-in     { animation: bounceIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-pop-in        { animation: popIn 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-slide-up      { animation: slideUp 400ms ease-out both; }
+.animate-marker-bounce { animation: markerBounce 350ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.animate-route-draw    { animation: routeDraw 900ms ease-in-out both; }
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg,
+    #F3C99B 25%,
+    #F7E7C6 50%,
+    #F3C99B 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

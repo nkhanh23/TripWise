@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>TripWise Mobile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-background": "#131b2e",
+                        "on-primary-fixed-variant": "#00429b",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c2c6d7",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#faf8ff",
+                        "tertiary-container": "#a36700",
+                        "primary": "#0056c5",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-container": "#fefcff",
+                        "inverse-on-surface": "#eef0ff",
+                        "inverse-surface": "#283044",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#eaedff",
+                        "on-surface": "#131b2e",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "secondary-fixed": "#bbf54d",
+                        "secondary-fixed-dim": "#a0d831",
+                        "on-secondary-container": "#4c6c00",
+                        "outline": "#727786",
+                        "on-tertiary-container": "#fffbff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-variant": "#dae2fd",
+                        "surface-container-high": "#e2e7ff",
+                        "primary-fixed": "#d9e2ff",
+                        "secondary-container": "#b8f24a",
+                        "inverse-primary": "#b0c6ff",
+                        "on-secondary-fixed": "#131f00",
+                        "surface-container-highest": "#dae2fd",
+                        "on-primary-fixed": "#001945",
+                        "secondary": "#486800",
+                        "primary-container": "#166ef1",
+                        "on-surface-variant": "#424654",
+                        "tertiary": "#825100",
+                        "surface-tint": "#0058ca",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "background": "#faf8ff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d2d9f4"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "16px",
+                        "app-margin": "24px",
+                        "component-gap": "12px",
+                        "stack-tight": "4px",
+                        "container-padding": "32px"
+                    },
+                    fontFamily: {
+                        "display-md": ["Inter"],
+                        "stats-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "display-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }],
+                        "stats-md": ["14px", { fontWeight: "600" }],
+                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "display-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
+                        "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.03em", fontWeight: "500" }],
+                        "display-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md h-full overflow-hidden flex flex-col relative antialiased select-none">
+<!-- Map Background -->
+<div class="absolute inset-0 z-0 bg-surface-container-low" data-alt="A detailed map view of a modern city center in light mode, featuring clean gray roads, subtle beige terrain, and a thick, highly visible bright blue route line winding through the streets. Minimalist 3D buildings are lightly sketched in white. The lighting is even and flat, typical of high-end navigation interfaces." data-location="Tokyo, Japan" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgcO9UgorpceE0w9YnKjaZwrf3Ps49W--eWshL6M8YyLzGJxbEMoiQ4cdRgAynlPQK-GX66o2K3VE3f-09v6_WVKzsAoY5JUm6Z6BrrekTYzehuE7ClCzPTcuuzaDMw2oGQnB8tPsdcqFDwJ9XoV3KROuKZMS6Qm553gHUejGhR5GyGqnFyArTNJlLb41VFzQSGDz93HkHFxVug9XfQY4oA7oyrTpLRLwWWPWf7mS1QhRbQhfBxtWLf5CBnBM8Xnp5z-4XTA0Er-F7')">
+<!-- SVG Map Route Overlay Mockup (Since we can't use real map API here) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveaspectratio="xMidYMid slice" viewbox="0 0 400 800">
+<path class="drop-shadow-md" d="M 100 200 C 150 250, 100 350, 200 400 C 300 450, 250 600, 150 700" fill="none" stroke="#0056c5" stroke-linecap="round" stroke-linejoin="round" stroke-width="6"></path>
+<!-- Map Markers -->
+<g transform="translate(100, 200)">
+<circle cx="0" cy="0" fill="#0056c5" r="10" stroke="white" stroke-width="3"></circle>
+</g>
+<g transform="translate(200, 400)">
+<circle cx="0" cy="0" fill="white" r="8" stroke="#0056c5" stroke-width="3"></circle>
+</g>
+<g transform="translate(150, 700)">
+<path d="M0 -15 C 8 -15, 12 -5, 0 15 C -12 -5, -8 -15, 0 -15 Z" fill="#ba1a1a"></path>
+<circle cx="0" cy="-8" fill="white" r="4"></circle>
+</g>
+</svg>
+</div>
+<!-- Floating Top Search Bar HUD -->
+<div class="absolute top-10 left-app-margin right-app-margin z-40 flex items-center bg-surface/90 backdrop-blur-md border border-outline-variant shadow-sm rounded-full px-4 py-3 min-h-[48px]">
+<span class="material-symbols-outlined text-on-surface-variant mr-3">menu</span>
+<input class="flex-1 bg-transparent border-none outline-none text-on-surface font-body-md placeholder-on-surface-variant/70 p-0 focus:ring-0" placeholder="Explore Tokyo..." type="text"/>
+<span class="material-symbols-outlined text-primary ml-3">search</span>
+</div>
+<!-- Floating Route Instruction Card -->
+<div class="absolute bottom-[353px] left-app-margin right-app-margin z-30 mb-4 transition-transform duration-300 transform translate-y-0" id="routeCard">
+<div class="bg-surface border border-outline-variant rounded-xl shadow-lg p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-surface-container h-12 w-12 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">turn_right</span>
+</div>
+<div>
+<div class="font-stats-md text-stats-md text-on-surface">In 200m, turn right</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Onto Shibuya Crossing</div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-primary bg-primary-fixed px-2 py-1 rounded-md mb-1">Optimized</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">4 min</span>
+</div>
+</div>
+</div>
+<!-- Bottom Sheet (Itinerary) -->
+<div class="absolute bottom-0 left-0 right-0 z-40 h-[397px] bg-surface rounded-t-3xl shadow-[0_-8px_30px_rgba(15,23,42,0.1)] flex flex-col transition-all duration-300" id="bottomSheet">
+<!-- Drag Handle Area -->
+<div class="w-full flex justify-center pt-3 pb-2 cursor-pointer" id="sheetHandle">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full"></div>
+</div>
+<!-- Sheet Header & Tabs -->
+<div class="px-app-margin pb-4 border-b border-outline-variant shrink-0">
+<div class="flex justify-between items-center mb-4">
+<div>
+<h2 class="font-display-sm text-display-sm text-on-surface">Tokyo Highlights</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">3 days • 12 locations</p>
+</div>
+<button class="bg-primary-container text-on-primary-container h-10 w-10 rounded-full flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined fill">directions</span>
+</button>
+</div>
+<!-- Day Tabs -->
+<div class="flex gap-2 overflow-x-auto pb-2 snap-x">
+<button class="snap-start shrink-0 px-4 py-2 rounded-full font-label-md text-label-md bg-on-surface text-on-primary transition-colors min-w-[80px]">Day 1</button>
+<button class="snap-start shrink-0 px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant transition-colors min-w-[80px]">Day 2</button>
+<button class="snap-start shrink-0 px-4 py-2 rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant transition-colors min-w-[80px]">Day 3</button>
+</div>
+</div>
+<!-- Itinerary Timeline Content -->
+<div class="flex-1 overflow-y-auto px-app-margin py-4 relative">
+<!-- Timeline Connector Line -->
+<div class="absolute left-[47px] top-6 bottom-6 w-[2px] bg-outline-variant z-0"></div>
+<div class="flex flex-col gap-6 relative z-10">
+<!-- Timeline Item 1 -->
+<div class="flex gap-4">
+<div class="w-14 flex flex-col items-center shrink-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">09:00</span>
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center mt-1 border-4 border-surface shadow-sm">
+<div class="w-2 h-2 bg-on-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-3 shadow-sm active:bg-surface-container-low transition-colors">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-stats-md text-stats-md text-on-surface">Senso-ji Temple</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">temple_buddhist</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Explore the historic temple and market.</p>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface bg-surface-variant px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 2h
+                            </span>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="flex gap-4">
+<div class="w-14 flex flex-col items-center shrink-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">11:30</span>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center mt-1 border-4 border-surface shadow-sm">
+<div class="w-2 h-2 bg-outline rounded-full"></div>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-3 shadow-sm active:bg-surface-container-low transition-colors">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-stats-md text-stats-md text-on-surface">Ueno Park</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">park</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Walk through the park, maybe visit a museum.</p>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="flex gap-4">
+<div class="w-14 flex flex-col items-center shrink-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">13:00</span>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center mt-1 border-4 border-surface shadow-sm">
+<div class="w-2 h-2 bg-outline rounded-full"></div>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-3 shadow-sm active:bg-surface-container-low transition-colors">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-stats-md text-stats-md text-on-surface">Sushi Dai</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">restaurant</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lunch reservation.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Simple drag interaction logic for the bottom sheet
+        const bottomSheet = document.getElementById('bottomSheet');
+        const sheetHandle = document.getElementById('sheetHandle');
+        const routeCard = document.getElementById('routeCard');
+        
+        let startY;
+        let currentY;
+        let isDragging = false;
+        
+        const MIN_HEIGHT = 20; // vh
+        const MID_HEIGHT = 45; // vh
+        const MAX_HEIGHT = 85; // vh
+        
+        let currentState = 'mid'; // 'min', 'mid', 'max'
+
+        sheetHandle.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+            bottomSheet.style.transition = 'none';
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentY = e.touches[0].clientY;
+            const deltaY = startY - currentY;
+            
+            // Calculate new height (roughly based on screen size)
+            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            const deltaVh = (deltaY / vh) * 100;
+            
+            let baseVh = currentState === 'min' ? MIN_HEIGHT : (currentState === 'mid' ? MID_HEIGHT : MAX_HEIGHT);
+            let newHeight = baseVh + deltaVh;
+            
+            // Constrain
+            newHeight = Math.max(MIN_HEIGHT, Math.min(newHeight, MAX_HEIGHT));
+            bottomSheet.style.height = `${newHeight}vh`;
+            
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            bottomSheet.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            
+            if (!currentY) return;
+            
+            const deltaY = startY - currentY;
+            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            const threshold = vh * 0.1; // 10% screen height to snap
+
+            if (deltaY > threshold) {
+                // Dragged up
+                if (currentState === 'min') currentState = 'mid';
+                else if (currentState === 'mid') currentState = 'max';
+            } else if (deltaY < -threshold) {
+                // Dragged down
+                if (currentState === 'max') currentState = 'mid';
+                else if (currentState === 'mid') currentState = 'min';
+            }
+
+            // Apply state
+            if (currentState === 'min') {
+                bottomSheet.style.height = `${MIN_HEIGHT}vh`;
+                routeCard.style.transform = 'translateY(15vh)';
+            } else if (currentState === 'mid') {
+                bottomSheet.style.height = `${MID_HEIGHT}vh`;
+                routeCard.style.transform = 'translateY(0)';
+            } else {
+                bottomSheet.style.height = `${MAX_HEIGHT}vh`;
+                routeCard.style.transform = 'translateY(-40vh)';
+            }
+            
+            currentY = null;
+        });
+    </script>
+</body></html>

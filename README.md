@@ -266,3 +266,4 @@ Nguyên tắc làm việc:
 - `DECISIONS.md`: Architecture Decision Records.
 - `TASKS.md`: master task list theo phase.
 - `.env.example`: danh sách biến môi trường chuẩn, không chứa secret thật.
+- `backend/README.md`: hướng dẫn chi tiết cài đặt và khởi chạy Backend local.

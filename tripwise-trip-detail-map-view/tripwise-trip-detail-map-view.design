@@ -1,0 +1,90 @@
+{
+  "data": [
+    {
+      "id": "page-trip-detail-map-view",
+      "title": "Trip Detail + Map View",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782892800000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/trip-detail-map-view.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-trip-detail-empty-state",
+      "title": "Trip Detail + Empty State",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782892800000,
+      "canvasData": {
+        "x": 620,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/trip-detail-empty-state.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-trip-detail-loading-state",
+      "title": "Trip Detail + Loading State",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782892800000,
+      "canvasData": {
+        "x": 1240,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/trip-detail-loading-state.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-trip-detail-route-unavailable",
+      "title": "Trip Detail + Route Unavailable",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782892800000,
+      "canvasData": {
+        "x": 1860,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/trip-detail-route-unavailable.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-trip-detail-map-mobile",
+      "title": "Trip Detail + Map View Mobile",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782892800000,
+      "canvasData": {
+        "x": 2480,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/trip-detail-map-mobile.html",
+        "interactions": []
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "desktop",
+    "projectName": "TripWise Trip Detail + Map View",
+    "designLibrary": null
+  }
+}

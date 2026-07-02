@@ -1,0 +1,147 @@
+{
+  "root": {
+    "nodeId": "gen-project-shell",
+    "kind": "project-shell",
+    "pageIds": [
+      "page-trip-detail-map-view",
+      "page-trip-detail-empty-state",
+      "page-trip-detail-loading-state",
+      "page-trip-detail-route-unavailable",
+      "page-trip-detail-map-mobile"
+    ],
+    "output": "partials/project-shell.html",
+    "sharedRegions": [
+      "warm canvas frame",
+      "cool rounded device shell",
+      "radius and shadow discipline"
+    ],
+    "privateRegions": [],
+    "mutableSlots": [
+      "pageTitle",
+      "stateMode",
+      "deviceMode"
+    ],
+    "status": "generated",
+    "children": [
+      {
+        "nodeId": "gen-trip-detail-desktop-shell",
+        "kind": "shared-branch",
+        "pageIds": [
+          "page-trip-detail-map-view",
+          "page-trip-detail-empty-state",
+          "page-trip-detail-loading-state",
+          "page-trip-detail-route-unavailable"
+        ],
+        "output": "partials/trip-detail-desktop-shell.html",
+        "sharedRegions": [
+          "icon sidebar",
+          "sticky trip header",
+          "sticky day tabs",
+          "map HUD overlay placement"
+        ],
+        "privateRegions": [],
+        "mutableSlots": [
+          "leftPanelState",
+          "timelineContent",
+          "routeMode"
+        ],
+        "status": "generated",
+        "children": [
+          {
+            "nodeId": "gen-trip-detail-map-view",
+            "kind": "page-leaf",
+            "pageIds": [
+              "page-trip-detail-map-view"
+            ],
+            "output": "pages/trip-detail-map-view.html",
+            "sharedRegions": [],
+            "privateRegions": [
+              "selected day content",
+              "selected route segment",
+              "instruction card"
+            ],
+            "mutableSlots": [
+              "selectedDay",
+              "selectedTimelineRow"
+            ],
+            "status": "planned",
+            "children": []
+          },
+          {
+            "nodeId": "gen-trip-detail-empty-state",
+            "kind": "page-leaf",
+            "pageIds": [
+              "page-trip-detail-empty-state"
+            ],
+            "output": "pages/trip-detail-empty-state.html",
+            "sharedRegions": [],
+            "privateRegions": [
+              "empty panel content",
+              "empty map HUD state"
+            ],
+            "mutableSlots": [
+              "leftPanelState"
+            ],
+            "status": "planned",
+            "children": []
+          },
+          {
+            "nodeId": "gen-trip-detail-loading-state",
+            "kind": "page-leaf",
+            "pageIds": [
+              "page-trip-detail-loading-state"
+            ],
+            "output": "pages/trip-detail-loading-state.html",
+            "sharedRegions": [],
+            "privateRegions": [
+              "skeleton panel content",
+              "loading route HUD state"
+            ],
+            "mutableSlots": [
+              "leftPanelState"
+            ],
+            "status": "planned",
+            "children": []
+          },
+          {
+            "nodeId": "gen-trip-detail-route-unavailable",
+            "kind": "page-leaf",
+            "pageIds": [
+              "page-trip-detail-route-unavailable"
+            ],
+            "output": "pages/trip-detail-route-unavailable.html",
+            "sharedRegions": [],
+            "privateRegions": [
+              "warning banner",
+              "route unavailable fallback map state"
+            ],
+            "mutableSlots": [
+              "routeMode"
+            ],
+            "status": "planned",
+            "children": []
+          }
+        ]
+      },
+      {
+        "nodeId": "gen-trip-detail-map-mobile",
+        "kind": "page-leaf",
+        "pageIds": [
+          "page-trip-detail-map-mobile"
+        ],
+        "output": "pages/trip-detail-map-mobile.html",
+        "sharedRegions": [],
+        "privateRegions": [
+          "mobile map-first HUD",
+          "bottom sheet itinerary"
+        ],
+        "mutableSlots": [
+          "sheetState",
+          "selectedTimelineRow"
+        ],
+        "status": "planned",
+        "children": []
+      }
+    ]
+  }
+}

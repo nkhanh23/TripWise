@@ -1,0 +1,23 @@
+{
+  "theme": {
+    "colors": {
+      "primary": "#0056c5",
+      "background": "#faf8ff",
+      "surface-container-lowest": "#ffffff",
+      "tripwise-blue": "#2F7BFF",
+      "tripwise-lime": "#B8F24A"
+    },
+    "typography": {
+      "display": ["Inter"],
+      "body": ["Inter"],
+      "icons": "Material Symbols Outlined"
+    },
+    "spacing": {
+      "stack-tight": "4px",
+      "container-padding": "32px",
+      "gutter": "16px",
+      "component-gap": "12px",
+      "app-margin": "24px"
+    }
+  }
+}
