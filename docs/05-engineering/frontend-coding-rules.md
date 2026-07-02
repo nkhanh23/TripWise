@@ -1,32 +1,49 @@
 # Frontend Coding Rules - AI Smart Travel Planner
 
-Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn Web Frontend (ReactJS / Next.js).
+Bộ quy tắc lập trình bắt buộc áp dụng cho Web Frontend của TripWise.
 
 ---
 
-## 1. Kết nối API & Custom Client Wrapper
-- **API Client**: Bắt buộc sử dụng một Axios instance hoặc Fetch wrapper cấu hình tập trung.
-- **Tự động gắn Token**: Tự động chèn JWT Access Token vào header `Authorization: Bearer <token>` đối với các API yêu cầu xác thực.
-- **Xử lý gia hạn (Silent Refresh)**: Thiết lập bộ chặn (Axios Interceptor) để tự động bắt lỗi `401 Unauthorized`. Khi gặp lỗi này, client tự động gọi `/api/v1/auth/refresh` để lấy Access Token mới và thử gửi lại request cũ mà không bắt người dùng đăng nhập lại (silent refresh).
+## 1. Framework boundary
 
----
+- Frontend web production dùng `Next.js + TypeScript`.
+- Hướng routing chuẩn là `App Router`.
+- Không tạo mới màn hình production bằng Vite/CRA song song với app `web/`.
+- Mock UI React/Vite cũ tại `web-archive-vite-ui/` chỉ dùng làm visual reference, không phải nơi phát triển production tiếp theo.
 
-## 2. Quản lý Token & Bảo mật
-- **Access Token**: Lưu trữ trong bộ nhớ RAM ứng dụng (Application State/Context). Không lưu trữ Access Token trong LocalStorage hoặc SessionStorage để chống lỗi lộ lọt token qua tấn công XSS.
-- **Cấm gọi API ngoài trực tiếp**: Web client tuyệt đối không được gọi trực tiếp sang Gemini API, OSRM API hoặc Weather API. Mọi cuộc gọi phải đi qua proxy API của Spring Boot để bảo vệ khóa bí mật (API Keys).
+## 2. Visual consistency với mock UI
 
----
+- UI mới phải bám sát mock React đã chốt về layout, spacing, tone, phân cấp component và trải nghiệm chính.
+- Có thể thay đổi implementation để phù hợp Next.js, nhưng không tự ý đổi phong cách giao diện nếu chưa có quyết định mới.
+- Khi cần chuyển một màn từ mock sang app thật, ưu tiên map lại structure và states trước, rồi mới tinh chỉnh kỹ thuật.
 
-## 3. Trải nghiệm người dùng: Loading, Error & Input Optimization
-- **Trạng thái tải (Loading/Error States)**:
-  - Tất cả các thao tác tương tác có độ trễ lớn (như sinh lịch trình) phải hiển thị màn hình loading/skeleton rõ ràng kèm thông điệp cụ thể (ví dụ: *"Đang chọn địa điểm..."*, *"Đang tính tuyến đường..."*).
-  - Hiển thị thông báo lỗi thân thiện với người dùng cuối, ẩn các chi tiết lỗi kỹ thuật thô.
-- **Chống spam API**:
-  - Áp dụng kỹ thuật **Debounce** (trì hoãn 300 - 500ms) trên các ô tìm kiếm địa điểm để tránh việc gửi API request liên tục sau mỗi ký tự người dùng gõ.
-  - Vô hiệu hóa (disable) nút bấm "Tạo lịch trình" hoặc "Lưu lịch trình" ngay sau khi click chuột cho đến khi nhận được phản hồi để tránh gửi request trùng lặp (double submit).
+## 3. Kết nối API & client wrapper
 
----
+- Bắt buộc dùng một API client tập trung, ví dụ Fetch wrapper hoặc Axios instance.
+- Chỉ đọc `NEXT_PUBLIC_*` env ở browser.
+- API base URL của frontend phải đi qua env public an toàn, ví dụ `NEXT_PUBLIC_API_BASE_URL`.
+- Không hardcode backend URL trong component.
 
-## 4. Map & Media Rules
-- **Map Component**: Tách biệt bản đồ Leaflet thành một Component độc lập (`TravelMap.jsx`). Truyền dữ liệu vào qua Props (markers, route coordinates) để dễ tái sử dụng và kiểm thử.
-- **Sử dụng CDN cho hình ảnh**: URL hình ảnh hiển thị trên card địa điểm phải sử dụng đường dẫn CDN (Cloudflare), không tải ảnh gốc dung lượng lớn trực tiếp từ Object Storage để tiết kiệm băng thông.
+## 4. Token & bảo mật
+
+- Access token không được hardcode trong code hoặc commit vào file cấu hình.
+- Frontend không được chứa Gemini API key, JWT secret, database password hay secret backend khác.
+- Web client không được gọi trực tiếp Gemini API, OSRM API hoặc Weather API; mọi request phải đi qua backend TripWise.
+
+## 5. UX states
+
+- Tất cả thao tác có độ trễ lớn phải có loading/skeleton rõ ràng.
+- Thông báo lỗi phải thân thiện với người dùng cuối, không lộ chi tiết kỹ thuật thô.
+- Nút submit quan trọng phải có trạng thái disabled/pending để tránh double submit.
+
+## 6. Rendering & performance
+
+- Tách map thành module riêng khi đến phase map integration.
+- Lazy load phần map hoặc các khối nặng khi phù hợp.
+- Tránh để thay đổi state nhỏ làm rerender toàn bộ layout hoặc map panel.
+
+## 7. Map & media rules
+
+- Khi triển khai map, dùng Leaflet + OpenStreetMap theo đúng roadmap phase.
+- Marker, route, overlays nên nhận dữ liệu qua props rõ ràng để dễ test và tái sử dụng.
+- Ảnh hiển thị production nên đi qua CDN hoặc URL đã tối ưu, không dùng asset nặng bừa bãi.

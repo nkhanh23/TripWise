@@ -9,6 +9,8 @@ import com.tripwise.place.application.dto.SearchPlacesQuery;
 import com.tripwise.place.application.service.GetPlaceDetailUseCase;
 import com.tripwise.place.application.service.NearbyPlacesUseCase;
 import com.tripwise.place.application.service.SearchPlacesUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
@@ -30,6 +32,7 @@ import java.util.List;
 @RequestMapping("/api/v1/places")
 @Validated
 @RequiredArgsConstructor
+@Tag(name = "Places", description = "Public place discovery endpoints")
 public class PlaceController {
 
     private static final int DEFAULT_PAGE = 0;
@@ -44,6 +47,7 @@ public class PlaceController {
     private final GetPlaceDetailUseCase getPlaceDetailUseCase;
 
     @GetMapping
+    @Operation(summary = "Search places", description = "Search verified places by city, category, tags, price level, and keyword with pagination.")
     public ResponseEntity<ApiResponse<PageResponse<PlaceResponse>>> searchPlaces(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) Long categoryId,
@@ -72,6 +76,7 @@ public class PlaceController {
     }
 
     @GetMapping("/nearby")
+    @Operation(summary = "Get nearby places", description = "Return nearby verified places around a latitude/longitude coordinate.")
     public ResponseEntity<ApiResponse<List<PlaceResponse>>> getNearbyPlaces(
             @RequestParam("lat")
             @DecimalMin(value = "-90.0", message = "Latitude must be greater than or equal to -90")
@@ -106,6 +111,7 @@ public class PlaceController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get place detail", description = "Return detailed information for a verified place.")
     public ResponseEntity<ApiResponse<PlaceDetailResponse>> getPlaceDetail(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(
                 "Place detail fetched successfully",

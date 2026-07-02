@@ -7,7 +7,7 @@ Hệ thống sử dụng mô hình **Modular Monolith** kết hợp **Clean Arch
 ┌────────────────────────────────────────────────────────┐
 │                        CLIENTS                         │
 │   ┌─────────────────────┐       ┌──────────────────┐   │
-│   │  React / Next.js    │       │     Flutter      │   │
+│   │      Next.js        │       │     Flutter      │   │
 │   └──────────┬──────────┘       └────────┬─────────┘   │
 └──────────────┼───────────────────────────┼─────────────┘
                │ HTTPS (REST API /api/v1)  │
@@ -45,7 +45,7 @@ Backend được tổ chức thành các module nghiệp vụ tách biệt. Mỗ
 ---
 
 ## 3. Web Frontend & Flutter Mobile
-- **Web Frontend**: Phát triển trên nền tảng **ReactJS hoặc Next.js**, giao tiếp hoàn toàn qua REST API. Sử dụng **Leaflet** cùng với nguồn bản đồ mở **OpenStreetMap** để kết xuất giao diện bản đồ, đánh dấu địa điểm (markers) và vẽ tuyến đường (polylines) mà không phát sinh chi phí.
+- **Web Frontend**: Phát triển production trên nền tảng **Next.js**, giao tiếp hoàn toàn qua REST API. Mock UI React/Vite cũ được giữ lại làm visual reference để các phase frontend tiếp theo bám sát giao diện đã duyệt. Khi đến phase map, sử dụng **Leaflet** cùng với **OpenStreetMap** để kết xuất bản đồ, marker và route polyline mà không phát sinh chi phí giấy phép nền tảng đóng.
 - **Flutter Mobile**: Xây dựng ứng dụng đa nền tảng cho Android và iOS, tập trung tối ưu hóa trải nghiệm xem lại lịch trình đã lưu khi đang di chuyển ngoại tuyến (offline snapshot). Token được bảo vệ an toàn bằng `Flutter Secure Storage`.
 
 ---

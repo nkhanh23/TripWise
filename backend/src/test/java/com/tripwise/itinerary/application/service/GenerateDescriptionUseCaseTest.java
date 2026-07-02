@@ -5,6 +5,7 @@ import com.tripwise.ai.infrastructure.GeminiClient;
 import com.tripwise.itinerary.domain.TimeSlot;
 import com.tripwise.itinerary.domain.entity.ItineraryDay;
 import com.tripwise.itinerary.domain.entity.ItineraryItem;
+import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryItemRepository;
 import com.tripwise.place.domain.entity.Place;
 import com.tripwise.place.domain.entity.PlaceCategory;
 import com.tripwise.trip.domain.entity.Trip;
@@ -19,6 +20,9 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,11 +31,18 @@ class GenerateDescriptionUseCaseTest {
     @Mock
     private GeminiClient geminiClient;
 
+    @Mock
+    private ItineraryItemRepository itineraryItemRepository;
+
     private GenerateDescriptionUseCase generateDescriptionUseCase;
 
     @BeforeEach
     void setUp() {
-        generateDescriptionUseCase = new GenerateDescriptionUseCase(geminiClient, new ObjectMapper());
+        generateDescriptionUseCase = new GenerateDescriptionUseCase(
+                geminiClient,
+                new ObjectMapper(),
+                itineraryItemRepository
+        );
     }
 
     @Test
@@ -41,21 +52,21 @@ class GenerateDescriptionUseCaseTest {
                 .destination("Nha Trang")
                 .days(1)
                 .budget("BUDGET")
-                .interests(List.of("biển", "ẩm thực"))
+                .interests(List.of("bien", "am thuc"))
                 .build();
 
-        PlaceCategory category = PlaceCategory.builder().name("Biển").slug("beach").build();
+        PlaceCategory category = PlaceCategory.builder().name("Bien").slug("beach").build();
         Place place = Place.builder()
-                .name("Trần Phú Beach")
+                .name("Tran Phu Beach")
                 .category(category)
-                .description("Bãi biển trung tâm")
+                .description("Bai bien trung tam")
                 .tags(Set.of("beach", "city-center"))
                 .build();
 
         ItineraryItem item = ItineraryItem.builder()
                 .orderIndex(0)
                 .timeSlot(TimeSlot.MORNING)
-                .reason("Trần Phú Beach - lý tưởng cho buổi sáng")
+                .reason("Tran Phu Beach - ly tuong cho buoi sang")
                 .estimatedCost(BigDecimal.ZERO)
                 .place(place)
                 .build();
@@ -71,7 +82,7 @@ class GenerateDescriptionUseCaseTest {
                           {
                             "dayNumber": 1,
                             "orderIndex": 0,
-                            "aiDescription": "Phù hợp để bắt đầu ngày mới với không gian biển thoáng đãng, dễ dạo chơi và gần trung tâm Nha Trang."
+                            "aiDescription": "Phu hop de bat dau ngay moi voi khong gian bien thoang dang, de dao choi va gan trung tam Nha Trang."
                           }
                         ]
                         """);
@@ -79,7 +90,8 @@ class GenerateDescriptionUseCaseTest {
         generateDescriptionUseCase.execute(trip, List.of(day));
 
         assertThat(item.getAiDescription())
-                .isEqualTo("Phù hợp để bắt đầu ngày mới với không gian biển thoáng đãng, dễ dạo chơi và gần trung tâm Nha Trang.");
+                .isEqualTo("Phu hop de bat dau ngay moi voi khong gian bien thoang dang, de dao choi va gan trung tam Nha Trang.");
+        verify(itineraryItemRepository).saveAll(anyList());
     }
 
     @Test
@@ -88,7 +100,7 @@ class GenerateDescriptionUseCaseTest {
         ItineraryItem item = ItineraryItem.builder()
                 .orderIndex(0)
                 .timeSlot(TimeSlot.MORNING)
-                .place(Place.builder().name("Trần Phú Beach").build())
+                .place(Place.builder().name("Tran Phu Beach").build())
                 .build();
         ItineraryDay day = ItineraryDay.builder().dayNumber(1).items(List.of(item)).build();
 
@@ -98,6 +110,7 @@ class GenerateDescriptionUseCaseTest {
         generateDescriptionUseCase.execute(trip, List.of(day));
 
         assertThat(item.getAiDescription()).isNull();
+        verify(itineraryItemRepository, never()).saveAll(anyList());
     }
 
     @Test
@@ -106,15 +119,16 @@ class GenerateDescriptionUseCaseTest {
         ItineraryItem item = ItineraryItem.builder()
                 .orderIndex(0)
                 .timeSlot(TimeSlot.MORNING)
-                .place(Place.builder().name("Trần Phú Beach").build())
+                .place(Place.builder().name("Tran Phu Beach").build())
                 .build();
         ItineraryDay day = ItineraryDay.builder().dayNumber(1).items(List.of(item)).build();
 
         when(geminiClient.generateContent(org.mockito.ArgumentMatchers.anyString()))
-                .thenReturn("không phải json");
+                .thenReturn("khong phai json");
 
         generateDescriptionUseCase.execute(trip, List.of(day));
 
         assertThat(item.getAiDescription()).isNull();
+        verify(itineraryItemRepository, never()).saveAll(anyList());
     }
 }

@@ -15,6 +15,7 @@ import com.tripwise.itinerary.application.dto.ItineraryResponse;
 import com.tripwise.itinerary.application.service.GenerateItineraryUseCase;
 import com.tripwise.itinerary.domain.TimeSlot;
 import com.tripwise.place.application.dto.PlaceResponse;
+import com.tripwise.transport.application.dto.TransportSuggestionResponse;
 import com.tripwise.trip.application.dto.CreateTripRequest;
 import com.tripwise.trip.application.dto.TripDetailResponse;
 import com.tripwise.trip.application.dto.TripResponse;
@@ -100,6 +101,10 @@ class TripControllerTest {
                                 .timeSlot(TimeSlot.MORNING)
                                 .aiDescription("Phù hợp để bắt đầu ngày mới với không gian biển thoáng đãng.")
                                 .estimatedCost(BigDecimal.ZERO)
+                                .transportSuggestion(TransportSuggestionResponse.builder()
+                                        .mode("WALK")
+                                        .reason("Quang duong ngan, phu hop de di bo.")
+                                        .build())
                                 .place(PlaceResponse.builder()
                                         .id(10L)
                                         .name("Trần Phú Beach")
@@ -199,6 +204,10 @@ class TripControllerTest {
                                 .items(List.of(ItineraryItemResponse.builder()
                                         .orderIndex(0)
                                         .aiDescription("Phù hợp để bắt đầu ngày với bãi biển trung tâm dễ tiếp cận.")
+                                        .transportSuggestion(TransportSuggestionResponse.builder()
+                                                .mode("TAXI")
+                                                .reason("Quang duong tam trung, taxi thuan tien hon trong thanh pho.")
+                                                .build())
                                         .place(PlaceResponse.builder()
                                                 .id(10L)
                                                 .name("Trần Phú Beach")
@@ -223,6 +232,82 @@ class TripControllerTest {
                 .andExpect(jsonPath("$.data.itinerary.days[0].items[0].aiDescription").value("Phù hợp để bắt đầu ngày với bãi biển trung tâm dễ tiếp cận."));
 
         verify(getTripDetailUseCase).execute("test@example.com", 100L);
+    }
+
+    @Test
+    @WithMockUser(username = "test@example.com")
+    void generateTrip_WhenTransportSuggestionExists_ShouldReturnItInResponse() throws Exception {
+        CreateTripRequest request = new CreateTripRequest("Plan a beach trip");
+        GeneratedItineraryResponse response = GeneratedItineraryResponse.builder()
+                .id(2L)
+                .destination("Nha Trang")
+                .days(1)
+                .nights(0)
+                .interests(List.of("beach"))
+                .status(TripStatus.GENERATED)
+                .itineraryDays(List.of(ItineraryDayResponse.builder()
+                        .dayNumber(1)
+                        .items(List.of(ItineraryItemResponse.builder()
+                                .orderIndex(0)
+                                .transportSuggestion(TransportSuggestionResponse.builder()
+                                        .mode("WALK")
+                                        .reason("Short distance")
+                                        .build())
+                                .place(PlaceResponse.builder()
+                                        .id(10L)
+                                        .name("Tran Phu Beach")
+                                        .city("Nha Trang")
+                                        .build())
+                                .build()))
+                        .build()))
+                .build();
+
+        when(generateItineraryUseCase.execute(eq("test@example.com"), any(CreateTripRequest.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(post("/api/v1/trips/generate")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.itineraryDays[0].items[0].transportSuggestion.mode").value("WALK"))
+                .andExpect(jsonPath("$.data.itineraryDays[0].items[0].transportSuggestion.reason").value("Short distance"));
+    }
+
+    @Test
+    @WithMockUser(username = "test@example.com")
+    void getTripDetail_WhenTransportSuggestionExists_ShouldReturnItInResponse() throws Exception {
+        TripDetailResponse response = TripDetailResponse.builder()
+                .id(101L)
+                .destination("Nha Trang")
+                .days(1)
+                .nights(0)
+                .status(TripStatus.GENERATED)
+                .itinerary(ItineraryResponse.builder()
+                        .days(List.of(ItineraryDayResponse.builder()
+                                .dayNumber(1)
+                                .items(List.of(ItineraryItemResponse.builder()
+                                        .orderIndex(0)
+                                        .transportSuggestion(TransportSuggestionResponse.builder()
+                                                .mode("TAXI")
+                                                .reason("Medium distance")
+                                                .build())
+                                        .place(PlaceResponse.builder()
+                                                .id(11L)
+                                                .name("Po Nagar")
+                                                .city("Nha Trang")
+                                                .build())
+                                        .build()))
+                                .build()))
+                        .build())
+                .build();
+
+        when(getTripDetailUseCase.execute("test@example.com", 101L)).thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/trips/101"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.itinerary.days[0].items[0].transportSuggestion.mode").value("TAXI"))
+                .andExpect(jsonPath("$.data.itinerary.days[0].items[0].transportSuggestion.reason").value("Medium distance"));
     }
 
     @Test

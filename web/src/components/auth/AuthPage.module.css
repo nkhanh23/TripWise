@@ -1,0 +1,238 @@
+.card {
+  width: 100%;
+}
+
+.stack {
+  display: grid;
+  gap: 18px;
+}
+
+.header {
+  display: grid;
+  gap: 8px;
+}
+
+.eyebrow {
+  justify-self: start;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-yellow);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  line-height: 0.96;
+  text-shadow:
+    2px 2px 0 var(--color-yellow),
+    3px 3px 0 var(--color-ink);
+}
+
+.description {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.fieldRow {
+  display: grid;
+  gap: 10px;
+}
+
+.passwordWrap {
+  position: relative;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 40px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.optionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--color-brand);
+}
+
+.linkButton,
+.textLink {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--color-brand);
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  height: 2px;
+  flex: 1;
+  background: rgba(17, 17, 17, 0.12);
+}
+
+.supportCard {
+  border: 2px dashed rgba(17, 17, 17, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 14px 16px;
+  display: grid;
+  gap: 6px;
+}
+
+.supportTitle {
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.supportBody {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.supportHint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.footnote {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.successCard {
+  display: grid;
+  gap: 18px;
+}
+
+.successBadge {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 2px solid var(--color-ink);
+  background: var(--color-lime);
+  box-shadow: 4px 4px 0 var(--color-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
+.successMeta {
+  display: grid;
+  gap: 8px;
+}
+
+.successList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  color: var(--color-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.buttonStack {
+  display: grid;
+  gap: 10px;
+}
+
+.inlineError {
+  color: var(--color-red);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.strengthMeter {
+  display: grid;
+  gap: 6px;
+}
+
+.strengthBar {
+  height: 10px;
+  overflow: hidden;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.strengthFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 150ms ease;
+}
+
+.strengthLabel {
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+@media (max-width: 640px) {
+  .optionsRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

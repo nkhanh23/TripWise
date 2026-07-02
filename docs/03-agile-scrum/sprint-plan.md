@@ -66,7 +66,7 @@ gantt
 
 ### Triển khai Giao diện & Vận hành (Sprints 8 - 10)
 - **Sprint 8: Web Frontend MVP**
-  - Triển khai web client bằng ReactJS/Next.js.
+  - Triển khai web client bằng Next.js.
   - Tích hợp bản đồ Leaflet hiển thị marker các địa điểm và polyline tuyến đường đi thực tế của OSRM (PBI-012).
   - Hoàn thiện form nhập prompt tiếng Việt và hiển thị kết quả.
 - **Sprint 9: Flutter Mobile MVP**

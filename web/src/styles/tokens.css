@@ -1,0 +1,82 @@
+:root {
+  color-scheme: light;
+
+  --color-canvas: #f7e7c6;
+  --color-canvas-alt: #f3c99b;
+  --color-surface: #fff6de;
+  --color-panel: #fffdf3;
+  --color-ink: #111111;
+
+  --color-brand: #20a7d8;
+  --color-brand-dark: #087ca7;
+  --color-brand-soft: #d6f1fb;
+  --color-red: #e6392e;
+  --color-red-soft: #ffdddb;
+  --color-yellow: #ffd166;
+  --color-yellow-soft: #fff3c4;
+  --color-lime: #b8f24a;
+  --color-lime-soft: #edfcc8;
+  --color-orange: #f77f00;
+
+  --text-primary: #111111;
+  --text-secondary: #3a2f2a;
+  --text-muted: #7a6a58;
+  --text-inverse: #fff6de;
+
+  --stroke-ink: #111111;
+  --stroke-soft: #d8b98a;
+  --stroke-light: #ebd8b7;
+
+  --shadow-card: 4px 4px 0 #111111;
+  --shadow-card-lg: 6px 6px 0 #111111;
+  --shadow-button: 4px 4px 0 #111111;
+  --shadow-button-hover: 6px 6px 0 #111111;
+  --shadow-button-pressed: 2px 2px 0 #111111;
+
+  --radius-card: 24px;
+  --radius-panel: 24px;
+  --radius-button: 16px;
+  --radius-input: 14px;
+  --radius-pill: 9999px;
+  --radius-modal: 28px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --font-display: "Baloo 2", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", system-ui, sans-serif;
+
+  --page-max-width: 1200px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-canvas: #1f1913;
+    --color-canvas-alt: #30261d;
+    --color-surface: #2a2118;
+    --color-panel: #33291f;
+    --color-ink: #f8e9cf;
+
+    --text-primary: #fff6de;
+    --text-secondary: #f3dfc2;
+    --text-muted: #d0baa0;
+    --text-inverse: #111111;
+
+    --stroke-ink: #f8e9cf;
+    --stroke-soft: #7c6754;
+    --stroke-light: #584839;
+
+    --shadow-card: 4px 4px 0 rgba(0, 0, 0, 0.45);
+    --shadow-card-lg: 6px 6px 0 rgba(0, 0, 0, 0.45);
+    --shadow-button: 4px 4px 0 rgba(0, 0, 0, 0.45);
+    --shadow-button-hover: 6px 6px 0 rgba(0, 0, 0, 0.45);
+    --shadow-button-pressed: 2px 2px 0 rgba(0, 0, 0, 0.45);
+  }
+}

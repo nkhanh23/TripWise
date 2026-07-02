@@ -21,7 +21,7 @@ graph TD
 
 1. **Phase 1: Requirement Analysis (Phân tích yêu cầu)**: Xác định rõ ràng các yêu cầu chức năng (FR), phi chức năng (NFR), bảo mật, mở rộng và dữ liệu cho MVP (Nha Trang, 1-3 ngày).
 2. **Phase 2: System Design (Thiết kế hệ thống)**: Thiết kế kiến trúc tổng thể, mô hình dữ liệu quan hệ địa lý (PostGIS), thiết kế API phiên bản `/api/v1` và cơ chế caching (Redis).
-3. **Phase 3: Implementation (Hiện thực hóa & Lập trình)**: Phát triển mã nguồn Spring Boot (Java 21) dựa trên Clean Architecture, kết hợp Web client (ReactJS/Next.js) và chuẩn bị cho Flutter mobile.
+3. **Phase 3: Implementation (Hiện thực hóa & Lập trình)**: Phát triển mã nguồn Spring Boot (Java 21) dựa trên Clean Architecture, kết hợp Web client Next.js và chuẩn bị cho Flutter mobile.
 4. **Phase 4: Testing (Kiểm thử)**: Thực hiện từ Unit test đến Integration test, API test, kiểm tra tính chịu lỗi của API ngoài (Gemini/OSRM/Weather) và kiểm thử thủ công UI.
 5. **Phase 5: Deployment (Triển khai)**: Đóng gói ứng dụng bằng Docker, thiết lập pipeline CI/CD, chuẩn bị môi trường chạy thật và quản lý biến môi trường.
 6. **Phase 6: Maintenance (Vận hành & Bảo trì)**: Giám sát log, theo dõi lỗi, tối ưu hiệu năng DB, sao lưu dữ liệu và kiểm soát chi phí gọi API ngoài.

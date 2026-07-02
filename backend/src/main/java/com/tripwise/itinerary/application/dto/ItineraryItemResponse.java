@@ -2,6 +2,7 @@ package com.tripwise.itinerary.application.dto;
 
 import com.tripwise.itinerary.domain.TimeSlot;
 import com.tripwise.place.application.dto.PlaceResponse;
+import com.tripwise.transport.application.dto.TransportSuggestionResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +25,6 @@ public class ItineraryItemResponse {
     private BigDecimal estimatedCost;
     private Integer distanceFromPreviousMeters;
     private Integer durationFromPreviousSeconds;
+    private TransportSuggestionResponse transportSuggestion;
     private PlaceResponse place;
 }

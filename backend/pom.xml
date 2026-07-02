@@ -82,6 +82,13 @@
             <version>${org.mapstruct.version}</version>
         </dependency>
 
+        <!-- API Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
         <!-- Rate Limiting (Bucket4j) -->
         <dependency>
             <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>

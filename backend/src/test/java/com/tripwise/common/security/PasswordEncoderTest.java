@@ -13,7 +13,8 @@ class PasswordEncoderTest {
 
     private final SecurityConfig securityConfig = new SecurityConfig(
             mock(JwtAuthenticationFilter.class),
-            mock(JwtAuthenticationEntryPoint.class)
+            mock(JwtAuthenticationEntryPoint.class),
+            new AppSecurityProperties()
     );
 
     @Test

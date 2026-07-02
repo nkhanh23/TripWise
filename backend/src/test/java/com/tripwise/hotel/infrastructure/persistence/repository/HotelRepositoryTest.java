@@ -93,6 +93,55 @@ class HotelRepositoryTest extends BaseIntegrationTest {
                 .containsExactly("Amber Stay", "Blue Bay Hotel");
     }
 
+    @Test
+    void shouldFilterByBudgetAndMinimumStarRatingOrderedByStarThenName() {
+        hotelRepository.save(Hotel.builder()
+                .name("Alpha Suites")
+                .city("Nha Trang")
+                .location(point(109.2000, 12.2400))
+                .priceLevel("medium")
+                .starRating(4)
+                .isActive(true)
+                .build());
+
+        hotelRepository.save(Hotel.builder()
+                .name("Zen Hotel")
+                .city("nha trang")
+                .location(point(109.2010, 12.2410))
+                .priceLevel("MEDIUM")
+                .starRating(5)
+                .isActive(true)
+                .build());
+
+        hotelRepository.save(Hotel.builder()
+                .name("Budget Corner")
+                .city("Nha Trang")
+                .location(point(109.2020, 12.2420))
+                .priceLevel("LOW")
+                .starRating(5)
+                .isActive(true)
+                .build());
+
+        hotelRepository.save(Hotel.builder()
+                .name("Inactive Luxury")
+                .city("Nha Trang")
+                .location(point(109.2030, 12.2430))
+                .priceLevel("MEDIUM")
+                .starRating(5)
+                .isActive(false)
+                .build());
+
+        hotelRepository.flush();
+
+        List<Hotel> hotels = hotelRepository
+                .findTop20ByCityIgnoreCaseAndPriceLevelIgnoreCaseAndStarRatingGreaterThanEqualAndIsActiveTrueOrderByStarRatingDescNameAsc(
+                        "NHA TRANG", "medium", 4);
+
+        assertThat(hotels)
+                .extracting(Hotel::getName)
+                .containsExactly("Zen Hotel", "Alpha Suites");
+    }
+
     private static Point point(double longitude, double latitude) {
         Point point = GEOMETRY_FACTORY.createPoint(new Coordinate(longitude, latitude));
         point.setSRID(4326);

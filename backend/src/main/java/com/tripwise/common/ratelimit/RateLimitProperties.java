@@ -14,6 +14,7 @@ public class RateLimitProperties {
     private boolean enabled = true;
     private Rule login = new Rule(5, Duration.ofMinutes(1));
     private Rule register = new Rule(3, Duration.ofMinutes(1));
+    private Rule tripGeneration = new Rule(3, Duration.ofMinutes(1));
 
     @Getter
     @Setter

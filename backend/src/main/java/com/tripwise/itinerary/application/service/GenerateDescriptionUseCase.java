@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripwise.ai.infrastructure.GeminiClient;
 import com.tripwise.itinerary.domain.entity.ItineraryDay;
 import com.tripwise.itinerary.domain.entity.ItineraryItem;
+import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryItemRepository;
 import com.tripwise.place.domain.entity.Place;
 import com.tripwise.trip.domain.entity.Trip;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +32,8 @@ public class GenerateDescriptionUseCase {
 
     private final GeminiClient geminiClient;
     private final ObjectMapper objectMapper;
+    private final ItineraryItemRepository itineraryItemRepository;
 
-    @Transactional
     public void execute(Trip trip, List<ItineraryDay> itineraryDays) {
         if (trip == null || itineraryDays == null || itineraryDays.isEmpty()) {
             return;
@@ -65,6 +65,13 @@ public class GenerateDescriptionUseCase {
                         item.setAiDescription(aiDescription);
                     }
                 }
+            }
+
+            List<ItineraryItem> itemsToPersist = items.stream()
+                    .filter(item -> item.getAiDescription() != null && !item.getAiDescription().isBlank())
+                    .toList();
+            if (!itemsToPersist.isEmpty()) {
+                itineraryItemRepository.saveAll(itemsToPersist);
             }
         } catch (Exception ex) {
             log.warn("Skipping AI itinerary descriptions for tripId={} because generation failed: {}",

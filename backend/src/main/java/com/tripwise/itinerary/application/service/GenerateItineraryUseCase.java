@@ -19,7 +19,6 @@ import com.tripwise.weather.application.service.WeatherAdjustmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,6 @@ public class GenerateItineraryUseCase {
     @Value("${tripwise.itinerary.places-per-day:4}")
     private int placesPerDay;
 
-    @Transactional
     public GeneratedItineraryResponse execute(String userEmail, CreateTripRequest request) {
         TripResponse tripResponse = createTripUseCase.execute(userEmail, request);
 

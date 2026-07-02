@@ -5,6 +5,8 @@ import com.tripwise.weather.application.dto.WeatherResponse;
 import com.tripwise.weather.application.service.GetWeatherForecastByCityUseCase;
 import com.tripwise.weather.domain.WeatherForecast;
 import com.tripwise.weather.presentation.dto.WeatherQueryRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/weather")
+@Tag(name = "Weather", description = "Weather forecast endpoints for itinerary support")
 public class WeatherController {
 
     private final GetWeatherForecastByCityUseCase getWeatherForecastByCityUseCase;
 
     @GetMapping("/{city}")
+    @Operation(summary = "Get weather forecast by city", description = "Return forecast data for a supported city and date range.")
     public ResponseEntity<ApiResponse<WeatherResponse>> getWeatherForecast(
             @PathVariable @NotBlank(message = "city must not be blank") String city,
             @Valid WeatherQueryRequest request

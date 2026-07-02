@@ -172,16 +172,16 @@
 
 - [x] Phase 10.1 - Hotel entity và repository
 - [x] Phase 10.2 - Hotel seed data
-- [ ] Phase 10.3 - Hotel suggestion API (by area/budget)
-- [ ] Phase 10.4 - Transport suggestion logic (MVP)
-- [ ] Phase 10.5 - Hotel/Transport tests
+- [x] Phase 10.3 - Hotel suggestion API (by area/budget)
+- [x] Phase 10.4 - Transport suggestion logic (MVP)
+- [x] Phase 10.5 - Hotel/Transport tests
 
 ### K. Backend Integration và Polish
 
-- [ ] Phase 11.1 - End-to-end trip generation flow test
-- [ ] Phase 11.2 - API documentation (Springdoc/OpenAPI)
-- [ ] Phase 11.3 - Backend performance review
-- [ ] Phase 11.4 - Security review backend
+- [x] Phase 11.1 - End-to-end trip generation flow test
+- [x] Phase 11.2 - API documentation (Springdoc/OpenAPI)
+- [x] Phase 11.3 - Backend performance review
+- [x] Phase 11.4 - Security review backend
 
 ### L. Frontend Web
 
@@ -3580,7 +3580,7 @@ Flyway V4 seed 10-15 Nha Trang hotels thật. Tọa độ chính xác. Various s
 
 ---
 
-## [ ] Phase 10.3 - Hotel suggestion API (by area/budget)
+## [x] Phase 10.3 - Hotel suggestion API (by area/budget)
 
 ### Goal
 
@@ -3628,7 +3628,7 @@ GET /api/v1/hotels/suggestions. Filter by city/budget/star. MVP. Tests. Chạy t
 
 ---
 
-## [ ] Phase 10.4 - Transport suggestion logic (MVP)
+## [x] Phase 10.4 - Transport suggestion logic (MVP)
 
 ### Goal
 
@@ -3671,7 +3671,7 @@ Distance-based transport mode suggestion. Tests. Chạy test.
 
 ---
 
-## [ ] Phase 10.5 - Hotel/Transport tests
+## [x] Phase 10.5 - Hotel/Transport tests
 
 ### Goal
 
@@ -3714,7 +3714,7 @@ cd backend
 
 ---
 
-## [ ] Phase 11.1 - End-to-end trip generation flow test
+## [x] Phase 11.1 - End-to-end trip generation flow test
 
 ### Goal
 
@@ -3756,7 +3756,7 @@ Register → login → generate → view → delete. Testcontainers. Mocked exte
 
 ---
 
-## [ ] Phase 11.2 - API documentation (Springdoc/OpenAPI)
+## [x] Phase 11.2 - API documentation (Springdoc/OpenAPI)
 
 ### Goal
 
@@ -3804,7 +3804,7 @@ Thêm springdoc-openapi. Swagger UI. Annotate controllers. Protect in prod. Ch�
 
 ---
 
-## [ ] Phase 11.3 - Backend performance review
+## [x] Phase 11.3 - Backend performance review
 
 ### Goal
 
@@ -3851,7 +3851,7 @@ Check N+1 queries, indexes, connection pool. Fix issues found. Chạy test.
 
 ---
 
-## [ ] Phase 11.4 - Security review backend
+## [x] Phase 11.4 - Security review backend
 
 ### Goal
 
@@ -5868,25 +5868,25 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 
 - [x] Phase 10.1 - Hotel entity và repository
 - [x] Phase 10.2 - Hotel seed data
-- [ ] Phase 10.3 - Hotel suggestion API (by area/budget)
-- [ ] Phase 10.4 - Transport suggestion logic (MVP)
-- [ ] Phase 10.5 - Hotel/Transport tests
+- [x] Phase 10.3 - Hotel suggestion API (by area/budget)
+- [x] Phase 10.4 - Transport suggestion logic (MVP)
+- [x] Phase 10.5 - Hotel/Transport tests
 
 ### K. Backend Integration và Polish
 
-- [ ] Phase 11.1 - End-to-end trip generation flow test
-- [ ] Phase 11.2 - API documentation (Springdoc/OpenAPI)
-- [ ] Phase 11.3 - Backend performance review
-- [ ] Phase 11.4 - Security review backend
+- [x] Phase 11.1 - End-to-end trip generation flow test
+- [x] Phase 11.2 - API documentation (Springdoc/OpenAPI)
+- [x] Phase 11.3 - Backend performance review
+- [x] Phase 11.4 - Security review backend
 
 ### L. Frontend Web
 
-- [ ] Phase 12.1 - React/Next.js project setup
-- [ ] Phase 12.2 - Design system và UI framework
-- [ ] Phase 12.3 - API client và auth interceptor
-- [ ] Phase 12.4 - Auth pages (Register/Login)
-- [ ] Phase 12.5 - Trip request form
-- [ ] Phase 12.6 - Itinerary result page
+- [x] Phase 12.1 - React/Next.js project setup
+- [x] Phase 12.2 - Design system và UI framework
+- [x] Phase 12.3 - API client và auth interceptor
+- [x] Phase 12.4 - Auth pages (Register/Login)
+- [x] Phase 12.5 - Trip request form
+- [x] Phase 12.6 - Itinerary result page
 - [ ] Phase 12.7 - Leaflet map integration
 - [ ] Phase 12.8 - Route polyline trên map
 - [ ] Phase 12.9 - Saved trips page

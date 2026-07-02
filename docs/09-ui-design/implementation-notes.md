@@ -1,27 +1,50 @@
 # Implementation Notes (UI Architecture Only)
 
-Tài liệu này gợi ý cách triển khai UI theo đúng design spec trong folder `09-ui-design/`.  
-Không viết code thật; chỉ mô tả kiến trúc, cách tách component, state, và lưu ý map/route.
+Tài liệu này mô tả hướng triển khai UI theo đúng design spec trong `docs/09-ui-design/`.
+Không viết business logic thật; chỉ mô tả kiến trúc, cách tách component, state và các lưu ý khi dựng map/route.
 
 ---
 
-## Web (ReactJS hoặc Next.js)
+## Web (Next.js)
+
+### Quyết định hiện tại
+
+- Frontend web production đã chốt dùng `Next.js`.
+- Hướng triển khai nhất quán là `App Router`.
+- Mock UI React/Vite ban đầu được giữ tại `web-archive-vite-ui/` làm visual reference.
+- Ở các phase UI tiếp theo, code có thể thay đổi theo chuẩn Next.js nhưng giao diện phải bám sát mock React đã chốt.
+
+### Vì sao chọn App Router
+
+- Phù hợp với project Next.js đã tạo ở Phase 12.1.
+- Dễ mở rộng cho nested layout, loading/error boundary và route-level organization ở các phase sau.
+- Giữ cấu hình đơn giản, ít boilerplate, phù hợp với frontend tách riêng backend.
+
+### Visual reference rules
+
+- `web-archive-vite-ui/` là nguồn tham chiếu chính cho layout, spacing, phân cấp component và phong cách retro.
+- Không port nguyên xi code cũ vào app mới.
+- Khi có khác biệt giữa code Next.js và mock archive, ưu tiên:
+  1. Giữ đúng trải nghiệm thị giác và flow người dùng của mock UI.
+  2. Chuyển implementation sang pattern phù hợp với Next.js.
+  3. Chỉ điều chỉnh nhỏ nếu cần cho SSR/client boundary hoặc maintainability.
 
 ### Khuyến nghị stack UI
 
-- Framework: ReactJS hoặc Next.js (chốt sau, nhưng thiết kế component nên portable).
-- Styling: TailwindCSS (token hóa theo `design-system.md`).
-- UI primitives: shadcn/ui (button, input, dialog, tabs, dropdown).
-- Map: Leaflet / react-leaflet + OpenStreetMap tiles.
+- Framework: Next.js + React + TypeScript.
+- Styling nền tảng: CSS tokens và CSS modules hoặc giải pháp nhẹ tương đương theo scope phase.
+- UI primitives: xây theo design system nội bộ, không cần kéo thêm framework lớn nếu chưa thật sự cần.
+- Map: Leaflet / react-leaflet + OpenStreetMap tiles ở phase map integration.
 
-### Cấu trúc UI modules (gợi ý)
+### Cấu trúc UI modules gợi ý
 
-- `ui/shell`: AppShell, layout split-screen, responsive wrappers.
-- `ui/trip`: TripHeader, TripStats, Timeline, TimelineItem, BudgetCard.
-- `ui/map`: MapPanel, MapMarker, RoutePolyline, MapOverlays (SearchBar, InstructionCard, NearestLabel).
-- `ui/common`: StatusTag, Card, Skeleton, EmptyState, ErrorBanner.
+- `src/app`: route segments, layout, loading/error boundaries.
+- `src/components/layout`: app shell, split-screen layout, responsive wrappers.
+- `src/components/ui`: primitive components như button, input, card, status, skeleton.
+- `src/components/features/*`: component theo màn hình hoặc flow nghiệp vụ.
+- `src/lib`: helper nhẹ, constants, formatter, env parsing.
 
-### State management (gợi ý)
+### State management gợi ý
 
 Chia state theo scope:
 
@@ -31,50 +54,35 @@ Chia state theo scope:
 
 Nguyên tắc:
 
-- Selection thay đổi không được làm rerender toàn bộ map nếu tránh được.
-- Tách “map rendering state” khỏi “panel list state”.
+- Tránh để selection làm rerender toàn bộ map nếu không cần.
+- Tách state render map khỏi state của panel danh sách.
+- Chỉ thêm state library khi thật sự cần ở phase phù hợp.
 
 ### Leaflet / OpenStreetMap notes
 
 - Overlay layering:
-  - Map canvas dưới
-  - UI overlay (search/instruction) trên (z-index cao), theo glass rules.
+  - Map canvas ở dưới.
+  - UI overlay ở trên với z-index rõ ràng.
 - Safe areas:
-  - không che attribution của OSM
-  - không che zoom controls
+  - Không che attribution của OSM.
+  - Không che zoom controls.
 - Marker:
-  - marker có trạng thái selected + badge số thứ tự
-  - cluster nếu số điểm nhiều (future)
+  - Có selected state.
+  - Có badge thứ tự nếu flow cần.
 
 ### OSRM route line notes
 
-- Route geometry có thể rất dài; cần lưu ý:
-  - simplify theo zoom (client) hoặc server gửi geometry tối ưu
-  - tránh setState liên tục khi user drag map
+- Route geometry có thể dài; cần cân nhắc simplify theo zoom hoặc response tối ưu từ backend.
+- Tránh cập nhật state liên tục khi người dùng kéo map.
 - Khi OSRM fail:
-  - UI fallback: vẫn hiển thị marker
-  - route: ẩn hoặc vẽ straight line nhẹ (nếu cần “cảm giác nối điểm”)
-
-### Mapping Transportation → OSRM profile (gợi ý)
-
-Để UI nhất quán, nên chuẩn hóa `transportationProfile` (UI) và mapping sang profile thực tế khi gọi OSRM:
-
-| UI label | UI value | OSRM profile gợi ý | Ghi chú |
-|---|---|---|---|
-| Đi bộ | `walking` | `walking` | nếu server OSRM hỗ trợ; nếu không thì dùng `foot`/mapping nội bộ |
-| Xe máy | `motorbike` | `driving` | OSRM public thường không có “motorbike”; dùng `driving` nhưng UI label vẫn “Xe máy” |
-| Ô tô | `car` | `driving` | chuẩn |
-| Xe đạp | `bicycle` | `cycling` | nếu server hỗ trợ; nếu không fallback `driving` + warning |
-
-Nguyên tắc UX:
-
-- Nếu backend/profile thực tế khác label UI, UI vẫn hiển thị theo lựa chọn của user nhưng có thể thêm hint nhỏ: “Tuyến đường tính theo profile gần nhất”.
+  - Vẫn hiển thị marker.
+  - Route có thể ẩn hoặc dùng fallback nhẹ nếu phase cho phép.
 
 ### UX performance
 
-- Split-screen layout: left panel scroll riêng để map luôn ổn định.
-- Lazy load map module khi vào màn Trip Detail để giảm bundle (khuyến nghị).
-- Skeleton loading giúp cảm giác nhanh.
+- Split-screen layout: panel trái scroll riêng để map ổn định.
+- Lazy load map module khi vào màn Trip Detail.
+- Có skeleton/loading rõ ràng để giữ cảm giác phản hồi nhanh.
 
 ---
 
@@ -84,33 +92,29 @@ Nguyên tắc UX:
 
 - Flutter UI theo `ui-layout-mobile.md`.
 - Map: `flutter_map` + OSM tiles.
-- Bottom sheet: `DraggableScrollableSheet` (native-like) hoặc package tương đương (quyết định sau).
+- Bottom sheet: `DraggableScrollableSheet` hoặc tương đương.
 
-### Kiến trúc widget (gợi ý)
+### Kiến trúc widget gợi ý
 
 - `TripDetailMapScreen`
   - `Stack`
-    - `MapWidget`
-    - `TopSearchBarOverlay`
-    - `TripSummaryOverlay`
-    - `InstructionCardOverlay`
-    - `ItineraryBottomSheet`
-    - `MapControls` (zoom/recenter)
+  - `MapWidget`
+  - `TopSearchBarOverlay`
+  - `TripSummaryOverlay`
+  - `InstructionCardOverlay`
+  - `ItineraryBottomSheet`
+  - `MapControls`
 
 ### Marker + route
 
-- Marker nên là widget custom để:
-  - giữ consistent style (brand blue + white stroke)
-  - selected state (scale + glow)
-  - order badge (1..n)
-- Route polyline:
-  - style giống web (brand blue + halo)
-  - nếu geometry dài: cân nhắc simplify
+- Marker nên là widget custom để giữ brand consistency.
+- Route polyline nên đồng bộ style với web.
+- Nếu geometry dài, cân nhắc simplify.
 
 ### Interaction notes
 
-- Chọn timeline item trong bottom sheet → focus map marker (animate camera).
-- Khi bottom sheet expanded → giảm khả năng map pan/zoom để tránh conflict gesture.
+- Chọn timeline item trong bottom sheet sẽ focus map marker.
+- Khi bottom sheet mở rộng, cần tránh conflict gesture với map.
 
 ---
 
@@ -118,16 +122,17 @@ Nguyên tắc UX:
 
 Luôn đối chiếu theo thứ tự ưu tiên:
 
-1. `design-system.md` (tokens + rules)
-2. `ui-layout-web.md` / `ui-layout-mobile.md` (layout)
-3. `trip-detail-map-spec.md` (core behavior)
-4. `component-spec.md` (API component)
+1. `design-system.md`
+2. `ui-layout-web.md` / `ui-layout-mobile.md`
+3. `trip-detail-map-spec.md`
+4. `component-spec.md`
+5. `web-archive-vite-ui/` như visual reference cho web
 
 ---
 
-## Các điểm cần chốt trước khi code UI
+## Các điểm đã chốt trước khi code UI
 
-- Web: chọn ReactJS hay Next.js (ảnh hưởng routing + data fetching).
-- Strategy lấy map tiles (OSM public vs self-host) và caching policy.
-- Strategy route geometry: geojson vs polyline encoded.
-- Quyết định “Add stop / Edit itinerary” có nằm trong MVP không (ảnh hưởng interaction và component scope).
+- Web production dùng `Next.js App Router`.
+- UI web phải bám mock archive tại `web-archive-vite-ui/`.
+- Backend vẫn là nguồn dữ liệu duy nhất; frontend không gọi trực tiếp Gemini, OSRM hay Weather.
+- Leaflet/OSM và route polyline để đúng phase map integration, không kéo sớm vào phase setup/design system.

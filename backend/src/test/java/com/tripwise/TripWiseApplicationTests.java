@@ -1,6 +1,8 @@
 package com.tripwise;
 
 import com.tripwise.auth.infrastructure.persistence.repository.RefreshTokenRepository;
+import com.tripwise.hotel.infrastructure.persistence.repository.HotelRepository;
+import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryItemRepository;
 import com.tripwise.place.infrastructure.persistence.repository.PlaceRepository;
 import com.tripwise.route.infrastructure.persistence.repository.RouteCacheJpaRepository;
 import com.tripwise.user.infrastructure.persistence.repository.UserRepository;
@@ -42,6 +44,12 @@ class TripWiseApplicationTests {
 
     @MockBean
     private WeatherCacheJpaRepository weatherCacheJpaRepository;
+
+    @MockBean
+    private HotelRepository hotelRepository;
+
+    @MockBean
+    private ItineraryItemRepository itineraryItemRepository;
 
     @Test
     void contextLoads() {

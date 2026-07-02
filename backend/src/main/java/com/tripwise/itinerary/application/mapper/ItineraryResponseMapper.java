@@ -6,6 +6,7 @@ import com.tripwise.itinerary.application.dto.ItineraryResponse;
 import com.tripwise.itinerary.domain.entity.ItineraryDay;
 import com.tripwise.itinerary.domain.entity.ItineraryItem;
 import com.tripwise.place.application.mapper.PlaceMapper;
+import com.tripwise.transport.application.service.TransportSuggestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class ItineraryResponseMapper {
 
     private final PlaceMapper placeMapper;
+    private final TransportSuggestionService transportSuggestionService;
 
     public ItineraryResponse toResponse(List<ItineraryDay> itineraryDays) {
         return ItineraryResponse.builder()
@@ -45,6 +47,7 @@ public class ItineraryResponseMapper {
                 .estimatedCost(itineraryItem.getEstimatedCost())
                 .distanceFromPreviousMeters(itineraryItem.getDistanceFromPreviousMeters())
                 .durationFromPreviousSeconds(itineraryItem.getDurationFromPreviousSeconds())
+                .transportSuggestion(transportSuggestionService.suggest(itineraryItem.getDistanceFromPreviousMeters()))
                 .place(placeMapper.toResponse(itineraryItem.getPlace()))
                 .build();
     }

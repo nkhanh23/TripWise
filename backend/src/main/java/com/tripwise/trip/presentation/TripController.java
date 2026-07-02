@@ -10,6 +10,8 @@ import com.tripwise.trip.application.dto.TripResponse;
 import com.tripwise.trip.application.service.DeleteTripUseCase;
 import com.tripwise.trip.application.service.GetTripDetailUseCase;
 import com.tripwise.trip.application.service.ListUserTripsUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/trips")
 @RequiredArgsConstructor
+@Tag(name = "Trips", description = "Trip generation and trip management endpoints")
 public class TripController {
 
     private static final int DEFAULT_PAGE = 0;
@@ -41,6 +44,7 @@ public class TripController {
     private final DeleteTripUseCase deleteTripUseCase;
 
     @PostMapping("/generate")
+    @Operation(summary = "Generate trip itinerary", description = "Parse a natural-language request and generate a saved itinerary for the authenticated user.")
     public ResponseEntity<ApiResponse<GeneratedItineraryResponse>> generateTrip(
             @Valid @RequestBody CreateTripRequest request,
             Authentication authentication) {
@@ -50,6 +54,7 @@ public class TripController {
     }
 
     @GetMapping
+    @Operation(summary = "List my trips", description = "Return paginated trips for the authenticated user.")
     public ResponseEntity<ApiResponse<PageResponse<TripResponse>>> getMyTrips(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size,
@@ -66,6 +71,7 @@ public class TripController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get trip detail", description = "Return a saved trip and its itinerary for the authenticated owner.")
     public ResponseEntity<ApiResponse<TripDetailResponse>> getTripDetail(
             @PathVariable Long id,
             Authentication authentication) {
@@ -74,6 +80,7 @@ public class TripController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete trip", description = "Delete a saved trip owned by the authenticated user.")
     public ResponseEntity<ApiResponse<Void>> deleteTrip(
             @PathVariable Long id,
             Authentication authentication) {

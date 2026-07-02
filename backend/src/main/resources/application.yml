@@ -19,7 +19,10 @@ spring:
       maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:10}
       minimum-idle: 2
       idle-timeout: 30000
+      max-lifetime: 1800000
+      keepalive-time: 300000
       connection-timeout: 20000
+      validation-timeout: 5000
 
   jpa:
     open-in-view: false
@@ -30,6 +33,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 50
 
   flyway:
     enabled: true
@@ -52,6 +56,14 @@ management:
       show-details: when_authorized
       probes:
         enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  paths-to-match: /api/v1/**
+  packages-to-scan: com.tripwise
 
 # Logging Configuration
 logging:
@@ -84,6 +96,11 @@ tripwise:
     register:
       capacity: ${AUTH_REGISTER_RATE_LIMIT_CAPACITY:3}
       window: ${AUTH_REGISTER_RATE_LIMIT_WINDOW:PT1M}
+    trip-generation:
+      capacity: ${TRIP_GENERATION_RATE_LIMIT_CAPACITY:3}
+      window: ${TRIP_GENERATION_RATE_LIMIT_WINDOW:PT1M}
+  security:
+    docs-public-enabled: ${TRIPWISE_DOCS_PUBLIC_ENABLED:false}
   scoring:
     weight:
       interest: ${TRIPWISE_SCORING_WEIGHT_INTEREST:4.0}

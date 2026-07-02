@@ -13,6 +13,12 @@ tripwise:
     secret: change_me_32_bytes_minimum_access_secret_for_local_only
     access-token-expiration: PT15M
     refresh-token-expiration: P7D
+  security:
+    docs-public-enabled: true
+    cors:
+      allowed-origins:
+        - http://localhost:5173
+        - http://localhost:3000
   gemini:
     api-key: ${GEMINI_API_KEY:dummy-api-key-for-local-development}
   osrm:

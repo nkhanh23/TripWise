@@ -440,7 +440,7 @@ web app, API client, pages/components, map components
 
 ### Risk/notes
 
-- Next.js hay ReactJS cần chốt trước khi tạo project để tránh đổi qua lại.
+- Framework web production đã chốt là Next.js; các phase web tiếp theo cần bám app `web/` và giữ giao diện nhất quán với mock archive tại `web-archive-vite-ui/`.
 
 ---
 

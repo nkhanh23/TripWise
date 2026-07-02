@@ -260,3 +260,26 @@ Triển khai logging có cấu trúc từ đầu. Metrics và tracing được c
 - Có nền tảng để theo dõi latency, error rate, cache hit rate, API cost.
 - Cần mask secret/token trong log.
 - Cần correlation ID/request ID khi backend foundation được tạo.
+
+---
+
+## ADR-013: Chọn Next.js làm web production và giữ mock React archive làm visual reference
+
+**Status:** Accepted
+
+### Context
+
+Frontend web của TripWise ban đầu đã có mock UI lớn bằng React/Vite để chốt hướng giao diện. Sau đó roadmap Phase 12.x chốt hướng triển khai production bằng Next.js trong thư mục `web/`. Nếu không ghi rõ quyết định này trong tài liệu, team rất dễ nhầm giữa việc chọn framework và việc giữ nguyên phong cách giao diện đã duyệt.
+
+### Decision
+
+Chọn `Next.js + TypeScript` làm codebase production cho web trong thư mục `web/`.
+
+Giữ mock UI React/Vite cũ tại `web-archive-vite-ui/` làm nguồn tham chiếu visual chính cho các phase UI tiếp theo.
+
+### Consequences
+
+- Team chỉ phát triển production web trong app Next.js.
+- Mock React/Vite không bị xóa vì vẫn cần làm chuẩn tham chiếu về layout, hierarchy và mood giao diện.
+- Khi chuyển một màn hình từ mock sang production, implementation có thể thay đổi để phù hợp Next.js nhưng trải nghiệm hình ảnh phải giữ nhất quán với mock đã chốt.
+- Tài liệu frontend cần ghi rõ sự phân biệt giữa `framework implementation` và `visual reference` để tránh hiểu sai scope.

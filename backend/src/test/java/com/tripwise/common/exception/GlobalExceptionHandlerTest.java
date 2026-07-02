@@ -65,4 +65,16 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getBody().getErrorCode()).isEqualTo("EXTERNAL_SERVICE_ERROR");
         assertThat(response.getBody().getMessage()).isEqualTo("External error");
     }
+
+    @Test
+    void shouldHandleGeneralExceptionWithoutExposingStackTrace() {
+        Exception ex = new RuntimeException("database password leaked in stack");
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleGeneralException(ex);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getErrorCode()).isEqualTo("SYSTEM_ERROR");
+        assertThat(response.getBody().getMessage()).doesNotContain("database password leaked");
+        assertThat(response.getBody().getMessage()).doesNotContain("RuntimeException");
+    }
 }

@@ -119,7 +119,7 @@
 - **Acceptance Criteria**:
   - Form nhập có ví dụ prompt và chọn ngày đi.
   - Giao diện kết quả responsive chia 2 cột: Cột trái hiển thị timeline chi tiết, cột phải hiển thị bản đồ Leaflet (vẽ markers và polyline route).
-- **Notes**: Sử dụng ReactJS hoặc Next.js. Giao diện cao cấp, hiện đại.
+- **Notes**: Sử dụng Next.js cho production web. Giao diện phải bám mock UI React đã chốt.
 
 ---
 

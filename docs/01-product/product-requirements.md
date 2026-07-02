@@ -308,7 +308,7 @@ User chỉ được xem/sửa/xóa lịch trình của chính mình.
 
 - Backend tách riêng web/mobile.
 - REST API versioning `/api/v1`.
-- Web dùng ReactJS hoặc Next.js.
+- Web production dùng Next.js; visual direction bám mock UI React đã chốt.
 - Mobile dùng Flutter ở phase sau.
 - Media/static assets dùng Object Storage + CDN.
 
@@ -448,7 +448,7 @@ Thiết kế dữ liệu cần cho phép thêm:
 
 Backend API tách riêng để phục vụ:
 
-- Web ReactJS/Next.js.
+- Web Next.js.
 - Flutter app.
 - Future partner/internal tools.
 

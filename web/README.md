@@ -1,40 +1,52 @@
-# Web Guide - AI Smart Travel Planner
+# TripWise Web
 
-Tài liệu này đặc tả quy chuẩn phát triển dành cho cấu phần **Web Frontend** của dự án AI Smart Travel Planner.
+Frontend web của TripWise dùng `Next.js + TypeScript` với `App Router`.
 
----
+## Frontend direction
 
-## 1. Công nghệ & Kết nối API
-- **Công nghệ chính**: **ReactJS hoặc Next.js**, sử dụng Vanilla CSS để thiết kế giao diện hiện đại, cao cấp.
-- **API Client**: Sử dụng Axios instance được cấu hình tập trung.
-- **Token Authorization**: Tự động chèn JWT Access Token vào header `Authorization: Bearer <token>` thông qua Axios Request Interceptor.
-- **Silent Refresh**: Sử dụng Axios Response Interceptor bắt lỗi `401 Unauthorized` để tự động gọi API `/api/v1/auth/refresh` gia hạn token ngầm, tránh gián đoạn trải nghiệm của người dùng.
+- `web/` là codebase production hiện tại.
+- `web-archive-vite-ui/` giữ lại mock UI React/Vite ban đầu để làm visual reference.
+- Các màn hình mới trong Next.js phải bám sát giao diện mock archive, nhưng implementation phải theo chuẩn Next.js hiện tại.
 
----
+## Why App Router
 
-## 2. Quy tắc bảo mật & Quản lý Token
-- **Lưu trữ Access Token**: Lưu trữ trong Memory (Redux/Context API). Tuyệt đối không lưu trong LocalStorage/SessionStorage để phòng chống lỗi XSS.
-- **Lưu trữ Refresh Token**: Backend thiết lập tự động vào **HttpOnly, Secure, SameSite=Strict Cookie** của trình duyệt.
-- **Cấm gọi API ngoài trực tiếp**: Web client cấm gọi trực tiếp sang Gemini API, OSRM API hay Weather API. Mọi yêu cầu phải gửi qua proxy API của Spring Boot.
+App Router được chọn vì cấu hình gọn, là hướng mặc định của Next.js và thuận tiện mở rộng cho các phase sau như auth pages, API client, loading states và route-level layout.
 
----
+## Local setup
 
-## 3. Tối ưu hóa UI/UX & Request
-- **Chống spam API**:
-  - Áp dụng kỹ thuật **Debounce** (trì hoãn 300 - 500ms) khi người dùng gõ tìm kiếm địa điểm du lịch.
-  - Vô hiệu hóa (disable) nút bấm "Tạo lịch trình" ngay sau khi click chuột để chặn double submit (tránh tốn chi phí AI 2 lần).
-- **Trạng thái tải (Loading/Error States)**:
-  - Hiển thị Shimmer/Skeleton Screen trong lúc chờ API phản hồi lịch trình.
-  - Hiển thị thông điệp lỗi tiếng Việt thân thiện, che giấu các chi tiết lỗi kỹ thuật thô của server.
-- **Bản đồ Leaflet**: Bản đồ OpenStreetMap được đóng gói vào một Component riêng biệt (`TravelMap.jsx`). Marker và Polyline di chuyển được vẽ thông qua GeoJSON nhận từ backend.
-- **Media CDN**: Tải hình ảnh địa điểm du lịch thông qua đường dẫn CDN (Cloudflare) để giảm độ trễ tải trang.
+1. Cài dependencies:
 
----
-
-## 4. Cách khởi chạy dự án cục bộ (Local Run)
-*(Hướng dẫn chạy sau khi thư mục project web được tạo)*
-```bash
+```cmd
+cd web
 npm install
+```
+
+2. Tạo file env local từ mẫu:
+
+```cmd
+Copy-Item .env.example .env.local
+```
+
+3. Chạy dev server:
+
+```cmd
 npm run dev
 ```
-Ứng dụng Web chạy local mặc định lắng nghe tại cổng `5173` (Vite) hoặc `3000` (Next.js).
+
+4. Kiểm tra lint:
+
+```cmd
+npm run lint
+```
+
+5. Build thử:
+
+```cmd
+npm run build
+```
+
+## Environment variables
+
+- `NEXT_PUBLIC_API_BASE_URL`: base URL an toàn để frontend gọi backend TripWise, ví dụ `http://localhost:8080/api/v1`.
+
+Không đặt Gemini API key, JWT secret, database password hay backend secret khác trong frontend.
