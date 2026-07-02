@@ -119,6 +119,46 @@ class GetWeatherForecastUseCaseTest {
     }
 
     @Test
+    void execute_WhenCacheIsPartial_ShouldCallApiAndRefreshWholeRange() {
+        when(weatherCacheRepository.findValidForecasts(anyString(), any(LocalDate.class), any(LocalDate.class), any(Instant.class)))
+                .thenReturn(List.of(
+                        WeatherCache.builder()
+                                .city("nha trang")
+                                .forecastDate(LocalDate.of(2026, 7, 2))
+                                .tempMin(25)
+                                .tempMax(31)
+                                .rainProbability(30)
+                                .weatherCode("1")
+                                .expiresAt(Instant.now().plusSeconds(3600))
+                                .build()
+                ));
+
+        WeatherForecast apiForecast = new WeatherForecast(
+                12.2388,
+                109.1967,
+                "Asia/Bangkok",
+                List.of(
+                        new WeatherForecast.DailyForecast(LocalDate.of(2026, 7, 2), 25.2, 31.4, 20, 1),
+                        new WeatherForecast.DailyForecast(LocalDate.of(2026, 7, 3), 24.8, 30.9, 45, 61)
+                )
+        );
+        when(weatherClient.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
+                .thenReturn(apiForecast);
+
+        WeatherForecast result = getWeatherForecastUseCase.execute(
+                "Nha Trang",
+                12.2388,
+                109.1967,
+                LocalDate.of(2026, 7, 2),
+                LocalDate.of(2026, 7, 3)
+        );
+
+        assertThat(result).isEqualTo(apiForecast);
+        verify(weatherClient).getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3));
+        verify(weatherCacheRepository, times(2)).save(any(WeatherCache.class));
+    }
+
+    @Test
     void execute_WhenApiFailsAndCachedFallbackExists_ShouldReturnCachedForecast() {
         when(weatherCacheRepository.findValidForecasts(anyString(), any(LocalDate.class), any(LocalDate.class), any(Instant.class)))
                 .thenReturn(List.of());
@@ -210,6 +250,17 @@ class GetWeatherForecastUseCaseTest {
                 109.1967,
                 LocalDate.of(2026, 7, 3),
                 LocalDate.of(2026, 7, 2)
+        ));
+    }
+
+    @Test
+    void execute_WhenLongitudeIsInvalid_ShouldThrowBusinessException() {
+        assertThrows(BusinessException.class, () -> getWeatherForecastUseCase.execute(
+                "Nha Trang",
+                12.2388,
+                181.0,
+                LocalDate.of(2026, 7, 2),
+                LocalDate.of(2026, 7, 3)
         ));
     }
 }

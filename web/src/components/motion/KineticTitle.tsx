@@ -27,23 +27,26 @@ const SIZE_STYLES: Record<
   React.CSSProperties
 > = {
   hero: {
-    fontSize: 'clamp(44px, 8vw, 72px)',
-    fontFamily: "'Luckiest Guy', 'Bangers', cursive",
+    fontFamily: "var(--font-display)",
+    fontSize: 'clamp(44px, 7vw, 80px)',
     fontWeight: 900,
     lineHeight: 0.95,
-    textShadow: '4px 5px 0 #111111',
+    letterSpacing: '0.01em',
+    textShadow: '4px 5px 0 #FFD166',
   },
   section: {
-    fontSize: 'clamp(32px, 5vw, 48px)',
-    fontFamily: "'Luckiest Guy', 'Bangers', cursive",
+    fontFamily: "var(--font-display)",
+    fontSize: 'clamp(32px, 4vw, 52px)',
     fontWeight: 800,
-    textShadow: '3px 4px 0 #111111',
+    lineHeight: 1.0,
+    textShadow: '3px 4px 0 #FFD166',
   },
   card: {
+    fontFamily: "var(--font-display)",
     fontSize: '28px',
-    fontFamily: "'Luckiest Guy', 'Bangers', cursive",
     fontWeight: 700,
-    textShadow: '2px 3px 0 #111111',
+    lineHeight: 1.1,
+    textShadow: '2px 3px 0 #FFD166',
   },
 };
 
@@ -51,7 +54,7 @@ const SHADOW_OVERRIDES: Record<
   NonNullable<KineticTitleProps['shadowVariant']>,
   string
 > = {
-  black: '4px 5px 0 #111111',
+  black: '4px 5px 0 #FFD166',
   red: '2px 2px 0 #E6392E, 4px 4px 0 #111111',
   cyan: '2px 2px 0 #20A7D8, 4px 4px 0 #111111',
 };

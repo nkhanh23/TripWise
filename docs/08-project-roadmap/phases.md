@@ -165,13 +165,13 @@
 - [ ] Phase 9.2 - Weather cache repository
 - [ ] Phase 9.3 - Weather forecast use case
 - [ ] Phase 9.4 - Weather adjustment cho itinerary
-- [ ] Phase 9.5 - Weather API endpoint
+- [x] Phase 9.5 - Weather API endpoint
 - [ ] Phase 9.6 - Weather module tests
 
 ### J. Hotel / Transport Suggestions
 
-- [ ] Phase 10.1 - Hotel entity và repository
-- [ ] Phase 10.2 - Hotel seed data
+- [x] Phase 10.1 - Hotel entity và repository
+- [x] Phase 10.2 - Hotel seed data
 - [ ] Phase 10.3 - Hotel suggestion API (by area/budget)
 - [ ] Phase 10.4 - Transport suggestion logic (MVP)
 - [ ] Phase 10.5 - Hotel/Transport tests
@@ -3404,7 +3404,7 @@ WeatherAdjustmentService. Adjust itinerary for rain/storm. Weather summary per d
 
 ---
 
-## [ ] Phase 9.5 - Weather API endpoint
+## [x] Phase 9.5 - Weather API endpoint
 
 ### Goal
 
@@ -3494,7 +3494,7 @@ cd backend
 
 ---
 
-## [ ] Phase 10.1 - Hotel entity và repository
+## [x] Phase 10.1 - Hotel entity và repository
 
 ### Goal
 
@@ -3538,7 +3538,7 @@ Hotel entity với PostGIS location. Repository. Tests. Chạy test.
 
 ---
 
-## [ ] Phase 10.2 - Hotel seed data
+## [x] Phase 10.2 - Hotel seed data
 
 ### Goal
 
@@ -5861,13 +5861,13 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [x] Phase 9.2 - Weather cache repository
 - [x] Phase 9.3 - Weather forecast use case
 - [x] Phase 9.4 - Weather adjustment cho itinerary
-- [ ] Phase 9.5 - Weather API endpoint
-- [ ] Phase 9.6 - Weather module tests
+- [x] Phase 9.5 - Weather API endpoint
+- [x] Phase 9.6 - Weather module tests
 
 ### J. Hotel / Transport Suggestions
 
-- [ ] Phase 10.1 - Hotel entity và repository
-- [ ] Phase 10.2 - Hotel seed data
+- [x] Phase 10.1 - Hotel entity và repository
+- [x] Phase 10.2 - Hotel seed data
 - [ ] Phase 10.3 - Hotel suggestion API (by area/budget)
 - [ ] Phase 10.4 - Transport suggestion logic (MVP)
 - [ ] Phase 10.5 - Hotel/Transport tests

@@ -11,6 +11,7 @@ import { SignInPage } from './pages/SignInPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { AdminPlacesPage } from './pages/AdminPlacesPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ComponentLibraryPage } from './pages/ComponentLibraryPage';
 
 // Layout wrapping sidebar dashboard navigation cockpit
 const DashboardLayout = () => {
@@ -31,9 +32,7 @@ const DashboardLayout = () => {
 const PublicLayout = () => {
   return (
     <div className="min-h-screen bg-surface w-full overflow-y-auto">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };
@@ -47,6 +46,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<SignInPage />} />
           <Route path="/register" element={<SignUpPage />} />
+          <Route path="/component-library" element={<ComponentLibraryPage />} />
         </Route>
 
         {/* Dashboard Pages */}

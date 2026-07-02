@@ -97,6 +97,35 @@ class WeatherClientTest {
     }
 
     @Test
+    void getForecast_WhenDailySectionIsIncomplete_ShouldThrowExternalServiceException() {
+        OpenMeteoForecastResponse response = new OpenMeteoForecastResponse();
+        response.setLatitude(12.2388);
+        response.setLongitude(109.1967);
+        response.setTimezone("Asia/Bangkok");
+
+        OpenMeteoForecastResponse.DailyData dailyData = new OpenMeteoForecastResponse.DailyData();
+        dailyData.setTime(List.of(LocalDate.of(2026, 7, 2)));
+        dailyData.setTemperature2mMin(List.of(25.2));
+        dailyData.setTemperature2mMax(List.of(31.4));
+        dailyData.setPrecipitationProbabilityMax(null);
+        dailyData.setWeatherCode(List.of(1));
+        response.setDaily(dailyData);
+
+        when(restClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.body(OpenMeteoForecastResponse.class)).thenReturn(response);
+
+        assertThrows(ExternalServiceException.class,
+                () -> weatherClient.getForecast(
+                        12.2388,
+                        109.1967,
+                        LocalDate.of(2026, 7, 2),
+                        LocalDate.of(2026, 7, 2)
+                ));
+    }
+
+    @Test
     void getForecast_WhenDailyArraysHaveDifferentLengths_ShouldThrowExternalServiceException() {
         OpenMeteoForecastResponse response = new OpenMeteoForecastResponse();
         response.setLatitude(12.2388);
@@ -147,6 +176,19 @@ class WeatherClientTest {
                 () -> weatherClient.getForecast(
                         95.0,
                         109.1967,
+                        LocalDate.of(2026, 7, 2),
+                        LocalDate.of(2026, 7, 3)
+                ));
+
+        assertThat(exception.getErrorCode()).isEqualTo("VALIDATION_ERROR");
+    }
+
+    @Test
+    void getForecast_WhenLongitudeIsInvalid_ShouldThrowBusinessException() {
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> weatherClient.getForecast(
+                        12.2388,
+                        -181.0,
                         LocalDate.of(2026, 7, 2),
                         LocalDate.of(2026, 7, 3)
                 ));
