@@ -5902,7 +5902,7 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [x] Phase 12.5 - Trip request form
 - [x] Phase 12.6 - Itinerary result page
 - [x] Phase 12.7 - Leaflet map integration
-- [ ] Phase 12.8 - Route polyline trên map
+- [x] Phase 12.8 - Route polyline trên map
 - [ ] Phase 12.9 - Saved trips page
 - [ ] Phase 12.10 - Loading/error states và UX polish
 - [ ] Phase 12.11 - Responsive UI

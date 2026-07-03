@@ -1,16 +1,25 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   Marker,
   Popup,
+  Polyline,
   TileLayer,
   useMap
 } from "react-leaflet";
-import L, { type DivIcon, type LatLngExpression } from "leaflet";
+import L, {
+  type DivIcon,
+  type LatLngExpression,
+  type LatLngTuple
+} from "leaflet";
 import styles from "./TripLeafletMap.module.css";
-import type { ItineraryDayResponse } from "@/lib/api";
+import {
+  getRoute,
+  type ItineraryDayResponse,
+  type RouteRequest
+} from "@/lib/api";
 
 type MapStop = {
   id: string;
@@ -22,7 +31,15 @@ type MapStop = {
   longitude: number;
   category?: string;
   timeLabel: string;
+  transportMode?: string;
   selected: boolean;
+};
+
+type RouteSegment = {
+  id: string;
+  profile: RouteRequest["profile"];
+  positions: LatLngTuple[];
+  isFallback: boolean;
 };
 
 type TripLeafletMapProps = {
@@ -71,6 +88,47 @@ function createStopIcon(stop: MapStop): DivIcon {
     iconAnchor: [18, 36],
     popupAnchor: [0, -30]
   });
+}
+
+function mapTransportModeToProfile(mode?: string): RouteRequest["profile"] {
+  switch (mode?.trim().toUpperCase()) {
+    case "WALK":
+      return "walking";
+    case "BIKE":
+    case "BICYCLE":
+    case "CYCLING":
+      return "cycling";
+    default:
+      return "driving";
+  }
+}
+
+function buildFallbackLine(origin: MapStop, destination: MapStop): LatLngTuple[] {
+  return [
+    [origin.latitude, origin.longitude],
+    [destination.latitude, destination.longitude]
+  ];
+}
+
+function parseGeometryPositions(geometry: string): LatLngTuple[] {
+  const parsed = JSON.parse(geometry) as {
+    type?: string;
+    coordinates?: number[][];
+  };
+
+  if (parsed.type !== "LineString" || !Array.isArray(parsed.coordinates)) {
+    return [];
+  }
+
+  return parsed.coordinates
+    .filter(
+      (coordinate): coordinate is [number, number] =>
+        Array.isArray(coordinate) &&
+        coordinate.length >= 2 &&
+        typeof coordinate[0] === "number" &&
+        typeof coordinate[1] === "number"
+    )
+    .map(([longitude, latitude]) => [latitude, longitude]);
 }
 
 function MapViewportController({
@@ -146,6 +204,11 @@ export function TripLeafletMap({
   selectedStopTitle,
   days
 }: TripLeafletMapProps) {
+  const [routeSegments, setRouteSegments] = useState<RouteSegment[]>([]);
+  const [routeStatus, setRouteStatus] = useState<"idle" | "loading" | "ready" | "fallback">(
+    "idle"
+  );
+
   const stops = useMemo(() => {
     return days
       .flatMap((day) =>
@@ -165,14 +228,104 @@ export function TripLeafletMap({
             longitude: item.place?.longitude as number,
             category: item.place?.categoryName,
             timeLabel: formatTimeLabel(item),
+            transportMode: item.transportSuggestion?.mode,
             selected:
               day.dayNumber === activeDay && item.orderIndex === selectedOrderIndex
           }))
       )
-      .filter((stop) => (activeDay ? stop.dayNumber === activeDay : true));
+      .filter((stop) => (activeDay ? stop.dayNumber === activeDay : true))
+      .sort((left, right) => left.orderIndex - right.orderIndex);
   }, [activeDay, days, selectedOrderIndex]);
 
   const selectedStop = stops.find((stop) => stop.selected);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadRouteSegments() {
+      if (stops.length < 2) {
+        setRouteSegments([]);
+        setRouteStatus("idle");
+        return;
+      }
+
+      setRouteStatus("loading");
+
+      const requests = stops.slice(1).map(async (stop, index) => {
+        const origin = stops[index];
+        const profile = mapTransportModeToProfile(stop.transportMode);
+
+        try {
+          const response = await getRoute({
+            originLat: origin.latitude,
+            originLng: origin.longitude,
+            destLat: stop.latitude,
+            destLng: stop.longitude,
+            profile
+          });
+
+          const positions = parseGeometryPositions(response.geometry);
+          return {
+            id: `${origin.id}-${stop.id}`,
+            profile,
+            positions:
+              positions.length >= 2 ? positions : buildFallbackLine(origin, stop),
+            isFallback: positions.length < 2
+          };
+        } catch {
+          return {
+            id: `${origin.id}-${stop.id}`,
+            profile,
+            positions: buildFallbackLine(origin, stop),
+            isFallback: true
+          };
+        }
+      });
+
+      const results = await Promise.all(requests);
+      if (!active) {
+        return;
+      }
+
+      const usedFallback = results.some((segment) => segment.isFallback);
+      setRouteSegments(results);
+      setRouteStatus(usedFallback ? "fallback" : "ready");
+    }
+
+    void loadRouteSegments();
+
+    return () => {
+      active = false;
+    };
+  }, [stops]);
+
+  const selectedSegmentId = useMemo(() => {
+    if (selectedOrderIndex === null || selectedOrderIndex <= 0) {
+      return null;
+    }
+
+    const previousStop = stops.find((stop) => stop.orderIndex === selectedOrderIndex - 1);
+    const currentStop = stops.find((stop) => stop.orderIndex === selectedOrderIndex);
+
+    if (!previousStop || !currentStop) {
+      return null;
+    }
+
+    return `${previousStop.id}-${currentStop.id}`;
+  }, [selectedOrderIndex, stops]);
+
+  const routeStatusLabel = useMemo(() => {
+    switch (routeStatus) {
+      case "loading":
+        return "Dang tai route";
+      case "fallback":
+        return "Dang dung line fallback";
+      case "ready":
+        return "OSRM polyline san sang";
+      default:
+        return stops.length > 1 ? "Chua nap route" : "Can it nhat 2 stop";
+    }
+  }, [routeStatus, stops.length]);
 
   return (
     <div className={styles.mapShell}>
@@ -190,6 +343,21 @@ export function TripLeafletMap({
         <MapViewportController selectedStop={selectedStop} stops={stops} />
         <MapControls />
 
+        {routeSegments.map((segment) => (
+          <Polyline
+            key={segment.id}
+            pathOptions={{
+              color: segment.id === selectedSegmentId ? "#20a7d8" : "#111111",
+              opacity: segment.id === selectedSegmentId ? 0.95 : 0.72,
+              weight: segment.id === selectedSegmentId ? 7 : 5,
+              lineCap: "round",
+              lineJoin: "round",
+              dashArray: segment.isFallback ? "10 12" : undefined
+            }}
+            positions={segment.positions}
+          />
+        ))}
+
         {stops.map((stop) => (
           <Marker
             icon={createStopIcon(stop)}
@@ -200,9 +368,7 @@ export function TripLeafletMap({
               <div className={styles.popupBody}>
                 <strong>{stop.title}</strong>
                 <span>{stop.subtitle}</span>
-                <span>
-                  Day {stop.dayNumber} • {stop.timeLabel}
-                </span>
+                <span>{`Day ${stop.dayNumber} | ${stop.timeLabel}`}</span>
                 {stop.category ? <span>{stop.category}</span> : null}
               </div>
             </Popup>
@@ -226,6 +392,10 @@ export function TripLeafletMap({
           <span className={styles.mapHudValue}>
             {selectedStopTitle || "Chon item tu timeline"}
           </span>
+        </div>
+        <div className={styles.mapHudCard}>
+          <span className={styles.mapHudLabel}>Route path</span>
+          <span className={styles.mapHudValue}>{routeStatusLabel}</span>
         </div>
       </div>
 

@@ -76,6 +76,20 @@ export interface TransportSuggestionResponse {
   reason: string;
 }
 
+export interface RouteRequest {
+  originLat: number;
+  originLng: number;
+  destLat: number;
+  destLng: number;
+  profile: "driving" | "walking" | "cycling";
+}
+
+export interface RouteResponse {
+  distanceMeters: number;
+  durationSeconds: number;
+  geometry: string;
+}
+
 export interface ItineraryItemResponse {
   orderIndex: number;
   startTime?: string;
@@ -114,6 +128,29 @@ export interface GeneratedItineraryResponse {
   createdAt?: string;
   updatedAt?: string;
   itineraryDays: ItineraryDayResponse[];
+}
+
+export interface TripResponse {
+  id: number;
+  destination: string;
+  startDate?: string;
+  days?: number;
+  nights?: number;
+  budget?: string;
+  travelStyle?: string;
+  interests?: string[];
+  preferences?: string;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PageResponse<T> {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  content: T[];
 }
 
 export interface ItineraryResponse {

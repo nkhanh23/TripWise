@@ -1,0 +1,327 @@
+.page {
+  padding: 40px 0 72px;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.heroCard,
+.ticketCard,
+.stateCard,
+.tripCard {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 28%),
+    var(--color-panel);
+}
+
+.stickerRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.sticker,
+.stickerAlt,
+.metaPill,
+.tripStatus,
+.filterChip,
+.pageDot {
+  border: 2px solid var(--stroke-ink);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sticker {
+  background: var(--color-yellow);
+  padding: 6px 12px;
+}
+
+.stickerAlt {
+  background: var(--color-brand-soft);
+  padding: 6px 12px;
+}
+
+.headline,
+.ticketTitle,
+.tripTitle,
+.emptyTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1.05;
+}
+
+.headline {
+  max-width: 16ch;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.description,
+.ticketNote,
+.emptyBody,
+.preferenceCopy {
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.description {
+  max-width: 70ch;
+  margin: 16px 0 0;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.ghostLink {
+  font-weight: 700;
+  color: var(--color-brand-dark);
+}
+
+.ticketCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ticketLabel,
+.tripEyebrow,
+.infoLabel {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ticketTitle {
+  margin-top: 8px;
+  font-size: 2rem;
+}
+
+.ticketStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ticketStat {
+  background: var(--color-surface);
+  border: 2px solid var(--stroke-ink);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.ticketStatLabel {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ticketStatValue {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+}
+
+.ticketNote {
+  margin: 20px 0 0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterChip {
+  background: var(--color-surface);
+  padding: 10px 16px;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease;
+}
+
+.filterChip:hover,
+.pageDot:hover {
+  transform: translateY(-1px);
+}
+
+.filterChipActive {
+  background: var(--color-yellow);
+}
+
+.pageInfo {
+  display: flex;
+  gap: 14px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.tripGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.tripCard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.tripHeader {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.tripTitle {
+  margin-top: 8px;
+  font-size: 1.8rem;
+}
+
+.tripStatus {
+  background: var(--color-lime-soft);
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.metaRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.metaPill {
+  background: var(--color-surface);
+  padding: 7px 12px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.infoItem {
+  background: rgba(255, 246, 222, 0.78);
+  border: 2px solid var(--stroke-ink);
+  border-radius: 18px;
+  padding: 14px 16px;
+}
+
+.infoValue {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.preferenceCopy {
+  margin: 0;
+  min-height: 54px;
+}
+
+.cardActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.emptyWrap {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.emptyTitle {
+  font-size: 2rem;
+}
+
+.emptyBody {
+  max-width: 52ch;
+  margin: 12px auto 0;
+}
+
+.pagination {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paginationDots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pageDot {
+  min-width: 42px;
+  min-height: 42px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.pageDotActive {
+  background: var(--color-brand);
+  color: var(--text-inverse);
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .tripGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 28px 0 48px;
+  }
+
+  .ticketStats,
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+
+  .pageInfo,
+  .tripHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

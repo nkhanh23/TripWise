@@ -63,13 +63,15 @@ export default function HomePage() {
                 <Link href="/planner">
                   <Button>Open Planner</Button>
                 </Link>
+                <Link href="/trips">
+                  <Button variant="secondary">Saved Trips</Button>
+                </Link>
                 <Link href="/login">
-                  <Button variant="secondary">Login</Button>
+                  <Button variant="ghost">Login</Button>
                 </Link>
                 <Link href="/register">
                   <Button variant="danger">Register</Button>
                 </Link>
-                <Button variant="ghost">Ghost Link</Button>
               </div>
             </div>
           </Card>

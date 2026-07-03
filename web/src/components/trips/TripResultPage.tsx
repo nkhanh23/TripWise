@@ -244,7 +244,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
               <Loading label="TripWise dang tai itinerary vua tao..." />
               <p className={styles.emptyInline}>
                 Man result nay dung contract `GET /api/v1/trips/{'{id}'}` va se la
-                nen cho map integration o Phase 12.7.
+                nen cho route polyline that o Phase 12.8.
               </p>
             </div>
           </Card>
@@ -293,7 +293,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
             <p className={styles.description}>
               Man nay tach rieng khoi planner de hien thi full trip detail, day tabs
               va timeline item dung theo mock React ban dau. Map panel se duoc noi
-              that o Phase 12.7, nen minh giu mot khung placeholder co chu dich.
+              them route polyline that o Phase 12.8 de timeline va map an khop nhau.
             </p>
 
             <div className={styles.heroActions}>
@@ -342,7 +342,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
               <p className={styles.ticketNote}>
                 Ban result nay dung du lieu luu that tu backend, khong phai preview
                 tam thoi o planner nua. Day la diem ban cho map, route polyline va
-                directions mode cua phase tiep theo.
+                directions mode cua phase hien tai.
               </p>
 
               <div className={styles.metaList}>
@@ -398,7 +398,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
               <h2 className={styles.sectionTitle}>Timeline theo ngay</h2>
               <p className={styles.sectionHint}>
                 Day tabs va itinerary items da la version result that. Tu day sang
-                12.7 minh se gan selection nay voi marker va route segment.
+                12.8 minh se gan selection nay voi marker va route segment.
               </p>
 
               <div className={styles.dayTabs}>
@@ -490,9 +490,9 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
                 <div className={styles.mapPlaceholderTop}>
                   <div>
                     <div className={styles.sectionHint}>Map panel placeholder</div>
-                    <h2 className={styles.mapTitle}>Panel phai da san sang cho 12.7</h2>
+                    <h2 className={styles.mapTitle}>Panel phai dang chay polyline 12.8</h2>
                   </div>
-                  <span className={styles.pill}>Leaflet tiep theo</span>
+                  <span className={styles.pill}>Route polyline live</span>
                 </div>
 
                 <p className={styles.mapBody}>
@@ -570,7 +570,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
                       </h3>
                       <p className={styles.transportBody}>
                         {selectedItem.transportSuggestion?.reason ||
-                          "Khi sang 12.7, block nay se noi voi route instruction va marker focus."}
+                          "Block nay se noi voi route instruction va marker focus tren map."}
                       </p>
                     </div>
                   </>
