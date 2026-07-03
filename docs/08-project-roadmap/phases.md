@@ -4230,6 +4230,17 @@ Hiển thị bản đồ OpenStreetMap với Leaflet, show places trên map.
 
 - Leaflet CSS must be imported
 - SSR compatibility with Next.js (use dynamic import)
+- Public OpenStreetMap tile server có thể ổn cho local/dev nhưng không nên mặc định giữ nguyên cho production traffic lớn
+
+### Production reminder
+
+Trước khi deploy production, cần thay hoặc xác nhận lại các điểm sau:
+
+- Nếu frontend còn dùng `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`, phải đánh giá chuyển sang tile provider production hoặc self-host; đồng thời giữ attribution đúng policy
+- Nếu backend còn dùng `https://router.project-osrm.org`, phải chuyển sang OSRM self-host hoặc provider route ổn định hơn cho production
+- `NEXT_PUBLIC_API_BASE_URL` phải đổi sang domain production thật, không để `localhost`
+- `GEMINI_API_KEY`, JWT secret, DB credentials, Redis credentials phải lấy từ environment variables hoặc secret manager production, không dùng giá trị local/default
+- CORS và allowlist domain phải siết theo domain production thật
 
 ### Suggested prompt
 
@@ -5092,6 +5103,7 @@ Deploy frontend lên production.
 - Build frontend production bundle
 - Deploy (Nginx static files hoặc Vercel hoặc container)
 - Configure API endpoint
+- Review lại cấu hình map tiles nếu frontend còn trỏ vào public OpenStreetMap tile server
 
 ### Files/Folders likely changed
 
@@ -5113,6 +5125,7 @@ Deploy frontend lên production.
 
 - API URL must be correct
 - CORS must allow production domain
+- Public tile server/dev config không phù hợp nếu production traffic tăng
 
 ### Suggested prompt
 
@@ -5180,6 +5193,7 @@ Verify tất cả hoạt động trên production.
 - Check map loads
 - Check weather
 - Performance check
+- Xác nhận frontend không còn trỏ `localhost`, map tile không còn phụ thuộc cấu hình dev, và backend không còn dùng secret/default demo values
 
 ### Files/Folders likely changed
 
@@ -5887,7 +5901,7 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [x] Phase 12.4 - Auth pages (Register/Login)
 - [x] Phase 12.5 - Trip request form
 - [x] Phase 12.6 - Itinerary result page
-- [ ] Phase 12.7 - Leaflet map integration
+- [x] Phase 12.7 - Leaflet map integration
 - [ ] Phase 12.8 - Route polyline trên map
 - [ ] Phase 12.9 - Saved trips page
 - [ ] Phase 12.10 - Loading/error states và UX polish
@@ -5947,22 +5961,6 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 ---
 
 **Total phases: 88**
-
-**Estimated effort:**
-
-- Foundation (A+B): ~2-3 weeks
-- Auth (C): ~2 weeks
-- Place + AI (D+E): ~2-3 weeks
-- Trip + Itinerary (F+G): ~2-3 weeks
-- Routing + Weather (H+I): ~1-2 weeks
-- Hotel/Transport (J): ~1 week
-- Backend polish (K): ~1 week
-- Frontend Web (L): ~3-4 weeks
-- Mobile Flutter (M): ~3-4 weeks
-- DevOps + Deploy (N+O): ~2 weeks
-- Security + Docs (P+Q): ~2 weeks
-
-**Total estimated: ~20-30 weeks (5-7 months) for full production-ready system**
 
 ---
 
