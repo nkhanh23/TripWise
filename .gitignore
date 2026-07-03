@@ -32,6 +32,10 @@ web-archive-vite-ui/
 .env.*
 !.env.example
 
+# Local Spring config (may contain secrets - use env vars instead)
+**/application-local.yml
+**/application-local.properties
+
 # OS
 .DS_Store
 Thumbs.db
@@ -40,5 +44,3 @@ Thumbs.db
 pgdata-local/
 redisdata-local/
 miniodata-local/
-
-backend/gradle.properties
