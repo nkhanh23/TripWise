@@ -82,26 +82,26 @@
 ### A. Foundation / Repository / Local Dev
 
 - [x] Phase 1.1 - Git hygiene và repository cleanup
-- [ ] Phase 1.2 - Backend configuration cleanup (warnings)
-- [ ] Phase 1.3 - Profile configuration (local/dev/prod)
-- [ ] Phase 1.4 - Actuator và health endpoint mở rộng
-- [ ] Phase 1.5 - Logging format và correlation ID cải thiện
-- [ ] Phase 1.6 - Local development documentation cập nhật
+- [x] Phase 1.2 - Backend configuration cleanup (warnings)
+- [x] Phase 1.3 - Profile configuration (local/dev/prod)
+- [x] Phase 1.4 - Actuator và health endpoint mở rộng
+- [x] Phase 1.5 - Logging format và correlation ID cải thiện
+- [x] Phase 1.6 - Local development documentation cập nhật
 
 ### B. Backend Core Foundation
 
-- [ ] Phase 2.1 - Base entity và audit columns
-- [ ] Phase 2.2 - Exception hierarchy mở rộng
-- [ ] Phase 2.3 - Validation strategy và custom validators
-- [ ] Phase 2.4 - Pagination và sorting support
-- [ ] Phase 2.5 - MapStruct setup và base mapper
-- [ ] Phase 2.6 - Testcontainers setup cho integration test
+- [x] Phase 2.1 - Base entity và audit columns
+- [x] Phase 2.2 - Exception hierarchy mở rộng
+- [x] Phase 2.3 - Validation strategy và custom validators
+- [x] Phase 2.4 - Pagination và sorting support
+- [x] Phase 2.5 - MapStruct setup và base mapper
+- [x] Phase 2.6 - Testcontainers setup cho integration test
 
 ### C. Auth Module
 
-- [ ] Phase 3.1 - User entity và JPA repository
-- [ ] Phase 3.2 - PasswordEncoder config (bcrypt)
-- [ ] Phase 3.3 - Register endpoint
+- [x] Phase 3.1 - User entity và JPA repository
+- [x] Phase 3.2 - PasswordEncoder config (bcrypt)
+- [x] Phase 3.3 - Register endpoint
 - [x] Phase 3.4 - JWT token generation và validation
 - [x] Phase 3.5 - Login endpoint
 - [x] Phase 3.6 - JWT authentication filter
@@ -113,29 +113,29 @@
 
 ### D. Place Module / PostGIS
 
-- [ ] Phase 4.1 - PlaceCategory entity, repository, và seed data migration
-- [ ] Phase 4.2 - Place entity và JPA repository với PostGIS
-- [ ] Phase 4.3 - Place seed data (Nha Trang verified places)
-- [ ] Phase 4.4 - Search/filter places API
-- [ ] Phase 4.5 - Nearby places API (PostGIS spatial query)
-- [ ] Phase 4.6 - Place detail API
-- [ ] Phase 4.7 - Place module tests
+- [x] Phase 4.1 - PlaceCategory entity, repository, và seed data migration
+- [x] Phase 4.2 - Place entity và JPA repository với PostGIS
+- [x] Phase 4.3 - Place seed data (Nha Trang verified places)
+- [x] Phase 4.4 - Search/filter places API
+- [x] Phase 4.5 - Nearby places API (PostGIS spatial query)
+- [x] Phase 4.6 - Place detail API
+- [x] Phase 4.7 - Place module tests
 
 ### E. AI / Gemini Integration
 
-- [ ] Phase 5.1 - Gemini API client configuration
-- [ ] Phase 5.2 - Prompt template cho trip parsing
-- [ ] Phase 5.3 - Trip requirement parsing use case
-- [ ] Phase 5.4 - AI output validation và fallback
-- [ ] Phase 5.5 - AI module tests (mocked Gemini)
+- [x] Phase 5.1 - Gemini API client configuration
+- [x] Phase 5.2 - Prompt template cho trip parsing
+- [x] Phase 5.3 - Trip requirement parsing use case
+- [x] Phase 5.4 - AI output validation và fallback
+- [x] Phase 5.5 - AI module tests (mocked Gemini)
 
 ### F. Trip Management
 
-- [ ] Phase 6.1 - Trip entity và repository
-- [ ] Phase 6.2 - Create trip (save parsed request)
-- [ ] Phase 6.3 - List user trips API
-- [ ] Phase 6.4 - Trip detail API
-- [ ] Phase 6.5 - Delete trip API
+- [x] Phase 6.1 - Trip entity và repository
+- [x] Phase 6.2 - Create trip (save parsed request)
+- [x] Phase 6.3 - List user trips API
+- [x] Phase 6.4 - Trip detail API
+- [x] Phase 6.5 - Delete trip API
 - [x] Phase 6.6 - Trip ownership authorization
 - [x] Phase 6.7 - Trip module tests
 
@@ -144,29 +144,29 @@
 - [x] Phase 7.1 - Scoring model (interest, budget, distance)
 - [x] Phase 7.2 - Candidate place selection use case
 - [x] Phase 7.3 - Day/time-slot grouping algorithm
-- [ ] Phase 7.4 - Itinerary persistence (itinerary_days, itinerary_items)
-- [ ] Phase 7.5 - Generate itinerary endpoint
-- [ ] Phase 7.6 - Itinerary detail API
-- [ ] Phase 7.7 - AI description generation cho itinerary items
-- [ ] Phase 7.8 - Itinerary module tests
+- [x] Phase 7.4 - Itinerary persistence (itinerary_days, itinerary_items)
+- [x] Phase 7.5 - Generate itinerary endpoint
+- [x] Phase 7.6 - Itinerary detail API
+- [x] Phase 7.7 - AI description generation cho itinerary items
+- [x] Phase 7.8 - Itinerary module tests
 
 ### H. OSRM Routing
 
 - [x] Phase 8.1 - OSRM HTTP client
 - [x] Phase 8.2 - Route cache repository
-- [ ] Phase 8.3 - Route calculation use case
+- [x] Phase 8.3 - Route calculation use case
 - [x] Phase 8.4 - Integrate routing vào itinerary generation
 - [x] Phase 8.5 - Route API endpoint
-- [ ] Phase 8.6 - Route module tests (mocked OSRM)
+- [x] Phase 8.6 - Route module tests (mocked OSRM)
 
 ### I. Weather Integration
 
-- [ ] Phase 9.1 - Weather API client (Open-Meteo)
-- [ ] Phase 9.2 - Weather cache repository
-- [ ] Phase 9.3 - Weather forecast use case
-- [ ] Phase 9.4 - Weather adjustment cho itinerary
+- [x] Phase 9.1 - Weather API client (Open-Meteo)
+- [x] Phase 9.2 - Weather cache repository
+- [x] Phase 9.3 - Weather forecast use case
+- [x] Phase 9.4 - Weather adjustment cho itinerary
 - [x] Phase 9.5 - Weather API endpoint
-- [ ] Phase 9.6 - Weather module tests
+- [x] Phase 9.6 - Weather module tests
 
 ### J. Hotel / Transport Suggestions
 
@@ -185,18 +185,23 @@
 
 ### L. Frontend Web
 
-- [ ] Phase 12.1 - React/Next.js project setup
-- [ ] Phase 12.2 - Design system và UI framework
-- [ ] Phase 12.3 - API client và auth interceptor
-- [ ] Phase 12.4 - Auth pages (Register/Login)
-- [ ] Phase 12.5 - Trip request form
-- [ ] Phase 12.6 - Itinerary result page
-- [ ] Phase 12.7 - Leaflet map integration
-- [ ] Phase 12.8 - Route polyline trên map
-- [ ] Phase 12.9 - Saved trips page
-- [ ] Phase 12.10 - Loading/error states và UX polish
-- [ ] Phase 12.11 - Responsive UI
-- [ ] Phase 12.12 - Frontend tests
+- [x] Phase 12.1 - React/Next.js project setup
+- [x] Phase 12.2 - Design system và UI framework
+- [x] Phase 12.3 - API client và auth interceptor
+- [x] Phase 12.4 - Auth pages (Register/Login)
+- [x] Phase 12.5 - Trip request form
+- [x] Phase 12.6 - Itinerary result page
+- [x] Phase 12.7 - Leaflet map integration
+- [x] Phase 12.8 - Route polyline trên map
+- [x] Phase 12.9 - Saved trips page
+- [x] Phase 12.10 - Loading/error states và UX polish
+- [x] Phase 12.11 - Landing page migration từ mock React sang Next.js
+- [x] Phase 12.12 - Dashboard page migration từ mock React sang Next.js
+- [x] Phase 12.13 - Explore/Favorites pages migration từ mock React sang Next.js
+- [x] Phase 12.14 - Profile/Settings/Auth recovery pages migration
+- [x] Phase 12.15 - System pages migration (404/403/500/unauthorized/trip not found)
+- [ ] Phase 12.16 - Responsive UI
+- [ ] Phase 12.17 - Frontend tests
 
 ### M. Mobile Flutter
 
@@ -3900,6 +3905,9 @@ Fix nếu có issues. Chạy test.
 
 ### L. Frontend Web
 
+- Ghi chú: Từ Phase 12.11 trở đi, ưu tiên port **các màn user-facing trong mock React archive** sang Next.js production app.
+- Các file mock mang tính demo/nội bộ như `ComponentLibraryPage.tsx`, `EmptyStatesDemoPage.tsx`, hoặc admin-only screens không mặc định thuộc MVP web production trừ khi có phase riêng yêu cầu.
+
 ---
 
 ## [ ] Phase 12.1 - React/Next.js project setup
@@ -4383,15 +4391,251 @@ Loading spinners, error messages, empty states, toasts, transitions, skeleton lo
 
 ---
 
-## [ ] Phase 12.11 - Responsive UI
+## [ ] Phase 12.11 - Landing page migration từ mock React sang Next.js
 
 ### Goal
 
-Đảm bảo UI hoạt động tốt trên mobile/tablet/desktop.
+Chuyển màn landing page từ mock React archive sang Next.js production app.
 
 ### What will be done
 
-- Responsive layout cho tất cả pages
+- Port visual structure của `LandingPage.tsx` từ `web-archive-vite-ui/` sang `web/`
+- Giữ mood, hierarchy, CTA và split hero preview theo docs UI
+- Kết nối CTA sang flow Next.js hiện có (`/planner`, `/login`, `/register`)
+- Không làm responsive polish tổng thể ở phase này
+- Không port các trang khác trong cùng phase
+
+### Files/Folders likely changed
+
+- `web/src/app/page.tsx`
+- `web/src/app/page.module.css`
+- Các component landing liên quan nếu cần tách riêng
+
+### Done when
+
+- Landing page trong Next.js bám sát mock archive
+- CTA hoạt động đúng với app routes hiện tại
+- Không còn phụ thuộc vào landing mock cũ để demo production flow
+
+### How to verify
+
+```bash
+# Open /
+# Verify hero, CTA, preview sections match mock direction
+```
+
+### Risks
+
+- Dễ lan sang responsive hoặc marketing polish quá mức
+- Không nên port nguyên xi code mock Vite
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 12.11 - Landing page migration.
+Port landing page từ mock React archive sang Next.js. Giữ giao diện bám mock, không làm responsive toàn cục.
+```
+
+---
+
+## [ ] Phase 12.12 - Dashboard page migration từ mock React sang Next.js
+
+### Goal
+
+Chuyển dashboard/home của user từ mock React archive sang Next.js production app.
+
+### What will be done
+
+- Port dashboard visual hierarchy từ `DashboardPage.tsx`
+- Tái sử dụng API đã có cho trip list/saved trips nếu phù hợp
+- Tạo route dashboard rõ ràng trong app Next.js
+- Giữ quick actions, continue planning, trip list, summary cards theo mock ở mức phù hợp MVP
+- Không làm explore/favorites/profile trong phase này
+
+### Files/Folders likely changed
+
+- `web/src/app/` route dashboard mới
+- `web/src/components/` dashboard-related components
+
+### Done when
+
+- Có dashboard page thật trong Next.js
+- Dashboard mở được từ flow login hoặc navigation
+- Trip list/quick actions render theo visual direction của mock
+
+### How to verify
+
+```bash
+# Login -> open dashboard
+# Verify trip list, continue planning, quick actions
+```
+
+### Risks
+
+- Dễ overlap với saved trips page đã có
+- Cần tránh kéo thêm feature ngoài dashboard scope
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 12.12 - Dashboard migration.
+Port dashboard từ mock React archive sang Next.js. Giữ trip overview, quick actions và continue planning.
+```
+
+---
+
+## [ ] Phase 12.13 - Explore/Favorites pages migration từ mock React sang Next.js
+
+### Goal
+
+Chuyển các màn khám phá địa điểm và saved places từ mock React archive sang Next.js.
+
+### What will be done
+
+- Port `ExplorePlacesPage.tsx` sang route/pages Next.js tương ứng
+- Port `FavoritesPlacesPage.tsx` sang route/pages Next.js tương ứng
+- Giữ split layout map/list và visual hierarchy theo mock
+- Chỉ dùng API/backend hiện có; nếu thiếu endpoint thì dừng để báo rõ dependency
+
+### Files/Folders likely changed
+
+- `web/src/app/explore/`
+- `web/src/app/favorites/` hoặc route tương đương
+- `web/src/components/` cho explore/favorites
+
+### Done when
+
+- Explore page có bản Next.js
+- Favorites page có bản Next.js
+- Điều hướng giữa explore/favorites và trip flows hợp lý
+
+### How to verify
+
+```bash
+# Open /explore and /favorites
+# Verify map/list layout and saved places flow
+```
+
+### Risks
+
+- Có thể thiếu backend endpoints cho saved places/favorites thực tế
+- Dễ kéo thêm scope về map polish hoặc responsive
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 12.13 - Explore/Favorites migration.
+Port hai màn này từ mock React archive sang Next.js. Nếu thiếu API thật cho favorites thì báo lại trước khi sửa lớn.
+```
+
+---
+
+## [ ] Phase 12.14 - Profile/Settings/Auth recovery pages migration
+
+### Goal
+
+Chuyển các màn profile, settings và auth recovery từ mock React archive sang Next.js.
+
+### What will be done
+
+- Port `ProfilePage.tsx`
+- Port `SettingsPage.tsx`
+- Port `ForgotPasswordPage.tsx` và `ResetPasswordPage.tsx` ở mức phù hợp backend hiện có
+- Nếu backend chưa hỗ trợ auth recovery thật thì chỉ tạo page shell rõ ràng và ghi chú dependency
+
+### Files/Folders likely changed
+
+- `web/src/app/profile/`
+- `web/src/app/settings/`
+- `web/src/app/forgot-password/`
+- `web/src/app/reset-password/`
+
+### Done when
+
+- Profile/settings có bản Next.js
+- Auth recovery pages có hướng xử lý rõ ràng theo backend hiện có
+- Không hardcode flow backend chưa tồn tại
+
+### How to verify
+
+```bash
+# Open profile/settings/recovery routes
+# Verify page shells and current backend-supported actions
+```
+
+### Risks
+
+- Backend có thể chưa có forgot/reset endpoints
+- Dễ tạo UI giả gây hiểu lầm nếu không ghi rõ scope
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 12.14 - Profile/Settings/Auth recovery migration.
+Port các page từ mock React archive sang Next.js. Nếu forgot/reset chưa có backend support thì chỉ làm shell và báo dependency.
+```
+
+---
+
+## [ ] Phase 12.15 - System pages migration (404/403/500/unauthorized/trip not found)
+
+### Goal
+
+Chuyển các system/error pages từ mock React archive sang Next.js production app.
+
+### What will be done
+
+- Port `NotFoundPage.tsx`
+- Port `ForbiddenPage.tsx`
+- Port `UnauthorizedPage.tsx`
+- Port `SomethingWentWrongPage.tsx`
+- Port `TripNotFoundPage.tsx`
+- Ánh xạ chúng vào App Router/error boundaries hoặc routes phù hợp
+
+### Files/Folders likely changed
+
+- `web/src/app/not-found.tsx`
+- `web/src/app/error.tsx`
+- Route/group cho các trạng thái system khác nếu cần
+- `web/src/components/` system-state components
+
+### Done when
+
+- Các trạng thái hệ thống chính có bản Next.js
+- 404/app error/trip not found có CTA hợp lý
+- Visual bám mock archive thay vì chỉ fallback mặc định
+
+### How to verify
+
+```bash
+# Open invalid route
+# Trigger app error boundary
+# Open invalid trip id
+```
+
+### Risks
+
+- Không nên tạo quá nhiều custom routes trùng với cơ chế mặc định của Next.js
+- Cần tránh duplicate với Phase 12.10 nếu state component đã có
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 12.15 - System pages migration.
+Port các màn 404/403/500/unauthorized/trip not found từ mock React archive sang Next.js.
+```
+
+---
+
+## [ ] Phase 12.16 - Responsive UI
+
+### Goal
+
+Đảm bảo UI hoạt động tốt trên mobile/tablet/desktop sau khi các màn production chính đã được port sang Next.js.
+
+### What will be done
+
+- Responsive layout cho tất cả production pages đã hoàn thành trong Phase 12.x
 - Mobile navigation
 - Map responsive
 - Form responsive
@@ -4419,13 +4663,13 @@ Loading spinners, error messages, empty states, toasts, transitions, skeleton lo
 ### Suggested prompt
 
 ```
-Đọc AGENTS.md. Thực hiện Phase 12.11 - Responsive UI.
-Responsive layout all pages. Mobile navigation. Test 320px to 1920px.
+Đọc AGENTS.md. Thực hiện Phase 12.16 - Responsive UI.
+Responsive layout all production pages. Mobile navigation. Test 320px to 1920px.
 ```
 
 ---
 
-## [ ] Phase 12.12 - Frontend tests
+## [ ] Phase 12.17 - Frontend tests
 
 ### Goal
 
@@ -4462,7 +4706,7 @@ npm test
 ### Suggested prompt
 
 ```
-Đọc AGENTS.md. Thực hiện Phase 12.12 - Frontend tests.
+Đọc AGENTS.md. Thực hiện Phase 12.17 - Frontend tests.
 Jest + RTL. Component tests. Page tests. API mocking. Chạy test.
 ```
 
@@ -5903,10 +6147,15 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [x] Phase 12.6 - Itinerary result page
 - [x] Phase 12.7 - Leaflet map integration
 - [x] Phase 12.8 - Route polyline trên map
-- [ ] Phase 12.9 - Saved trips page
+- [x] Phase 12.9 - Saved trips page
 - [ ] Phase 12.10 - Loading/error states và UX polish
-- [ ] Phase 12.11 - Responsive UI
-- [ ] Phase 12.12 - Frontend tests
+- [ ] Phase 12.11 - Landing page migration từ mock React sang Next.js
+- [ ] Phase 12.12 - Dashboard page migration từ mock React sang Next.js
+- [ ] Phase 12.13 - Explore/Favorites pages migration từ mock React sang Next.js
+- [ ] Phase 12.14 - Profile/Settings/Auth recovery pages migration
+- [ ] Phase 12.15 - System pages migration (404/403/500/unauthorized/trip not found)
+- [ ] Phase 12.16 - Responsive UI
+- [ ] Phase 12.17 - Frontend tests
 
 ### M. Mobile Flutter
 
@@ -5960,7 +6209,7 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 
 ---
 
-**Total phases: 88**
+**Total phases: 93**
 
 ---
 

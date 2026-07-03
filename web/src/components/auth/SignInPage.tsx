@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AuthShell } from "./AuthShell";
 import styles from "./AuthPage.module.css";
 import { Button, Card, ErrorMessage, Input, Loading } from "@/components/ui";
+import { KineticTitle, BounceCard } from "@/components/motion";
 import { ApiError, getCurrentUser, login, logout, type UserResponse } from "@/lib/api";
 
 type FormErrors = {
@@ -103,7 +104,8 @@ export function SignInPage() {
       posterBody="Phase 12.4 chi dung hai auth page, nhung form nay da noi voi backend that va su dung session flow cua Phase 12.3."
       ticketTitle="Session boarding"
     >
-      <Card className={styles.card} elevated>
+      <BounceCard>
+        <Card className={styles.card} elevated>
         {signedInUser ? (
           <div className={styles.successCard}>
             <span aria-hidden="true" className={styles.successBadge}>
@@ -125,8 +127,11 @@ export function SignInPage() {
             </ul>
 
             <div className={styles.buttonStack}>
-              <Link className={styles.textLink} href="/">
-                Ve trang preview
+              <Link className={styles.textLink} href="/planner">
+                Sang planner
+              </Link>
+              <Link className={styles.textLink} href="/trips">
+                Xem saved trips
               </Link>
               <Button disabled={submitting} fullWidth onClick={handleLogout}>
                 {submitting ? "Dang dang xuat..." : "Dang xuat khoi phien nay"}
@@ -137,7 +142,14 @@ export function SignInPage() {
           <div className={styles.stack}>
             <div className={styles.header}>
               <span className={styles.eyebrow}>Welcome back</span>
-              <h2 className={styles.title}>Dang nhap TripWise</h2>
+              <KineticTitle
+                tag="h2"
+                text="Dang nhap TripWise"
+                size="section"
+                variant="pop"
+                shadowVariant="black"
+                className={styles.title}
+              />
               <p className={styles.description}>
                 Tiep tuc cac chuyen di dang len ke hoach va giu session auth theo
                 dung flow backend `/api/v1/auth`.
@@ -148,6 +160,23 @@ export function SignInPage() {
               <ErrorMessage
                 title="Dang nhap chua thanh cong"
                 message={authError}
+                actions={
+                  <>
+                    <Button
+                      fullWidth={false}
+                      onClick={() => {
+                        setAuthError(null);
+                        setErrors({});
+                      }}
+                      variant="secondary"
+                    >
+                      Thu lai
+                    </Button>
+                    <Link className={styles.textLink} href="/register">
+                      Tao tai khoan moi
+                    </Link>
+                  </>
+                }
               />
             ) : null}
 
@@ -226,6 +255,7 @@ export function SignInPage() {
           </div>
         )}
       </Card>
+      </BounceCard>
     </AuthShell>
   );
 }

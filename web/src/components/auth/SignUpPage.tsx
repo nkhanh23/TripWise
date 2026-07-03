@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AuthShell } from "./AuthShell";
 import styles from "./AuthPage.module.css";
 import { Button, Card, ErrorMessage, Input } from "@/components/ui";
+import { KineticTitle, BounceCard } from "@/components/motion";
 import { ApiError, register, type UserResponse } from "@/lib/api";
 
 type FormErrors = {
@@ -144,7 +145,8 @@ export function SignUpPage() {
       posterBody="Visual duoc giu gan mock React goc, con implementation thi dung Next.js App Router va auth contract backend that."
       ticketTitle="Explorer passport"
     >
-      <Card className={styles.card} elevated>
+      <BounceCard>
+        <Card className={styles.card} elevated>
         {createdUser ? (
           <div className={styles.successCard}>
             <span aria-hidden="true" className={styles.successBadge}>
@@ -169,13 +171,23 @@ export function SignUpPage() {
               <Link className={styles.textLink} href="/login">
                 Sang trang dang nhap
               </Link>
+              <Link className={styles.textLink} href="/planner">
+                Mo planner
+              </Link>
             </div>
           </div>
         ) : (
           <div className={styles.stack}>
             <div className={styles.header}>
               <span className={styles.eyebrow}>New explorer</span>
-              <h2 className={styles.title}>Tao tai khoan moi</h2>
+              <KineticTitle
+                tag="h2"
+                text="Tao tai khoan moi"
+                size="section"
+                variant="pop"
+                shadowVariant="black"
+                className={styles.title}
+              />
               <p className={styles.description}>
                 Luu trip, luu diem dung chan va chuan bi cho cac flow planner o
                 Phase 12.5 tro di.
@@ -186,6 +198,23 @@ export function SignUpPage() {
               <ErrorMessage
                 title="Dang ky chua thanh cong"
                 message={authError}
+                actions={
+                  <>
+                    <Button
+                      fullWidth={false}
+                      onClick={() => {
+                        setAuthError(null);
+                        setErrors({});
+                      }}
+                      variant="secondary"
+                    >
+                      Kiem tra lai
+                    </Button>
+                    <Link className={styles.textLink} href="/login">
+                      Dang nhap neu da co tai khoan
+                    </Link>
+                  </>
+                }
               />
             ) : null}
 
@@ -307,6 +336,7 @@ export function SignUpPage() {
           </div>
         )}
       </Card>
+      </BounceCard>
     </AuthShell>
   );
 }

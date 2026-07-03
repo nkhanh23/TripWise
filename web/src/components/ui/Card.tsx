@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import type { PropsWithChildren, ReactNode, CSSProperties } from "react";
 import styles from "./Card.module.css";
 
 type CardProps = PropsWithChildren<{
@@ -8,6 +8,7 @@ type CardProps = PropsWithChildren<{
   interactive?: boolean;
   footer?: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }>;
 
 export function Card({
@@ -17,7 +18,8 @@ export function Card({
   elevated = false,
   interactive = false,
   footer,
-  className
+  className,
+  style
 }: CardProps) {
   const classes = [
     styles.card,
@@ -29,7 +31,7 @@ export function Card({
     .join(" ");
 
   return (
-    <section className={classes}>
+    <section className={classes} style={style}>
       {title ? <h2 className={styles.title}>{title}</h2> : null}
       {description ? <p className={styles.description}>{description}</p> : null}
       {children}

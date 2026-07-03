@@ -20,7 +20,7 @@ tripwise:
         - http://localhost:5173
         - http://localhost:3000
   gemini:
-    api-key: ${GEMINI_API_KEY:dummy-api-key-for-local-development}
+    api-key: ${GEMINI_API_KEY:your-gemini-api-key-here}
   osrm:
     api-url: ${OSRM_API_URL:https://router.project-osrm.org}
     timeout: ${OSRM_TIMEOUT:3s}

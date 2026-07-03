@@ -4,7 +4,8 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./SavedTripsPage.module.css";
-import { Button, Card, ErrorMessage, Loading } from "@/components/ui";
+import { Button, Card, EmptyState, ErrorMessage, Loading } from "@/components/ui";
+import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
   ApiError,
   AuthSessionExpiredError,
@@ -117,6 +118,7 @@ export function SavedTripsPage() {
   const [isDeletingId, setIsDeletingId] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [statusFilter, setStatusFilter] =
     useState<(typeof STATUS_FILTERS)[number]["key"]>("ALL");
 
@@ -153,7 +155,7 @@ export function SavedTripsPage() {
     return () => {
       active = false;
     };
-  }, [currentPage]);
+  }, [currentPage, refreshKey]);
 
   const filteredTrips = useMemo(() => {
     const trips = tripPage?.content ?? [];
@@ -216,17 +218,30 @@ export function SavedTripsPage() {
     });
   }
 
+  function handleRetry() {
+    setRefreshKey((value) => value + 1);
+  }
+
   return (
     <main className={styles.page}>
+      <FilmGrainOverlay />
       <div className={`${styles.shell} page-shell`}>
         <section className={styles.hero}>
+          <BounceCard delay={100}>
           <Card className={styles.heroCard} elevated>
             <div className={styles.stickerRow}>
               <span className={styles.sticker}>Phase 12.9</span>
               <span className={styles.stickerAlt}>Saved Trips Page</span>
             </div>
 
-            <h1 className={styles.headline}>Thu vien trip da luu cua ban, tach rieng khoi planner.</h1>
+            <KineticTitle
+              tag="h1"
+              text="Thu vien trip da luu cua ban, tach rieng khoi planner."
+              size="section"
+              variant="pop"
+              shadowVariant="black"
+              className={styles.headline}
+            />
             <p className={styles.description}>
               Man nay dung contract `GET /api/v1/trips` va `DELETE /api/v1/trips/{'{id}'}`
               de quan ly danh sach itinerary da luu. Giao dien van bam mood dashboard
@@ -240,7 +255,9 @@ export function SavedTripsPage() {
               </Link>
             </div>
           </Card>
+          </BounceCard>
 
+          <BounceCard delay={200}>
           <Card className={styles.ticketCard} elevated>
             <div className={styles.ticketLabel}>Library snapshot</div>
             <h2 className={styles.ticketTitle}>Saved trips</h2>
@@ -265,6 +282,7 @@ export function SavedTripsPage() {
               display title tu destination + duration de giu scope frontend-only.
             </p>
           </Card>
+          </BounceCard>
         </section>
 
         <section className={styles.toolbar}>
@@ -293,36 +311,53 @@ export function SavedTripsPage() {
         </section>
 
         {errorMessage ? (
-          <ErrorMessage message={errorMessage} title="Khong tai duoc saved trips" />
+          <ErrorMessage
+            message={errorMessage}
+            title="Khong tai duoc saved trips"
+            actions={
+              <>
+                <Button onClick={handleRetry}>Thu lai</Button>
+                <Button onClick={handleOpenPlanner} variant="secondary">
+                  Mo planner
+                </Button>
+              </>
+            }
+          />
         ) : null}
 
         {isLoading ? (
           <Card className={styles.stateCard} elevated>
-            <Loading label="TripWise dang tai thu vien trip da luu..." />
+            <div className={styles.stateWrap}>
+              <Loading label="TripWise dang tai thu vien trip da luu..." />
+              <p className={styles.stateHint}>
+                Danh sach se giu phan trang backend va hien lai bo loc khi du lieu san sang.
+              </p>
+            </div>
           </Card>
         ) : null}
 
         {!isLoading && !errorMessage && filteredTrips.length === 0 ? (
           <Card className={styles.stateCard} elevated>
-            <div className={styles.emptyWrap}>
-              <h2 className={styles.emptyTitle}>Chua co trip phu hop bo loc nay.</h2>
-              <p className={styles.emptyBody}>
-                Ban co the tao trip moi tu planner hoac doi lai tab de xem cac trip khac.
-              </p>
-              <div className={styles.heroActions}>
-                <Button onClick={handleOpenPlanner}>Mo planner</Button>
-                <Button onClick={() => setStatusFilter("ALL")} variant="secondary">
-                  Xem tat ca
-                </Button>
-              </div>
-            </div>
+            <EmptyState
+              title="Chua co trip phu hop bo loc nay."
+              message="Ban co the tao trip moi tu planner hoac doi lai tab de xem cac trip khac."
+              actions={
+                <>
+                  <Button onClick={handleOpenPlanner}>Mo planner</Button>
+                  <Button onClick={() => setStatusFilter("ALL")} variant="secondary">
+                    Xem tat ca
+                  </Button>
+                </>
+              }
+            />
           </Card>
         ) : null}
 
         {!isLoading && !errorMessage && filteredTrips.length > 0 ? (
           <section className={styles.tripGrid}>
-            {filteredTrips.map((trip) => (
-              <Card className={styles.tripCard} elevated interactive key={trip.id}>
+            {filteredTrips.map((trip, idx) => (
+              <BounceCard key={trip.id} delay={300 + idx * 100}>
+              <Card className={styles.tripCard} elevated interactive>
                 <div className={styles.tripHeader}>
                   <div>
                     <div className={styles.tripEyebrow}>Trip #{trip.id}</div>
@@ -377,6 +412,7 @@ export function SavedTripsPage() {
                   </Button>
                 </div>
               </Card>
+              </BounceCard>
             ))}
           </section>
         ) : null}

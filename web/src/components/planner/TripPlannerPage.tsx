@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./TripPlannerPage.module.css";
 import { Button, Card, ErrorMessage, Loading } from "@/components/ui";
+import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
   ApiError,
   AuthSessionExpiredError,
@@ -332,17 +333,26 @@ export function TripPlannerPage() {
 
   return (
     <main className={styles.page}>
+      <FilmGrainOverlay />
       <div className={styles.shell}>
         <section className={styles.hero}>
-          <Card className={styles.heroCard} elevated>
-            <div className={styles.heroStack}>
+          <BounceCard delay={100}>
+            <Card className={styles.heroCard} elevated>
+              <div className={styles.heroStack}>
               <div className={styles.stickerRow}>
                 <span className={styles.sticker}>Phase 12.5</span>
                 <span className={styles.stickerAlt}>Trip Request Form</span>
               </div>
 
               <div>
-                <h1 className={styles.headline}>Nhap trip brief, de TripWise lo phan con lai.</h1>
+                <KineticTitle
+                  tag="h1"
+                  text="Nhap trip brief, de TripWise lo phan con lai."
+                  size="section"
+                  variant="pop"
+                  shadowVariant="black"
+                  className={styles.headline}
+                />
               </div>
 
               <p className={styles.description}>
@@ -367,7 +377,9 @@ export function TripPlannerPage() {
               </div>
             </div>
           </Card>
+          </BounceCard>
 
+          <BounceCard delay={200}>
           <Card className={styles.ticket} elevated>
             <div className={styles.ticketBody}>
               <div>
@@ -402,9 +414,11 @@ export function TripPlannerPage() {
               </p>
             </div>
           </Card>
+          </BounceCard>
         </section>
 
         <section className={styles.contentGrid}>
+          <BounceCard delay={300}>
           <Card
             className={styles.formCard}
             elevated
@@ -639,6 +653,15 @@ export function TripPlannerPage() {
                 <ErrorMessage
                   message={validationError}
                   title="Form chua san sang de gui"
+                  actions={
+                    <Button
+                      fullWidth={false}
+                      onClick={() => setValidationError(null)}
+                      variant="secondary"
+                    >
+                      Dong nhac nho
+                    </Button>
+                  }
                 />
               ) : null}
 
@@ -646,6 +669,20 @@ export function TripPlannerPage() {
                 <ErrorMessage
                   message={submitError}
                   title="Khong the tao lich trinh"
+                  actions={
+                    <>
+                      <Button
+                        fullWidth={false}
+                        onClick={() => setSubmitError(null)}
+                        variant="secondary"
+                      >
+                        Kiem tra lai brief
+                      </Button>
+                      <Link className={styles.outlineButton} href="/login">
+                        Dang nhap lai
+                      </Link>
+                    </>
+                  }
                 />
               ) : null}
 
@@ -668,8 +705,10 @@ export function TripPlannerPage() {
               </div>
             </form>
           </Card>
+          </BounceCard>
 
           <div className={styles.sideStack}>
+            <BounceCard delay={400}>
             <Card
               className={styles.sideCard}
               title="AI da hieu"
@@ -698,7 +737,9 @@ export function TripPlannerPage() {
                 </div>
               </div>
             </Card>
+            </BounceCard>
 
+            <BounceCard delay={500}>
             <Card
               className={styles.sideCard}
               title="Goi y cua TripWise AI"
@@ -841,6 +882,7 @@ export function TripPlannerPage() {
                 </p>
               )}
             </Card>
+            </BounceCard>
           </div>
         </section>
       </div>

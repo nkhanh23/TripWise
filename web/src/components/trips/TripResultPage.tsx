@@ -5,7 +5,8 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import styles from "./TripResultPage.module.css";
-import { Button, Card, ErrorMessage, Loading } from "@/components/ui";
+import { Button, Card, EmptyState, ErrorMessage, Loading } from "@/components/ui";
+import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
   ApiError,
   AuthSessionExpiredError,
@@ -169,6 +170,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null);
   const [selectedOrderIndex, setSelectedOrderIndex] = useState<number | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -206,7 +208,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
     return () => {
       active = false;
     };
-  }, [tripId]);
+  }, [refreshKey, tripId]);
 
   const itineraryDays = useMemo(() => trip?.itinerary.days ?? [], [trip]);
   const currentDay =
@@ -233,6 +235,10 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
     startTransition(() => {
       router.push("/planner");
     });
+  }
+
+  function handleRetry() {
+    setRefreshKey((value) => value + 1);
   }
 
   if (isLoading) {
@@ -262,16 +268,18 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
               <ErrorMessage
                 title="Khong tai duoc itinerary"
                 message={errorMessage ?? "Khong tim thay trip."}
+                actions={
+                  <>
+                    <Button onClick={handleRetry}>Thu lai</Button>
+                    <Button onClick={handleOpenPlanner} variant="secondary">
+                      Ve planner
+                    </Button>
+                    <Link className={styles.ghostLink} href="/login">
+                      Dang nhap lai
+                    </Link>
+                  </>
+                }
               />
-              <div className={styles.heroActions}>
-                <Button onClick={() => window.location.reload()}>Thu lai</Button>
-                <Button onClick={handleOpenPlanner} variant="secondary">
-                  Ve planner
-                </Button>
-                <Link className={styles.ghostLink} href="/login">
-                  Dang nhap lai
-                </Link>
-              </div>
             </div>
           </Card>
         </div>
@@ -281,15 +289,24 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
 
   return (
     <main className={styles.page}>
+      <FilmGrainOverlay />
       <div className={styles.shell}>
         <section className={styles.hero}>
+          <BounceCard delay={100}>
           <Card className={styles.heroCard} elevated>
             <div className={styles.stickerRow}>
               <span className={styles.sticker}>Phase 12.6</span>
               <span className={styles.stickerAlt}>Itinerary Result Page</span>
             </div>
 
-            <h1 className={styles.headline}>{trip.destination} da len form thanh itinerary roi.</h1>
+            <KineticTitle
+              tag="h1"
+              text={`${trip.destination} da len form thanh itinerary roi.`}
+              size="section"
+              variant="pop"
+              shadowVariant="black"
+              className={styles.headline}
+            />
             <p className={styles.description}>
               Man nay tach rieng khoi planner de hien thi full trip detail, day tabs
               va timeline item dung theo mock React ban dau. Map panel se duoc noi
@@ -324,7 +341,9 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
               </div>
             </div>
           </Card>
+          </BounceCard>
 
+          <BounceCard delay={200}>
           <Card className={styles.ticketCard} elevated>
             <div className={styles.ticketBody}>
               <div>
@@ -361,10 +380,12 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
               </div>
             </div>
           </Card>
+          </BounceCard>
         </section>
 
         <section className={styles.layout}>
           <div className={styles.leftStack}>
+            <BounceCard delay={300}>
             <Card className={styles.panelCard} elevated>
               <h2 className={styles.sectionTitle}>Trip header</h2>
               <p className={styles.sectionHint}>
@@ -477,14 +498,25 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
                   </div>
                 </>
               ) : (
-                <p className={styles.emptyInline}>
-                  Trip nay chua co itinerary day/item de render.
-                </p>
+                <EmptyState
+                  title="Trip nay chua co itinerary day/item de render."
+                  message="Ban co the quay lai planner de tao lai trip hoac thu tai lai neu du lieu vua duoc cap nhat."
+                  actions={
+                    <>
+                      <Button onClick={handleRetry}>Thu tai lai</Button>
+                      <Button onClick={handleOpenPlanner} variant="secondary">
+                        Ve planner
+                      </Button>
+                    </>
+                  }
+                />
               )}
             </Card>
+            </BounceCard>
           </div>
 
           <div className={styles.rightStack}>
+            <BounceCard delay={500}>
             <Card className={styles.mapCard} elevated>
               <div className={styles.mapPlaceholder}>
                 <div className={styles.mapPlaceholderTop}>
@@ -530,7 +562,9 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
                 />
               </div>
             </Card>
+            </BounceCard>
 
+            <BounceCard delay={600}>
             <Card className={styles.panelCard} elevated>
               <div className={styles.selectedCard}>
                 <div>
@@ -581,7 +615,9 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
                 )}
               </div>
             </Card>
+            </BounceCard>
 
+            <BounceCard delay={700}>
             <Card className={styles.panelCard} elevated>
               <h2 className={styles.sectionTitle}>Backend metadata</h2>
               <p className={styles.sectionHint}>
@@ -608,6 +644,7 @@ export function TripResultPage({ tripId }: TripResultPageProps) {
                 </div>
               </div>
             </Card>
+            </BounceCard>
           </div>
         </section>
       </div>

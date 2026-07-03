@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { PropsWithChildren } from "react";
 import styles from "./AuthShell.module.css";
+import { KineticTitle, FilmGrainOverlay } from "@/components/motion";
 
 type AuthShellProps = PropsWithChildren<{
   posterTag: string;
@@ -31,6 +34,7 @@ export function AuthShell({
 }: AuthShellProps) {
   return (
     <main className={styles.shell}>
+      <FilmGrainOverlay />
       <div className={styles.frame}>
         <header className={styles.header}>
           <Link className={styles.brandLink} href="/">
@@ -55,7 +59,14 @@ export function AuthShell({
 
             <div className={styles.posterTop}>
               <div className={styles.posterTag}>{posterTag}</div>
-              <h1 className={styles.posterTitle}>{posterTitle}</h1>
+              <KineticTitle
+                tag="h1"
+                text={posterTitle}
+                size="section"
+                variant="pop"
+                shadowVariant="black"
+                className={styles.posterTitle}
+              />
               <p className={styles.posterBody}>{posterBody}</p>
 
               <ul className={styles.featureList}>

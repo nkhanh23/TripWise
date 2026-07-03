@@ -263,6 +263,19 @@
   padding: 20px 0;
 }
 
+.stateWrap {
+  display: grid;
+  gap: 14px;
+}
+
+.stateHint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
 .emptyTitle {
   font-size: 2rem;
 }
