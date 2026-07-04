@@ -2,9 +2,7 @@ package com.tripwise.place.application.service;
 
 import com.tripwise.common.exception.ResourceNotFoundException;
 import com.tripwise.place.application.dto.PlaceDetailResponse;
-import com.tripwise.place.application.mapper.PlaceMapper;
-import com.tripwise.place.domain.entity.Place;
-import com.tripwise.place.infrastructure.persistence.repository.PlaceRepository;
+import com.tripwise.place.infrastructure.persistence.PlacePublicReadJdbcRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,10 +20,7 @@ import static org.mockito.Mockito.when;
 class GetPlaceDetailUseCaseTest {
 
     @Mock
-    private PlaceRepository placeRepository;
-
-    @Mock
-    private PlaceMapper placeMapper;
+    private PlacePublicReadJdbcRepository placePublicReadJdbcRepository;
 
     @InjectMocks
     private GetPlaceDetailUseCase getPlaceDetailUseCase;
@@ -33,34 +28,32 @@ class GetPlaceDetailUseCaseTest {
     @Test
     void execute_WhenPlaceExists_ShouldReturnPlaceDetail() {
         Long placeId = 1L;
-        Place mockPlace = new Place();
-        mockPlace.setId(placeId);
-        
-        PlaceDetailResponse mockResponse = new PlaceDetailResponse();
-        mockResponse.setId(placeId);
-        
-        when(placeRepository.findPublicDetailById(placeId)).thenReturn(Optional.of(mockPlace));
-        when(placeMapper.toDetailResponse(mockPlace)).thenReturn(mockResponse);
+        PlaceDetailResponse mockResponse = PlaceDetailResponse.builder()
+                .id(placeId)
+                .name("Chua Long Son")
+                .build();
+
+        when(placePublicReadJdbcRepository.findPublicPlaceDetailById(placeId))
+                .thenReturn(Optional.of(mockResponse));
 
         PlaceDetailResponse result = getPlaceDetailUseCase.execute(placeId);
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(placeId);
-        
-        verify(placeRepository).findPublicDetailById(placeId);
-        verify(placeMapper).toDetailResponse(mockPlace);
+        verify(placePublicReadJdbcRepository).findPublicPlaceDetailById(placeId);
     }
 
     @Test
     void execute_WhenPlaceNotFound_ShouldThrowException() {
         Long placeId = 999L;
-        
-        when(placeRepository.findPublicDetailById(placeId)).thenReturn(Optional.empty());
+
+        when(placePublicReadJdbcRepository.findPublicPlaceDetailById(placeId))
+                .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> getPlaceDetailUseCase.execute(placeId))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Place not found");
-                
-        verify(placeRepository).findPublicDetailById(placeId);
+
+        verify(placePublicReadJdbcRepository).findPublicPlaceDetailById(placeId);
     }
 }

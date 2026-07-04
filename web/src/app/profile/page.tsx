@@ -1,4 +1,5 @@
 import { ProfilePage } from "@/components/profile/ProfilePage";
+import { AppLayout } from "@/components/layout/AppLayout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ProfilePage />;
+  return (
+    <AppLayout>
+      <ProfilePage />
+    </AppLayout>
+  );
 }

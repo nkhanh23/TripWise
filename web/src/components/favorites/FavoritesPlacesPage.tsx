@@ -12,7 +12,19 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { RetroImage } from '@/components/ui/RetroImage';
 import { Modal } from '@/components/ui/Modal';
-import { MapPanel } from '@/components/map/MapPanel';
+import dynamic from 'next/dynamic';
+
+const ExploreLeafletMap = dynamic(
+  () => import('../explore/ExploreLeafletMap'),
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#FFFDF3" }}>
+        <span style={{ fontSize: 10, fontWeight: 800, color: "#7A6A58" }}>Đang tải...</span>
+      </div>
+    )
+  }
+);
 
 interface SavedPlace {
   id: string;
@@ -999,10 +1011,8 @@ export const FavoritesPlacesPage: React.FC = () => {
               >
                 <h4 style={{ fontSize: 13, fontWeight: 900, margin: 0 }}>Bản đồ địa điểm đã lưu</h4>
                 <div style={{ height: 160, borderRadius: 12, overflow: 'hidden', border: '2px solid #111111' }}>
-                  <MapPanel
+                  <ExploreLeafletMap
                     markers={mapMarkers}
-                    showRoute={false}
-                    height="100%"
                     onMarkerClick={handleMarkerClick}
                   />
                 </div>

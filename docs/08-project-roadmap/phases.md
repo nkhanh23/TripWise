@@ -120,6 +120,11 @@
 - [x] Phase 4.5 - Nearby places API (PostGIS spatial query)
 - [x] Phase 4.6 - Place detail API
 - [x] Phase 4.7 - Place module tests
+- [x] Phase 4.8 - Nationwide place data ingestion pipeline (Geofabrik/OSM)
+- [x] Phase 4.9 - Place enrichment, editorial review, and popularity scoring
+- [x] Phase 4.10 - Place schema expansion for nationwide data model
+- [x] Phase 4.11 - Nationwide place import, sync, and dedupe execution
+- [x] Phase 4.12 - Nationwide place API and map-ready response model
 
 ### E. AI / Gemini Integration
 
@@ -202,6 +207,7 @@
 - [x] Phase 12.15 - System pages migration (404/403/500/unauthorized/trip not found)
 - [ ] Phase 12.16 - Responsive UI
 - [ ] Phase 12.17 - Frontend tests
+- [x] Phase 12.18 - Nationwide places display on Explore map and list UI
 
 ### M. Mobile Flutter
 
@@ -1937,6 +1943,364 @@ cd backend
 Đọc AGENTS.md. Thực hiện Phase 4.7 - Place module tests.
 Bổ sung unit/integration/controller tests cho Place module.
 Test spatial queries, edge cases. Đảm bảo coverage >80%. Chạy test.
+```
+
+---
+
+## [x] Phase 4.8 - Nationwide place data ingestion pipeline (Geofabrik/OSM)
+
+### Goal
+
+Chuẩn bị pipeline nhập dữ liệu địa điểm có thể mở rộng từ Nha Trang ra toàn Việt Nam, với PostgreSQL + PostGIS là nguồn dữ liệu chính cho TripWise.
+
+### What will be done
+
+- Chốt `Geofabrik Vietnam Extract` là nguồn dữ liệu nền để import offline theo batch vào PostGIS
+- Xác định `OpenStreetMap/Overpass` chỉ dùng cho thử nghiệm truy vấn, backfill nhỏ, hoặc kiểm tra tag chứ không làm runtime dependency chính
+- Thiết kế ingestion flow: tải `.osm.pbf` -> import thô -> lọc POI cần dùng -> chuẩn hóa sang schema `places`
+- Xác định nhóm tag OSM ưu tiên cho TripWise:
+  - `tourism=*`
+  - `amenity=restaurant|cafe|fast_food`
+  - `leisure=*`
+  - `natural=beach`
+  - `historic=*`
+  - `shop=*` có chọn lọc
+- Thiết kế mapping từ tag OSM sang category nội bộ của TripWise để scoring và filter hoạt động ổn định
+- Thiết kế chiến lược dedupe theo `source`, `external_id`, `name`, `location`, và khoảng cách gần nhau để tránh trùng POI
+- Bổ sung metadata bắt buộc cho place import:
+  - `source`
+  - `source_external_id`
+  - `verification_status`
+  - `last_synced_at`
+  - `raw_tags`
+- Thiết kế quy trình review dữ liệu imported:
+  - import tự động
+  - đánh dấu `unverified`
+  - admin/reviewer duyệt các điểm nổi bật trước khi dùng cho recommendation nhạy cảm
+- Xác định chiến lược refresh dữ liệu định kỳ theo batch, tránh phụ thuộc truy vấn live từ API public
+- Đề xuất lớp bổ sung cho UX tìm kiếm tiếng Việt:
+  - `Goong` hoặc `VietMap` chỉ dùng cho search/autocomplete
+  - không ghi đè source of truth của place nếu chưa qua quy trình enrich/verify
+- Rà soát license/attribution của OSM và policy tile usage để tránh dùng sai trong production
+
+### Files/Folders likely changed
+
+- `docs/08-project-roadmap/phases.md`
+- `docs/04-architecture/database-design.md` (nếu cần cập nhật schema place metadata)
+- `docs/04-architecture/postgis-design.md` (nếu cần cập nhật chiến lược import/tag mapping)
+- `docs/06-devops/local-development.md` hoặc tài liệu ingestion riêng (nếu cần hướng dẫn import)
+- `backend/src/main/resources/db/migration/` (ở phase triển khai schema thực tế sau này)
+
+### Done when
+
+- Roadmap có phase riêng cho ingestion dữ liệu địa điểm toàn Việt Nam
+- Chốt rõ nguồn dữ liệu chính, nguồn hỗ trợ, và ranh giới trách nhiệm của từng nguồn
+- Có mô tả đủ các bước import, mapping, dedupe, review, refresh
+- Không phụ thuộc vào Gemini hay runtime API public để sinh dữ liệu place production
+
+### How to verify
+
+```bash
+type docs\08-project-roadmap\phases.md
+# Kiểm tra roadmap đã có Phase 4.8 cho data ingestion pipeline
+```
+
+### Risks
+
+- Tag OSM ở Việt Nam không đồng đều, cần mapping và lọc dữ liệu cẩn thận
+- Nếu import trực tiếp không có bước review/dedupe, chất lượng recommendation sẽ giảm
+- Nếu dùng public Overpass hoặc public tile server sai mục đích production, có nguy cơ bị rate limit hoặc chặn
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 4.8 - Nationwide place data ingestion pipeline.
+Thiết kế pipeline nhập dữ liệu địa điểm từ Geofabrik/OSM vào PostgreSQL + PostGIS.
+Chốt tag mapping, dedupe, verification metadata, refresh strategy và vai trò của Goong/VietMap cho search tiếng Việt.
+Không triển khai UI. Không để API public làm source of truth production.
+```
+
+---
+
+## [x] Phase 4.9 - Place enrichment, editorial review, and popularity scoring
+
+### Goal
+
+Hoàn thiện lớp dữ liệu địa điểm đủ giàu cho TripWise bằng cách tách riêng `fact`, `presentation`, `editorial`, và `derived intelligence`, thay vì phụ thuộc vào một nguồn duy nhất.
+
+### What will be done
+
+- Chốt kiến trúc nhiều lớp cho dữ liệu địa điểm:
+  - `Base place layer` từ `Geofabrik/OSM` cho identity + location
+  - `Enrichment layer` từ nguồn có license/API rõ ràng
+  - `Editorial/verified layer` do admin hoặc reviewer kiểm duyệt
+  - `Derived intelligence layer` do TripWise tự tính từ dữ liệu và hành vi người dùng
+- Tách rõ `fact` và `presentation`:
+  - `fact`: tên, tọa độ, category, opening hours, ticket price, rating
+  - `presentation`: mô tả du lịch, travel highlights, reason text, caption
+- Xác định nhóm field cốt lõi cho `places` hoặc các bảng enrich liên quan:
+  - `Core`: `source`, `source_external_id`, `name`, `location`, `category`, `raw_tags`
+  - `Enrichment`: `rating`, `review_count`, `opening_hours`, `price_level`, `ticket_price_min`, `ticket_price_max`, `image_url`
+  - `Editorial`: `short_description`, `travel_highlights`, `best_time`, `visit_duration_minutes`, `verification_status`
+  - `Derived`: `popularity_score`, `tripwise_score`, `last_synced_at`
+- Thiết kế ranh giới nguồn dữ liệu cho từng field:
+  - `rating/review_count/opening_hours`: từ provider hợp pháp như Google Places, Goong, Foursquare, hoặc provider thương mại khác khi được duyệt
+  - `image_url`: từ Wikimedia Commons, open tourism datasets, ảnh admin curate, hoặc user-generated ở giai đoạn sau
+  - `ticket_price`, `best_time`, `tips`, `family/couple/student fit`: ưu tiên nhập tay hoặc review thủ công cho các điểm quan trọng
+  - `description` và text gợi ý: Gemini chỉ được sinh từ fact đã xác minh, không được bịa dữ liệu
+- Thiết kế bảng hoặc cấu trúc lưu `source`, `updated_at`, `verification_status` cho từng field enrich quan trọng nếu cần audit chi tiết
+- Xác định quy trình editorial cho các điểm nổi bật:
+  - auto import dữ liệu nền
+  - enrich theo batch
+  - admin/reviewer xác minh
+  - mới đưa vào tập dữ liệu recommendation chất lượng cao
+- Thiết kế công thức `popularity_score` nội bộ từ:
+  - `rating`
+  - `review_count`
+  - số lần được chọn vào itinerary
+  - số lần user lưu
+  - số lần user click xem chi tiết
+- Xác định nguyên tắc fallback:
+  - nếu thiếu enrich thì vẫn dùng được dữ liệu nền
+  - nhưng UI và scoring phải biết đó là place thiếu dữ liệu phong phú
+- Đề xuất chiến lược rollout:
+  - MVP gần: OSM/Geofabrik + dữ liệu curate thủ công cho các điểm hot
+  - Giai đoạn mở rộng: thêm provider enrich cho rating/opening hours/reviews
+  - Giai đoạn trưởng thành: tính điểm phổ biến và chất lượng từ hành vi thật của người dùng TripWise
+
+### Files/Folders likely changed
+
+- `docs/08-project-roadmap/phases.md`
+- `docs/04-architecture/place-enrichment-editorial-model.md`
+- `docs/04-architecture/database-design.md` (nếu cần tách schema core/enrichment/editorial)
+- `docs/04-architecture/postgis-design.md` (nếu cần cập nhật chiến lược place metadata)
+- `docs/04-architecture/backend-modules.md` (nếu cần bổ sung admin/data-ingestion responsibilities)
+- `backend/src/main/resources/db/migration/` (ở phase triển khai schema thực tế sau này)
+
+### Done when
+
+- Roadmap có phase riêng cho enrichment/editorial/derived place data
+- Có mô tả rõ field nào là dữ liệu nền, field nào là enrich, field nào là editorial, field nào là derived
+- Có nguyên tắc rõ ràng rằng Gemini chỉ sinh `presentation`, không làm nguồn `fact`
+- Có chiến lược rollout theo từng giai đoạn để dữ liệu đủ dùng cho MVP và mở rộng sau này
+
+### How to verify
+
+```bash
+type docs\08-project-roadmap\phases.md
+# Kiểm tra roadmap đã có Phase 4.9 cho enrichment/editorial/popularity scoring
+```
+
+### Risks
+
+- Nếu trộn lẫn `fact` và `presentation`, hệ thống sẽ khó audit và dễ để AI bịa dữ liệu
+- Nếu field enrich không lưu `source` và `updated_at`, rất khó kiểm soát độ tin cậy
+- Nếu popularity score phụ thuộc hoàn toàn vào vendor bên ngoài, TripWise sẽ mất tài sản dữ liệu riêng
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 4.9 - Place enrichment, editorial review, and popularity scoring.
+Thiết kế lớp dữ liệu enrich cho TripWise: rating, review count, opening hours, ticket price, image, description, editorial tips, popularity score.
+Tách rõ fact và presentation. Gemini chỉ được viết nội dung từ fact đã xác minh.
+Không để một vendor duy nhất quyết định toàn bộ dữ liệu place.
+```
+
+---
+
+## [x] Phase 4.10 - Place schema expansion for nationwide data model
+
+### Goal
+
+Biến thiết kế của Phase 4.8 và 4.9 thành schema database thực tế để TripWise có thể lưu dữ liệu địa điểm toàn Việt Nam theo nhiều lớp dữ liệu.
+
+### What will be done
+
+- Rà soát bảng `places` và `place_categories` hiện tại
+- Quyết định field nào giữ trong `places`, field nào tách bảng riêng để tránh phình một bảng duy nhất
+- Thiết kế migration bổ sung cho các nhóm dữ liệu:
+  - `core place identity`
+  - `enrichment`
+  - `editorial`
+  - `derived metrics`
+- Cân nhắc các bảng hoặc cấu trúc như:
+  - `place_enrichments`
+  - `place_images`
+  - `place_editorial_contents`
+  - `place_popularity_metrics`
+  - `place_data_sources`
+- Bổ sung cột hoặc bảng để lưu:
+  - `source`
+  - `source_external_id`
+  - `raw_tags`
+  - `verification_status`
+  - `last_synced_at`
+  - `updated_at` theo nguồn enrich quan trọng
+- Thiết kế index phù hợp cho:
+  - spatial queries
+  - search theo city/category
+  - lookup theo `source + source_external_id`
+  - sort/filter theo `rating`, `popularity_score`, `verification_status`
+- Xác định unique constraints và chiến lược chống trùng dữ liệu
+- Xác định quan hệ giữa dữ liệu place và media/image nếu dùng bảng riêng
+
+### Files/Folders likely changed
+
+- `docs/08-project-roadmap/phases.md`
+- `docs/04-architecture/place-schema-expansion.md`
+- `docs/04-architecture/database-design.md`
+- `docs/04-architecture/postgis-design.md`
+- `backend/src/main/resources/db/migration/` (ở phase triển khai thực tế)
+
+### Done when
+
+- Có schema đích rõ ràng cho dữ liệu place toàn quốc
+- Biết chính xác bảng nào, cột nào, index nào sẽ được thêm
+- Schema hỗ trợ được import nền, enrich, editorial review, và popularity scoring
+
+### How to verify
+
+```bash
+type docs\08-project-roadmap\phases.md
+# Kiểm tra roadmap đã có Phase 4.10 cho schema expansion
+```
+
+### Risks
+
+- Nếu dồn tất cả field vào một bảng `places`, schema sẽ khó maintain và sync
+- Nếu thiếu index/constraint ngay từ đầu, import toàn quốc sẽ chậm và dễ sinh trùng dữ liệu
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 4.10 - Place schema expansion for nationwide data model.
+Thiết kế schema database thật cho dữ liệu place toàn Việt Nam sau khi đã có base/enrichment/editorial/derived design.
+Xác định rõ bảng nào, cột nào, index nào, unique constraint nào.
+```
+
+---
+
+## [x] Phase 4.11 - Nationwide place import, sync, and dedupe execution
+
+### Goal
+
+Thực thi pipeline import dữ liệu địa điểm toàn Việt Nam vào database của TripWise và đảm bảo dữ liệu có thể đồng bộ định kỳ.
+
+### What will be done
+
+- Tạo quy trình tải dữ liệu `Geofabrik Vietnam Extract`
+- Tạo job import batch vào PostgreSQL + PostGIS
+- Lọc các nhóm POI TripWise cần dùng từ dữ liệu OSM thô
+- Map tag OSM sang category nội bộ
+- Áp dụng dedupe theo `source`, `source_external_id`, `name`, `location`
+- Lưu `unverified` cho các điểm chưa qua review
+- Tạo cơ chế sync định kỳ:
+  - import mới
+  - cập nhật điểm cũ
+  - đánh dấu điểm stale nếu không còn trong nguồn
+- Ghi log import:
+  - số lượng record ingest
+  - số record bị bỏ qua
+  - số record bị trùng
+  - số record lỗi mapping
+- Chuẩn bị khả năng enrich batch từ provider hợp pháp ở bước sau
+
+### Files/Folders likely changed
+
+- `docs/08-project-roadmap/phases.md`
+- `docs/06-devops/local-development.md` hoặc tài liệu import riêng
+- `backend/src/main/resources/db/migration/`
+- `backend/src/main/java/.../data-ingestion/`
+- `backend/src/test/java/.../data-ingestion/`
+
+### Done when
+
+- Database local/staging có thể chứa dữ liệu place toàn Việt Nam
+- Có thể chạy import lặp lại mà không phá dữ liệu cũ
+- Có log và thống kê import/dedupe rõ ràng
+
+### How to verify
+
+```bash
+cd backend
+.\mvnw.cmd test
+# Sau phase triển khai thực tế, kiểm tra database có dữ liệu place toàn quốc và spatial query vẫn hoạt động
+```
+
+### Risks
+
+- Import toàn quốc có thể nặng, cần batch size và transaction strategy hợp lý
+- Mapping tag OSM không chuẩn sẽ làm category bị nhiễu trên UI và scoring
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 4.11 - Nationwide place import, sync, and dedupe execution.
+Triển khai pipeline import thật dữ liệu place toàn Việt Nam vào PostGIS.
+Đảm bảo import lặp lại an toàn, có dedupe, có log, và chuẩn bị cho enrich batch.
+```
+
+---
+
+## [x] Phase 4.12 - Nationwide place API and map-ready response model
+
+### Goal
+
+Mở rộng API place để backend có thể phục vụ dữ liệu địa điểm toàn Việt Nam cho web/mobile và hiển thị trực tiếp trên bản đồ.
+
+### What will be done
+
+- Thiết kế hoặc mở rộng API `/api/v1/places` cho phạm vi toàn quốc
+- Bổ sung filter/pagination/sort phù hợp:
+  - province/city
+  - category
+  - tag
+  - verification status
+  - rating/popularity khi có dữ liệu
+- Thiết kế response DTO tối ưu cho map/list:
+  - `id`
+  - `name`
+  - `lat/lng`
+  - `category`
+  - `rating`
+  - `image`
+  - `verification_status`
+  - `popularity_score`
+- Tách response nhẹ cho `map markers` và response đầy đủ cho `place detail`
+- Đảm bảo backend không expose raw internal structure trực tiếp ra API
+- Đảm bảo spatial query, paging, và sort vẫn chạy hiệu quả với dataset lớn
+
+### Files/Folders likely changed
+
+- `docs/08-project-roadmap/phases.md`
+- `docs/04-architecture/api-design.md`
+- `backend/src/main/java/.../modules/place/`
+- `backend/src/test/java/.../modules/place/`
+
+### Done when
+
+- Có API place toàn quốc dùng được cho giao diện explore/map
+- Response model đủ nhẹ cho marker map và đủ giàu cho card/list/detail
+- API vẫn tuân thủ pagination/filter/sort đúng chuẩn dự án
+
+### How to verify
+
+```bash
+cd backend
+.\mvnw.cmd test
+# Sau phase triển khai thực tế, gọi API /api/v1/places với filter/pagination để kiểm tra map-ready DTO
+```
+
+### Risks
+
+- Nếu trả payload quá nặng cho map, frontend sẽ chậm
+- Nếu không tách marker DTO và detail DTO, chi phí truyền dữ liệu sẽ cao
+
+### Suggested prompt
+
+```
+Đọc AGENTS.md. Thực hiện Phase 4.12 - Nationwide place API and map-ready response model.
+Mở rộng API place để phục vụ dữ liệu toàn quốc cho map và list UI, có pagination/filter/sort và DTO tối ưu cho marker map.
 ```
 
 ---
@@ -4712,6 +5076,60 @@ Jest + RTL. Component tests. Page tests. API mocking. Chạy test.
 
 ---
 
+## [x] Phase 12.18 - Nationwide places display on Explore map and list UI
+
+### Goal
+
+Hiển thị dữ liệu địa điểm toàn Việt Nam đã được backend phục vụ lên giao diện Explore của TripWise dưới dạng list + map.
+
+### What will be done
+
+- Kết nối Explore page với API place toàn quốc
+- Hỗ trợ filter theo tỉnh/thành, category, keyword, verified status nếu phù hợp UX
+- Hiển thị marker map cho tập địa điểm trả về
+- Hiển thị card/list tương ứng ở panel bên trái hoặc layout mobile
+- Tối ưu loading cho dataset lớn:
+  - phân trang
+  - lazy load
+  - giới hạn marker theo viewport hoặc filter
+- Đồng bộ hành vi giữa list và map:
+  - click item trong list -> focus marker/map
+  - click marker -> highlight item trong list
+- Hiển thị dữ liệu enrich khi có:
+  - rating
+  - image
+  - short description
+  - category badges
+- Có empty/loading/error state phù hợp cho truy vấn toàn quốc
+
+### Files/Folders likely changed
+
+- `docs/08-project-roadmap/phases.md`
+- `web/src/app/explore/page.tsx`
+- `web/src/components/explore/`
+- `web/src/lib/api/`
+
+### Done when
+
+- Giao diện Explore hiển thị được dữ liệu địa điểm từ nhiều tỉnh/thành
+- Map và list đồng bộ tương tác với nhau
+- UI vẫn mượt và không cố render toàn bộ dữ liệu một lần
+
+### How to verify
+
+```bash
+cd web
+npm run build
+# Sau phase triển khai thực tế, mở /explore và kiểm tra dữ liệu place toàn quốc hiển thị trên list + map
+```
+
+### Risks
+
+- Nếu render quá nhiều marker cùng lúc, trải nghiệm map sẽ chậm
+- Nếu UX filter không rõ ràng, dữ liệu toàn quốc sẽ làm Explore bị quá tải thông tin
+
+---
+
 ### M. Mobile Flutter
 
 ---
@@ -6074,6 +6492,9 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [x] Phase 4.5 - Nearby places API (PostGIS spatial query)
 - [x] Phase 4.6 - Place detail API
 - [x] Phase 4.7 - Place module tests
+- [x] Phase 4.8 - Nationwide place data ingestion pipeline (Geofabrik/OSM)
+- [x] Phase 4.9 - Place enrichment, editorial review, and popularity scoring
+- [x] Phase 4.10 - Place schema expansion for nationwide data model
 
 ### E. AI / Gemini Integration
 
@@ -6156,6 +6577,7 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [ ] Phase 12.15 - System pages migration (404/403/500/unauthorized/trip not found)
 - [ ] Phase 12.16 - Responsive UI
 - [ ] Phase 12.17 - Frontend tests
+- [ ] Phase 12.18 - Nationwide places display on Explore map and list UI
 
 ### M. Mobile Flutter
 
@@ -6209,7 +6631,7 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 
 ---
 
-**Total phases: 93**
+**Total phases: 100**
 
 ---
 

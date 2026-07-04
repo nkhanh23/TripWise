@@ -43,9 +43,13 @@ docker compose ps
 ```
 
 ### Bước 3: Chạy ứng dụng Backend (Spring Boot)
-Import dự án vào IntelliJ IDEA và chạy file main class, hoặc chạy thông qua Gradle:
+Import dự án vào IntelliJ IDEA và chạy file main class, hoặc chạy thông qua Maven:
 ```bash
-./gradlew bootRun
+# Windows (PowerShell)
+.\mvnw.cmd spring-boot:run
+
+# Linux/macOS
+./mvnw spring-boot:run
 ```
 Ứng dụng sẽ tự động chạy các tệp migration của Flyway để tạo bảng cấu trúc trong PostgreSQL và lắng nghe tại cổng `8080`.
 
@@ -64,3 +68,55 @@ docker compose up -d
 ### 4.2 Lỗi mất kết nối PostgreSQL (Connection Refused)
 - **Nguyên nhân**: Container Postgres chưa khởi động xong hoặc xung đột cổng `5432` với một phần mềm Postgres cài trực tiếp trên máy host.
 - **Xử lý**: Tắt dịch vụ Postgres trên máy host hoặc đổi cổng export trong `docker-compose.yml` (ví dụ: đổi thành `5433:5432`).
+
+---
+
+## 5. Ghi chú cho pipeline import dữ liệu địa điểm toàn quốc
+
+Trong lộ trình mở rộng dữ liệu địa điểm, backend sẽ dùng hướng `offline batch import` thay vì gọi public API runtime để cấp dữ liệu place production.
+
+Nguyên tắc local dev:
+
+- Dữ liệu place production phải đi qua PostgreSQL + PostGIS của TripWise
+- Không dùng Overpass public làm nguồn runtime cho web/mobile
+- Nguồn dữ liệu nền toàn quốc dự kiến là `Geofabrik Vietnam Extract`
+- Public OSM/Overpass chỉ nên dùng để thử query, backfill nhỏ, hoặc kiểm tra tag
+
+Thiết kế chi tiết của pipeline này được mô tả tại:
+
+- `docs/04-architecture/place-ingestion-pipeline.md`
+
+Lưu ý:
+
+- Phase này chưa yêu cầu chạy import toàn quốc trên local
+- Việc mở rộng schema và thực thi import thật sẽ được làm ở các phase sau
+
+## 6. Chạy nationwide place import trên local
+
+Khi Phase 4.11 đã có mặt trong codebase, backend hỗ trợ một runner nội bộ để nạp file place đã chuẩn hóa vào PostgreSQL + PostGIS.
+
+Định dạng input phù hợp nhất cho local/dev hiện tại là:
+
+- `.ndjson` hoặc `.jsonl` cho batch lớn
+- `.json` array cho batch nhỏ hoặc test tay
+
+Mỗi record nên có tối thiểu:
+
+- `name`
+- `latitude`
+- `longitude`
+- `categorySlug` hoặc `rawTags` để mapper suy ra category nội bộ
+
+Ví dụ chạy import:
+
+```bash
+# Windows PowerShell
+cd backend
+.\mvnw.cmd spring-boot:run --% -Dspring-boot.run.profiles=local -Dspring-boot.run.arguments="--tripwise.place-import.enabled=true --tripwise.place-import.source-name=OSM_GEOFABRIK --tripwise.place-import.input-file=C:\data\vietnam-places.ndjson --tripwise.place-import.import-mode=FULL_SYNC"
+```
+
+Lưu ý:
+
+- `FULL_SYNC` sẽ đánh dấu stale và vô hiệu hóa các place cũ thuộc cùng `source_name` nhưng không còn xuất hiện trong file import mới
+- `UPSERT_ONLY` chỉ thêm/cập nhật, không deactivate record cũ
+- Nếu category không map được vào các `place_categories` hiện có, record sẽ bị skip và được tính vào `mapping/error` trong `place_import_runs`

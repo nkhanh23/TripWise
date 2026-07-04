@@ -33,3 +33,29 @@
   color: var(--text-secondary);
   line-height: 1.6;
 }
+
+/* Comic hover effects */
+.hoverable {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  cursor: pointer;
+}
+
+.posterHover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 #111111 !important;
+}
+
+.ticketHover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 #111111 !important;
+}
+
+.speechHover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 #111111 !important;
+}
+
+.mapOverlayHover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 #111111 !important;
+}

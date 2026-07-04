@@ -2,10 +2,13 @@ package com.tripwise.place.presentation.controller;
 
 import com.tripwise.common.api.ApiResponse;
 import com.tripwise.common.api.PageResponse;
+import com.tripwise.place.application.dto.MapPlacesQuery;
 import com.tripwise.place.application.dto.NearbyPlacesQuery;
 import com.tripwise.place.application.dto.PlaceDetailResponse;
+import com.tripwise.place.application.dto.PlaceMapMarkerResponse;
 import com.tripwise.place.application.dto.PlaceResponse;
 import com.tripwise.place.application.dto.SearchPlacesQuery;
+import com.tripwise.place.application.service.GetPlaceMapMarkersUseCase;
 import com.tripwise.place.application.service.GetPlaceDetailUseCase;
 import com.tripwise.place.application.service.NearbyPlacesUseCase;
 import com.tripwise.place.application.service.SearchPlacesUseCase;
@@ -17,7 +20,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,38 +43,100 @@ public class PlaceController {
     private static final double DEFAULT_RADIUS_METERS = 5000;
     private static final int DEFAULT_LIMIT = 20;
     private static final int MAX_NEARBY_LIMIT = 100;
+    private static final int DEFAULT_MARKER_LIMIT = 500;
+    private static final int MAX_MARKER_LIMIT = 1000;
 
     private final SearchPlacesUseCase searchPlacesUseCase;
     private final NearbyPlacesUseCase nearbyPlacesUseCase;
+    private final GetPlaceMapMarkersUseCase getPlaceMapMarkersUseCase;
     private final GetPlaceDetailUseCase getPlaceDetailUseCase;
 
     @GetMapping
-    @Operation(summary = "Search places", description = "Search verified places by city, category, tags, price level, and keyword with pagination.")
+    @Operation(summary = "Search places", description = "Search nationwide places by province, city, category, tags, verification status, rating, and keyword with pagination.")
     public ResponseEntity<ApiResponse<PageResponse<PlaceResponse>>> searchPlaces(
+            @RequestParam(required = false) String province,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) List<String> tags,
             @RequestParam(required = false) String priceLevel,
+            @RequestParam(required = false) String verificationStatus,
+            @RequestParam(required = false) @DecimalMin(value = "0.0", message = "Minimum rating must be greater than or equal to 0") @DecimalMax(value = "5.0", message = "Minimum rating must be less than or equal to 5") java.math.BigDecimal minRating,
             @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
         SearchPlacesQuery query = SearchPlacesQuery.builder()
+                .province(province)
                 .city(city)
                 .categoryId(categoryId)
                 .tags(tags)
                 .priceLevel(priceLevel)
+                .verificationStatus(verificationStatus)
+                .minRating(minRating)
                 .keyword(keyword)
                 .build();
 
         PageRequest pageRequest = PageRequest.of(
                 normalizePage(page),
-                normalizeSize(size),
-                Sort.by(Sort.Direction.ASC, "name")
+                normalizeSize(size)
         );
 
-        PageResponse<PlaceResponse> response = PageResponse.of(searchPlacesUseCase.execute(query, pageRequest));
+        PageResponse<PlaceResponse> response = PageResponse.of(
+                searchPlacesUseCase.execute(query, pageRequest, normalizeSortBy(sortBy), normalizeSortDirection(sortDirection))
+        );
         return ResponseEntity.ok(ApiResponse.success("Places fetched successfully", response));
+    }
+
+    @GetMapping("/map-markers")
+    @Operation(summary = "Get map markers", description = "Return lightweight nationwide place markers inside a bounding box for map rendering.")
+    public ResponseEntity<ApiResponse<List<PlaceMapMarkerResponse>>> getMapMarkers(
+            @RequestParam("minLat")
+            @DecimalMin(value = "-90.0", message = "Minimum latitude must be greater than or equal to -90")
+            @DecimalMax(value = "90.0", message = "Minimum latitude must be less than or equal to 90")
+            Double minLatitude,
+            @RequestParam("minLng")
+            @DecimalMin(value = "-180.0", message = "Minimum longitude must be greater than or equal to -180")
+            @DecimalMax(value = "180.0", message = "Minimum longitude must be less than or equal to 180")
+            Double minLongitude,
+            @RequestParam("maxLat")
+            @DecimalMin(value = "-90.0", message = "Maximum latitude must be greater than or equal to -90")
+            @DecimalMax(value = "90.0", message = "Maximum latitude must be less than or equal to 90")
+            Double maxLatitude,
+            @RequestParam("maxLng")
+            @DecimalMin(value = "-180.0", message = "Maximum longitude must be greater than or equal to -180")
+            @DecimalMax(value = "180.0", message = "Maximum longitude must be less than or equal to 180")
+            Double maxLongitude,
+            @RequestParam(required = false) String province,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) String verificationStatus,
+            @RequestParam(required = false) @DecimalMin(value = "0.0", message = "Minimum rating must be greater than or equal to 0") @DecimalMax(value = "5.0", message = "Minimum rating must be less than or equal to 5") java.math.BigDecimal minRating,
+            @RequestParam(defaultValue = "500")
+            @Min(value = 1, message = "Limit must be greater than 0")
+            @Max(value = MAX_MARKER_LIMIT, message = "Limit must be less than or equal to 1000")
+            Integer limit
+    ) {
+        MapPlacesQuery query = MapPlacesQuery.builder()
+                .minLatitude(minLatitude)
+                .minLongitude(minLongitude)
+                .maxLatitude(maxLatitude)
+                .maxLongitude(maxLongitude)
+                .province(province)
+                .city(city)
+                .categoryId(categoryId)
+                .tags(tags)
+                .verificationStatus(verificationStatus)
+                .minRating(minRating)
+                .limit(normalizeMarkerLimit(limit))
+                .build();
+
+        return ResponseEntity.ok(ApiResponse.success(
+                "Place map markers fetched successfully",
+                getPlaceMapMarkersUseCase.execute(query)
+        ));
     }
 
     @GetMapping("/nearby")
@@ -111,7 +175,7 @@ public class PlaceController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get place detail", description = "Return detailed information for a verified place.")
+    @Operation(summary = "Get place detail", description = "Return detailed information for a public place.")
     public ResponseEntity<ApiResponse<PlaceDetailResponse>> getPlaceDetail(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(
                 "Place detail fetched successfully",
@@ -139,5 +203,27 @@ public class PlaceController {
             return DEFAULT_LIMIT;
         }
         return Math.min(limit, MAX_NEARBY_LIMIT);
+    }
+
+    private int normalizeMarkerLimit(Integer limit) {
+        if (limit == null || limit < 1) {
+            return DEFAULT_MARKER_LIMIT;
+        }
+        return Math.min(limit, MAX_MARKER_LIMIT);
+    }
+
+    private String normalizeSortBy(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) {
+            return "name";
+        }
+
+        return switch (sortBy.trim()) {
+            case "rating", "popularityScore", "name" -> sortBy.trim();
+            default -> "name";
+        };
+    }
+
+    private String normalizeSortDirection(String sortDirection) {
+        return "desc".equalsIgnoreCase(sortDirection) ? "desc" : "asc";
     }
 }

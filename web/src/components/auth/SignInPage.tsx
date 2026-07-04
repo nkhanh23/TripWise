@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { AuthShell } from "./AuthShell";
 import styles from "./AuthPage.module.css";
-import { Button, Card, ErrorMessage, Input, Loading } from "@/components/ui";
-import { KineticTitle, BounceCard } from "@/components/motion";
+import { KineticTitle } from "@/components/motion";
 import { ApiError, getCurrentUser, login, logout, type UserResponse } from "@/lib/api";
 
 type FormErrors = {
@@ -21,15 +20,15 @@ function buildFieldErrors(email: string, password: string): FormErrors {
   const nextErrors: FormErrors = {};
 
   if (!email.trim()) {
-    nextErrors.email = "Vui long nhap dia chi email.";
+    nextErrors.email = "Vui lòng nhập địa chỉ email.";
   } else if (!validateEmail(email)) {
-    nextErrors.email = "Dia chi email khong dung dinh dang.";
+    nextErrors.email = "Địa chỉ email không đúng định dạng.";
   }
 
   if (!password) {
-    nextErrors.password = "Vui long nhap mat khau.";
+    nextErrors.password = "Vui lòng nhập mật khẩu.";
   } else if (password.length < 6) {
-    nextErrors.password = "Mat khau phai co it nhat 6 ky tu.";
+    nextErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
   }
 
   return nextErrors;
@@ -44,7 +43,7 @@ function mapApiError(error: unknown) {
     return error.message;
   }
 
-  return "Khong the dang nhap luc nay. Vui long thu lai sau.";
+  return "Không thể đăng nhập lúc này. Vui lòng thử lại sau.";
 }
 
 export function SignInPage() {
@@ -99,117 +98,125 @@ export function SignInPage() {
 
   return (
     <AuthShell
-      posterTag="Welcome back"
-      posterTitle="Dang nhap de tiep tuc hanh trinh."
-      posterBody="Phase 12.4 chi dung hai auth page, nhung form nay da noi voi backend that va su dung session flow cua Phase 12.3."
-      ticketTitle="Session boarding"
+      posterTag="AI Smart Travel Planner"
+      posterTitle="Lên lịch trình thông minh hơn, vui hơn."
+      posterBody="Đăng nhập để tiếp tục các chuyến đi đang lên kế hoạch, lưu địa điểm yêu thích và mở lại itinerary đã tạo."
+      ticketTitle="Nha Trang Summer"
     >
-      <BounceCard>
-        <Card className={styles.card} elevated>
+      <section className={styles.card}>
         {signedInUser ? (
           <div className={styles.successCard}>
             <span aria-hidden="true" className={styles.successBadge}>
-              OK
+              <i className={`material-symbols-outlined ${styles.successBadgeIcon}`}>check</i>
             </span>
 
             <div className={styles.successMeta}>
-              <h2 className={styles.title}>Dang nhap thanh cong.</h2>
+              <h2 className={styles.title}>Đăng nhập thành công.</h2>
               <p className={styles.description}>
-                Session da duoc luu cho trinh duyet hien tai. Minh cung da goi
-                `/auth/me` de xac nhan token va interceptor dang hoat dong.
+                Phiên đăng nhập đã được lưu cho trình duyệt hiện tại. Bạn có thể mở planner
+                hoặc xem lại các chuyến đi đã lưu.
               </p>
             </div>
 
             <ul className={styles.successList}>
-              <li>Ho ten: {signedInUser.fullName}</li>
+              <li>Họ tên: {signedInUser.fullName}</li>
               <li>Email: {signedInUser.email}</li>
               <li>Role: {signedInUser.role}</li>
             </ul>
 
             <div className={styles.buttonStack}>
-              <Link className={styles.textLink} href="/planner">
+              <Link className={styles.primaryAction} href="/planner">
                 Sang planner
               </Link>
-              <Link className={styles.textLink} href="/trips">
-                Xem saved trips
+              <Link className={styles.secondaryAction} href="/trips">
+                Xem chuyến đi đã lưu
               </Link>
-              <Button disabled={submitting} fullWidth onClick={handleLogout}>
-                {submitting ? "Dang dang xuat..." : "Dang xuat khoi phien nay"}
-              </Button>
+              <button
+                className={styles.secondaryAction}
+                disabled={submitting}
+                onClick={handleLogout}
+                type="button"
+              >
+                {submitting ? "Đang đăng xuất..." : "Đăng xuất khỏi phiên này"}
+              </button>
             </div>
           </div>
         ) : (
           <div className={styles.stack}>
             <div className={styles.header}>
               <span className={styles.eyebrow}>Welcome back</span>
-              <KineticTitle
-                tag="h2"
-                text="Dang nhap TripWise"
-                size="section"
-                variant="pop"
-                shadowVariant="black"
-                className={styles.title}
-              />
-              <p className={styles.description}>
-                Tiep tuc cac chuyen di dang len ke hoach va giu session auth theo
-                dung flow backend `/api/v1/auth`.
-              </p>
+              <KineticTitle text="Đăng nhập TripWise" size="card" variant="pop" className={styles.title} />
+              <p className={styles.description}>Tiếp tục chuyến đi đang lên kế hoạch của bạn.</p>
             </div>
 
             {authError ? (
-              <ErrorMessage
-                title="Dang nhap chua thanh cong"
-                message={authError}
-                actions={
-                  <>
-                    <Button
-                      fullWidth={false}
-                      onClick={() => {
-                        setAuthError(null);
-                        setErrors({});
-                      }}
-                      variant="secondary"
-                    >
-                      Thu lai
-                    </Button>
-                    <Link className={styles.textLink} href="/register">
-                      Tao tai khoan moi
-                    </Link>
-                  </>
-                }
-              />
+              <div className={styles.errorCard} role="alert">
+                <strong>Đăng nhập chưa thành công</strong>
+                <p>{authError}</p>
+                <button
+                  className={styles.textButton}
+                  onClick={() => {
+                    setAuthError(null);
+                    setErrors({});
+                  }}
+                  type="button"
+                >
+                  Thử lại
+                </button>
+              </div>
             ) : null}
 
             <form className={styles.form} onSubmit={handleSubmit}>
-              <Input
-                autoComplete="email"
-                error={errors.email}
-                label="Dia chi email"
-                name="email"
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="khanh@example.com"
-                value={email}
-              />
+              <label className={styles.fieldRow}>
+                <span>Địa chỉ Email</span>
+                <span className={styles.inputShell}>
+                  <i className={`material-symbols-outlined ${styles.inputIcon}`} aria-hidden="true">
+                    mail
+                  </i>
+                  <input
+                    autoComplete="email"
+                    className={styles.input}
+                    name="email"
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="khanh@example.com"
+                    type="email"
+                    value={email}
+                  />
+                </span>
+                {errors.email ? <span className={styles.inlineError}>{errors.email}</span> : null}
+              </label>
 
-              <div className={styles.passwordWrap}>
-                <Input
-                  autoComplete="current-password"
-                  error={errors.password}
-                  label="Mat khau"
-                  name="password"
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Nhap mat khau..."
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                />
-                <button
-                  className={styles.toggleButton}
-                  onClick={() => setShowPassword((current) => !current)}
-                  type="button"
-                >
-                  {showPassword ? "An" : "Hien"}
-                </button>
-              </div>
+              <label className={styles.fieldRow}>
+                <span>Mật khẩu</span>
+                <span className={styles.inputShell}>
+                  <i className={`material-symbols-outlined ${styles.inputIcon}`} aria-hidden="true">
+                    lock
+                  </i>
+                  <input
+                    autoComplete="current-password"
+                    className={styles.input}
+                    name="password"
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Nhập mật khẩu..."
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                  />
+                  <button
+                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPassword((current) => !current)}
+                    type="button"
+                  >
+                    <i
+                      className={`material-symbols-outlined ${styles.passwordToggleIcon}`}
+                      aria-hidden="true"
+                    >
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </i>
+                  </button>
+                </span>
+                {errors.password ? <span className={styles.inlineError}>{errors.password}</span> : null}
+              </label>
 
               <div className={styles.optionsRow}>
                 <label className={styles.checkboxLabel}>
@@ -219,43 +226,45 @@ export function SignInPage() {
                     onChange={(event) => setRememberMe(event.target.checked)}
                     type="checkbox"
                   />
-                  <span>Ghi nho phien dang nhap tren may nay</span>
+                  <span>Ghi nhớ đăng nhập</span>
                 </label>
 
-                <span className={styles.supportHint}>
-                  Refresh token van duoc xoay vong o backend.
-                </span>
+                <Link className={styles.textLink} href="/forgot-password">
+                  Quên mật khẩu?
+                </Link>
               </div>
 
-              <div className={styles.buttonStack}>
-                <Button disabled={submitting || loadingProfile} fullWidth type="submit">
-                  {submitting ? "Dang dang nhap..." : "Dang nhap vao TripWise"}
-                </Button>
-              </div>
+              <button
+                className={styles.primaryAction}
+                disabled={submitting || loadingProfile}
+                type="submit"
+              >
+                {submitting || loadingProfile ? "Đang đăng nhập..." : "Đăng nhập vào TripWise"}
+              </button>
             </form>
 
-            {loadingProfile ? <Loading label="Dang xac nhan phien dang nhap..." /> : null}
+            {loadingProfile ? (
+              <div className={styles.loadingLine}>Đang xác nhận phiên đăng nhập...</div>
+            ) : null}
 
-            <div className={styles.divider}>Phase 12.4</div>
+            <div className={styles.divider}>Hoặc tiếp tục bằng</div>
 
-            <div className={styles.supportCard}>
-              <div className={styles.supportTitle}>Scope note</div>
-              <p className={styles.supportBody}>
-                Page nay chi cover login email/password va session verify. OAuth,
-                forgot password va protected dashboard se de phase sau.
-              </p>
-            </div>
+            <button className={styles.googleButton} type="button">
+              <i className={`material-symbols-outlined ${styles.googleIcon}`} aria-hidden="true">
+                account_circle
+              </i>
+              <span>Tiếp tục với Google</span>
+            </button>
 
             <p className={styles.footnote}>
-              Chua co tai khoan?{" "}
+              Chưa có tài khoản?{" "}
               <Link className={styles.textLink} href="/register">
-                Dang ky ngay
+                Đăng ký ngay
               </Link>
             </p>
           </div>
         )}
-      </Card>
-      </BounceCard>
+      </section>
     </AuthShell>
   );
 }

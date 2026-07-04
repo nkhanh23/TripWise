@@ -1,4 +1,5 @@
-import { Card, Loading } from "@/components/ui";
+import { Card } from "@/components/ui/Card";
+import { Loading } from "@/components/ui/Loading";
 
 export default function RootLoading() {
   return (

@@ -1,5 +1,10 @@
 import { TripPlannerPage } from "@/components/planner/TripPlannerPage";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 export default function PlannerRoute() {
-  return <TripPlannerPage />;
+  return (
+    <AppLayout>
+      <TripPlannerPage />
+    </AppLayout>
+  );
 }

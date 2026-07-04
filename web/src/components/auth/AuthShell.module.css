@@ -1,18 +1,20 @@
 .shell {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top right, rgba(32, 167, 216, 0.2), transparent 30%),
-    linear-gradient(180deg, var(--color-canvas), #efd6a8);
-  padding: 24px;
+    radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.42), transparent 28%),
+    radial-gradient(circle at 80% 8%, rgba(255, 209, 102, 0.18), transparent 26%),
+    linear-gradient(180deg, #f7e7c6 0%, #f7dfb6 100%);
+  color: #111111;
+  padding: 16px 24px 64px;
 }
 
 .frame {
-  width: min(1240px, 100%);
+  width: min(1280px, 100%);
+  min-height: calc(100vh - 58px);
   margin: 0 auto;
-  min-height: calc(100vh - 48px);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 24px;
+  gap: 32px;
 }
 
 .header,
@@ -20,139 +22,182 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 24px;
+}
+
+.header {
+  padding-inline: 28px;
 }
 
 .brandLink {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: var(--color-brand);
+  color: #087ca7;
   text-decoration: none;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 2vw, 2.2rem);
-  text-shadow: 2px 2px 0 var(--color-ink);
+  font-size: clamp(1.9rem, 2.4vw, 2.45rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-shadow: 2px 2px 0 #111111;
 }
 
 .brandMark {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 2px solid var(--color-ink);
-  background: var(--color-yellow);
-  color: var(--color-ink);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 3px 3px 0 var(--color-ink);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+  color: #20a7d8;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 40;
 }
 
 .headerActions {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .headerLink,
 .footerLink {
-  color: var(--color-ink);
-  font-size: 0.85rem;
-  font-weight: 800;
+  color: #111111;
+  font-size: 0.95rem;
+  font-weight: 900;
   text-decoration: none;
   border-bottom: 2px dashed currentColor;
 }
 
+.demoButton {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #111111;
+  border-radius: 18px;
+  background: #ffd166;
+  color: #111111;
+  padding: 0 20px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 5px 5px 0 #111111;
+  transition:
+    transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 140ms ease;
+}
+
+.demoButton:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 #111111;
+}
+
 .content {
   display: grid;
-  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
-  gap: 28px;
-  align-items: stretch;
+  grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr);
+  gap: 32px;
+  padding-inline: 24px;
 }
 
 .formColumn {
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .poster {
+  min-height: 520px;
   position: relative;
-  overflow: hidden;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 50%),
-    linear-gradient(180deg, var(--color-surface), #ffe9bf);
-  border: 3px solid var(--color-ink);
-  border-radius: 28px;
-  box-shadow: 10px 10px 0 var(--color-ink);
-  padding: 32px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 560px;
+  overflow: hidden;
+  border: 3px solid #111111;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.82), transparent 34%),
+    linear-gradient(135deg, #fffdf3 0%, #fff6de 54%, #f6dcae 100%);
+  padding: 32px;
+  box-shadow: 8px 8px 0 #111111;
 }
 
 .stamp {
+  width: 104px;
+  height: 104px;
   position: absolute;
-  top: 22px;
-  right: 22px;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  border: 3px dashed var(--color-red);
-  color: var(--color-red);
+  top: 36px;
+  right: 34px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  border: 3px dashed #e6392e;
+  border-radius: 999px;
+  color: #e6392e;
+  font-size: 0.72rem;
   font-weight: 900;
+  line-height: 1.16;
   text-align: center;
   text-transform: uppercase;
-  transform: rotate(13deg);
+  transform: rotate(12deg);
 }
 
 .posterTop {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .posterTag {
-  justify-self: start;
-  border: 2px solid var(--color-ink);
+  width: fit-content;
+  border: 3px solid #111111;
   border-radius: 999px;
-  background: var(--color-lime);
-  padding: 6px 12px;
-  font-size: 0.72rem;
+  background: #b8f24a;
+  padding: 8px 16px;
+  font-size: 0.88rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .posterTitle {
-  margin: 0;
-  max-width: 14ch;
+  max-width: 19ch;
+  margin: 10px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(2.3rem, 3.5vw, 4rem);
-  line-height: 0.98;
+  font-size: clamp(2.45rem, 3.7vw, 3.75rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
   text-shadow:
-    3px 3px 0 var(--color-yellow),
-    4px 4px 0 var(--color-ink);
+    3px 3px 0 #ffd166,
+    5px 5px 0 #111111;
+}
+
+.compassBadge {
+  width: 52px;
+  height: 52px;
+  display: inline-grid;
+  place-items: center;
+  border: 3px solid #111111;
+  border-radius: 999px;
+  background: #ffd166;
+  box-shadow: 4px 4px 0 #111111;
+  transform: rotate(-12deg);
+}
+
+.compassIcon {
+  font-size: 1.7rem;
+  line-height: 1;
+  color: #111111;
+  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
 }
 
 .posterBody {
-  max-width: 48ch;
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.6;
+  max-width: 58ch;
+  margin: 20px 0 0;
+  color: #3a2f2a;
+  font-size: clamp(0.94rem, 1.05vw, 1.02rem);
+  font-weight: 800;
+  line-height: 1.56;
 }
 
 .featureList {
   display: grid;
-  gap: 14px;
-  margin: 24px 0 0;
+  gap: 18px;
+  margin: 38px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -161,121 +206,182 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-weight: 700;
   color: #3a2f2a;
+  font-size: clamp(0.84rem, 0.96vw, 0.92rem);
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 .featureBadge {
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
-  border-radius: 50%;
-  border: 2px solid var(--color-ink);
-  background: var(--color-yellow);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 3px 3px 0 var(--color-ink);
-  font-size: 0.8rem;
-  font-weight: 900;
+  border: 3px solid #111111;
+  border-radius: 999px;
+  background: #ffd166;
+  color: #111111;
+  box-shadow: 3px 3px 0 #111111;
+  font-size: 1rem;
+  line-height: 1;
+  font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 20;
 }
 
 .ticket {
+  min-height: 96px;
   position: relative;
-  background: var(--color-panel);
-  border: 2px solid var(--color-ink);
-  border-radius: 20px;
-  box-shadow: 5px 5px 0 var(--color-ink);
-  padding: 20px 20px 20px 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  border: 4px solid #111111;
+  border-radius: 22px;
+  background: #fffdf3;
+  padding: 18px 24px 18px 40px;
+  box-shadow: 7px 7px 0 #111111;
 }
 
 .ticket::before {
   content: "";
+  width: 26px;
+  height: 26px;
   position: absolute;
-  left: -11px;
+  left: -15px;
   top: 50%;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--color-ink);
-  background: var(--color-surface);
+  border: 3px solid #111111;
+  border-radius: 999px;
+  background: #f7e7c6;
   transform: translateY(-50%);
 }
 
 .ticketLabel {
-  font-size: 0.7rem;
+  display: block;
+  color: #7a6a58;
+  font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
-  color: var(--color-muted);
   text-transform: uppercase;
 }
 
 .ticketTitle {
-  margin: 8px 0 18px;
-  font-family: var(--font-display);
-  font-size: 1.6rem;
+  margin-top: 6px;
+  color: #111111;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .ticketStats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, auto);
+  gap: 24px;
+  align-items: center;
 }
 
-.ticketStatValue {
+.ticketStats strong {
   display: block;
   margin-top: 4px;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 900;
+  white-space: nowrap;
+}
+
+.ticketStatBlue {
+  color: #20a7d8;
+}
+
+.ticketStatRed {
+  color: #e6392e;
+}
+
+.ticketStatLime {
+  color: #7ec413;
+  text-shadow: 1px 1px 0 #111111;
 }
 
 .footer {
   flex-wrap: wrap;
-  border-top: 2px dashed rgba(17, 17, 17, 0.18);
-  padding-top: 16px;
-  color: var(--color-muted);
-  font-size: 0.82rem;
-  font-weight: 700;
+  border-top: 2px dashed rgba(17, 17, 17, 0.26);
+  padding: 18px 28px 0;
+  color: #7a6a58;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 .footerNav {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1080px) {
   .content {
     grid-template-columns: 1fr;
   }
 
+  .formColumn {
+    max-width: 680px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
   .poster {
-    min-height: 0;
+    min-height: 520px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .shell {
-    padding: 16px;
+    padding: 18px 14px;
   }
 
   .frame {
-    min-height: calc(100vh - 32px);
-    gap: 18px;
+    min-height: calc(100vh - 36px);
+    gap: 26px;
   }
 
   .header,
   .footer {
     align-items: flex-start;
     flex-direction: column;
+    padding-inline: 0;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .content {
+    padding-inline: 0;
   }
 
   .poster {
     padding: 24px;
+    border-radius: 22px;
+    box-shadow: 7px 7px 0 #111111;
+  }
+
+  .stamp {
+    width: 78px;
+    height: 78px;
+    top: 20px;
+    right: 20px;
+    font-size: 0.58rem;
+  }
+
+  .posterTitle {
+    font-size: clamp(2.4rem, 12vw, 3.35rem);
+  }
+
+  .ticket {
+    grid-template-columns: 1fr;
   }
 
   .ticketStats {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }

@@ -33,7 +33,7 @@ Tài liệu này đặc tả chi tiết trách nhiệm, thực thể, use cases,
 ---
 
 ## 3. Module Place (Địa điểm)
-- **Responsibility**: Quản lý cơ sở dữ liệu địa điểm du lịch thực tế tại Nha Trang, thực hiện các truy vấn tìm kiếm không gian.
+- **Responsibility**: Quản lý cơ sở dữ liệu địa điểm du lịch thực tế, bắt đầu từ Nha Trang và mở rộng dần sang toàn Việt Nam, thực hiện các truy vấn tìm kiếm không gian.
 - **Main Entities**: `Place` (name, location geography, estimatedCost, durationMinutes, tags, bestTime, indoor, isActive).
 - **Main Use Cases**:
   - `SearchPlaces`: Tìm kiếm địa điểm theo tên, danh mục, tags.
@@ -128,7 +128,8 @@ Tài liệu này đặc tả chi tiết trách nhiệm, thực thể, use cases,
 - **Responsibility**: Cung cấp các công cụ quản trị dữ liệu địa điểm, người dùng và theo dõi trạng thái hệ thống.
 - **Main Entities**: Kế thừa thực thể từ các module Place, User.
 - **Main Use Cases**:
-  - `ImportPlacesData`: Import hàng loạt dữ liệu địa điểm Nha Trang thô từ các nguồn mở.
+  - `ImportPlacesData`: Import hàng loạt dữ liệu địa điểm từ nguồn mở có kiểm soát vào database nội bộ.
+  - `ReviewImportedPlaces`: Kiểm duyệt các địa điểm mới được import trước khi dùng cho recommendation chất lượng cao.
 - **APIs liên quan**: `/api/v1/admin/**` (GET/POST/PUT/DELETE).
 - **Security Note**: Tất cả các endpoint đều được bảo vệ nghiêm ngặt bằng Spring Security, chỉ cho phép vai trò `ADMIN` truy cập.
 

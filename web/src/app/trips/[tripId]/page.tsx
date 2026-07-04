@@ -1,4 +1,5 @@
 import { TripResultPage } from "@/components/trips/TripResultPage";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 type TripDetailRouteProps = {
   params: Promise<{
@@ -9,5 +10,9 @@ type TripDetailRouteProps = {
 export default async function TripDetailRoute({ params }: TripDetailRouteProps) {
   const { tripId } = await params;
 
-  return <TripResultPage tripId={tripId} />;
+  return (
+    <AppLayout>
+      <TripResultPage tripId={tripId} />
+    </AppLayout>
+  );
 }

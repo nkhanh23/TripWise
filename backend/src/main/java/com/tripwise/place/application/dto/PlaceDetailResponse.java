@@ -16,7 +16,11 @@ public class PlaceDetailResponse {
 
     private Long id;
     private String name;
+    private String province;
     private String city;
+    private String district;
+    private String ward;
+    private String displayAddress;
     private Long categoryId;
     private String categoryName;
     private String categorySlug;
@@ -27,6 +31,9 @@ public class PlaceDetailResponse {
     private Boolean verified;
     private String priceLevel;
     private BigDecimal rating;
+    private String verificationStatus;
+    private BigDecimal popularityScore;
+    private String primaryImageUrl;
     private Double latitude;
     private Double longitude;
     private Set<String> tags;

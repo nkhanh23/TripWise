@@ -1,4 +1,5 @@
 import { SettingsPage } from "@/components/settings/SettingsPage";
+import { AppLayout } from "@/components/layout/AppLayout";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <SettingsPage />;
+  return (
+    <AppLayout>
+      <SettingsPage />
+    </AppLayout>
+  );
 }

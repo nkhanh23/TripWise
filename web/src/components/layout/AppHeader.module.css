@@ -1,0 +1,97 @@
+.headerContainer {
+  width: 100%;
+  background-color: #FFF6DE;
+  border-bottom: 2px solid #111111;
+  box-shadow: 0 2px 0 #111111;
+  z-index: 40;
+  position: relative;
+  font-family: var(--font-body);
+}
+
+.header {
+  width: 100%;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.leftSide {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: #20A7D8;
+  text-shadow: 1px 1px 0 #111111;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 800;
+  background-color: #B8F24A;
+  border: 1.5px solid #111111;
+  border-radius: 6px;
+  padding: 1px 6px;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+
+.rightSide {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notificationBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  padding: 0;
+  color: #7A6A58;
+  transition: color 0.15s ease;
+}
+
+.notificationBtn:hover {
+  color: #20A7D8;
+}
+
+.avatarLink {
+  text-decoration: none;
+  display: flex;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #111111;
+  background-color: #FFD166;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  color: #111111;
+  transition: transform 150ms ease;
+  box-shadow: 2px 2px 0 #111111;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 767px) {
+  .header {
+    padding: 12px 16px;
+  }
+  .brandTitle {
+    font-size: 18px;
+  }
+}

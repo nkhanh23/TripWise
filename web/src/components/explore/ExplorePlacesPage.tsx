@@ -1,901 +1,865 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { AppContent } from '@/components/layout/AppContent';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { KineticTitle } from '@/components/motion/KineticTitle';
-import { FilmGrainOverlay } from '@/components/motion/FilmGrainOverlay';
-import { ErrorBanner } from '@/components/ui/ErrorBanner';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { RetroImage } from '@/components/ui/RetroImage';
-import { MapPanel } from '@/components/map/MapPanel';
-import { searchPlaces } from '@/lib/api';
 
-interface PlaceData {
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { AppContent } from "@/components/layout/AppContent";
+import { FilmGrainOverlay } from "@/components/motion/FilmGrainOverlay";
+import { KineticTitle } from "@/components/motion/KineticTitle";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { RetroImage } from "@/components/ui/RetroImage";
+import { searchPlaces, getPlaceMapMarkers, getPlaceDetail } from "@/lib/api";
+import type { PlaceResponse, PageResponse, PlaceMapMarkerResponse } from "@/lib/api/contracts";
+import type { MapMarkerData } from "./ExploreLeafletMap";
+import styles from "./ExplorePlacesPage.module.css";
+
+const ExploreLeafletMap = dynamic(() => import("./ExploreLeafletMap"), {
+  ssr: false,
+  loading: () => (
+    <div className={styles.mapLoading}>
+      <span className="material-symbols-outlined">map</span>
+      <span>Dang tai ban do...</span>
+    </div>
+  ),
+});
+
+type ExploreCategory =
+  | "Tat ca"
+  | "Bien"
+  | "Van hoa"
+  | "An uong"
+  | "Cafe"
+  | "Check-in"
+  | "Mua sam"
+  | "Thien nhien"
+  | "Khac";
+
+type ViewState = "default" | "loading" | "empty" | "error";
+
+type ExplorePlaceData = {
   id: string;
   name: string;
-  category: 'Biển' | 'Văn hóa' | 'Ăn uống' | 'Cafe' | 'Check-in' | 'Mua sắm' | 'Thiên nhiên';
+  province: string;
+  city: string;
+  category: ExploreCategory;
+  categorySlug: string;
   tags: string[];
-  distance: string;
-  duration: string;
-  cost: string;
+  rating: number;
+  priceLevel: string;
+  durationLabel: string;
+  costLabel: string;
+  imageUrl: string;
+  description: string;
   lat: number;
   lng: number;
-  description: string;
-  bestTime: string;
-  markerType: 'accommodation' | 'place' | 'origin';
-  imageUrl: string;
+  verificationStatus: string;
+};
+
+const categories: ExploreCategory[] = [
+  "Tat ca",
+  "Bien",
+  "Van hoa",
+  "An uong",
+  "Cafe",
+  "Check-in",
+  "Mua sam",
+  "Thien nhien",
+];
+
+const categoryMeta: Record<
+  ExploreCategory,
+  { label: string; icon: string; badge: "info" | "success" | "warn" | "neutral" }
+> = {
+  "Tat ca": { label: "Tat ca", icon: "apps", badge: "neutral" },
+  Bien: { label: "Bien", icon: "water", badge: "info" },
+  "Van hoa": { label: "Van hoa", icon: "temple_hindu", badge: "warn" },
+  "An uong": { label: "An uong", icon: "restaurant", badge: "warn" },
+  Cafe: { label: "Cafe", icon: "local_cafe", badge: "neutral" },
+  "Check-in": { label: "Check-in", icon: "photo_camera", badge: "success" },
+  "Mua sam": { label: "Mua sam", icon: "shopping_bag", badge: "warn" },
+  "Thien nhien": { label: "Thien nhien", icon: "park", badge: "success" },
+  Khac: { label: "Khac", icon: "place", badge: "neutral" },
+};
+
+const SORT_OPTIONS = [
+  { value: "popularityScore_desc", label: "Pho bien" },
+  { value: "rating_desc", label: "Danh gia cao" },
+  { value: "name_asc", label: "Ten A-Z" },
+  { value: "name_desc", label: "Ten Z-A" },
+] as const;
+
+const PAGE_SIZE = 20;
+const MAP_MARKER_LIMIT = 200;
+
+function normalizeCategory(value?: string): ExploreCategory {
+  const normalized = (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
+  if (normalized.includes("bien")) return "Bien";
+  if (normalized.includes("van hoa")) return "Van hoa";
+  if (normalized.includes("an")) return "An uong";
+  if (normalized.includes("cafe")) return "Cafe";
+  if (normalized.includes("check")) return "Check-in";
+  if (normalized.includes("mua")) return "Mua sam";
+  if (normalized.includes("thien nhien")) return "Thien nhien";
+
+  return "Khac";
+}
+
+function imageUrlFallback(url?: string): string {
+  return url && url.length > 0
+    ? url
+    : "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&auto=format&fit=crop&q=60";
+}
+
+function mapPlaceToExplorePlace(place: PlaceResponse): ExplorePlaceData {
+  return {
+    id: place.id.toString(),
+    name: place.name,
+    province: place.province ?? "",
+    city: place.city,
+    category: normalizeCategory(place.categoryName),
+    categorySlug: place.categorySlug ?? "",
+    tags: place.tags ?? [],
+    rating: place.rating ?? 0,
+    priceLevel: place.priceLevel ?? "",
+    durationLabel: place.durationMinutes ? `${place.durationMinutes} phut` : "30 phut",
+    costLabel: place.estimatedCost
+      ? `${place.estimatedCost.toLocaleString("vi-VN")} ₫`
+      : "",
+    imageUrl: imageUrlFallback(place.primaryImageUrl),
+    description: place.description ?? "",
+    lat: place.latitude ?? 12.2415,
+    lng: place.longitude ?? 109.196,
+    verificationStatus: place.verificationStatus ?? "UNVERIFIED",
+  };
+}
+
+function toExploreMarkers(apiMarkers: PlaceMapMarkerResponse[]): MapMarkerData[] {
+  return apiMarkers.map((m) => ({
+    id: m.id.toString(),
+    lat: m.latitude,
+    lng: m.longitude,
+    label: m.name,
+    categorySlug: m.categorySlug,
+  }));
+}
+
+function parseSortOption(value: string): { sortBy: string; sortDirection: string } {
+  const [sortBy, sortDirection] = value.split("_");
+  return { sortBy, sortDirection };
 }
 
 export const ExplorePlacesPage: React.FC = () => {
-  // Page states
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>('p-1'); // Default select first
-  const [activeCategory, setActiveCategory] = useState<string>('Tất cả');
-  const [searchQuery, setSearchQuery] = useState('Nha Trang');
-  const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>(['p-2', 'p-7']);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<ExploreCategory>("Tat ca");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [provinceQuery, setProvinceQuery] = useState("");
+  const [sortOption, setSortOption] = useState<string>("popularityScore_desc");
+  const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>([]);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
-  const [addToTripMenuOpen, setAddToTripMenuOpen] = useState<string | null>(null); // holds place.id when menu open
+  const [addToTripMenuOpen, setAddToTripMenuOpen] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [viewState, setViewState] = useState<'default' | 'loading' | 'empty' | 'error'>('default');
-  
-  // Extra toggle parameters
-  const [filterNearMe, setFilterNearMe] = useState(false);
-  const [filterFree, setFilterFree] = useState(false);
+  const [viewState, setViewState] = useState<ViewState>("loading");
+  const [places, setPlaces] = useState<ExplorePlaceData[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [mapMarkers, setMapMarkers] = useState<MapMarkerData[]>([]);
+  const hasSelectedRef = useRef(false);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto hide toast
   useEffect(() => {
-    if (toastMessage) {
-      const t = setTimeout(() => setToastMessage(null), 3000);
-      return () => clearTimeout(t);
-    }
+    if (!toastMessage) return;
+    const timer = window.setTimeout(() => setToastMessage(null), 3000);
+    return () => window.clearTimeout(timer);
   }, [toastMessage]);
 
-  const [places, setPlaces] = useState<PlaceData[]>([]);
+  const loadPlaces = useCallback(async (pageNum: number) => {
+    setViewState("loading");
+
+    try {
+      const { sortBy, sortDirection } = parseSortOption(sortOption);
+
+      const response: PageResponse<PlaceResponse> = await searchPlaces({
+        province: provinceQuery || undefined,
+        keyword: searchQuery || undefined,
+        categoryId: activeCategory === "Tat ca" ? undefined : undefined,
+        sortBy,
+        sortDirection,
+        page: pageNum,
+        size: PAGE_SIZE,
+      });
+
+      const mapped = response.content.map(mapPlaceToExplorePlace);
+      setPlaces(mapped);
+      setPage(response.page);
+      setTotalPages(response.totalPages);
+      setTotalElements(response.totalElements);
+      setViewState(mapped.length === 0 ? "empty" : "default");
+
+      if (mapped.length > 0 && !hasSelectedRef.current) {
+        hasSelectedRef.current = true;
+        setSelectedPlaceId(mapped[0].id);
+      }
+    } catch {
+      setViewState("error");
+    }
+  }, [provinceQuery, searchQuery, activeCategory, sortOption]);
+
+  const loadMapMarkers = useCallback(async () => {
+    try {
+      const markers = await getPlaceMapMarkers({
+        minLat: -90,
+        minLng: -180,
+        maxLat: 90,
+        maxLng: 180,
+        province: provinceQuery || undefined,
+        categoryId: activeCategory === "Tat ca" ? undefined : undefined,
+        limit: MAP_MARKER_LIMIT,
+      });
+      setMapMarkers(toExploreMarkers(markers));
+    } catch {
+      setMapMarkers([]);
+    }
+  }, [provinceQuery, activeCategory]);
+
+  const triggerSearch = useCallback((pageNum: number) => {
+    setPage(pageNum);
+    setSelectedPlaceId(null);
+    hasSelectedRef.current = false;
+    void loadPlaces(pageNum);
+    void loadMapMarkers();
+  }, [loadPlaces, loadMapMarkers]);
+
+  const scheduleDebouncedSearch = useCallback((pageNum: number) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      triggerSearch(pageNum);
+    }, 400);
+  }, [triggerSearch]);
 
   useEffect(() => {
-    const fetchPlaces = async () => {
-      setViewState('loading');
-      try {
-        const response = await searchPlaces({ size: 50 });
-        if (response && response.content) {
-          const apiPlaces: PlaceData[] = response.content.map(p => ({
-            id: p.id.toString(),
-            name: p.name,
-            category: (p.categoryName || 'Khác') as any,
-            tags: p.tags || [],
-            distance: p.distanceMeters ? `${p.distanceMeters}m` : '0m',
-            duration: p.durationMinutes ? `${p.durationMinutes} phút` : '30 phút',
-            cost: p.estimatedCost ? `${p.estimatedCost.toLocaleString('vi-VN')} ₫` : '0 ₫',
-            lat: p.latitude || 12.2415,
-            lng: p.longitude || 109.1960,
-            description: p.description || '',
-            bestTime: 'Cả ngày',
-            markerType: 'place',
-            imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60', // random default
-          }));
-          setPlaces(apiPlaces);
-          setViewState(apiPlaces.length === 0 ? 'empty' : 'default');
-        } else {
-          setViewState('error');
-        }
-      } catch (error) {
-        console.error("Failed to fetch places:", error);
-        setViewState('error');
-      }
+    void loadPlaces(0);
+    void loadMapMarkers();
+  }, [loadPlaces, loadMapMarkers]);
+
+  useEffect(() => {
+    scheduleDebouncedSearch(0);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
-    fetchPlaces();
+  }, [provinceQuery, searchQuery, activeCategory, sortOption, scheduleDebouncedSearch]);
+
+  const handleSearch = useCallback(() => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    triggerSearch(0);
+  }, [triggerSearch]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    if (newPage < 0 || newPage >= totalPages) return;
+    void loadPlaces(newPage);
+  }, [loadPlaces, totalPages]);
+
+  const handleCategorySelect = useCallback((category: ExploreCategory) => {
+    setActiveCategory(category);
+    setSelectedPlaceId(null);
+    setPage(0);
+    hasSelectedRef.current = false;
   }, []);
 
-  // Categories list
-  const categories = ['Tất cả', 'Biển', 'Văn hóa', 'Ăn uống', 'Cafe', 'Check-in', 'Mua sắm', 'Thiên nhiên'];
-
-  // Filter list logic
-  const filteredPlaces = places.filter((place) => {
-    // 1. Search Query filter
-    const matchesSearch = searchQuery
-      ? place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        place.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        place.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-      : true;
-
-    // 2. Category filter
-    const matchesCategory = activeCategory === 'Tất cả' ? true : place.category === activeCategory;
-
-    // 3. Extra parameter filters
-    const matchesNearMe = filterNearMe ? parseFloat(place.distance) < 2 : true;
-    const matchesFree = filterFree ? place.cost === '0 ₫' : true;
-
-    return matchesSearch && matchesCategory && matchesNearMe && matchesFree;
-  });
-
-  const handleCategorySelect = (cat: string) => {
-    setActiveCategory(cat);
-    setSelectedPlaceId(null);
-  };
-
-  const handlePlaceSelect = (id: string) => {
+  const handlePlaceSelect = useCallback((id: string) => {
     setSelectedPlaceId(id);
-    const place = places.find((p) => p.id === id);
-    if (place) {
-      setDetailDrawerOpen(false); // keep drawer closed until clicked details
-    }
-  };
+    setDetailDrawerOpen(false);
+  }, []);
 
-  const handleSaveToggle = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (savedPlaceIds.includes(id)) {
-      setSavedPlaceIds(savedPlaceIds.filter((p) => p !== id));
-      setToastMessage('Đã bỏ lưu địa điểm này 💔');
-    } else {
-      setSavedPlaceIds([...savedPlaceIds, id]);
-      setToastMessage('Đã thêm vào danh sách yêu thích! ❤️');
-    }
-  };
+  const handleSaveToggle = useCallback((id: string, event?: React.MouseEvent) => {
+    event?.stopPropagation();
 
-  const handleAddPlaceToTrip = (placeName: string, tripName: string) => {
-    setToastMessage(`Đã thêm "${placeName}" vào hành trình "${tripName}"! 📅`);
-    setAddToTripMenuOpen(null);
-  };
+    setSavedPlaceIds((prev) => {
+      if (prev.includes(id)) {
+        setToastMessage("Da bo luu dia diem nay.");
+        return prev.filter((pid) => pid !== id);
+      }
+      setToastMessage("Da them vao danh sach yeu thich.");
+      return [...prev, id];
+    });
+  }, []);
 
-  const handleMarkerClick = (markerId: string) => {
+  const handleMarkerClick = useCallback((markerId: string) => {
     setSelectedPlaceId(markerId);
     setDetailDrawerOpen(false);
-  };
+  }, []);
 
-  // Build marker list for Map based on filtered results
-  const mapMarkers = filteredPlaces.map((p) => ({
-    id: p.id,
-    lat: p.lat,
-    lng: p.lng,
-    label: p.name,
-    selected: selectedPlaceId === p.id,
-    type: p.markerType,
-  }));
+  const resetFilters = useCallback(() => {
+    setActiveCategory("Tat ca");
+    setSearchQuery("");
+    setProvinceQuery("");
+    setSortOption("popularityScore_desc");
+    setPage(0);
+    setSelectedPlaceId(null);
+    hasSelectedRef.current = false;
+  }, []);
 
-  const activePlaceObj = places.find((p) => p.id === selectedPlaceId);
+  const filteredPlaces = useMemo(() => {
+    if (activeCategory === "Tat ca") return places;
+    return places.filter((p) => p.category === activeCategory);
+  }, [places, activeCategory]);
+
+  const activePlaceObj = useMemo(
+    () => places.find((p) => p.id === selectedPlaceId) ?? filteredPlaces[0] ?? null,
+    [places, filteredPlaces, selectedPlaceId],
+  );
+
+  const safeMarkers: MapMarkerData[] = useMemo(
+    () => mapMarkers.map((m) => ({ ...m, selected: m.id === selectedPlaceId })),
+    [mapMarkers, selectedPlaceId],
+  );
+
+  const renderLoadingState = () => (
+    <div className={styles.stateGrid}>
+      <div className={styles.stateLeft}>
+        <Skeleton variant="card" />
+        <Skeleton variant="text" />
+        <Skeleton variant="card" />
+        <Skeleton variant="text" />
+      </div>
+      <div className={styles.stateRight}>
+        <div className={styles.loadingMap}>
+          <span className={`material-symbols-outlined ${styles.spinIcon}`}>progress_activity</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEmptyState = () => (
+    <div className={styles.stateGrid}>
+      <div className={styles.stateLeftCenter}>
+        <Card>
+          <EmptyState
+            title="Khong tim thay dia diem"
+            message="Khong co dia danh nao khop voi bo loc hien tai."
+            actions={<Button onClick={resetFilters}>Xoa bo loc</Button>}
+          />
+        </Card>
+      </div>
+      <div className={styles.stateRight}>
+        <div className={styles.mapFrame}>
+          <ExploreLeafletMap markers={[]} />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderErrorState = () => (
+    <div className={styles.stateGrid}>
+      <div className={styles.stateLeftCenter}>
+        <Card title="Da co loi xay ra">
+          <ErrorBanner
+            message="Khong the tai duoc danh sach dia diem tu he thong."
+            onRetry={() => { setPage(0); void loadPlaces(0); }}
+          />
+        </Card>
+      </div>
+      <div className={styles.stateRight}>
+        <div className={styles.mapFrame}>
+          <ExploreLeafletMap markers={[]} />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <AppContent variant="map" className="relative pb-24 md:pb-10 pt-4">
+    <AppContent variant="map" className={styles.page}>
       <FilmGrainOverlay />
 
-      {/* Toast popup */}
-      {toastMessage && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 76,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1100,
-            backgroundColor: '#B8F24A',
-            border: '2.5px solid #111111',
-            borderRadius: 14,
-            boxShadow: '4px 4px 0 #111111',
-            padding: '10px 20px',
-            fontFamily: "'Be Vietnam Pro', sans-serif",
-            fontSize: 13,
-            fontWeight: 800,
-            color: '#111111',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
-          className="animate-pop-in"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
-          {toastMessage}
+      {toastMessage ? (
+        <div className={styles.toast}>
+          <span className="material-symbols-outlined">check_circle</span>
+          <span>{toastMessage}</span>
         </div>
-      )}
+      ) : null}
 
-      {/* Main split-screen panel container */}
-      <div className="w-full h-full flex flex-col">
-        
-        {/* Toggle States Dev Toolbar */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 12, overflowX: 'auto', paddingBottom: 6 }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#7A6A58', alignSelf: 'center', fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-             Dev simulator:
-          </span>
-          {['default', 'loading', 'empty', 'error'].map((st) => (
-            <button
-              key={st}
-              onClick={() => setViewState(st as any)}
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                padding: '3px 8px',
-                borderRadius: 6,
-                border: '1.5px solid #111111',
-                backgroundColor: viewState === st ? '#FFD166' : '#FFF6DE',
-                cursor: 'pointer',
-                fontFamily: "'Be Vietnam Pro', sans-serif",
-                textTransform: 'capitalize'
-              }}
-            >
-              {st}
-            </button>
-          ))}
-        </div>
+      <div className={styles.shell}>
+        {viewState === "loading" && filteredPlaces.length === 0 ? renderLoadingState() : null}
+        {viewState === "empty" ? renderEmptyState() : null}
+        {viewState === "error" ? renderErrorState() : null}
 
-        {/* LOADING STATE */}
-        {viewState === 'loading' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-180px)] overflow-hidden">
-            <div className="lg:col-span-5 space-y-6 overflow-y-auto pr-2 custom-scrollbar">
-              <Skeleton variant="card" />
-              <Skeleton variant="text" />
-            </div>
-            <div className="lg:col-span-7 h-full">
-              <div style={{ height: '100%', backgroundColor: '#F3C99B', borderRadius: 24, border: '3px solid #111111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span className="material-symbols-outlined animate-spin text-5xl text-brand">pending</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* EMPTY STATE */}
-        {viewState === 'empty' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-180px)] overflow-hidden">
-            <div className="lg:col-span-5 flex flex-col justify-center">
-              <Card>
-                <EmptyState 
-                  title="Không tìm thấy địa điểm" 
-                  message="Không tìm thấy địa danh nào khớp với bộ lọc hiện tại của bạn. Vui lòng xoá bớt từ khoá."
-                  actions={
-                    <Button onClick={() => { setSearchQuery(''); setActiveCategory('Tất cả'); setFilterFree(false); setFilterNearMe(false); }}>
-                      Xoá bộ lọc
-                    </Button>
-                  }
-                />
-              </Card>
-            </div>
-            <div className="lg:col-span-7 h-full">
-              <MapPanel height="100%" />
-            </div>
-          </div>
-        )}
-
-        {/* ERROR STATE */}
-        {viewState === 'error' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-180px)] overflow-hidden">
-            <div className="lg:col-span-5 flex flex-col justify-center">
-              <Card title="Đã có lỗi xảy ra">
-                <ErrorBanner 
-                  message="Không thể tải được danh sách địa điểm du lịch từ hệ thống cơ sở dữ liệu."
-                  onRetry={() => setViewState('default')}
-                />
-              </Card>
-            </div>
-            <div className="lg:col-span-7 h-full">
-              <MapPanel height="100%" />
-            </div>
-          </div>
-        )}
-
-        {/* DEFAULT DISPLAY STATE */}
-        {viewState === 'default' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch h-[calc(100vh-180px)] overflow-hidden pb-4 md:pb-0">
-            
-            {/* LEFT EXPLORE PANEL: span 5 (Search, Category chip grid, list result cards) */}
-            <aside className="lg:col-span-5 flex flex-col h-full overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-              
-              {/* Explorer Header */}
-              <div 
-                style={{
-                  backgroundColor: '#FFFDF3',
-                  border: '2.5px solid #111111',
-                  borderRadius: 20,
-                  padding: 16,
-                  boxShadow: '4px 4px 0 #111111',
-                  fontFamily: "'Be Vietnam Pro', sans-serif"
-                }}
-                className="space-y-2"
-              >
-                <div className="flex justify-between items-center">
-                  <KineticTitle text="Khám phá địa điểm 🧭" size="card" variant="pop" />
-                  <Badge variant="sticker">Explore Map</Badge>
+        {viewState !== "loading" || filteredPlaces.length > 0 ? (
+          <div className={styles.splitLayout}>
+            <aside className={styles.leftColumn}>
+              <Card variant="ticket" className={styles.headerCard}>
+                <div className={styles.headerRow}>
+                  <KineticTitle text="Kham pha dia diem" size="card" variant="pop" />
+                  <Badge variant="sticker" icon="explore">
+                    Toan quoc
+                  </Badge>
                 </div>
-                <p style={{ fontSize: 12, color: '#7A6A58', fontWeight: 650 }}>
-                  Tìm địa danh ăn uống, vui chơi yêu thích để thêm vào hành trình đi.
+                <p className={styles.headerText}>
+                  Tim dia danh, an uong va vui choi tren khap ca nuoc.
                 </p>
-              </div>
+              </Card>
 
-              {/* Search ticket input & extra parameter toggles */}
-              <div 
-                style={{
-                  backgroundColor: '#FFF6DE',
-                  border: '2px solid #111111',
-                  borderRadius: 16,
-                  padding: 12,
-                  boxShadow: '3px 3px 0 #111111',
-                  fontFamily: "'Be Vietnam Pro', sans-serif"
-                }}
-                className="space-y-3"
-              >
-                <div style={{ position: 'relative' }}>
-                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Tìm địa điểm, bãi biển, quán ăn..."
-                    style={{
-                      width: '100%',
-                      padding: '10px 14px 10px 42px',
-                      backgroundColor: '#FFFDF3',
-                      border: '2px solid #111111',
-                      borderRadius: 12,
-                      fontSize: 13,
-                      fontWeight: 700,
-                      outline: 'none',
-                    }}
-                    className="focus:ring-2 focus:ring-brand focus:border-transparent transition-all"
-                  />
-                  {searchQuery && (
-                    <button 
-                      onClick={() => setSearchQuery('')}
-                      style={{ position: 'absolute', right: 12, top: '1/2', transform: 'translateY(-50%)', border: 'none', background: 'none', fontWeight: 900, cursor: 'pointer' }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                {/* Extra switches filters */}
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <button
-                    onClick={() => setFilterNearMe(!filterNearMe)}
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 800,
-                      padding: '4px 10px',
-                      borderRadius: 9999,
-                      border: '1.5px solid #111111',
-                      backgroundColor: filterNearMe ? '#FFD166' : '#FFFDF3',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    📍 Gần tôi (&lt; 2km)
-                  </button>
-
-                  <button
-                    onClick={() => setFilterFree(!filterFree)}
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 800,
-                      padding: '4px 10px',
-                      borderRadius: 9999,
-                      border: '1.5px solid #111111',
-                      backgroundColor: filterFree ? '#FFD166' : '#FFFDF3',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    🆓 Miễn phí
+              <Card variant="ticket" className={styles.searchCard}>
+                <div className={styles.searchRow}>
+                  <div className={styles.searchInputWrap}>
+                    <span className={`material-symbols-outlined ${styles.searchIcon}`}>search</span>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+                      placeholder="Tim ten dia diem..."
+                      className={styles.searchInput}
+                    />
+                    {searchQuery ? (
+                      <button type="button" onClick={() => { setSearchQuery(""); }} className={styles.clearSearch}>
+                        <span className="material-symbols-outlined">close</span>
+                      </button>
+                    ) : null}
+                  </div>
+                  <button type="button" onClick={handleSearch} className={styles.searchButton}>
+                    <span className="material-symbols-outlined">search</span>
                   </button>
                 </div>
-              </div>
 
-              {/* Category chip selector row */}
-              <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 6 }}>
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => handleCategorySelect(cat)}
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 800,
-                      padding: '6px 12px',
-                      borderRadius: 9999,
-                      border: '2px solid #111111',
-                      backgroundColor: activeCategory === cat ? '#FFD166' : '#FFFDF3',
-                      boxShadow: activeCategory === cat ? '2px 2px 0 #111111' : 'none',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      fontFamily: "'Be Vietnam Pro', sans-serif",
-                    }}
-                    className="hover:scale-[1.03] transition-transform"
+                <div className={styles.filterRow}>
+                  <div className={styles.filterInputWrap}>
+                    <span className={`material-symbols-outlined ${styles.filterIcon}`}>location_city</span>
+                    <input
+                      type="text"
+                      value={provinceQuery}
+                      onChange={(e) => setProvinceQuery(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+                      placeholder="Tinh/Thanh pho..."
+                      className={styles.filterInput}
+                    />
+                  </div>
+                  <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    className={styles.sortSelect}
                   >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </Card>
 
-              {/* Filter result status label */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'Be Vietnam Pro', sans-serif" }}>
-                <span style={{ fontSize: 12, fontWeight: 800, color: '#7A6A58' }}>
-                  Tìm thấy {filteredPlaces.length} địa điểm
-                </span>
-                {(activeCategory !== 'Tất cả' || searchQuery || filterFree || filterNearMe) && (
-                  <button
-                    onClick={() => { setActiveCategory('Tất cả'); setSearchQuery(''); setFilterNearMe(false); setFilterFree(false); }}
-                    style={{ background: 'none', border: 'none', fontSize: 11, fontWeight: 900, color: '#E6392E', cursor: 'pointer', textDecoration: 'underline' }}
-                  >
-                    Xoá bộ lọc
-                  </button>
-                )}
-              </div>
-
-              {/* List result cards */}
-              <div className="space-y-4 flex-1 pr-1 pb-6">
-                {filteredPlaces.map((place) => {
-                  const isSelected = selectedPlaceId === place.id;
-                  const isSaved = savedPlaceIds.includes(place.id);
-                  const isMenuOpen = addToTripMenuOpen === place.id;
-
+              <div className={styles.categoryRow}>
+                {categories.map((category) => {
+                  const meta = categoryMeta[category];
                   return (
-                    <div
-                      key={place.id}
-                      onClick={() => handlePlaceSelect(place.id)}
-                      style={{
-                        backgroundColor: '#FFFDF3',
-                        border: isSelected ? '3px solid #20A7D8' : '2px solid #111111',
-                        borderRadius: 20,
-                        overflow: 'hidden',
-                        boxShadow: isSelected ? '5px 5px 0 #20A7D8' : '4px 4px 0 #111111',
-                        display: 'flex',
-                        height: 140,
-                        cursor: 'pointer',
-                        position: 'relative',
-                        fontFamily: "'Be Vietnam Pro', sans-serif",
-                      }}
-                      className="hover:scale-[1.01] transition-transform"
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => handleCategorySelect(category)}
+                      className={`${styles.categoryChip} ${activeCategory === category ? styles.categoryChipActive : ""}`}
                     >
-                      {/* Photo Thumbnail */}
-                      <div style={{ width: '35%', height: '100%', borderRight: '2px solid #111111', overflow: 'hidden' }}>
-                        <RetroImage 
-                          src={place.imageUrl} 
-                          alt={place.name} 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                        />
-                      </div>
-
-                      {/* Info Panel content */}
-                      <div style={{ width: '65%', padding: '12px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <div>
-                          <div className="flex justify-between items-start">
-                            <h3 style={{ fontWeight: 850, fontSize: 14, color: '#111111', margin: 0, lineHeight: 1.2 }}>
-                              {place.name}
-                            </h3>
-                            {/* Favorite Saved Heart Button */}
-                            <button
-                              type="button"
-                              onClick={(e) => handleSaveToggle(place.id, e)}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 0,
-                                display: 'flex',
-                              }}
-                            >
-                              <span 
-                                className="material-symbols-outlined" 
-                                style={{ 
-                                  fontSize: 18, 
-                                  color: isSaved ? '#E6392E' : '#7A6A58',
-                                  fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0"
-                                }}
-                              >
-                                favorite
-                              </span>
-                            </button>
-                          </div>
-
-                          <div style={{ fontSize: 10, color: '#7A6A58', fontWeight: 700, marginTop: 4 }}>
-                            🏷️ {place.category} • 📍 {place.distance}
-                          </div>
-
-                          {/* Tags row */}
-                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
-                            {place.tags.map((tag) => (
-                              <span 
-                                key={tag} 
-                                style={{
-                                  fontSize: 8,
-                                  fontWeight: 800,
-                                  backgroundColor: '#FFF6DE',
-                                  border: '1px solid #111111',
-                                  borderRadius: 4,
-                                  padding: '1px 5px',
-                                  textTransform: 'uppercase'
-                                }}
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Cards Action Buttons */}
-                        <div style={{ display: 'flex', gap: 6, position: 'relative' }}>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setAddToTripMenuOpen(isMenuOpen ? null : place.id);
-                            }}
-                            style={{
-                              backgroundColor: '#B8F24A',
-                              border: '1.5px solid #111111',
-                              borderRadius: 8,
-                              padding: '4px 8px',
-                              fontSize: 10,
-                              fontWeight: 900,
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 3,
-                            }}
-                          >
-                            <span className="material-symbols-outlined" style={{ fontSize: 12 }}>add</span>
-                            Thêm vào trip
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedPlaceId(place.id);
-                              setDetailDrawerOpen(true);
-                            }}
-                            style={{
-                              backgroundColor: '#FFF6DE',
-                              border: '1.5px solid #111111',
-                              borderRadius: 8,
-                              padding: '4px 8px',
-                              fontSize: 10,
-                              fontWeight: 900,
-                              cursor: 'pointer',
-                              color: '#111111'
-                            }}
-                          >
-                            Chi tiết
-                          </button>
-
-                          {/* Floating menu options for Add To Trip */}
-                          {isMenuOpen && (
-                            <div
-                              style={{
-                                position: 'absolute',
-                                bottom: 'calc(100% + 6px)',
-                                left: 0,
-                                zIndex: 120,
-                                backgroundColor: '#FFFDF3',
-                                border: '2px solid #111111',
-                                borderRadius: 10,
-                                boxShadow: '3px 3px 0 #111111',
-                                padding: '4px 0',
-                                width: 140,
-                              }}
-                            >
-                              {['Nha Trang 3N2Đ', 'Đà Lạt cuối tuần', '+ Tạo trip mới'].map((tripItem) => (
-                                <button
-                                  key={tripItem}
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleAddPlaceToTrip(place.name, tripItem);
-                                  }}
-                                  style={{
-                                    width: '100%',
-                                    textAlign: 'left',
-                                    border: 'none',
-                                    background: 'none',
-                                    padding: '6px 12px',
-                                    fontSize: 11,
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    fontFamily: "'Be Vietnam Pro', sans-serif"
-                                  }}
-                                  className="hover:bg-yellow-soft"
-                                >
-                                  {tripItem}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                      </div>
-                    </div>
+                      <span className="material-symbols-outlined">{meta.icon}</span>
+                      <span>{meta.label}</span>
+                    </button>
                   );
                 })}
               </div>
 
-            </aside>
+              <div className={styles.filterSummary}>
+                <span className={styles.resultCount}>
+                  {totalElements > 0
+                    ? `Tim thay ${totalElements} dia diem`
+                    : "Dang tai..."}
+                </span>
+                {activeCategory !== "Tat ca" || searchQuery || provinceQuery ? (
+                  <button type="button" onClick={resetFilters} className={styles.clearFilters}>
+                    Xoa bo loc
+                  </button>
+                ) : null}
+              </div>
 
-            {/* RIGHT PANEL: span 7 (Map viewport dashboard cockpit) */}
-            <main className="lg:col-span-7 h-[calc(100vh-210px)] lg:h-full relative">
-              <div className="w-full h-full rounded-[24px] overflow-hidden border-[3px] border-[#111111] shadow-comic-lg relative">
-                
-                {/* Map drawing mockup */}
-                <MapPanel
-                  markers={mapMarkers}
-                  showRoute={false} // Independent exploration map, no route line overlay
-                  height="100%"
-                  onMarkerClick={handleMarkerClick}
-                />
+              <div className={styles.placeList}>
+                {filteredPlaces.length === 0 && viewState === "loading" ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} variant="card" />
+                  ))
+                ) : (
+                  filteredPlaces.map((place) => {
+                    const isSelected = selectedPlaceId === place.id;
+                    const isSaved = savedPlaceIds.includes(place.id);
+                    const isMenuOpen = addToTripMenuOpen === place.id;
+                    const meta = categoryMeta[place.category];
+                    const verified = place.verificationStatus === "VERIFIED" || place.verificationStatus === "PARTIALLY_VERIFIED";
 
-                {/* Filter Summary Pill overlay */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    zIndex: 90,
-                    backgroundColor: '#B8F24A',
-                    border: '2px solid #111111',
-                    borderRadius: 9999,
-                    padding: '4px 12px',
-                    boxShadow: '2px 2px 0 #111111',
-                    fontSize: 11,
-                    fontWeight: 800,
-                    fontFamily: "'Be Vietnam Pro', sans-serif"
-                  }}
-                >
-                  ⚓ {filteredPlaces.length} places • Nha Trang
-                </div>
-
-                {/* Place Popup speech bubble */}
-                {selectedPlaceId && activePlaceObj && !detailDrawerOpen && (
-                  <div 
-                    style={{ 
-                      position: 'absolute', 
-                      top: '28%', 
-                      left: '50%', 
-                      transform: 'translateX(-50%)',
-                      zIndex: 100,
-                      width: 290,
-                      backgroundColor: '#FFFDF3',
-                      border: '2.5px solid #111111',
-                      borderRadius: 16,
-                      padding: 14,
-                      boxShadow: '4px 4px 0 #111111',
-                      fontFamily: "'Be Vietnam Pro', sans-serif",
-                    }}
-                    className="animate-pop-in"
-                  >
-                    {/* speech bubble pointing arrow */}
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        bottom: -8,
-                        left: '50%',
-                        transform: 'translateX(-50%) rotate(45deg)',
-                        width: 14,
-                        height: 14,
-                        backgroundColor: '#FFFDF3',
-                        borderRight: '2.5px solid #111111',
-                        borderBottom: '2.5px solid #111111',
-                      }}
-                    />
-
-                    <div className="flex justify-between items-start">
-                      <h4 style={{ fontWeight: 850, fontSize: 14, color: '#111111', margin: 0 }}>
-                        {activePlaceObj.name}
-                      </h4>
-                      <button 
-                        onClick={() => setSelectedPlaceId(null)}
-                        style={{ border: 'none', background: 'none', fontSize: 13, fontWeight: 900, cursor: 'pointer', color: '#7A6A58' }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    <div style={{ fontSize: 10, color: '#7A6A58', margin: '4px 0 8px', fontWeight: 700 }}>
-                      🏖️ {activePlaceObj.category} • ⏱ {activePlaceObj.duration} • 💰 {activePlaceObj.cost}
-                    </div>
-
-                    <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                      <button
-                        onClick={() => {
-                          const isSaved = savedPlaceIds.includes(activePlaceObj.id);
-                          if (isSaved) {
-                            setSavedPlaceIds(savedPlaceIds.filter(id => id !== activePlaceObj.id));
-                          } else {
-                            setSavedPlaceIds([...savedPlaceIds, activePlaceObj.id]);
+                    return (
+                      <div
+                        key={place.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handlePlaceSelect(place.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handlePlaceSelect(place.id);
                           }
                         }}
-                        style={{
-                          backgroundColor: '#FFF6DE',
-                          border: '1.5px solid #111111',
-                          borderRadius: 8,
-                          padding: '5px',
-                          fontSize: 10,
-                          fontWeight: 800,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 3,
-                          flex: 1,
-                        }}
+                        className={`${styles.placeCard} ${isSelected ? styles.placeCardSelected : ""}`}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: savedPlaceIds.includes(activePlaceObj.id) ? '#E6392E' : '#7A6A58' }}>favorite</span>
-                        Lưu
-                      </button>
+                        <div className={styles.placeThumb}>
+                          <RetroImage
+                            src={place.imageUrl}
+                            alt={place.name}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                          {verified ? (
+                            <span className={styles.verifiedBadge}>
+                              <span className="material-symbols-outlined">verified</span>
+                            </span>
+                          ) : null}
+                        </div>
 
-                      <button 
-                        onClick={() => setAddToTripMenuOpen(activePlaceObj.id)}
-                        style={{ flex: 1.2, backgroundColor: '#B8F24A', border: '1.5px solid #111111', borderRadius: 8, padding: '5px', fontSize: 10, fontWeight: 800, cursor: 'pointer' }}
-                      >
-                        Thêm vào trip
-                      </button>
+                        <div className={styles.placeBody}>
+                          <div className={styles.placeTop}>
+                            <div className={styles.placeTitleBlock}>
+                              <h3 className={styles.placeTitle}>{place.name}</h3>
+                              <button
+                                type="button"
+                                onClick={(event) => handleSaveToggle(place.id, event)}
+                                className={styles.favoriteButton}
+                              >
+                                <span
+                                  className="material-symbols-outlined"
+                                  style={{
+                                    fontVariationSettings: isSaved
+                                      ? "'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 20"
+                                      : "'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20",
+                                  }}
+                                >
+                                  favorite
+                                </span>
+                              </button>
+                            </div>
 
-                      <button 
-                        onClick={() => setDetailDrawerOpen(true)}
-                        style={{ flex: 1, backgroundColor: '#20A7D8', color: '#FFFDF3', border: '1.5px solid #111111', borderRadius: 8, padding: '5px', fontSize: 10, fontWeight: 800, cursor: 'pointer' }}
+                            <div className={styles.placeMeta}>
+                              <Badge variant={meta.badge} size="sm" icon={meta.icon}>
+                                {meta.label}
+                              </Badge>
+                              {place.province ? (
+                                <span className={styles.placeMetaText}>
+                                  <span className="material-symbols-outlined">location_on</span>
+                                  {place.province}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
+
+                          <div className={styles.placeRatingRow}>
+                            {place.rating > 0 ? (
+                              <span className={styles.ratingBadge}>
+                                <span className="material-symbols-outlined">star</span>
+                                {place.rating.toFixed(1)}
+                              </span>
+                            ) : null}
+                            {place.durationLabel ? (
+                              <span className={styles.placeMetaText}>
+                                <span className="material-symbols-outlined">schedule</span>
+                                {place.durationLabel}
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <div className={styles.tagRow}>
+                            {place.tags.slice(0, 3).map((tag) => (
+                              <span key={tag} className={styles.tagChip}>#{tag}</span>
+                            ))}
+                            {place.tags.length > 3 ? (
+                              <span className={styles.tagChip}>+{place.tags.length - 3}</span>
+                            ) : null}
+                          </div>
+
+                          <div className={styles.placeActions}>
+                            <div className={styles.inlineActions}>
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setAddToTripMenuOpen(isMenuOpen ? null : place.id);
+                                }}
+                                className={`${styles.smallAction} ${styles.smallActionPrimary}`}
+                              >
+                                <span className="material-symbols-outlined">add_circle</span>
+                                Them vao trip
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setSelectedPlaceId(place.id);
+                                  setDetailDrawerOpen(true);
+                                }}
+                                className={styles.smallAction}
+                              >
+                                <span className="material-symbols-outlined">info</span>
+                                Chi tiet
+                              </button>
+                            </div>
+                            {place.costLabel ? (
+                              <div className={styles.costLabel}>
+                                <span className="material-symbols-outlined">payments</span>
+                                {place.costLabel}
+                              </div>
+                            ) : null}
+
+                            {isMenuOpen ? (
+                              <div className={styles.tripMenu}>
+                                <div className={styles.tripMenuHeader}>Chon trip</div>
+                                <button
+                                  type="button"
+                                  className={styles.tripMenuItem}
+                                  onClick={() => {
+                                    setToastMessage(`Da them "${place.name}" vao trip.`);
+                                    setAddToTripMenuOpen(null);
+                                  }}
+                                >
+                                  + Tao trip moi
+                                </button>
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {totalPages > 1 ? (
+                <div className={styles.pagination}>
+                  <button
+                    type="button"
+                    disabled={page <= 0}
+                    onClick={() => handlePageChange(page - 1)}
+                    className={styles.pageButton}
+                  >
+                    <span className="material-symbols-outlined">chevron_left</span>
+                  </button>
+                  <span className={styles.pageInfo}>
+                    Trang {page + 1} / {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={page >= totalPages - 1}
+                    onClick={() => handlePageChange(page + 1)}
+                    className={styles.pageButton}
+                  >
+                    <span className="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+              ) : null}
+            </aside>
+
+            <main className={styles.rightColumn}>
+              <div className={styles.mapFrame}>
+                <ExploreLeafletMap
+                  markers={safeMarkers}
+                  onMarkerClick={handleMarkerClick}
+                  selectedMarkerId={selectedPlaceId}
+                />
+
+                <Card variant="mapOverlay" className={styles.mapCountOverlay}>
+                  <div className={styles.mapCountContent}>
+                    <span className="material-symbols-outlined">travel_explore</span>
+                    <span>{mapMarkers.length} markers</span>
+                    {provinceQuery ? (
+                      <>
+                        <span className={styles.mapCountDot}>•</span>
+                        <span>{provinceQuery}</span>
+                      </>
+                    ) : null}
+                  </div>
+                </Card>
+
+                {selectedPlaceId && activePlaceObj && !detailDrawerOpen ? (
+                  <Card variant="speech" className={styles.mapBubble}>
+                    <div className={styles.mapBubbleHeader}>
+                      <div>
+                        <h4 className={styles.mapBubbleTitle}>{activePlaceObj.name}</h4>
+                        <p className={styles.mapBubbleSubtitle}>
+                          {[activePlaceObj.province, activePlaceObj.city].filter(Boolean).join(", ")}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPlaceId(null)}
+                        className={styles.mapBubbleClose}
                       >
-                        Chi tiết
+                        <span className="material-symbols-outlined">close</span>
                       </button>
                     </div>
-                  </div>
-                )}
 
-                {/* Compass & Map Navigation controls overlay */}
-                <div 
-                  style={{ 
-                    position: 'absolute', 
-                    bottom: 16, 
-                    left: 16, 
-                    zIndex: 90,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 6
-                  }}
-                >
-                  {['add', 'remove', 'my_location', 'zoom_out_map'].map((ico, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setToastMessage('Đã điều chỉnh thu phóng bản đồ! 🗺️')}
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        border: '2px solid #111111',
-                        backgroundColor: '#FFFDF3',
-                        boxShadow: '2px 2px 0 #111111',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer'
-                      }}
-                      className="hover:scale-105 active:scale-95"
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{ico}</span>
+                    <div className={styles.mapBubbleMeta}>
+                      <span>
+                        <span className="material-symbols-outlined">schedule</span>
+                        {activePlaceObj.durationLabel}
+                      </span>
+                      {activePlaceObj.rating > 0 ? (
+                        <span>
+                          <span className="material-symbols-outlined">star</span>
+                          {activePlaceObj.rating.toFixed(1)}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className={styles.mapBubbleActions}>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveToggle(activePlaceObj.id)}
+                        className={styles.overlayAction}
+                      >
+                        <span
+                          className="material-symbols-outlined"
+                          style={{
+                            fontVariationSettings: savedPlaceIds.includes(activePlaceObj.id)
+                              ? "'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 20"
+                              : "'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20",
+                          }}
+                        >
+                          favorite
+                        </span>
+                        Luu
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setAddToTripMenuOpen(activePlaceObj.id)}
+                        className={`${styles.overlayAction} ${styles.overlayActionPrimary}`}
+                      >
+                        <span className="material-symbols-outlined">add_circle</span>
+                        Them
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDetailDrawerOpen(true)}
+                        className={`${styles.overlayAction} ${styles.overlayActionInfo}`}
+                      >
+                        <span className="material-symbols-outlined">visibility</span>
+                        Xem
+                      </button>
+                    </div>
+                  </Card>
+                ) : null}
+
+                <div className={styles.mapControls}>
+                  {["add", "remove", "my_location", "zoom_out_map"].map((icon) => (
+                    <button key={icon} type="button" className={styles.mapControlButton}>
+                      <span className="material-symbols-outlined">{icon}</span>
                     </button>
                   ))}
                 </div>
 
-                {/* 8. PLACE DETAIL DRAWER: Absolute floating drawer card inside the map panel */}
-                {detailDrawerOpen && activePlaceObj && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 16,
-                      right: 16,
-                      bottom: 16,
-                      width: 'calc(100% - 32px)',
-                      maxWidth: 360,
-                      backgroundColor: '#FFFDF3',
-                      border: '3px solid #111111',
-                      borderRadius: 20,
-                      boxShadow: '6px 6px 0 #111111',
-                      zIndex: 200,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      overflow: 'hidden',
-                      fontFamily: "'Be Vietnam Pro', sans-serif"
-                    }}
-                    className="animate-pop-in"
-                  >
-                    {/* Drawer Photo Header */}
-                    <div style={{ height: 160, position: 'relative', borderBottom: '2px solid #111111' }}>
-                      <RetroImage 
-                        src={activePlaceObj.imageUrl} 
-                        alt={activePlaceObj.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                {detailDrawerOpen && activePlaceObj ? (
+                  <div className={styles.drawer}>
+                    <div className={styles.drawerHero}>
+                      <RetroImage
+                        src={activePlaceObj.imageUrl}
+                        alt={activePlaceObj.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                       <button
+                        type="button"
                         onClick={() => setDetailDrawerOpen(false)}
-                        style={{
-                          position: 'absolute',
-                          top: 10,
-                          right: 10,
-                          width: 30,
-                          height: 30,
-                          borderRadius: '50%',
-                          border: '2px solid #111111',
-                          backgroundColor: '#FFFDF3',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 900,
-                          cursor: 'pointer',
-                        }}
+                        className={styles.drawerClose}
                       >
-                        ✕
+                        <span className="material-symbols-outlined">close</span>
                       </button>
                     </div>
 
-                    {/* Drawer Content */}
-                    <div style={{ flex: 1, padding: 18, overflowY: 'auto' }} className="space-y-4 custom-scrollbar">
-                      <div>
-                        <span style={{ fontSize: 10, fontWeight: 900, backgroundColor: '#FFD166', border: '1.5px solid #111111', borderRadius: 6, padding: '2px 8px' }}>
-                          {activePlaceObj.category}
-                        </span>
-                        <h3 style={{ fontSize: 20, fontWeight: 900, marginTop: 8, marginBottom: 4, lineHeight: 1.2 }}>
-                          {activePlaceObj.name}
-                        </h3>
-                        <p style={{ fontSize: 12, color: '#7A6A58', fontWeight: 650 }}>
-                          Nha Trang, Khánh Hoà
+                    <div className={styles.drawerContent}>
+                      <div className={styles.drawerHeading}>
+                        <Badge
+                          variant={categoryMeta[activePlaceObj.category].badge}
+                          size="sm"
+                          icon={categoryMeta[activePlaceObj.category].icon}
+                        >
+                          {categoryMeta[activePlaceObj.category].label}
+                        </Badge>
+                        <h3 className={styles.drawerTitle}>{activePlaceObj.name}</h3>
+                        <p className={styles.drawerSubtitle}>
+                          {[activePlaceObj.province, activePlaceObj.city].filter(Boolean).join(", ")}
                         </p>
                       </div>
 
-                      <div style={{ padding: 12, backgroundColor: '#FFF6DE', border: '1.5px solid #111111', borderRadius: 12 }} className="space-y-2">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700 }}>
-                          <span style={{ color: '#7A6A58' }}>📍 Khoảng cách</span>
-                          <span>{activePlaceObj.distance}</span>
+                      <div className={styles.drawerStats}>
+                        <div className={styles.drawerStatRow}>
+                          <span>
+                            <span className="material-symbols-outlined">star</span>
+                            Danh gia
+                          </span>
+                          <strong>{activePlaceObj.rating > 0 ? `${activePlaceObj.rating.toFixed(1)} / 5` : "Chua co"}</strong>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700 }}>
-                          <span style={{ color: '#7A6A58' }}>⏱ Thời gian ước tính</span>
-                          <span>{activePlaceObj.duration}</span>
+                        <div className={styles.drawerStatRow}>
+                          <span>
+                            <span className="material-symbols-outlined">schedule</span>
+                            Thoi gian tham quan
+                          </span>
+                          <strong>{activePlaceObj.durationLabel}</strong>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700 }}>
-                          <span style={{ color: '#7A6A58' }}>💰 Giá vé dự kiến</span>
-                          <span style={{ color: '#E6392E' }}>{activePlaceObj.cost}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700 }}>
-                          <span style={{ color: '#7A6A58' }}>🌅 Thời gian lý tưởng</span>
-                          <span>{activePlaceObj.bestTime}</span>
-                        </div>
+                        {activePlaceObj.costLabel ? (
+                          <div className={styles.drawerStatRow}>
+                            <span>
+                              <span className="material-symbols-outlined">payments</span>
+                              Gia du kien
+                            </span>
+                            <strong>{activePlaceObj.costLabel}</strong>
+                          </div>
+                        ) : null}
                       </div>
 
-                      <div>
-                        <h4 style={{ fontSize: 12, fontWeight: 800, marginBottom: 6 }}>Giới thiệu địa danh</h4>
-                        <p style={{ fontSize: 12, color: '#3A2F2A', lineHeight: 1.5, textAlign: 'justify' }}>
-                          {activePlaceObj.description}
-                        </p>
-                      </div>
+                      {activePlaceObj.description ? (
+                        <div className={styles.drawerSection}>
+                          <h4>Gioi thieu</h4>
+                          <p>{activePlaceObj.description}</p>
+                        </div>
+                      ) : null}
 
-                      {/* Tags row */}
-                      <div className="flex gap-1.5 flex-wrap">
+                      <div className={styles.drawerTagList}>
                         {activePlaceObj.tags.map((tag) => (
-                          <Badge key={tag} variant="neutral">
-                            #{tag}
-                          </Badge>
+                          <Badge key={tag} variant="neutral" size="sm">#{tag}</Badge>
                         ))}
                       </div>
                     </div>
 
-                    {/* Drawer Footer Actions */}
-                    <div style={{ padding: 16, borderTop: '2px solid #EBD8B7', backgroundColor: '#FFF6DE', display: 'flex', gap: 8 }}>
-                      <Button 
-                        variant="secondary" 
-                        size="md" 
+                    <div className={styles.drawerFooter}>
+                      <Button
+                        variant="secondary"
+                        size="md"
                         style={{ flex: 1 }}
-                        onClick={(e) => handleSaveToggle(activePlaceObj.id, e as any)}
+                        onClick={() => handleSaveToggle(activePlaceObj.id)}
                       >
-                        {savedPlaceIds.includes(activePlaceObj.id) ? '❤️ Đã lưu' : '🤍 Lưu'}
+                        {savedPlaceIds.includes(activePlaceObj.id) ? "Da luu" : "Luu"}
                       </Button>
-                      <Button 
-                        variant="primary" 
-                        size="md" 
+                      <Button
+                        variant="primary"
+                        size="md"
                         style={{ flex: 1.3 }}
                         onClick={() => setAddToTripMenuOpen(activePlaceObj.id)}
                       >
-                        Thêm vào trip
+                        Them vao trip
                       </Button>
                     </div>
                   </div>
-                )}
-
+                ) : null}
               </div>
             </main>
-
           </div>
-        )}
-
+        ) : null}
       </div>
     </AppContent>
   );

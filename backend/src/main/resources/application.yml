@@ -26,7 +26,6 @@ spring:
 
   jpa:
     open-in-view: false
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
     show-sql: ${SPRING_JPA_SHOW_SQL:false}
@@ -111,3 +110,10 @@ tripwise:
       max-meters: ${TRIPWISE_SCORING_DISTANCE_MAX_METERS:15000.0}
   itinerary:
     places-per-day: ${TRIPWISE_ITINERARY_PLACES_PER_DAY:4}
+  place-import:
+    enabled: ${TRIPWISE_PLACE_IMPORT_ENABLED:false}
+    source-name: ${TRIPWISE_PLACE_IMPORT_SOURCE:OSM_GEOFABRIK}
+    input-file: ${TRIPWISE_PLACE_IMPORT_INPUT_FILE:}
+    import-mode: ${TRIPWISE_PLACE_IMPORT_MODE:FULL_SYNC}
+    dedupe-radius-meters: ${TRIPWISE_PLACE_IMPORT_DEDUPE_RADIUS_METERS:150.0}
+    fail-on-mapping-error: ${TRIPWISE_PLACE_IMPORT_FAIL_ON_MAPPING_ERROR:false}

@@ -18,9 +18,17 @@ class PlaceDetailIntegrationTest extends BaseIntegrationTest {
     private JdbcTemplate jdbcTemplate;
 
     @Test
-    void shouldReturnPublicPlaceDetailById() {
+    void shouldReturnPublicPlaceDetailByIdWithNationwideFields() {
         Long placeId = jdbcTemplate.queryForObject(
-                "SELECT id FROM places WHERE name = 'Chùa Long Sơn' AND city = 'Nha Trang'",
+                """
+                SELECT id
+                FROM places
+                WHERE city = 'Nha Trang'
+                  AND verification_status = 'VERIFIED'
+                  AND is_active = TRUE
+                ORDER BY id
+                LIMIT 1
+                """,
                 Long.class
         );
 
@@ -28,8 +36,13 @@ class PlaceDetailIntegrationTest extends BaseIntegrationTest {
 
         assertThat(response.path("success").asBoolean()).isTrue();
         assertThat(response.path("data").path("id").asLong()).isEqualTo(placeId);
-        assertThat(response.path("data").path("name").asText()).isEqualTo("Chùa Long Sơn");
-        assertThat(response.path("data").path("categorySlug").asText()).isEqualTo("spiritual");
+        assertThat(response.path("data").path("name").asText()).isNotBlank();
+        assertThat(response.path("data").path("city").asText()).isEqualTo("Nha Trang");
+        assertThat(response.path("data").path("province").asText()).isEqualTo("Khanh Hoa");
+        assertThat(response.path("data").path("categorySlug").asText()).isNotBlank();
+        assertThat(response.path("data").path("verificationStatus").asText()).isEqualTo("VERIFIED");
         assertThat(response.path("data").path("description").asText()).isNotBlank();
+        assertThat(response.path("data").path("latitude").isNumber()).isTrue();
+        assertThat(response.path("data").path("longitude").isNumber()).isTrue();
     }
 }

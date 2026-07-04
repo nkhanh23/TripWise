@@ -1,340 +1,472 @@
 .page {
-  padding: 40px 0 72px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.35), transparent 32%),
+    linear-gradient(180deg, var(--color-canvas) 0%, var(--color-canvas-alt) 100%);
+  padding: 32px;
+  font-family: var(--font-body);
 }
 
 .shell {
+  width: min(100%, 1280px);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
-  gap: 24px;
-  align-items: stretch;
-}
-
-.heroCard,
-.ticketCard,
-.stateCard,
-.tripCard {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 28%),
-    var(--color-panel);
-}
-
-.stickerRow {
+/* Hero Section */
+.heroCard {
+  border: 3px solid #111111 !important;
+  border-radius: 24px !important;
+  background: #FFFDF3 !important;
+  padding: 24px !important;
+  box-shadow: 6px 6px 0 #111111 !important;
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.sticker,
-.stickerAlt,
-.metaPill,
-.tripStatus,
-.filterChip,
-.pageDot {
-  border: 2px solid var(--stroke-ink);
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
-  font-weight: 700;
+.travelArchiveBadge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: #B8F24A;
+  border: 2px solid #111111;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-weight: 900;
+  font-size: 10px;
+  text-transform: uppercase;
+  transform: skewX(-2deg);
+  box-shadow: 2px 2px 0 #111111;
 }
 
-.sticker {
-  background: var(--color-yellow);
-  padding: 6px 12px;
-}
-
-.stickerAlt {
-  background: var(--color-brand-soft);
-  padding: 6px 12px;
-}
-
-.headline,
-.ticketTitle,
-.tripTitle,
-.emptyTitle {
-  margin: 0;
+.heroTitle {
   font-family: var(--font-display);
-  line-height: 1.05;
+  font-size: 26px;
+  font-weight: 800;
+  color: #111111;
 }
 
-.headline {
-  max-width: 16ch;
-  font-size: clamp(2rem, 4vw, 3.4rem);
+.heroDesc {
+  font-size: 13px;
+  color: #7A6A58;
+  font-weight: 650;
+  margin-top: 4px;
 }
 
-.description,
-.ticketNote,
-.emptyBody,
-.preferenceCopy {
-  color: var(--text-secondary);
-  line-height: 1.65;
-}
-
-.description {
-  max-width: 70ch;
-  margin: 16px 0 0;
-}
-
-.heroActions {
-  display: flex;
-  flex-wrap: wrap;
+/* Stat stickers */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  align-items: center;
-  margin-top: 24px;
 }
 
-.ghostLink {
-  font-weight: 700;
-  color: var(--color-brand-dark);
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-.ticketCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.statSticker {
+  background: #FFF6DE;
+  border: 2px solid #111111;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 2px 2px 0 #111111;
 }
 
-.ticketLabel,
-.tripEyebrow,
-.infoLabel {
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.statLabel {
+  font-size: 10px;
+  font-weight: 800;
+  color: #7A6A58;
   text-transform: uppercase;
 }
 
-.ticketTitle {
-  margin-top: 8px;
-  font-size: 2rem;
-}
-
-.ticketStats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.ticketStat {
-  background: var(--color-surface);
-  border: 2px solid var(--stroke-ink);
-  border-radius: 18px;
-  padding: 16px;
-}
-
-.ticketStatLabel {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.ticketStatValue {
-  display: block;
-  margin-top: 6px;
+.statValue {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 24px;
+  color: #20A7D8;
+  margin-top: 4px;
 }
 
-.ticketNote {
-  margin: 20px 0 0;
-}
-
+/* Toolbar filters */
 .toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.filterRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.filterChip {
-  background: var(--color-surface);
-  padding: 10px 16px;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    background-color 160ms ease;
-}
-
-.filterChip:hover,
-.pageDot:hover {
-  transform: translateY(-1px);
-}
-
-.filterChipActive {
-  background: var(--color-yellow);
-}
-
-.pageInfo {
-  display: flex;
-  gap: 14px;
-  color: var(--text-muted);
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-
-.tripGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.tripCard {
+  background: #FFF6DE;
+  border: 2px solid #111111;
+  border-radius: 16px;
+  padding: 14px;
+  shadow: 3px 3px 0 #111111;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
+  box-shadow: 3px 3px 0 #111111;
 }
 
-.tripHeader {
+@media (min-width: 768px) {
+  .toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.filterGroup {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex: 1;
 }
 
-.tripTitle {
-  margin-top: 8px;
-  font-size: 1.8rem;
+@media (min-width: 768px) {
+  .filterGroup {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
-.tripStatus {
-  background: var(--color-lime-soft);
-  padding: 7px 12px;
+.searchWrapper {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .searchWrapper {
+    max-width: 280px;
+  }
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #7A6A58;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background: #FFFDF3;
+  border: 2px solid #111111;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+  outline: none;
+  font-family: var(--font-body);
+}
+
+.searchInput:focus {
+  border-color: #20A7D8;
+}
+
+.statusChips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.statusChips::-webkit-scrollbar {
+  height: 3px;
+}
+
+.statusChip {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1.5px solid #111111;
+  background: #FFFDF3;
+  cursor: pointer;
   white-space: nowrap;
+  font-family: var(--font-body);
+  transition: transform 100ms ease;
+  color: #111111;
 }
 
-.metaRow {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.statusChip:active {
+  transform: scale(0.95);
 }
 
-.metaPill {
-  background: var(--color-surface);
-  padding: 7px 12px;
+.statusChipActive {
+  background: #FFD166 !important;
 }
 
-.infoGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.infoItem {
-  background: rgba(255, 246, 222, 0.78);
-  border: 2px solid var(--stroke-ink);
-  border-radius: 18px;
-  padding: 14px 16px;
-}
-
-.infoValue {
-  display: block;
-  margin-top: 6px;
-  font-weight: 700;
-  line-height: 1.45;
-}
-
-.preferenceCopy {
-  margin: 0;
-  min-height: 54px;
-}
-
-.cardActions {
+.optionsGroup {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.emptyWrap {
-  text-align: center;
-  padding: 20px 0;
+.sortLabel {
+  color: #7A6A58;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.sortSelect {
+  background: #FFFDF3;
+  border: 1.5px solid #111111;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  outline: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  color: #111111;
+}
+
+.viewToggler {
+  display: flex;
+  border: 1.5px solid #111111;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #FFFDF3;
+}
+
+.toggleBtn {
+  border: none;
+  background: transparent;
+  padding: 5px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7A6A58;
+  transition: background 120ms ease;
+}
+
+.toggleBtnActive {
+  background: #FFD166;
+  color: #111111;
+}
+
+/* Empty or Loading State Card */
+.stateCard {
+  border: 3px solid #111111 !important;
+  border-radius: 24px !important;
+  background: #FFFDF3 !important;
+  padding: 32px !important;
+  box-shadow: 6px 6px 0 #111111 !important;
 }
 
 .stateWrap {
-  display: grid;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
 }
 
 .stateHint {
+  font-size: 12px;
+  color: #7A6A58;
   margin: 0;
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  font-weight: 700;
-  line-height: 1.6;
 }
 
-.emptyTitle {
-  font-size: 2rem;
+/* Trip Grid */
+.tripGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
 }
 
-.emptyBody {
-  max-width: 52ch;
-  margin: 12px auto 0;
+@media (min-width: 768px) {
+  .tripGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
+@media (min-width: 1024px) {
+  .tripGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tripCard {
+  background: #FFFDF3 !important;
+  border: 3px solid #111111 !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  box-shadow: 4px 4px 0 #111111 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  padding: 0 !important;
+  min-height: 380px;
+}
+
+.cardHeaderCover {
+  height: 110px;
+  border-bottom: 2.5px solid #111111;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coverMapIcon {
+  font-size: 36px;
+  color: #FFF6DE;
+  opacity: 0.6;
+}
+
+.durationStamp {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #FFD166;
+  border: 1.5px solid #111111;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-weight: 900;
+  font-size: 10px;
+  box-shadow: 1.5px 1.5px 0 #111111;
+  color: #111111;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.cardBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.tripCardTitle {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  color: #111111;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.dateLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #7A6A58;
+  font-weight: 600;
+}
+
+.dateIcon {
+  font-size: 16px;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  border-top: 1.5px dashed #D8B98A;
+  border-bottom: 1.5px dashed #D8B98A;
+  padding: 8px 0;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detailLabel {
+  font-size: 9px;
+  font-weight: 800;
+  color: #7A6A58;
+  text-transform: uppercase;
+}
+
+.detailVal {
+  font-size: 11px;
+  font-weight: 800;
+  color: #111111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preferenceCopy {
+  font-size: 11px;
+  color: #7A6A58;
+  margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tagPill {
+  font-size: 9px;
+  font-weight: 800;
+  background: #FFF6DE;
+  border: 1px solid #111111;
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: #7A6A58;
+}
+
+.cardFooterActions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* Pagination container */
 .pagination {
   display: flex;
-  gap: 16px;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-bottom: 24px;
 }
 
 .paginationDots {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  align-items: center;
+  gap: 6px;
 }
 
 .pageDot {
-  min-width: 42px;
-  min-height: 42px;
-  background: var(--color-surface);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1.5px solid #111111;
+  border-radius: 6px;
+  background-color: #FFFDF3;
+  color: #111111;
   cursor: pointer;
+  transition: all 120ms ease;
 }
 
 .pageDotActive {
-  background: var(--color-brand);
-  color: var(--text-inverse);
-}
-
-@media (max-width: 980px) {
-  .hero,
-  .tripGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 720px) {
-  .page {
-    padding: 28px 0 48px;
-  }
-
-  .ticketStats,
-  .infoGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .pagination {
-    flex-direction: column;
-  }
-
-  .pageInfo,
-  .tripHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  background-color: #FFD166;
+  box-shadow: 1.5px 1.5px 0 #111111;
+  transform: translate(-1px, -1px);
 }

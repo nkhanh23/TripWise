@@ -4,3 +4,5 @@ export * from "./EmptyState";
 export * from "./ErrorMessage";
 export * from "./Input";
 export * from "./Loading";
+export * from "./Badge";
+export * from "./ErrorBanner";

@@ -54,7 +54,11 @@ export interface CreateTripRequest {
 export interface PlaceResponse {
   id: number;
   name: string;
+  province?: string;
   city: string;
+  district?: string;
+  ward?: string;
+  displayAddress?: string;
   categoryId?: number;
   categoryName?: string;
   categorySlug?: string;
@@ -65,10 +69,28 @@ export interface PlaceResponse {
   verified?: boolean;
   priceLevel?: string;
   rating?: number;
+  verificationStatus?: string;
+  popularityScore?: number;
+  primaryImageUrl?: string;
   latitude?: number;
   longitude?: number;
   distanceMeters?: number;
   tags?: string[];
+}
+
+export interface PlaceMapMarkerResponse {
+  id: number;
+  name: string;
+  province?: string;
+  city: string;
+  categoryName?: string;
+  categorySlug?: string;
+  rating?: number;
+  primaryImageUrl?: string;
+  verificationStatus?: string;
+  popularityScore?: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface TransportSuggestionResponse {

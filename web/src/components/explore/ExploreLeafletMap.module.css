@@ -1,0 +1,66 @@
+.mapCanvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: #FFFDF3;
+}
+
+.markerOuter {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+}
+
+.markerOuter::after {
+  content: "";
+  position: absolute;
+  inset: auto 13px -6px 13px;
+  height: 10px;
+  background: #20A7D8;
+  border-left: 2px solid #111111;
+  border-right: 2px solid #111111;
+  border-bottom: 2px solid #111111;
+  transform: rotate(45deg);
+  z-index: 0;
+}
+
+.markerOuterSelected {
+  filter: drop-shadow(0 0 8px rgba(32, 167, 216, 0.65));
+}
+
+.markerOuterSelected::after {
+  background: #B8F24A;
+}
+
+.markerCore {
+  position: relative;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  background: #20A7D8;
+  display: grid;
+  place-items: center;
+  box-shadow: 2px 2px 0 #111111;
+}
+
+.markerOuterSelected .markerCore {
+  background: #B8F24A;
+  transform: scale(1.06);
+}
+
+.markerNumber,
+.markerLetter {
+  color: #FFFFFF;
+  font-size: 0.84rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.markerOuterSelected .markerNumber,
+.markerOuterSelected .markerLetter {
+  color: #111111;
+}

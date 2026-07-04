@@ -1,5 +1,10 @@
 import { ExplorePlacesPage } from "@/components/explore/ExplorePlacesPage";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 export default function ExploreRoute() {
-  return <ExplorePlacesPage />;
+  return (
+    <AppLayout noScroll>
+      <ExplorePlacesPage />
+    </AppLayout>
+  );
 }

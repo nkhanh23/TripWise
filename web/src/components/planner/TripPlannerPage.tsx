@@ -4,7 +4,7 @@ import { startTransition, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./TripPlannerPage.module.css";
-import { Button, Card, ErrorMessage, Loading } from "@/components/ui";
+import { Button, Card, ErrorMessage, Loading, Badge } from "@/components/ui";
 import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
   ApiError,
@@ -58,58 +58,6 @@ const EXAMPLE_PROMPTS = [
   "Da Nang cuoi tuan, uu tien food trip gon gon."
 ] as const;
 
-const PREVIEW_ITINERARY: Record<
-  PreviewDay,
-  Array<{ time: string; title: string; description: string }>
-> = {
-  1: [
-    {
-      time: "08:00",
-      title: "Tran Phu Beach",
-      description: "Mo dau bang buoi sang ngoai troi, de chup hinh va di dao."
-    },
-    {
-      time: "11:30",
-      title: "Bua trua hai san",
-      description: "Can giua budget vua phai va mon dia phuong de tiep nang luong."
-    },
-    {
-      time: "15:00",
-      title: "Thap Ba Ponagar",
-      description: "Them mot diem van hoa de itinerary khong bi mot mau."
-    }
-  ],
-  2: [
-    {
-      time: "07:30",
-      title: "Dao - bien buoi sang",
-      description: "Khoang thoi gian mat me nhat cho style chill va nature."
-    },
-    {
-      time: "13:30",
-      title: "Cafe truoc buoi chieu",
-      description: "Block nghi nhe de mat do ngay thu hai khong qua day."
-    },
-    {
-      time: "18:30",
-      title: "Hai san buoi toi",
-      description: "Foodie block duoc uu tien neu ban chon nhom hai san."
-    }
-  ],
-  3: [
-    {
-      time: "08:30",
-      title: "Cho Dam / mua qua",
-      description: "Block nhe cho ngay cuoi, phu hop truoc luc roi thanh pho."
-    },
-    {
-      time: "11:00",
-      title: "Bua trua ket chuyen",
-      description: "Giu lich thong thoang de de check-out va di chuyen."
-    }
-  ]
-};
-
 const GENERATION_STEPS = [
   "Dang phan tich yeu cau tu prompt va cac field form.",
   "Dang doi chieu voi dia diem that trong he thong.",
@@ -119,7 +67,7 @@ const GENERATION_STEPS = [
 
 function formatDateForDisplay(value: string) {
   if (!value) {
-    return "Chua chon";
+    return "Chưa chọn";
   }
 
   const date = new Date(value);
@@ -152,7 +100,7 @@ function countTripDays(startDate: string, endDate: string) {
 
 function normalizeApiError(error: unknown) {
   if (error instanceof AuthSessionExpiredError) {
-    return "Phien dang nhap da het han. Ban hay dang nhap lai truoc khi tao trip.";
+    return "Phiên đăng nhập đã hết hạn. Bạn hãy đăng nhập lại trước khi tạo trip.";
   }
 
   if (error instanceof ApiError) {
@@ -163,7 +111,7 @@ function normalizeApiError(error: unknown) {
     return error.message;
   }
 
-  return "TripWise chua the tao lich trinh luc nay. Vui long thu lai sau.";
+  return "TripWise chưa thể tạo lịch trình lúc này. Vui lòng thử lại sau.";
 }
 
 function formatPromptFromForm(input: {
@@ -229,7 +177,6 @@ export function TripPlannerPage() {
   const [prompt, setPrompt] = useState(
     "Nha Trang 3 ngay 2 dem, di cung ban be, thich bien, hai san, check-in dep, ngan sach vua phai."
   );
-  const [previewDay, setPreviewDay] = useState<PreviewDay>(1);
   const [suggestionFlags, setSuggestionFlags] = useState<SuggestionFlags>({
     density: true,
     outdoor: true,
@@ -276,22 +223,22 @@ export function TripPlannerPage() {
     setSubmitError(null);
 
     if (!destination.trim()) {
-      setValidationError("Ban can nhap diem den truoc khi tao trip.");
+      setValidationError("Bạn cần nhập điểm đến trước khi tạo trip.");
       return;
     }
 
     if (!totalDays || totalDays < 1) {
-      setValidationError("Khoang ngay khong hop le.");
+      setValidationError("Khoảng ngày không hợp lệ.");
       return;
     }
 
     if (totalDays > 3) {
-      setValidationError("MVP hien chi ho tro toi da 3 ngay.");
+      setValidationError("MVP hiện chỉ hỗ trợ tối đa 3 ngày.");
       return;
     }
 
     if (!prompt.trim()) {
-      setValidationError("Ban can mo ta ngan gon nhu cau chuyen di.");
+      setValidationError("Bạn cần mô tả ngắn gọn nhu cầu chuyến đi.");
       return;
     }
 
@@ -329,246 +276,172 @@ export function TripPlannerPage() {
     setSubmitError(null);
   }
 
-  const previewItems = PREVIEW_ITINERARY[previewDay];
-
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <FilmGrainOverlay />
+      
       <div className={styles.shell}>
+        
+        {/* HERO HEADER */}
         <section className={styles.hero}>
           <BounceCard delay={100}>
             <Card className={styles.heroCard} elevated>
               <div className={styles.heroStack}>
-              <div className={styles.stickerRow}>
-                <span className={styles.sticker}>Phase 12.5</span>
-                <span className={styles.stickerAlt}>Trip Request Form</span>
-              </div>
-
-              <div>
+                <div className={styles.stickerRow}>
+                  <span className={styles.sticker}>✦ AI Travel Machine</span>
+                </div>
                 <KineticTitle
                   tag="h1"
-                  text="Nhap trip brief, de TripWise lo phan con lai."
+                  text="Lập lịch trình bằng AI ✨"
                   size="section"
                   variant="pop"
                   shadowVariant="black"
                   className={styles.headline}
                 />
+                <p className={styles.description}>
+                  Điền vài thông tin hoặc mô tả bằng một câu tự nhiên. TripWise AI sẽ thiết kế trọn gói bưu thiếp và tuyến đường di chuyển trong 10 giây.
+                </p>
               </div>
-
-              <p className={styles.description}>
-                Man nay tap trung vao form nhap yeu cau chuyen di theo dung spec
-                planner. UI van bam mood mock React archive, con request thi duoc
-                gom thanh mot prompt de goi backend hien tai.
-              </p>
-
-              <div className={styles.microStats}>
-                <div className={styles.microStat}>
-                  <div className={styles.microLabel}>Mode</div>
-                  <div className={styles.microValue}>Planner form</div>
-                </div>
-                <div className={styles.microStat}>
-                  <div className={styles.microLabel}>Auth</div>
-                  <div className={styles.microValue}>Dang nhap bat buoc</div>
-                </div>
-                  <div className={styles.microStat}>
-                    <div className={styles.microLabel}>Result</div>
-                    <div className={styles.microValue}>Trang rieng /trips/:id</div>
-                  </div>
-              </div>
-            </div>
-          </Card>
-          </BounceCard>
-
-          <BounceCard delay={200}>
-          <Card className={styles.ticket} elevated>
-            <div className={styles.ticketBody}>
-              <div>
-                <div className={styles.ticketLabel}>Ticket snapshot</div>
-                <h2 className={styles.ticketTitle}>Planner cockpit</h2>
-              </div>
-
-              <div className={styles.ticketMeta}>
-                <div className={styles.ticketMetaRow}>
-                  <span className={styles.ticketLabel}>Destination</span>
-                  <span>{destination || "Chua nhap"}</span>
-                </div>
-                <div className={styles.ticketMetaRow}>
-                  <span className={styles.ticketLabel}>Duration</span>
-                  <span>
-                    {totalDays ? `${totalDays} ngay ${Math.max(totalDays - 1, 0)} dem` : "Can chon ngay"}
-                  </span>
-                </div>
-                <div className={styles.ticketMetaRow}>
-                  <span className={styles.ticketLabel}>Travelers</span>
-                  <span>{travelers} nguoi</span>
-                </div>
-                <div className={styles.ticketMetaRow}>
-                  <span className={styles.ticketLabel}>Transport</span>
-                  <span>{transport}</span>
-                </div>
-              </div>
-
-              <p className={styles.snapshotNote}>
-                Sau khi generate xong, TripWise se dua ban sang result page rieng
-                de xem timeline day du.
-              </p>
-            </div>
-          </Card>
+            </Card>
           </BounceCard>
         </section>
 
-        <section className={styles.contentGrid}>
-          <BounceCard delay={300}>
-          <Card
-            className={styles.formCard}
-            elevated
-            title="Thong tin chuyen di"
-            description="Nhap cac rang buoc quan trong. Backend hien tai nhan mot request string, nen form nay se hop nhat thanh brief tu nhien truoc khi submit."
-          >
-            <form className={styles.form} onSubmit={handleSubmit}>
-              <section className={styles.section}>
-                <div className={styles.sectionTitleRow}>
-                  <h3 className={styles.sectionTitle}>1. Diem den va thoi gian</h3>
-                  <span className={styles.sectionHint}>MVP toi da 3 ngay</span>
+        {/* LEFT COLUMN: FORM */}
+        <div className={styles.leftCol}>
+          <BounceCard delay={200}>
+            <div className={styles.formCard}>
+              <div className={styles.formTitleBar}>
+                <h3 className={styles.formTitle}>Thông tin chuyến đi</h3>
+                <p className={styles.formSubtitle}>Cài đặt tham số lịch trình</p>
+              </div>
+
+              <form className={styles.formBody} onSubmit={handleSubmit}>
+                
+                {/* 1. Destination */}
+                <div className={styles.formSection}>
+                  <label className={styles.formLabel} htmlFor="destinationInput">Bạn muốn đi đâu?</label>
+                  <div className={styles.inputWrapper}>
+                    <i className={`material-symbols-outlined ${styles.inputIcon}`}>explore</i>
+                    <input
+                      id="destinationInput"
+                      type="text"
+                      className={styles.textInput}
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      placeholder="Ví dụ: Nha Trang"
+                    />
+                  </div>
                 </div>
 
-                <div className={styles.gridTwo}>
-                  <label className={styles.label}>
-                    <span>Diem den</span>
-                    <input
-                      className={styles.inputLike}
-                      onChange={(event) => setDestination(event.target.value)}
-                      placeholder="Vi du: Nha Trang"
-                      value={destination}
-                    />
-                  </label>
+                {/* 2. Date Range */}
+                <div className={styles.formSection}>
+                  <label className={styles.formLabel}>Bạn đi khi nào?</label>
+                  <div className={styles.gridTwo}>
+                    <div className={styles.inputWrapper}>
+                      <i className={`material-symbols-outlined ${styles.inputIcon}`}>calendar_month</i>
+                      <input
+                        type="date"
+                        className={styles.textInput}
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.inputWrapper}>
+                      <i className={`material-symbols-outlined ${styles.inputIcon}`}>calendar_month</i>
+                      <input
+                        type="date"
+                        className={styles.textInput}
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className={styles.dateWarningRow}>
+                    {totalDays !== null && (
+                      <Badge variant="sticker" size="sm">{totalDays} ngày {Math.max(0, totalDays - 1)} đêm</Badge>
+                    )}
+                    <span className={styles.dateWarningText}>
+                      ⚠️ MVP hỗ trợ lịch trình tối đa 3 ngày.
+                    </span>
+                  </div>
+                </div>
 
-                  <label className={styles.label}>
-                    <span>So nguoi di</span>
-                    <div className={styles.stepper}>
+                {/* 3. Budget */}
+                <div className={styles.formSection}>
+                  <label className={styles.formLabel}>Ngân sách</label>
+                  <div className={styles.segmentedControl}>
+                    {BUDGET_OPTIONS.map((option) => {
+                      const isActive = budget === option.key;
+                      return (
+                        <button
+                          key={option.key}
+                          type="button"
+                          onClick={() => setBudget(option.key)}
+                          className={`${styles.segmentBtn} ${isActive ? styles.segmentBtnActive : ''}`}
+                        >
+                          {option.key === "Tiet kiem" ? "Tiết kiệm" : option.key === "Vua phai" ? "Vừa phải" : "Thoải mái"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 4. Travel Styles */}
+                <div className={styles.formSection}>
+                  <label className={styles.formLabel}>Phong cách du lịch</label>
+                  <div className={styles.chipsContainer}>
+                    {TRAVEL_STYLES.map((style) => {
+                      const active = travelStyles.includes(style);
+                      return (
+                        <button
+                          key={style}
+                          type="button"
+                          onClick={() => setTravelStyles((current) => toggleValue(current, style))}
+                          className={`${styles.chipBtn} ${active ? styles.chipBtnStyleActive : ''}`}
+                        >
+                          {style === "Chill" ? "Chill" : style === "Foodie" ? "Foodie" : style === "Check-in" ? "Check-in" : style === "Nature" ? "Nature" : style === "Culture" ? "Culture" : "Adventure nhẹ"}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 5 & 6. Travelers & Transport */}
+                <div className={styles.gridTwo}>
+                  <div className={styles.formSection}>
+                    <label className={styles.formLabel}>Số người đi</label>
+                    <div className={styles.stepperContainer}>
                       <button
-                        className={styles.stepperButton}
-                        onClick={() => setTravelers((current) => Math.max(1, current - 1))}
                         type="button"
+                        onClick={() => setTravelers((prev) => Math.max(1, prev - 1))}
+                        className={styles.stepperBtn}
                       >
                         -
                       </button>
                       <span className={styles.stepperValue}>{travelers}</span>
                       <button
-                        className={styles.stepperButton}
-                        onClick={() => setTravelers((current) => Math.min(10, current + 1))}
                         type="button"
+                        onClick={() => setTravelers((prev) => prev + 1)}
+                        className={styles.stepperBtn}
                       >
                         +
                       </button>
                     </div>
-                  </label>
-                </div>
+                  </div>
 
-                <div className={styles.gridTwo}>
-                  <label className={styles.label}>
-                    <span>Ngay bat dau</span>
-                    <input
-                      className={styles.inputLike}
-                      onChange={(event) => setStartDate(event.target.value)}
-                      type="date"
-                      value={startDate}
-                    />
-                  </label>
-
-                  <label className={styles.label}>
-                    <span>Ngay ket thuc</span>
-                    <input
-                      className={styles.inputLike}
-                      onChange={(event) => setEndDate(event.target.value)}
-                      type="date"
-                      value={endDate}
-                    />
-                  </label>
-                </div>
-
-                <div className={styles.warning}>
-                  TripWise hien dang dung flow MVP 1-3 ngay. Neu ban chon qua 3
-                  ngay, form se chan submit thay vi tu dong doan nghia.
-                </div>
-              </section>
-
-              <section className={styles.section}>
-                <div className={styles.sectionTitleRow}>
-                  <h3 className={styles.sectionTitle}>2. Ngan sach va phong cach</h3>
-                  <span className={styles.sectionHint}>Dung de dieu chinh scoring va mat do itinerary</span>
-                </div>
-
-                <div className={styles.budgetRow}>
-                  {BUDGET_OPTIONS.map((option) => (
-                    <button
-                      className={`${styles.budgetButton} ${budget === option.key ? styles.budgetActive : ""}`}
-                      key={option.key}
-                      onClick={() => setBudget(option.key)}
-                      type="button"
-                    >
-                      <span className={styles.budgetName}>{option.key}</span>
-                      <span className={styles.budgetBody}>{option.description}</span>
-                    </button>
-                  ))}
-                </div>
-
-                <div className={styles.chipRow}>
-                  {TRAVEL_STYLES.map((style) => {
-                    const active = travelStyles.includes(style);
-
-                    return (
-                      <button
-                        className={`${styles.chip} ${active ? styles.chipActive : ""}`}
-                        key={style}
-                        onClick={() => setTravelStyles((current) => toggleValue(current, style))}
-                        type="button"
-                      >
-                        {style}
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className={styles.section}>
-                <div className={styles.sectionTitleRow}>
-                  <h3 className={styles.sectionTitle}>3. Di chuyen va an uong</h3>
-                  <span className={styles.sectionHint}>O phase nay chua co route map, nhung profile van duoc dua vao brief</span>
-                </div>
-
-                <div className={styles.gridTwo}>
-                  <label className={styles.label}>
-                    <span>Phuong tien chinh</span>
-                    <select
-                      className={styles.selectLike}
-                      onChange={(event) => setTransport(event.target.value as TransportMode)}
-                      value={transport}
-                    >
-                      {TRANSPORT_OPTIONS.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <div className={styles.label}>
-                    <span>So thich an uong</span>
-                    <div className={styles.chipRow}>
-                      {FOOD_PREFERENCES.map((food) => {
-                        const active = foodPreferences.includes(food);
-
+                  <div className={styles.formSection}>
+                    <label className={styles.formLabel}>Phương tiện chính</label>
+                    <div className={styles.chipsContainer}>
+                      {TRANSPORT_OPTIONS.map((mode) => {
+                        const active = transport === mode;
                         return (
                           <button
-                            className={`${styles.chip} ${active ? styles.chipActive : ""}`}
-                            key={food}
-                            onClick={() =>
-                              setFoodPreferences((current) => toggleValue(current, food))
-                            }
+                            key={mode}
                             type="button"
+                            onClick={() => setTransport(mode)}
+                            className={`${styles.chipBtn} ${active ? styles.chipBtnTransportActive : ''}`}
                           >
-                            {food}
+                            {mode === "Di bo" ? "Đi bộ" : mode === "Xe may" ? "Xe máy" : mode === "O to" ? "Ô tô" : "Xe đạp"}
                           </button>
                         );
                       })}
@@ -576,289 +449,156 @@ export function TripPlannerPage() {
                   </div>
                 </div>
 
-                {transport === "Di bo" ? (
-                  <div className={styles.warning}>
-                    Neu lich trinh co diem xa nhau, profile di bo co the lam thoi
-                    gian di chuyen tang manh. Day la canh bao UX theo spec, chua
-                    phai route verify that.
+                {/* 7. Food Preferences */}
+                <div className={styles.formSection}>
+                  <label className={styles.formLabel}>Bạn thích ăn gì?</label>
+                  <div className={styles.chipsContainer}>
+                    {FOOD_PREFERENCES.map((food) => {
+                      const active = foodPreferences.includes(food);
+                      return (
+                        <button
+                          key={food}
+                          type="button"
+                          onClick={() => setFoodPreferences((current) => toggleValue(current, food))}
+                          className={`${styles.chipBtn} ${active ? styles.chipBtnFoodActive : ''}`}
+                        >
+                          {food === "Hai san" ? "Hải sản" : food === "An vat" ? "Ăn vặt" : food === "Cafe" ? "Cafe" : food === "Mon dia phuong" ? "Món địa phương" : food === "An chay" ? "Ăn chay" : "Ít cay"}
+                        </button>
+                      );
+                    })}
                   </div>
-                ) : null}
-              </section>
-
-              <section className={styles.section}>
-                <div className={styles.sectionTitleRow}>
-                  <h3 className={styles.sectionTitle}>4. Prompt tu nhien</h3>
-                  <span className={styles.sectionHint}>Backend hien tai nhan field `request`, nen textarea nay la phan quan trong nhat</span>
                 </div>
 
-                <label className={styles.label}>
-                  <span>Mo ta chuyen di bang loi cua ban</span>
+                {/* 8. Text Description */}
+                <div className={styles.formSection}>
+                  <label className={styles.formLabel} htmlFor="naturalPromptInput">Mô tả chuyến đi bằng lời của bạn</label>
                   <textarea
-                    className={styles.textareaLike}
-                    onChange={(event) => setPrompt(event.target.value)}
-                    placeholder="Vi du: Nha Trang 3 ngay 2 dem, thich bien, hai san, check-in dep, ngan sach vua phai..."
+                    id="naturalPromptInput"
+                    className={styles.textarea}
                     value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Ví dụ: Nha Trang 3 ngày 2 đêm, thích biển, ăn hải sản tối, nghỉ dưỡng..."
+                    rows={3}
                   />
-                </label>
-
-                <div className={styles.chipRow}>
-                  {EXAMPLE_PROMPTS.map((example) => (
-                    <button
-                      className={styles.outlineButton}
-                      key={example}
-                      onClick={() => setPrompt(example)}
-                      type="button"
-                    >
-                      {example}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className={styles.section}>
-                <div className={styles.sectionTitleRow}>
-                  <h3 className={styles.sectionTitle}>5. AI suggestion hooks</h3>
-                  <span className={styles.sectionHint}>Chi ap dung vao brief string, khong co business logic phia client</span>
-                </div>
-
-                <div className={styles.chipRow}>
-                  {[
-                    ["density", "Giu lich thoang hon"],
-                    ["outdoor", "Uu tien ngoai troi buoi sang"],
-                    ["seafood", "Them bua hai san buoi toi"]
-                  ].map(([key, label]) => {
-                    const flagKey = key as keyof SuggestionFlags;
-                    const active = suggestionFlags[flagKey];
-
-                    return (
+                  <div className={styles.templateContainer}>
+                    <span className={styles.templateLabel}>Mẫu nhanh:</span>
+                    {EXAMPLE_PROMPTS.map((ex) => (
                       <button
-                        className={`${styles.chip} ${active ? styles.chipActive : ""}`}
-                        key={key}
-                        onClick={() =>
-                          setSuggestionFlags((current) => ({
-                            ...current,
-                            [flagKey]: !current[flagKey]
-                          }))
-                        }
+                        key={ex}
                         type="button"
+                        onClick={() => setPrompt(ex)}
+                        className={styles.templateBtn}
                       >
-                        {label}
+                        {ex.includes("Nha Trang") ? "Nha Trang 3N2Đ" : ex.includes("Da Lat") ? "Đà Lạt 2 ngày" : "Đà Nẵng cuối tuần"}
                       </button>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </section>
 
-              {validationError ? (
-                <ErrorMessage
-                  message={validationError}
-                  title="Form chua san sang de gui"
-                  actions={
-                    <Button
-                      fullWidth={false}
-                      onClick={() => setValidationError(null)}
-                      variant="secondary"
+                {/* Messages & Actions */}
+                {validationError && (
+                  <div className={styles.formWarning}>
+                    {validationError}
+                  </div>
+                )}
+                {submitError && (
+                  <div className={styles.formWarning}>
+                    {submitError}
+                  </div>
+                )}
+
+                <div className={styles.formActions}>
+                  <Button variant="primary" type="submit" disabled={!canSubmit || isSubmitting}>
+                    {isSubmitting ? "Đang tạo..." : "Tạo lịch trình ⚡"}
+                  </Button>
+                  <Button variant="secondary" type="button" onClick={() => router.push('/dashboard')}>
+                    Lưu nháp
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className={styles.deleteBtn}
+                  >
+                    Xoá form
+                  </button>
+                </div>
+              </form>
+            </div>
+          </BounceCard>
+        </div>
+
+        {/* RIGHT COLUMN: HUD INSIGHTS */}
+        <div className={styles.rightCol}>
+          
+          {/* AI UNDERSTANDING */}
+          <BounceCard delay={300}>
+            <Card variant="speech" title="AI đã hiểu">
+              {destination.trim() ? (
+                <div className={styles.summaryTable}>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>📍 Điểm đến:</span>
+                    <span className={styles.summaryVal}>{destination}</span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>📅 Thời gian:</span>
+                    <span className={styles.summaryVal}>
+                      {totalDays ? `${totalDays} ngày ${Math.max(0, totalDays - 1)} đêm` : ""} ({formatDateForDisplay(startDate)} – {formatDateForDisplay(endDate)})
+                    </span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>👥 Người đi:</span>
+                    <span className={styles.summaryVal}>{travelers} người</span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>💰 Ngân sách:</span>
+                    <span className={styles.summaryVal}>
+                      {budget === "Tiet kiem" ? "Tiết kiệm" : budget === "Vua phai" ? "Vừa phải" : "Thoải mái"}
+                    </span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>🎨 Phong cách:</span>
+                    <span className={styles.summaryVal}>
+                      {travelStyles.length > 0 ? travelStyles.join(", ") : "Chưa chọn"}
+                    </span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>🛵 Phương tiện:</span>
+                    <span className={styles.summaryVal}>
+                      {transport === "Di bo" ? "Đi bộ" : transport === "Xe may" ? "Xe máy" : transport === "O to" ? "Ô tô" : "Xe đạp"}
+                    </span>
+                  </div>
+                  <div className={styles.summaryRow}>
+                    <span className={styles.summaryKey}>🦀 Ăn uống:</span>
+                    <span className={styles.summaryVal}>
+                      {foodPreferences.length > 0 ? foodPreferences.join(", ") : "Chưa chọn"}
+                    </span>
+                  </div>
+                  <div className={styles.summaryFooter}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        document.getElementById("destinationInput")?.focus();
+                      }}
+                      className={styles.summaryFooterBtn}
                     >
-                      Dong nhac nho
-                    </Button>
-                  }
-                />
-              ) : null}
-
-              {submitError ? (
-                <ErrorMessage
-                  message={submitError}
-                  title="Khong the tao lich trinh"
-                  actions={
-                    <>
-                      <Button
-                        fullWidth={false}
-                        onClick={() => setSubmitError(null)}
-                        variant="secondary"
-                      >
-                        Kiem tra lai brief
-                      </Button>
-                      <Link className={styles.outlineButton} href="/login">
-                        Dang nhap lai
-                      </Link>
-                    </>
-                  }
-                />
-              ) : null}
-
-              <div className={styles.actions}>
-                <Button disabled={!canSubmit || isSubmitting} type="submit">
-                  {isSubmitting ? "Dang tao va mo result..." : "Tao lich trinh"}
-                </Button>
-                <Button
-                  fullWidth={false}
-                  onClick={resetForm}
-                  type="button"
-                  variant="secondary"
-                >
-                  Xoa form
-                </Button>
-                <Link className={styles.outlineButton} href="/login">
-                  Dang nhap / doi session
-                </Link>
-                <span className={styles.ghostButton}>Result page se mo sau khi generate thanh cong</span>
-              </div>
-            </form>
-          </Card>
+                      Chỉnh lại thông tin
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.emptyState}>
+                  Nhập prompt hoặc điền form để AI tóm tắt yêu cầu của bạn.
+                </div>
+              )}
+            </Card>
           </BounceCard>
 
-          <div className={styles.sideStack}>
+          {/* SUGGESTIONS OR LOADING PROGRESS */}
+          {isSubmitting ? (
             <BounceCard delay={400}>
-            <Card
-              className={styles.sideCard}
-              title="AI da hieu"
-              description="Tom tat cac field dang co tren form truoc khi goi backend."
-            >
-              <div className={styles.summaryList}>
-                <div className={styles.summaryItem}>
-                  <span className={styles.summaryKey}>Destination</span>
-                  <span className={styles.summaryValue}>{destination || "Chua nhap"}</span>
-                </div>
-                <div className={styles.summaryItem}>
-                  <span className={styles.summaryKey}>Time window</span>
-                  <span className={styles.summaryValue}>
-                    {formatDateForDisplay(startDate)} - {formatDateForDisplay(endDate)}
-                  </span>
-                </div>
-                <div className={styles.summaryItem}>
-                  <span className={styles.summaryKey}>Styles</span>
-                  <span className={styles.summaryValue}>
-                    {travelStyles.length > 0 ? travelStyles.join(", ") : "Chua chon"}
-                  </span>
-                </div>
-                <div className={styles.summaryItem}>
-                  <span className={styles.summaryKey}>Generated request</span>
-                  <span className={styles.summaryValue}>{generatedRequest}</span>
-                </div>
-              </div>
-            </Card>
-            </BounceCard>
-
-            <BounceCard delay={500}>
-            <Card
-              className={styles.sideCard}
-              title="Goi y cua TripWise AI"
-              description="Nhung de xuat nay chi thay doi cach minh tao request string."
-            >
-              <div className={styles.suggestionList}>
-                <div className={styles.suggestionItem}>
-                  <div className={styles.suggestionTitle}>
-                    <span>Giam mat do moi ngay</span>
-                    <button
-                      className={`${styles.miniButton} ${
-                        suggestionFlags.density ? styles.miniButtonActive : ""
-                      }`}
-                      onClick={() =>
-                        setSuggestionFlags((current) => ({
-                          ...current,
-                          density: !current.density
-                        }))
-                      }
-                      type="button"
-                    >
-                      {suggestionFlags.density ? "Da ap dung" : "Ap dung"}
-                    </button>
-                  </div>
-                  <p className={styles.suggestionBody}>
-                    Phu hop khi ban chon Chill, giup request huong toi 3-4 diem
-                    moi ngay thay vi nhieu block sat nhau.
-                  </p>
-                </div>
-
-                <div className={styles.suggestionItem}>
-                  <div className={styles.suggestionTitle}>
-                    <span>Uu tien diem ngoai troi buoi sang</span>
-                    <button
-                      className={`${styles.miniButton} ${
-                        suggestionFlags.outdoor ? styles.miniButtonActive : ""
-                      }`}
-                      onClick={() =>
-                        setSuggestionFlags((current) => ({
-                          ...current,
-                          outdoor: !current.outdoor
-                        }))
-                      }
-                      type="button"
-                    >
-                      {suggestionFlags.outdoor ? "Da ap dung" : "Ap dung"}
-                    </button>
-                  </div>
-                  <p className={styles.suggestionBody}>
-                    Dung cho cac diem bien, dao, check-in ngoai troi trong khung
-                    sang som.
-                  </p>
-                </div>
-
-                <div className={styles.suggestionItem}>
-                  <div className={styles.suggestionTitle}>
-                    <span>Them block hai san buoi toi</span>
-                    <button
-                      className={`${styles.miniButton} ${
-                        suggestionFlags.seafood ? styles.miniButtonActive : ""
-                      }`}
-                      onClick={() =>
-                        setSuggestionFlags((current) => ({
-                          ...current,
-                          seafood: !current.seafood
-                        }))
-                      }
-                      type="button"
-                    >
-                      {suggestionFlags.seafood ? "Da ap dung" : "Ap dung"}
-                    </button>
-                  </div>
-                  <p className={styles.suggestionBody}>
-                    Chi co tac dung dieu chinh brief neu ban muon uu tien nhom
-                    foodie va hai san dia phuong.
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            <Card
-              className={styles.sideCard}
-              title="Preview itinerary"
-              description="Preview nay la shell tham chieu tu mock, chua phai man result thuc te."
-            >
-              <div className={styles.dayTabs}>
-                {[1, 2, 3].map((day) => (
-                  <button
-                    className={`${styles.dayTab} ${previewDay === day ? styles.dayTabActive : ""}`}
-                    key={day}
-                    onClick={() => setPreviewDay(day as PreviewDay)}
-                    type="button"
-                  >
-                    Day {day}
-                  </button>
-                ))}
-              </div>
-
-              <div className={styles.previewList}>
-                {previewItems.map((item) => (
-                  <div className={styles.previewItem} key={`${previewDay}-${item.time}-${item.title}`}>
-                    <span className={styles.previewTime}>{item.time}</span>
-                    <span className={styles.previewTitle}>{item.title}</span>
-                    <p className={styles.previewBody}>{item.description}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            <Card
-              className={styles.sideCard}
-              title="Generate status"
-              description="Khi submit that, planner se handoff sang man itinerary result cua Phase 12.6."
-            >
-              {isSubmitting ? (
-                <div className={styles.statusCard}>
-                  <Loading label="TripWise dang tao draft itinerary..." />
-
-                  <div className={styles.statusSteps}>
+              <Card title="Đang tạo lịch trình...">
+                <div className={styles.progressSection}>
+                  <div className={styles.statusList}>
                     {GENERATION_STEPS.map((step, index) => (
                       <div className={styles.statusStep} key={step}>
                         <span
@@ -870,22 +610,89 @@ export function TripPlannerPage() {
                       </div>
                     ))}
                   </div>
-
                   <div className={styles.progressBar}>
                     <div className={styles.progressFill} style={{ width: "55%" }} />
                   </div>
                 </div>
-              ) : (
-                <p className={styles.emptyState}>
-                  Chua co request generate nao dang chay. Sau khi dang nhap va
-                  submit form, TripWise se mo sang result page cua trip vua tao.
-                </p>
-              )}
-            </Card>
+              </Card>
             </BounceCard>
-          </div>
-        </section>
+          ) : (
+            <section className={styles.formSection} style={{ gap: '12px' }}>
+              <h3 style={{ fontFamily: "var(--font-display)", fontSize: 18, color: '#111111', margin: '0 0 4px' }}>
+                Gợi ý của TripWise AI
+              </h3>
+              
+              <div className={styles.suggestionsList}>
+                {/* Suggestion 1 */}
+                <div className={styles.suggestionCard}>
+                  <div className={styles.sugHeader}>
+                    <span className={styles.sugTitle}>🗺️ Giảm mật độ lịch trình</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSuggestionFlags((current) => ({
+                          ...current,
+                          density: !current.density,
+                        }))
+                      }
+                      className={`${styles.sugBtn} ${suggestionFlags.density ? styles.sugBtnActive : ''}`}
+                    >
+                      {suggestionFlags.density ? 'Đã áp dụng ✓' : 'Áp dụng'}
+                    </button>
+                  </div>
+                  <p className={styles.sugDesc}>
+                    Với phong cách chill, nên giữ 3–4 điểm mỗi ngày để không quá mệt mỏi khi di chuyển.
+                  </p>
+                </div>
+
+                {/* Suggestion 2 */}
+                <div className={styles.suggestionCard}>
+                  <div className={styles.sugHeader}>
+                    <span className={styles.sugTitle}>☀️ Ưu tiên biển buổi sáng</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSuggestionFlags((current) => ({
+                          ...current,
+                          outdoor: !current.outdoor,
+                        }))
+                      }
+                      className={`${styles.sugBtn} ${suggestionFlags.outdoor ? styles.sugBtnActive : ''}`}
+                    >
+                      {suggestionFlags.outdoor ? 'Đã áp dụng ✓' : 'Áp dụng'}
+                    </button>
+                  </div>
+                  <p className={styles.sugDesc}>
+                    Biển Nha Trang nắng đẹp hơn, nước trong và ít đông hơn vào đầu ngày.
+                  </p>
+                </div>
+
+                {/* Suggestion 3 */}
+                <div className={styles.suggestionCard}>
+                  <div className={styles.sugHeader}>
+                    <span className={styles.sugTitle}>🦀 Thêm bữa hải sản buổi tối</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSuggestionFlags((current) => ({
+                          ...current,
+                          seafood: !current.seafood,
+                        }))
+                      }
+                      className={`${styles.sugBtn} ${suggestionFlags.seafood ? styles.sugBtnActive : ''}`}
+                    >
+                      {suggestionFlags.seafood ? 'Đã áp dụng ✓' : 'Áp dụng'}
+                    </button>
+                  </div>
+                  <p className={styles.sugDesc}>
+                    Các quán dọc bờ kè Phạm Văn Đồng có hải sản tươi rói ngon nhất vào buổi tối.
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

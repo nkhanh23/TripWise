@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthShell } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
 import { KineticTitle } from '@/components/motion/KineticTitle';
 import { ErrorBanner } from '@/components/ui/ErrorBanner';
+import styles from './AuthPage.module.css';
 
 export const ForgotPasswordPage: React.FC = () => {
   const router = useRouter();
@@ -49,62 +48,47 @@ export const ForgotPasswordPage: React.FC = () => {
       posterBody="Hệ thống sẽ gửi email hướng dẫn đặt lại mật khẩu cho tài khoản của bạn."
       ticketTitle="Password recovery"
     >
-      {success ? (
-        <Card>
-          <div className="space-y-6 py-4">
-            <div className="flex gap-4">
+      <section className={styles.card}>
+        {success ? (
+          <div className={styles.successCard}>
+            <div style={{ display: 'flex', gap: 16 }}>
               <span
                 style={{
-                  width: 48,
-                  height: 48,
+                  width: 54,
+                  height: 54,
                   borderRadius: '50%',
-                  border: '2px solid #111111',
+                  border: '3px solid #111111',
                   backgroundColor: '#B8F24A',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  boxShadow: '3px 3px 0 #111111'
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 24, fontWeight: 'bold' }}>mail</span>
+                <i className="material-symbols-outlined" style={{ fontSize: 24, fontWeight: 'bold' }} aria-hidden="true">mail</i>
               </span>
-              <div className="space-y-1.5 flex-1">
+              <div className="space-y-1.5 flex-1 animate-pop-in">
                 <KineticTitle text="Kiểm tra email 📬" size="card" variant="pop" />
-                <p style={{ fontSize: 13, color: '#7A6A58', fontWeight: 650, lineHeight: 1.5 }}>
+                <p className={styles.description}>
                   Nếu địa chỉ email <strong>{email}</strong> đã đăng ký trên hệ thống, chúng tôi đã gửi thư hướng dẫn đặt lại mật khẩu. Vui lòng kiểm tra hộp thư đến hoặc thư rác.
                 </p>
               </div>
             </div>
 
-            <div style={{ paddingTop: 4 }}>
+            <div style={{ paddingTop: 10 }}>
               <Button variant="secondary" size="md" style={{ width: '100%' }} onClick={() => router.push('/login')}>
                 Quay lại đăng nhập
               </Button>
             </div>
           </div>
-        </Card>
-      ) : (
-        <Card>
-          <div className="space-y-5">
+        ) : (
+          <div className={styles.stack}>
             {/* Header titles */}
-            <div className="space-y-1.5">
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 900,
-                  backgroundColor: '#FFD166',
-                  border: '1.5px solid #111111',
-                  borderRadius: 6,
-                  padding: '2px 8px',
-                  textTransform: 'uppercase',
-                  display: 'inline-block',
-                  transform: 'skewX(-2deg)'
-                }}
-              >
-                Reset Password
-              </span>
-              <KineticTitle text="Quên mật khẩu?" size="card" variant="pop" />
-              <p style={{ fontSize: 12, color: '#7A6A58', fontWeight: 650, marginTop: 4 }}>
+            <div className={styles.header}>
+              <span className={styles.eyebrow}>Reset Password</span>
+              <KineticTitle text="Quên mật khẩu?" size="card" variant="pop" className={styles.title} />
+              <p className={styles.description}>
                 Nhập email của bạn và TripWise sẽ gửi đường dẫn khôi phục mật khẩu.
               </p>
             </div>
@@ -118,16 +102,26 @@ export const ForgotPasswordPage: React.FC = () => {
             )}
 
             {/* Email form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Địa chỉ Email của bạn"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="khanh@example.com"
-                required
-              />
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <label className={styles.fieldRow}>
+                <span>Địa chỉ Email của bạn</span>
+                <span className={styles.inputShell}>
+                  <i className={`material-symbols-outlined ${styles.inputIcon}`} aria-hidden="true">
+                    mail
+                  </i>
+                  <input
+                    autoComplete="email"
+                    className={styles.input}
+                    name="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="khanh@example.com"
+                    type="email"
+                    value={email}
+                  />
+                </span>
+              </label>
 
-              <div style={{ paddingTop: 6 }} className="space-y-3">
+              <div style={{ paddingTop: 6 }} className={styles.form}>
                 <Button
                   variant="primary"
                   size="lg"
@@ -150,8 +144,8 @@ export const ForgotPasswordPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </Card>
-      )}
+        )}
+      </section>
     </AuthShell>
   );
 };

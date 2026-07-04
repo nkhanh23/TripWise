@@ -3,7 +3,8 @@
 import Link from "next/link";
 import type { PropsWithChildren } from "react";
 import styles from "./AuthShell.module.css";
-import { KineticTitle, FilmGrainOverlay } from "@/components/motion";
+import { FilmGrainOverlay, KineticTitle } from "@/components/motion";
+
 
 type AuthShellProps = PropsWithChildren<{
   posterTag: string;
@@ -13,16 +14,22 @@ type AuthShellProps = PropsWithChildren<{
 }>;
 
 const posterFeatures = [
-  "AI rut gon prompt thanh ke hoach ro rang theo ngay.",
-  "Route va thoi gian di chuyen duoc tinh tu backend that.",
-  "Moi phien dang nhap dung chung mot auth flow cho web app.",
-  "Mock React goc duoc giu nguyen lam visual reference."
-];
-
-const ticketStats = [
-  { label: "Mode", value: "Auth" },
-  { label: "Stack", value: "Next.js" },
-  { label: "API", value: "/api/v1" }
+  {
+    icon: "auto_awesome",
+    text: "AI tạo itinerary chi tiết theo từng ngày.",
+  },
+  {
+    icon: "map",
+    text: "Lộ trình hiển thị trực quan, thực tế trên bản đồ.",
+  },
+  {
+    icon: "favorite",
+    text: "Lưu trữ thư viện chuyến đi và địa điểm yêu thích.",
+  },
+  {
+    icon: "sunny",
+    text: "Đề xuất tối ưu theo thời tiết, ngân sách và sở thích.",
+  },
 ];
 
 export function AuthShell({
@@ -30,23 +37,27 @@ export function AuthShell({
   posterTag,
   posterTitle,
   posterBody,
-  ticketTitle
+  ticketTitle,
 }: AuthShellProps) {
   return (
     <main className={styles.shell}>
       <FilmGrainOverlay />
+
       <div className={styles.frame}>
         <header className={styles.header}>
           <Link className={styles.brandLink} href="/">
-            <span aria-hidden="true" className={styles.brandMark}>
-              TW
-            </span>
+            <i aria-hidden="true" className={`material-symbols-outlined ${styles.brandMark}`}>
+              explore
+            </i>
             <span>TripWise</span>
           </Link>
 
           <div className={styles.headerActions}>
             <Link className={styles.headerLink} href="/">
-              Ve trang preview
+              Về trang chủ
+            </Link>
+            <Link className={styles.demoButton} href="/planner">
+              Tạo trip demo
             </Link>
           </div>
         </header>
@@ -55,10 +66,15 @@ export function AuthShell({
           <div className={styles.formColumn}>{children}</div>
 
           <aside className={styles.poster}>
-            <div className={styles.stamp}>Boarding Pass</div>
+            <div className={styles.stamp}>
+              Boarding
+              <br />
+              Pass
+            </div>
 
             <div className={styles.posterTop}>
               <div className={styles.posterTag}>{posterTag}</div>
+
               <KineticTitle
                 tag="h1"
                 text={posterTitle}
@@ -67,44 +83,61 @@ export function AuthShell({
                 shadowVariant="black"
                 className={styles.posterTitle}
               />
+
+              <div className={styles.compassBadge} aria-hidden="true">
+                <i className={`material-symbols-outlined ${styles.compassIcon}`}>explore</i>
+              </div>
+
               <p className={styles.posterBody}>{posterBody}</p>
 
               <ul className={styles.featureList}>
-                {posterFeatures.map((feature, index) => (
-                  <li className={styles.featureItem} key={feature}>
-                    <span aria-hidden="true" className={styles.featureBadge}>
-                      {index + 1}
-                    </span>
-                    <span>{feature}</span>
+                {posterFeatures.map((feature) => (
+                  <li className={styles.featureItem} key={feature.text}>
+                    <i aria-hidden="true" className={`material-symbols-outlined ${styles.featureBadge}`}>
+                      {feature.icon}
+                    </i>
+                    <span>{feature.text}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className={styles.ticket}>
-              <div className={styles.ticketLabel}>Ticket snapshot</div>
-              <div className={styles.ticketTitle}>{ticketTitle}</div>
+              <div>
+                <div className={styles.ticketLabel}>Ticket ID</div>
+                <div className={styles.ticketTitle}>{ticketTitle}</div>
+              </div>
 
               <div className={styles.ticketStats}>
-                {ticketStats.map((item) => (
-                  <div key={item.label}>
-                    <div className={styles.ticketLabel}>{item.label}</div>
-                    <span className={styles.ticketStatValue}>{item.value}</span>
-                  </div>
-                ))}
+                <div>
+                  <span className={styles.ticketLabel}>Dur</span>
+                  <strong className={styles.ticketStatBlue}>3N2Đ</strong>
+                </div>
+                <div>
+                  <span className={styles.ticketLabel}>Stops</span>
+                  <strong className={styles.ticketStatRed}>7 stops</strong>
+                </div>
+                <div>
+                  <span className={styles.ticketLabel}>Dist</span>
+                  <strong className={styles.ticketStatLime}>24.5 km</strong>
+                </div>
               </div>
             </div>
           </aside>
         </section>
 
         <footer className={styles.footer}>
-          <span>TripWise auth pages giu mood retro cartoon tu mock archive, nhung chay tren Next.js App Router.</span>
+          <span>© 2026 TripWise. Phong cách retro cartoon.</span>
+
           <nav className={styles.footerNav}>
-            <Link className={styles.footerLink} href="/login">
-              Login
+            <Link className={styles.footerLink} href="/terms">
+              Điều khoản
             </Link>
-            <Link className={styles.footerLink} href="/register">
-              Register
+            <Link className={styles.footerLink} href="/privacy">
+              Bảo mật
+            </Link>
+            <Link className={styles.footerLink} href="/contact">
+              Liên hệ
             </Link>
           </nav>
         </footer>

@@ -1,0 +1,176 @@
+/* Sidebar default styling (Desktop layout) */
+.sidebar {
+  background-color: #FFF6DE;
+  border-right: 2px solid #111111;
+  box-shadow: 4px 0 0 #111111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  width: 92px;
+  height: 100vh;
+  flex-shrink: 0;
+  z-index: 50;
+  font-family: var(--font-body);
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logoText {
+  font-size: 13px;
+  color: #20A7D8;
+  text-shadow: 1px 1px 0 #111111;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.navLinks {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Custom Scrollbar for side links container */
+.navLinks::-webkit-scrollbar {
+  width: 4px;
+}
+.navLinks::-webkit-scrollbar-thumb {
+  background-color: rgba(17, 17, 17, 0.15);
+  border-radius: 2px;
+}
+
+.navLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  width: 80px;
+  padding: 8px 0;
+  border-radius: 12px;
+  transition: all 150ms ease;
+}
+
+.iconBox {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7A6A58;
+  transition: all 120ms ease;
+}
+
+.navLink:hover .iconBox {
+  transform: scale(1.05);
+}
+
+.activeIconBox {
+  border: 2px solid #111111 !important;
+  background-color: #FFD166 !important;
+  box-shadow: 2px 2px 0 #111111 !important;
+  color: #111111 !important;
+  transform: translate(-1px, -1px);
+}
+
+.navLabel {
+  font-size: 9px;
+  font-weight: 800;
+  color: #7A6A58;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.activeLabel {
+  color: #111111 !important;
+}
+
+.profileAvatar {
+  margin-top: auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #111111;
+  background-color: #FFD166;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #111111;
+  text-decoration: none;
+  color: #111111;
+  transition: transform 150ms ease;
+}
+
+.profileAvatar:hover {
+  transform: scale(1.05);
+}
+
+/* Mobile Sidebar (Bottom Navigation) */
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    border-right: none;
+    border-top: 2px solid #111111;
+    box-shadow: 0 -4px 0 #111111;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0 16px;
+    z-index: 100;
+  }
+
+  .logo {
+    display: none;
+  }
+
+  .profileAvatar {
+    display: none;
+  }
+
+  .navLinks {
+    flex-direction: row;
+    justify-content: space-around;
+    height: 100%;
+    overflow-y: visible;
+  }
+
+  .navLink {
+    width: 56px;
+    padding: 4px 0;
+  }
+
+  .iconBox {
+    width: 34px;
+    height: 34px;
+  }
+
+  .navLabel {
+    font-size: 8px;
+    margin-top: 2px;
+  }
+}

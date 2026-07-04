@@ -4,7 +4,7 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./SavedTripsPage.module.css";
-import { Button, Card, EmptyState, ErrorMessage, Loading } from "@/components/ui";
+import { Button, Card, EmptyState, ErrorMessage, Loading, Badge } from "@/components/ui";
 import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
   ApiError,
@@ -18,24 +18,24 @@ import {
 const PAGE_SIZE = 6;
 
 const STATUS_LABELS: Record<string, string> = {
-  DRAFT: "Nhap",
-  GENERATED: "Da tao",
-  PLANNED: "Sap toi",
-  COMPLETED: "Hoan tat",
-  CANCELLED: "Da huy"
+  DRAFT: "Nháp",
+  GENERATED: "Đã tạo",
+  PLANNED: "Sắp tới",
+  COMPLETED: "Hoàn tất",
+  CANCELLED: "Đã huỷ"
 };
 
 const STATUS_FILTERS = [
-  { key: "ALL", label: "Tat ca" },
-  { key: "DRAFT", label: "Nhap" },
-  { key: "GENERATED", label: "Da tao" },
-  { key: "PLANNED", label: "Sap toi" },
-  { key: "COMPLETED", label: "Hoan tat" }
+  { key: "ALL", label: "Tất cả" },
+  { key: "DRAFT", label: "Nháp" },
+  { key: "GENERATED", label: "Đã tạo" },
+  { key: "PLANNED", label: "Sắp tới" },
+  { key: "COMPLETED", label: "Hoàn tất" }
 ] as const;
 
 function formatDate(value?: string) {
   if (!value) {
-    return "Chua ro";
+    return "Chưa rõ";
   }
 
   const date = new Date(value);
@@ -52,7 +52,7 @@ function formatDate(value?: string) {
 
 function formatDateTime(value?: string) {
   if (!value) {
-    return "Chua cap nhat";
+    return "Chưa cập nhật";
   }
 
   const date = new Date(value);
@@ -71,33 +71,44 @@ function formatDateTime(value?: string) {
 
 function formatDuration(trip: TripResponse) {
   if (trip.days && trip.nights !== undefined) {
-    return `${trip.days} ngay / ${trip.nights} dem`;
+    return `${trip.days}N${trip.nights}Đ`;
   }
 
   if (trip.days) {
-    return `${trip.days} ngay`;
+    return `${trip.days} ngày`;
   }
 
   if (trip.startDate) {
     return formatDate(trip.startDate);
   }
 
-  return "Chua co lich";
+  return "—";
 }
 
 function buildTripTitle(trip: TripResponse) {
-  const base = trip.destination || "Trip chua dat ten";
+  const base = trip.destination || "Chuyến đi tự do";
+  const icon = trip.status === "COMPLETED" ? "🏮" : trip.status === "PLANNED" ? "☁️" : "🏖️";
 
   if (!trip.days) {
-    return base;
+    return `${base} ${icon}`;
   }
 
-  return `${base} ${trip.days}N${trip.nights ?? Math.max(trip.days - 1, 0)}D`;
+  return `${base} Hè Rực Rỡ ${icon}`;
+}
+
+function getEndDateStr(startDate?: string, days?: number) {
+  if (!startDate) return "";
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return "";
+  if (!days) return formatDate(startDate);
+  
+  const end = new Date(start.getTime() + (days - 1) * 24 * 60 * 60 * 1000);
+  return formatDate(end.toISOString().split('T')[0]);
 }
 
 function normalizeError(error: unknown) {
   if (error instanceof AuthSessionExpiredError) {
-    return "Phien dang nhap da het han. Ban hay dang nhap lai de xem cac trip da luu.";
+    return "Phiên đăng nhập đã hết hạn. Bạn hãy đăng nhập lại để xem các trip đã lưu.";
   }
 
   if (error instanceof ApiError) {
@@ -108,95 +119,111 @@ function normalizeError(error: unknown) {
     return error.message;
   }
 
-  return "TripWise chua tai duoc thu vien trip luc nay.";
+  return "Không thể kết nối đến máy chủ lưu trữ thư viện chuyến đi.";
+}
+
+function getTripHeaderGradient(tripId: number) {
+  const gradients = [
+    'linear-gradient(135deg, #FFD166 0%, #F77F00 100%)',
+    'linear-gradient(135deg, #B8F24A 0%, #20A7D8 100%)',
+    'linear-gradient(135deg, #20A7D8 0%, #FFD166 100%)',
+    'linear-gradient(135deg, #F77F00 0%, #E6392E 100%)',
+  ];
+  return gradients[tripId % gradients.length];
 }
 
 export function SavedTripsPage() {
   const router = useRouter();
   const [tripPage, setTripPage] = useState<PageResponse<TripResponse> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDeletingId, setIsDeletingId] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"updated" | "date" | "cost">("updated");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [refreshKey, setRefreshKey] = useState(0);
-  const [statusFilter, setStatusFilter] =
-    useState<(typeof STATUS_FILTERS)[number]["key"]>("ALL");
+  const [isDeletingId, setIsDeletingId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-
-    async function loadTrips() {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const response = await listTrips(currentPage, PAGE_SIZE);
-        if (!active) {
-          return;
+    setIsLoading(true);
+    setErrorMessage(null);
+    listTrips(currentPage, PAGE_SIZE)
+      .then((response) => {
+        if (active) {
+          setTripPage(response);
         }
-
-        setTripPage(response);
-      } catch (error) {
-        if (!active) {
-          return;
+      })
+      .catch((error) => {
+        if (active) {
+          setErrorMessage(normalizeError(error));
         }
-
-        setTripPage(null);
-        setErrorMessage(normalizeError(error));
-      } finally {
+      })
+      .finally(() => {
         if (active) {
           setIsLoading(false);
         }
-      }
-    }
-
-    void loadTrips();
-
+      });
     return () => {
       active = false;
     };
-  }, [currentPage, refreshKey]);
+  }, [currentPage, statusFilter, refreshKey]);
 
-  const filteredTrips = useMemo(() => {
-    const trips = tripPage?.content ?? [];
-
-    if (statusFilter === "ALL") {
-      return trips;
-    }
-
-    return trips.filter((trip) => trip.status === statusFilter);
-  }, [statusFilter, tripPage]);
-
+  // Statistics calculated from current returned elements/metadata
   const stats = useMemo(() => {
-    const trips = tripPage?.content ?? [];
-    const generatedCount = trips.filter((trip) => trip.status === "GENERATED").length;
-    const completedCount = trips.filter((trip) => trip.status === "COMPLETED").length;
-
+    const list = tripPage?.content ?? [];
     return {
       total: tripPage?.totalElements ?? 0,
-      generated: generatedCount,
-      completed: completedCount
+      draft: list.filter((t) => t.status === "DRAFT").length,
+      planned: list.filter((t) => t.status === "PLANNED").length,
+      completed: list.filter((t) => t.status === "COMPLETED").length
     };
   }, [tripPage]);
 
+  // Local query filter and sort processing
+  const processedTrips = useMemo(() => {
+    const items = [...(tripPage?.content ?? [])];
+    const query = searchQuery.trim().toLowerCase();
+    const filtered = query
+      ? items.filter(
+          (t) =>
+            t.destination?.toLowerCase().includes(query) ||
+            t.travelStyle?.toLowerCase().includes(query) ||
+            t.interests?.some((i) => i.toLowerCase().includes(query))
+        )
+      : items;
+
+    return filtered.sort((a, b) => {
+      if (sortBy === "cost") {
+        const valA = a.budget === "Thoai mai" ? 3 : a.budget === "Vua phai" ? 2 : 1;
+        const valB = b.budget === "Thoai mai" ? 3 : b.budget === "Vua phai" ? 2 : 1;
+        return valB - valA;
+      }
+      if (sortBy === "date") {
+        return (a.startDate || "").localeCompare(b.startDate || "");
+      }
+      return (b.updatedAt || "").localeCompare(a.updatedAt || "");
+    });
+  }, [tripPage, searchQuery, sortBy]);
+
   async function handleDeleteTrip(trip: TripResponse) {
-    if (
-      !window.confirm(
-        `Xoa trip "${buildTripTitle(trip)}"? Hanh dong nay se xoa luon itinerary da luu.`
-      )
-    ) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xoá hành trình "${trip.destination}"?`)) {
       return;
     }
 
     setIsDeletingId(trip.id);
-    setErrorMessage(null);
-
     try {
       await deleteTrip(trip.id);
-      const shouldGoPreviousPage =
-        (tripPage?.content.length ?? 0) === 1 && currentPage > 0;
-      const nextPage = shouldGoPreviousPage ? currentPage - 1 : currentPage;
+      const nextPage =
+        tripPage &&
+        tripPage.content.length === 1 &&
+        currentPage > 0
+          ? currentPage - 1
+          : currentPage;
+
       const response = await listTrips(nextPage, PAGE_SIZE);
+
       setCurrentPage(nextPage);
       setTripPage(response);
     } catch (error) {
@@ -223,238 +250,315 @@ export function SavedTripsPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <FilmGrainOverlay />
-      <div className={`${styles.shell} page-shell`}>
-        <section className={styles.hero}>
-          <BounceCard delay={100}>
-          <Card className={styles.heroCard} elevated>
-            <div className={styles.stickerRow}>
-              <span className={styles.sticker}>Phase 12.9</span>
-              <span className={styles.stickerAlt}>Saved Trips Page</span>
+      
+      <div className={styles.shell}>
+        
+        {/* HERO CARD SUMMARY */}
+        <BounceCard delay={100}>
+          <div className={styles.heroCard}>
+            <div className={styles.travelArchiveBadge}>
+              Travel Archive
             </div>
 
-            <KineticTitle
-              tag="h1"
-              text="Thu vien trip da luu cua ban, tach rieng khoi planner."
-              size="section"
-              variant="pop"
-              shadowVariant="black"
-              className={styles.headline}
-            />
-            <p className={styles.description}>
-              Man nay dung contract `GET /api/v1/trips` va `DELETE /api/v1/trips/{'{id}'}`
-              de quan ly danh sach itinerary da luu. Giao dien van bam mood dashboard
-              cua mock React, nhung scope chi gom list, pagination, open detail va delete.
-            </p>
-
-            <div className={styles.heroActions}>
-              <Button onClick={handleOpenPlanner}>Tao trip moi</Button>
-              <Link className={styles.ghostLink} href="/login">
-                Dang nhap lai
-              </Link>
-            </div>
-          </Card>
-          </BounceCard>
-
-          <BounceCard delay={200}>
-          <Card className={styles.ticketCard} elevated>
-            <div className={styles.ticketLabel}>Library snapshot</div>
-            <h2 className={styles.ticketTitle}>Saved trips</h2>
-
-            <div className={styles.ticketStats}>
-              <div className={styles.ticketStat}>
-                <span className={styles.ticketStatLabel}>Tong da luu</span>
-                <span className={styles.ticketStatValue}>{stats.total}</span>
-              </div>
-              <div className={styles.ticketStat}>
-                <span className={styles.ticketStatLabel}>Da tao itinerary</span>
-                <span className={styles.ticketStatValue}>{stats.generated}</span>
-              </div>
-              <div className={styles.ticketStat}>
-                <span className={styles.ticketStatLabel}>Hoan tat</span>
-                <span className={styles.ticketStatValue}>{stats.completed}</span>
-              </div>
+            <div>
+              <KineticTitle text="Chuyến đi đã lưu 🧳" size="section" variant="pop" />
+              <p className={styles.heroDesc}>
+                Tất cả các bản phác thảo nháp, hành trình sắp tới và lịch sử chuyến đi hoàn tất nằm gọn ở đây.
+              </p>
             </div>
 
-            <p className={styles.ticketNote}>
-              Backend hien tai chua co field `title` rieng, nen page nay dung
-              display title tu destination + duration de giu scope frontend-only.
-            </p>
-          </Card>
-          </BounceCard>
-        </section>
+            {/* Stat Stickers */}
+            <div className={styles.statsGrid}>
+              <div className={styles.statSticker}>
+                <div className={styles.statLabel}>Tổng Trips</div>
+                <div className={styles.statValue} style={{ color: '#20A7D8' }}>{stats.total}</div>
+              </div>
+              <div className={styles.statSticker}>
+                <div className={styles.statLabel}>Đang nháp</div>
+                <div className={styles.statValue} style={{ color: '#FFD166' }}>{stats.draft}</div>
+              </div>
+              <div className={styles.statSticker}>
+                <div className={styles.statLabel}>Sắp tới</div>
+                <div className={styles.statValue} style={{ color: '#F77F00' }}>{stats.planned}</div>
+              </div>
+              <div className={styles.statSticker}>
+                <div className={styles.statLabel}>Hoàn tất</div>
+                <div className={styles.statValue} style={{ color: '#B8F24A' }}>{stats.completed}</div>
+              </div>
+            </div>
+          </div>
+        </BounceCard>
 
-        <section className={styles.toolbar}>
-          <div className={styles.filterRow}>
-            {STATUS_FILTERS.map((filter) => (
-              <button
-                className={`${styles.filterChip} ${
-                  statusFilter === filter.key ? styles.filterChipActive : ""
-                }`}
-                key={filter.key}
-                onClick={() => setStatusFilter(filter.key)}
-                type="button"
+        {/* TOOLBAR FILTER LINE */}
+        <div className={styles.toolbar}>
+          <div className={styles.filterGroup}>
+            {/* Search Input Box */}
+            <div className={styles.searchWrapper}>
+              <i className={`material-symbols-outlined ${styles.searchIcon}`}>search</i>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm tên chuyến hoặc địa danh..."
+                className={styles.searchInput}
+              />
+            </div>
+
+            {/* Status Chips */}
+            <div className={styles.statusChips}>
+              {STATUS_FILTERS.map((filter) => (
+                <button
+                  key={filter.key}
+                  type="button"
+                  onClick={() => {
+                    setStatusFilter(filter.key);
+                    setCurrentPage(0);
+                  }}
+                  className={`${styles.statusChip} ${
+                    statusFilter === filter.key ? styles.statusChipActive : ""
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Toolbar Options */}
+          <div className={styles.optionsGroup}>
+            
+            {/* Sort Selection */}
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <span className={styles.sortLabel}>Sắp xếp:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className={styles.sortSelect}
               >
-                {filter.label}
+                <option value="updated">Cập nhật</option>
+                <option value="date">Ngày đi</option>
+                <option value="cost">Chi phí</option>
+              </select>
+            </div>
+
+            {/* View Switcher */}
+            <div className={styles.viewToggler}>
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`${styles.toggleBtn} ${viewMode === 'grid' ? styles.toggleBtnActive : ''}`}
+                aria-label="Grid view"
+              >
+                <i className="material-symbols-outlined" style={{ fontSize: 16 }}>grid_view</i>
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`${styles.toggleBtn} ${viewMode === 'list' ? styles.toggleBtnActive : ''}`}
+                aria-label="List view"
+              >
+                <i className="material-symbols-outlined" style={{ fontSize: 16 }}>view_list</i>
+              </button>
+            </div>
           </div>
+        </div>
 
-          <div className={styles.pageInfo}>
-            <span>
-              Trang {(tripPage?.page ?? currentPage) + 1}
-              {tripPage?.totalPages ? ` / ${tripPage.totalPages}` : ""}
-            </span>
-            <span>{tripPage?.totalElements ?? 0} trip</span>
-          </div>
-        </section>
-
-        {errorMessage ? (
-          <ErrorMessage
-            message={errorMessage}
-            title="Khong tai duoc saved trips"
-            actions={
-              <>
-                <Button onClick={handleRetry}>Thu lai</Button>
-                <Button onClick={handleOpenPlanner} variant="secondary">
-                  Mo planner
-                </Button>
-              </>
-            }
-          />
-        ) : null}
-
-        {isLoading ? (
+        {/* LOADING STATE */}
+        {isLoading && (
           <Card className={styles.stateCard} elevated>
             <div className={styles.stateWrap}>
-              <Loading label="TripWise dang tai thu vien trip da luu..." />
+              <Loading label="TripWise đang tải thư viện chuyến đi đã lưu..." />
               <p className={styles.stateHint}>
-                Danh sach se giu phan trang backend va hien lai bo loc khi du lieu san sang.
+                Danh sách sẽ được phân trang từ máy chủ và đồng bộ trong vài giây.
               </p>
             </div>
           </Card>
-        ) : null}
+        )}
 
-        {!isLoading && !errorMessage && filteredTrips.length === 0 ? (
+        {/* ERROR STATE */}
+        {errorMessage && !isLoading && (
           <Card className={styles.stateCard} elevated>
-            <EmptyState
-              title="Chua co trip phu hop bo loc nay."
-              message="Ban co the tao trip moi tu planner hoac doi lai tab de xem cac trip khac."
+            <ErrorMessage
+              message={errorMessage}
+              title="Không tải được thư viện chuyến đi"
               actions={
-                <>
-                  <Button onClick={handleOpenPlanner}>Mo planner</Button>
-                  <Button onClick={() => setStatusFilter("ALL")} variant="secondary">
-                    Xem tat ca
-                  </Button>
-                </>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <Button onClick={handleRetry}>Thử lại</Button>
+                  <Button onClick={handleOpenPlanner} variant="secondary">Mở planner</Button>
+                </div>
               }
             />
           </Card>
-        ) : null}
+        )}
 
-        {!isLoading && !errorMessage && filteredTrips.length > 0 ? (
-          <section className={styles.tripGrid}>
-            {filteredTrips.map((trip, idx) => (
-              <BounceCard key={trip.id} delay={300 + idx * 100}>
-              <Card className={styles.tripCard} elevated interactive>
-                <div className={styles.tripHeader}>
-                  <div>
-                    <div className={styles.tripEyebrow}>Trip #{trip.id}</div>
-                    <h2 className={styles.tripTitle}>{buildTripTitle(trip)}</h2>
-                  </div>
-                  <span className={styles.tripStatus}>
-                    {STATUS_LABELS[trip.status] ?? trip.status}
-                  </span>
-                </div>
-
-                <div className={styles.metaRow}>
-                  <span className={styles.metaPill}>{trip.destination || "Chua ro diem den"}</span>
-                  <span className={styles.metaPill}>{formatDuration(trip)}</span>
-                  <span className={styles.metaPill}>
-                    Cap nhat {formatDateTime(trip.updatedAt)}
-                  </span>
-                </div>
-
-                <div className={styles.infoGrid}>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Khoi hanh</span>
-                    <span className={styles.infoValue}>{formatDate(trip.startDate)}</span>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Budget</span>
-                    <span className={styles.infoValue}>{trip.budget || "Chua ro"}</span>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Travel style</span>
-                    <span className={styles.infoValue}>{trip.travelStyle || "Chua ro"}</span>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <span className={styles.infoLabel}>Interests</span>
-                    <span className={styles.infoValue}>
-                      {trip.interests?.join(", ") || "Chua ro"}
-                    </span>
-                  </div>
-                </div>
-
-                <p className={styles.preferenceCopy}>
-                  {trip.preferences || "Trip nay chua co preference note duoc hien thi."}
-                </p>
-
-                <div className={styles.cardActions}>
-                  <Button onClick={() => handleOpenTrip(trip.id)}>Mo chi tiet</Button>
+        {/* EMPTY FILTER STATE */}
+        {!isLoading && !errorMessage && processedTrips.length === 0 && (
+          <Card className={styles.stateCard} elevated>
+            <EmptyState
+              title="Chưa có chuyến đi phù hợp"
+              message="Không tìm thấy hành trình du lịch nào khớp với bộ lọc tìm kiếm hiện tại."
+              actions={
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <Button onClick={handleOpenPlanner}>Tạo chuyến đi đầu tiên ⚡</Button>
                   <Button
-                    disabled={isDeletingId === trip.id}
-                    onClick={() => void handleDeleteTrip(trip)}
-                    variant="danger"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setStatusFilter("ALL");
+                    }}
+                    variant="secondary"
                   >
-                    {isDeletingId === trip.id ? "Dang xoa..." : "Xoa"}
+                    Xem tất cả
                   </Button>
                 </div>
-              </Card>
+              }
+            />
+          </Card>
+        )}
+
+        {/* DEFAULT TRIPS GRID VIEW */}
+        {!isLoading && !errorMessage && processedTrips.length > 0 && (
+          <section className={styles.tripGrid} style={viewMode === 'list' ? { gridTemplateColumns: '1fr' } : undefined}>
+            {processedTrips.map((trip, idx) => (
+              <BounceCard key={trip.id} delay={200 + idx * 80}>
+                <Card className={styles.tripCard} elevated interactive>
+                  
+                  {/* Card Cover Gradient Header */}
+                  <div
+                    className={styles.cardHeaderCover}
+                    style={{ background: getTripHeaderGradient(trip.id) }}
+                  >
+                    <i className={`material-symbols-outlined ${styles.coverMapIcon}`}>map</i>
+
+                    {/* Days Stamp */}
+                    <div className={styles.durationStamp}>
+                      {formatDuration(trip)}
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className={styles.statusBadge}>
+                      <Badge
+                        variant={
+                          trip.status === "DRAFT" ? "warn" :
+                          trip.status === "PLANNED" ? "info" :
+                          trip.status === "COMPLETED" ? "success" : "neutral"
+                        }
+                        size="sm"
+                      >
+                        {STATUS_LABELS[trip.status] ?? trip.status}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className={styles.cardBody}>
+                    <h2 className={styles.tripCardTitle}>
+                      {buildTripTitle(trip)}
+                    </h2>
+                    
+                    <div className={styles.dateLine}>
+                      <i className={`material-symbols-outlined ${styles.dateIcon}`}>calendar_month</i>
+                      <span>
+                        {formatDate(trip.startDate)} {trip.days && trip.days > 1 ? `– ${getEndDateStr(trip.startDate, trip.days)}` : ""}
+                      </span>
+                    </div>
+
+                    {/* Specifications Details Grid */}
+                    <div className={styles.detailsGrid}>
+                      <div className={styles.detailItem}>
+                        <span className={styles.detailLabel}>Khởi hành</span>
+                        <span className={styles.detailVal}>{trip.destination || "Chưa rõ"}</span>
+                      </div>
+                      <div className={styles.detailItem}>
+                        <span className={styles.detailLabel}>Ngân sách</span>
+                        <span className={styles.detailVal}>
+                          {trip.budget === "Tiet kiem" ? "Tiết kiệm" : trip.budget === "Vua phai" ? "Vừa phải" : trip.budget === "Thoai mai" ? "Thoải mái" : "Chưa rõ"}
+                        </span>
+                      </div>
+                      <div className={styles.detailItem}>
+                        <span className={styles.detailLabel}>Phong cách</span>
+                        <span className={styles.detailVal}>{trip.travelStyle || "Tự do"}</span>
+                      </div>
+                      <div className={styles.detailItem}>
+                        <span className={styles.detailLabel}>Cập nhật</span>
+                        <span className={styles.detailVal}>{trip.updatedAt ? formatDate(trip.updatedAt) : "—"}</span>
+                      </div>
+                    </div>
+
+                    {/* User prompt preferences preview */}
+                    <p className={styles.preferenceCopy}>
+                      {trip.preferences || "Chuyến đi được tạo tự động bởi TripWise AI theo sở thích của bạn."}
+                    </p>
+
+                    {/* Tags */}
+                    {trip.interests && trip.interests.length > 0 && (
+                      <div className={styles.tagsRow}>
+                        {trip.interests.slice(0, 3).map((tag) => (
+                          <span key={tag} className={styles.tagPill}>
+                            #{tag.toLowerCase()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Footer Actions */}
+                    <div className={styles.cardFooterActions}>
+                      <Button onClick={() => handleOpenTrip(trip.id)}>Mở chi tiết</Button>
+                      <Button
+                        disabled={isDeletingId === trip.id}
+                        onClick={() => void handleDeleteTrip(trip)}
+                        variant="danger"
+                      >
+                        {isDeletingId === trip.id ? "Đang xóa..." : "Xoá"}
+                      </Button>
+                    </div>
+                  </div>
+
+                </Card>
               </BounceCard>
             ))}
           </section>
-        ) : null}
+        )}
 
-        <section className={styles.pagination}>
-          <Button
-            disabled={isLoading || currentPage === 0}
-            onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
-            variant="secondary"
-          >
-            Trang truoc
-          </Button>
+        {/* PAGINATION PANEL */}
+        {!isLoading && !errorMessage && (tripPage?.totalPages ?? 0) > 1 && (
+          <section className={styles.pagination}>
+            <Button
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage((page) => Math.max(0, page - 1))}
+              variant="secondary"
+            >
+              Trang trước
+            </Button>
 
-          <div className={styles.paginationDots}>
-            {Array.from({ length: tripPage?.totalPages ?? 0 }, (_, index) => (
-              <button
-                aria-label={`Den trang ${index + 1}`}
-                className={`${styles.pageDot} ${
-                  index === (tripPage?.page ?? currentPage) ? styles.pageDotActive : ""
-                }`}
-                key={index}
-                onClick={() => setCurrentPage(index)}
-                type="button"
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
+            <div className={styles.paginationDots}>
+              {Array.from({ length: tripPage?.totalPages ?? 0 }, (_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setCurrentPage(index)}
+                  className={`${styles.pageDot} ${
+                    index === (tripPage?.page ?? currentPage) ? styles.pageDotActive : ""
+                  }`}
+                  aria-label={`Đi đến trang ${index + 1}`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
 
-          <Button
-            disabled={
-              isLoading ||
-              !tripPage ||
-              currentPage >= Math.max(tripPage.totalPages - 1, 0)
-            }
-            onClick={() => setCurrentPage((page) => page + 1)}
-            variant="secondary"
-          >
-            Trang sau
-          </Button>
-        </section>
+            <Button
+              disabled={currentPage >= Math.max((tripPage?.totalPages ?? 0) - 1, 0)}
+              onClick={() => setCurrentPage((page) => page + 1)}
+              variant="secondary"
+            >
+              Trang sau
+            </Button>
+          </section>
+        )}
+
       </div>
-    </main>
+    </div>
   );
 }

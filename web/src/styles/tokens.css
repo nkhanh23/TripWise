@@ -55,28 +55,4 @@
   --page-max-width: 1200px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --color-canvas: #1f1913;
-    --color-canvas-alt: #30261d;
-    --color-surface: #2a2118;
-    --color-panel: #33291f;
-    --color-ink: #f8e9cf;
 
-    --text-primary: #fff6de;
-    --text-secondary: #f3dfc2;
-    --text-muted: #d0baa0;
-    --text-inverse: #111111;
-
-    --stroke-ink: #f8e9cf;
-    --stroke-soft: #7c6754;
-    --stroke-light: #584839;
-
-    --shadow-card: 4px 4px 0 rgba(0, 0, 0, 0.45);
-    --shadow-card-lg: 6px 6px 0 rgba(0, 0, 0, 0.45);
-    --shadow-button: 4px 4px 0 rgba(0, 0, 0, 0.45);
-    --shadow-button-hover: 6px 6px 0 rgba(0, 0, 0, 0.45);
-    --shadow-button-pressed: 2px 2px 0 rgba(0, 0, 0, 0.45);
-  }
-}

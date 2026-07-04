@@ -14,30 +14,49 @@ class PlaceSearchIntegrationTest extends BaseIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    void shouldSearchPlacesByCityAndKeyword() {
+    void shouldSearchPlacesByProvinceAndKeywordWithMapReadyFields() {
         JsonNode response = restTemplate.getForObject(
-                "/api/v1/places?city=Nha%20Trang&keyword=Long&page=0&size=10",
+                "/api/v1/places?province=Khanh%20Hoa&city=Nha%20Trang&keyword=Long&page=0&size=10&sortBy=popularityScore&sortDirection=desc",
                 JsonNode.class
         );
 
         assertThat(response.path("success").asBoolean()).isTrue();
         assertThat(response.path("data").path("content")).isNotEmpty();
-        assertThat(response.path("data").path("content").get(0).path("name").asText())
-                .isEqualTo("Chùa Long Sơn");
+
+        JsonNode firstPlace = response.path("data").path("content").get(0);
+        assertThat(firstPlace.path("name").asText()).containsIgnoringCase("Long");
+        assertThat(firstPlace.path("province").asText()).isEqualTo("Khanh Hoa");
+        assertThat(firstPlace.path("city").asText()).isEqualTo("Nha Trang");
+        assertThat(firstPlace.has("verificationStatus")).isTrue();
+        assertThat(firstPlace.has("popularityScore")).isTrue();
+        assertThat(firstPlace.has("primaryImageUrl")).isTrue();
     }
 
     @Test
-    void shouldFilterPlacesByTagAndPriceLevel() {
+    void shouldFilterPlacesByVerificationStatusAndMinRating() {
         JsonNode response = restTemplate.getForObject(
-                "/api/v1/places?tags=night-market&priceLevel=LOW&page=0&size=10",
+                "/api/v1/places?verificationStatus=VERIFIED&minRating=4.0&page=0&size=10&sortBy=rating&sortDirection=desc",
                 JsonNode.class
         );
 
         assertThat(response.path("success").asBoolean()).isTrue();
-        assertThat(response.path("data").path("content")).hasSize(1);
-        assertThat(response.path("data").path("content").get(0).path("name").asText())
-                .isEqualTo("Chợ đêm Nha Trang");
-        assertThat(response.path("data").path("content").get(0).path("priceLevel").asText())
-                .isEqualTo("LOW");
+        assertThat(response.path("data").path("content")).isNotEmpty();
+        response.path("data").path("content").forEach(place -> {
+            assertThat(place.path("verificationStatus").asText()).isEqualTo("VERIFIED");
+            assertThat(place.path("rating").decimalValue()).isGreaterThanOrEqualTo(new java.math.BigDecimal("4.0"));
+        });
+    }
+
+    @Test
+    void shouldSearchPlacesWhenOptionalFiltersAreOmitted() {
+        JsonNode response = restTemplate.getForObject(
+                "/api/v1/places?page=0&size=5&sortBy=name&sortDirection=asc",
+                JsonNode.class
+        );
+
+        assertThat(response.path("success").asBoolean()).isTrue();
+        assertThat(response.path("message").asText()).isEqualTo("Places fetched successfully");
+        assertThat(response.path("data").path("content")).isNotEmpty();
+        assertThat(response.path("data").path("size").asInt()).isEqualTo(5);
     }
 }

@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthShell } from '@/components/auth/AuthShell';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
 import { KineticTitle } from '@/components/motion/KineticTitle';
+import styles from './AuthPage.module.css';
 
 export const ResetPasswordPage: React.FC = () => {
   const router = useRouter();
@@ -101,14 +100,14 @@ export const ResetPasswordPage: React.FC = () => {
           }}
           className="animate-pop-in"
         >
-          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>check_circle</span>
+          <i className="material-symbols-outlined" style={{ fontSize: 20 }} aria-hidden="true">check_circle</i>
           {toastMessage}
         </div>
       )}
 
-      {success ? (
-        <Card>
-          <div className="space-y-6 py-4 text-center">
+      <section className={styles.card}>
+        {success ? (
+          <div className={styles.successCard}>
             <div
               style={{
                 width: 64,
@@ -123,115 +122,110 @@ export const ResetPasswordPage: React.FC = () => {
                 boxShadow: '3px 3px 0 #111111'
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 32, fontWeight: 'bold' }}>lock_open</span>
+              <i className="material-symbols-outlined" style={{ fontSize: 32, fontWeight: 'bold' }} aria-hidden="true">lock_open</i>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 text-center animate-pop-in">
               <KineticTitle text="Đặt lại mật khẩu thành công! 🔓" size="card" variant="pop" className="justify-center" />
-              <p style={{ fontSize: 13, color: '#7A6A58', fontWeight: 650 }}>
+              <p className={styles.description}>
                 Mật khẩu của bạn đã được cập nhật thành công. Giờ đây bạn có thể đăng nhập lại vào hệ thống bằng mật khẩu mới này.
               </p>
             </div>
 
-            <div style={{ paddingTop: 4 }}>
+            <div style={{ paddingTop: 10 }}>
               <Button variant="primary" size="lg" style={{ width: '100%' }} onClick={() => router.push('/login')}>
                 Đăng nhập ngay
               </Button>
             </div>
           </div>
-        </Card>
-      ) : (
-        <Card>
-          <div className="space-y-5">
+        ) : (
+          <div className={styles.stack}>
             {/* Header titles */}
-            <div className="space-y-1.5">
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 900,
-                  backgroundColor: '#FFD166',
-                  border: '1.5px solid #111111',
-                  borderRadius: 6,
-                  padding: '2px 8px',
-                  textTransform: 'uppercase',
-                  display: 'inline-block',
-                  transform: 'skewX(-2deg)'
-                }}
-              >
-                Reset Password
-              </span>
-              <KineticTitle text="Đặt lại mật khẩu" size="card" variant="pop" />
-              <p style={{ fontSize: 12, color: '#7A6A58', fontWeight: 650, marginTop: 4 }}>
+            <div className={styles.header}>
+              <span className={styles.eyebrow}>Reset Password</span>
+              <KineticTitle text="Đặt lại mật khẩu" size="card" variant="pop" className={styles.title} />
+              <p className={styles.description}>
                 Vui lòng điền mật khẩu mới có tính bảo mật cao của bạn.
               </p>
             </div>
 
             {/* Reset Form list elements */}
-            <form onSubmit={handleResetPassword} className="space-y-3.5">
-              <div>
-                <div style={{ position: 'relative' }}>
-                  <Input
-                    label="Mật khẩu mới"
-                    type={showPassword ? 'text' : 'password'}
-                    value={newPassword}
+            <form onSubmit={handleResetPassword} className={styles.form}>
+              <label className={styles.fieldRow}>
+                <span>Mật khẩu mới</span>
+                <span className={styles.inputShell}>
+                  <i className={`material-symbols-outlined ${styles.inputIcon}`} aria-hidden="true">
+                    lock
+                  </i>
+                  <input
+                    autoComplete="new-password"
+                    className={styles.input}
+                    name="newPassword"
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    error={errors.newPassword}
-                    required
+                    type={showPassword ? 'text' : 'password'}
+                    value={newPassword}
                   />
                   <button
+                    aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPassword((current) => !current)}
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: 12,
-                      top: 36,
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: '#7A6A58'
-                    }}
-                    aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                      {showPassword ? 'visibility_off' : 'visibility'}
-                    </span>
+                    <i
+                      className={`material-symbols-outlined ${styles.passwordToggleIcon}`}
+                      aria-hidden="true"
+                    >
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </i>
                   </button>
-                </div>
+                </span>
 
                 {/* Password Strength Meter */}
                 {newPassword && (
-                  <div style={{ marginTop: 6 }} className="space-y-1">
-                    <div style={{ display: 'flex', gap: 4, height: 6, backgroundColor: '#FFF6DE', border: '1.5px solid #111111', borderRadius: 4, overflow: 'hidden', padding: 1 }}>
+                  <div style={{ marginTop: 6 }} className={styles.strengthMeter}>
+                    <div className={styles.strengthBar}>
                       <div
+                        className={styles.strengthFill}
                         style={{
                           width: `${strength.progress}%`,
-                          height: '100%',
                           backgroundColor: strength.color,
-                          borderRadius: 2,
-                          transition: 'width 0.2s ease'
                         }}
                       />
                     </div>
-                    <span style={{ fontSize: 9, fontWeight: 800, color: strength.color }}>
+                    <span className={styles.strengthLabel} style={{ color: strength.color }}>
                       Độ mạnh mật khẩu: {strength.label}
                     </span>
                   </div>
                 )}
-              </div>
+                {errors.newPassword ? (
+                  <span className={styles.inlineError}>{errors.newPassword}</span>
+                ) : null}
+              </label>
 
-              <Input
-                label="Xác nhận mật khẩu mới"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-                error={errors.confirmPassword}
-                required
-              />
+              <label className={styles.fieldRow}>
+                <span>Xác nhận mật khẩu mới</span>
+                <span className={styles.inputShell}>
+                  <i className={`material-symbols-outlined ${styles.inputIcon}`} aria-hidden="true">
+                    lock
+                  </i>
+                  <input
+                    autoComplete="new-password"
+                    className={styles.input}
+                    name="confirmPassword"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    type="password"
+                    value={confirmPassword}
+                  />
+                </span>
+                {errors.confirmPassword ? (
+                  <span className={styles.inlineError}>{errors.confirmPassword}</span>
+                ) : null}
+              </label>
 
               {/* Submit Buttons */}
-              <div style={{ paddingTop: 6 }} className="space-y-3">
+              <div style={{ paddingTop: 6 }} className={styles.form}>
                 <Button
                   variant="primary"
                   size="lg"
@@ -254,8 +248,8 @@ export const ResetPasswordPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </Card>
-      )}
+        )}
+      </section>
     </AuthShell>
   );
 };

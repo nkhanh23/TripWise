@@ -53,8 +53,8 @@ Khi xảy ra lỗi (lỗi validate, lỗi phân quyền, lỗi hệ thống), AP
 - **Phân trang (Pagination)**: Các API trả về danh sách lớn (như danh sách địa điểm, danh sách trip) bắt buộc hỗ trợ phân trang qua query parameters:
   - `page`: Số trang (bắt đầu từ `0`).
   - `size`: Số lượng phần tử trên một trang (mặc định là `10`, tối đa `100`).
-- **Sắp xếp (Sorting)**: Hỗ trợ tham số `sort` theo cấu trúc `fieldName,asc|desc` (ví dụ: `/api/v1/places?sort=estimatedCost,asc`).
-- **Bộ lọc (Filtering)**: Lọc trực tiếp qua query params (ví dụ: `/api/v1/places?category=cafe&indoor=true`).
+- **Sắp xếp (Sorting)**: Hỗ trợ query params theo đặc thù từng API. Với place search hiện tại dùng `sortBy` + `sortDirection` (ví dụ: `/api/v1/places?sortBy=popularityScore&sortDirection=desc`).
+- **Bộ lọc (Filtering)**: Lọc trực tiếp qua query params (ví dụ: `/api/v1/places?categoryId=3&city=Nha%20Trang`).
 
 ---
 
@@ -82,8 +82,14 @@ Khi xảy ra lỗi (lỗi validate, lỗi phân quyền, lỗi hệ thống), AP
 - `GET /api/v1/auth/me`: Lấy thông tin phiên đăng nhập hiện tại.
 
 ### 6.2 Nhóm API Địa điểm (Places)
-- `GET /api/v1/places`: Tìm kiếm, phân trang và lọc địa điểm du lịch Nha Trang.
-- `GET /api/v1/places/:id`: Xem chi tiết địa điểm.
+- `GET /api/v1/places`: Tìm kiếm địa điểm toàn quốc với pagination, filter và sort cho `province`, `city`, `categoryId`, `tags`, `priceLevel`, `verificationStatus`, `minRating`, `keyword`, `sortBy`, `sortDirection`.
+- `GET /api/v1/places/map-markers`: Trả về marker DTO gọn cho bản đồ theo bounding box `minLat`, `minLng`, `maxLat`, `maxLng` và các filter công khai.
+- `GET /api/v1/places/:id`: Xem chi tiết địa điểm công khai với response giàu hơn cho list/detail UI.
+
+#### Place response model
+- `GET /api/v1/places` trả về DTO tối ưu cho card/list: `id`, `name`, `province`, `city`, `district`, `ward`, `displayAddress`, `category`, `rating`, `primaryImageUrl`, `verificationStatus`, `popularityScore`, `latitude`, `longitude`, `tags`.
+- `GET /api/v1/places/map-markers` trả về DTO nhẹ cho map: `id`, `name`, `province`, `city`, `category`, `rating`, `primaryImageUrl`, `verificationStatus`, `popularityScore`, `latitude`, `longitude`.
+- `GET /api/v1/places/:id` giữ response detail riêng, không expose trực tiếp JPA entity hay cấu trúc bảng nội bộ.
 
 ### 6.3 Nhóm API Tạo lịch trình (Trips)
 - `POST /api/v1/trips/generate`: Nhập prompt, sinh lịch trình thô dựa trên AI + PostGIS + Route + Weather.
