@@ -117,3 +117,5 @@ tripwise:
     import-mode: ${TRIPWISE_PLACE_IMPORT_MODE:FULL_SYNC}
     dedupe-radius-meters: ${TRIPWISE_PLACE_IMPORT_DEDUPE_RADIUS_METERS:150.0}
     fail-on-mapping-error: ${TRIPWISE_PLACE_IMPORT_FAIL_ON_MAPPING_ERROR:false}
+  place-moderation-backfill:
+    known-location-only: ${TRIPWISE_PLACE_MODERATION_BACKFILL_KNOWN_LOCATION_ONLY:false}

@@ -28,6 +28,8 @@ public class PlaceModerationBackfillProperties {
 
     private Boolean currentRecommendable;
 
+    private boolean knownLocationOnly = false;
+
     private PlaceModerationBackfillMode mode = PlaceModerationBackfillMode.DRY_RUN;
 
     private boolean apply = false;

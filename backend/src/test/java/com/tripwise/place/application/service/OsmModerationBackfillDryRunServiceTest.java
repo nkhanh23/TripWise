@@ -654,6 +654,7 @@ class OsmModerationBackfillDryRunServiceTest {
                 .currentPlaceType("FOOD")
                 .currentVerificationStatus("PENDING")
                 .currentRecommendable(Boolean.FALSE)
+                .knownLocationOnly(true)
                 .build();
 
         when(repository.countPlacesForModerationBackfill(scope)).thenReturn(1L);
@@ -671,6 +672,8 @@ class OsmModerationBackfillDryRunServiceTest {
         assertThat(report.scopeCurrentPlaceType()).isEqualTo("FOOD");
         assertThat(report.scopeCurrentVerificationStatus()).isEqualTo("PENDING");
         assertThat(report.scopeCurrentRecommendable()).isFalse();
+        assertThat(report.scopeKnownLocationOnly()).isTrue();
+        assertThat(service.formatReport(report)).contains("scopeKnownLocationOnly=true");
         assertThat(service.formatReport(report)).contains("scopeCity=Hồ Chí Minh");
     }
 

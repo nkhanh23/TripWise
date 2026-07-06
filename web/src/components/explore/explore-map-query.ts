@@ -109,7 +109,7 @@ export function buildExplorePlaceSearchParams(
   return {
     province: input.province || undefined,
     city: input.city || undefined,
-    placeType: input.placeType || undefined,
+    placeType: input.placeType ?? DEFAULT_EXPLORE_PLACE_GROUP,
     keyword: input.keyword || undefined,
     sortBy: input.sortBy,
     sortDirection: input.sortDirection,
@@ -128,7 +128,7 @@ export function buildExploreMarkerParams(
     maxLng: input.viewportBounds.maxLng,
     province: input.province || undefined,
     city: input.city || undefined,
-    placeType: input.placeType || undefined,
+    placeType: input.placeType ?? DEFAULT_EXPLORE_PLACE_GROUP,
     limit: input.limit,
   };
 }

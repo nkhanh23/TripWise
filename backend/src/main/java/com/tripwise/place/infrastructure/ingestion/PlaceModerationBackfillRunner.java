@@ -35,6 +35,7 @@ public class PlaceModerationBackfillRunner implements ApplicationRunner {
                 .currentPlaceType(properties.getCurrentPlaceType())
                 .currentVerificationStatus(properties.getCurrentVerificationStatus())
                 .currentRecommendable(properties.getCurrentRecommendable())
+                .knownLocationOnly(properties.isKnownLocationOnly())
                 .build();
 
         var report = properties.getMode() == PlaceModerationBackfillMode.APPLY

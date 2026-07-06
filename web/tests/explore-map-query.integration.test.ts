@@ -12,7 +12,7 @@ import {
   VIETNAM_BOUNDS,
 } from "../src/components/explore/explore-map-query.js";
 
-test("Explore defaults place search to ATTRACTION", () => {
+test("Explore defaults place search to the frontend default placeType", () => {
   const params = buildExplorePlaceSearchParams({
     sortBy: "popularityScore",
     sortDirection: "desc",
@@ -25,7 +25,29 @@ test("Explore defaults place search to ATTRACTION", () => {
   assert.equal(params.size, 20);
 });
 
-test("Explore marker query uses the active viewport bounds and keeps ATTRACTION by default", () => {
+test("Explore sends explicit placeType values for every chip state", () => {
+  const groups = ["ALL", "ATTRACTION", "FOOD", "HOTEL", "SERVICE"] as const;
+
+  for (const placeType of groups) {
+    const placeParams = buildExplorePlaceSearchParams({
+      placeType,
+      sortBy: "popularityScore",
+      sortDirection: "desc",
+      page: 0,
+      size: 20,
+    });
+    const markerParams = buildExploreMarkerParams({
+      viewportBounds: VIETNAM_BOUNDS,
+      placeType,
+      limit: 200,
+    });
+
+    assert.equal(placeParams.placeType, placeType);
+    assert.equal(markerParams.placeType, placeType);
+  }
+});
+
+test("Explore marker query uses the active viewport bounds and keeps the default placeType", () => {
   const params = buildExploreMarkerParams({
     viewportBounds: {
       minLat: 12.1,

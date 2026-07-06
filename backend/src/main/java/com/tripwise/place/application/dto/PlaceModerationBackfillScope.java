@@ -9,6 +9,7 @@ public record PlaceModerationBackfillScope(
         String city,
         String currentPlaceType,
         String currentVerificationStatus,
-        Boolean currentRecommendable
+        Boolean currentRecommendable,
+        boolean knownLocationOnly
 ) {
 }

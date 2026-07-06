@@ -212,6 +212,7 @@ public class OsmModerationBackfillDryRunService {
         builder.append("scopeCurrentPlaceType=").append(report.scopeCurrentPlaceType()).append('\n');
         builder.append("scopeCurrentVerificationStatus=").append(report.scopeCurrentVerificationStatus()).append('\n');
         builder.append("scopeCurrentRecommendable=").append(report.scopeCurrentRecommendable()).append('\n');
+        builder.append("scopeKnownLocationOnly=").append(report.scopeKnownLocationOnly()).append('\n');
         builder.append("sourceScopeConfirmed=").append(report.sourceScopeConfirmed()).append('\n');
         builder.append("totalSourceRecords=").append(report.totalSourceRecords()).append('\n');
         builder.append("checkedRecords=").append(report.checkedRecords()).append('\n');
@@ -569,6 +570,7 @@ public class OsmModerationBackfillDryRunService {
                     normalizeEnum(scope.currentPlaceType()),
                     normalizeEnum(scope.currentVerificationStatus()),
                     scope.currentRecommendable(),
+                    scope.knownLocationOnly(),
                     sourceScopeConfirmed,
                     totalSourceRecords,
                     checkedRecords,
@@ -676,6 +678,7 @@ public class OsmModerationBackfillDryRunService {
             String scopeCurrentPlaceType,
             String scopeCurrentVerificationStatus,
             Boolean scopeCurrentRecommendable,
+            boolean scopeKnownLocationOnly,
             boolean sourceScopeConfirmed,
             long totalSourceRecords,
             long checkedRecords,

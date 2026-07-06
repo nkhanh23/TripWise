@@ -286,6 +286,14 @@ export const ExplorePlacesPage: React.FC = () => {
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const markerDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const locationComboboxRef = useRef<HTMLDivElement | null>(null);
+  const latestPlacesRequestIdRef = useRef(0);
+  const latestMarkerRequestIdRef = useRef(0);
+  const hasInitializedSearchRef = useRef(false);
+  const previousImmediateSearchDepsRef = useRef<{
+    activeGroup: ExplorePlaceGroup;
+    sortOption: string;
+  } | null>(null);
+  const skipInitialDebouncedSearchRef = useRef(true);
 
   const appliedProvinceQuery = provinceQuery.trim();
   const appliedCityQuery = cityQuery.trim();
@@ -384,6 +392,7 @@ export const ExplorePlacesPage: React.FC = () => {
   }, []);
 
   const loadPlaces = useCallback(async (pageNum: number) => {
+    const requestId = ++latestPlacesRequestIdRef.current;
     const { sortBy, sortDirection } = parseSortOption(sortOption);
 
     const response: PageResponse<PlaceResponse> = await searchPlaces(
@@ -398,6 +407,10 @@ export const ExplorePlacesPage: React.FC = () => {
         size: PAGE_SIZE,
       }),
     );
+
+    if (requestId !== latestPlacesRequestIdRef.current) {
+      return [];
+    }
 
     const mapped = response.content.map(mapPlaceToExplorePlace);
     setPlaces(mapped);
@@ -424,6 +437,8 @@ export const ExplorePlacesPage: React.FC = () => {
     currentViewportBounds: ExploreViewportBounds,
     mappedPlaces: ExplorePlaceData[],
   ) => {
+    const requestId = ++latestMarkerRequestIdRef.current;
+
     if (mappedPlaces.length === 0) {
       setMapMarkers([]);
       return;
@@ -439,6 +454,9 @@ export const ExplorePlacesPage: React.FC = () => {
           limit: MAP_MARKER_LIMIT,
         }),
       );
+      if (requestId !== latestMarkerRequestIdRef.current) {
+        return;
+      }
       const visibleMarkers = filterMarkersByVisiblePlaces(
         markers,
         mappedPlaces.map((place) => place.id),
@@ -476,15 +494,47 @@ export const ExplorePlacesPage: React.FC = () => {
   }, [triggerSearch]);
 
   useEffect(() => {
+    if (!hasInitializedSearchRef.current) {
+      hasInitializedSearchRef.current = true;
+      previousImmediateSearchDepsRef.current = {
+        activeGroup,
+        sortOption,
+      };
+      void triggerSearch(0);
+      return;
+    }
+
+    const previousDeps = previousImmediateSearchDepsRef.current;
+    if (
+      previousDeps?.activeGroup === activeGroup
+      && previousDeps.sortOption === sortOption
+    ) {
+      return;
+    }
+
+    previousImmediateSearchDepsRef.current = {
+      activeGroup,
+      sortOption,
+    };
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
     void triggerSearch(0);
-  }, [triggerSearch]);
+  }, [activeGroup, sortOption, triggerSearch]);
 
   useEffect(() => {
+    if (skipInitialDebouncedSearchRef.current) {
+      skipInitialDebouncedSearchRef.current = false;
+      return;
+    }
+
     scheduleDebouncedSearch(0);
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
-  }, [provinceQuery, cityQuery, searchQuery, activeGroup, sortOption, scheduleDebouncedSearch]);
+  }, [provinceQuery, cityQuery, searchQuery, scheduleDebouncedSearch]);
 
   const handleViewportChange = useCallback((nextBounds: ExploreViewportBounds) => {
     setViewportBounds((currentBounds) => (
@@ -524,6 +574,9 @@ export const ExplorePlacesPage: React.FC = () => {
   }, [totalPages, triggerSearch]);
 
   const handleGroupSelect = useCallback((group: ExplorePlaceGroup) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setActiveGroup(group);
     setSelectedPlaceId(null);
     setPage(0);
@@ -554,6 +607,9 @@ export const ExplorePlacesPage: React.FC = () => {
   }, []);
 
   const resetFilters = useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setActiveGroup(DEFAULT_EXPLORE_PLACE_GROUP);
     setSearchQuery("");
     setProvinceQuery("");

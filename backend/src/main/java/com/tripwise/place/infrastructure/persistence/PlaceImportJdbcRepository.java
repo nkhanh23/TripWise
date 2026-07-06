@@ -352,6 +352,7 @@ public class PlaceImportJdbcRepository {
                 """);
         appendLocationFilter(where, "province", provinceFilter);
         appendLocationFilter(where, "city", cityFilter);
+        appendKnownLocationOnlyFilter(where, scope.knownLocationOnly());
 
         return new QueryParts(where.toString(), parameters);
     }
@@ -1078,6 +1079,24 @@ public class PlaceImportJdbcRepository {
                 .append(", '')) = LOWER(:")
                 .append(parameterName)
                 .append(")");
+    }
+
+    private void appendKnownLocationOnlyFilter(StringBuilder sql, boolean knownLocationOnly) {
+        if (!knownLocationOnly) {
+            return;
+        }
+
+        sql.append("""
+                 AND (
+                     (p.province IS NOT NULL
+                      AND BTRIM(p.province) <> ''
+                      AND LOWER(BTRIM(p.province)) NOT IN ('unknown', 'null'))
+                     OR
+                     (p.city IS NOT NULL
+                      AND BTRIM(p.city) <> ''
+                      AND LOWER(BTRIM(p.city)) NOT IN ('unknown', 'null'))
+                 )
+                """);
     }
 
     private record QueryParts(String fromAndWhereClause, MapSqlParameterSource parameters) {
