@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Service
 public class OsmModerationBackfillDryRunService {
@@ -41,6 +42,7 @@ public class OsmModerationBackfillDryRunService {
             "panel",
             "academy",
             "talent",
+            "talents",
             "tai nang",
             "trung tam dao tao",
             "training",
@@ -64,6 +66,7 @@ public class OsmModerationBackfillDryRunService {
             "barber",
             "massage",
             "service",
+            "services",
             "dich vu"
     );
     private static final Set<String> FOOD_NON_FOOD_RETAIL_KEYWORDS = Set.of(
@@ -409,10 +412,16 @@ public class OsmModerationBackfillDryRunService {
 
     private String firstMatchingKeyword(String normalizedName, Set<String> keywords) {
         return keywords.stream()
-                .filter(normalizedName::contains)
                 .sorted()
+                .filter(keyword -> containsWholePhrase(normalizedName, keyword))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean containsWholePhrase(String normalizedName, String keyword) {
+        String escapedKeyword = Pattern.quote(keyword);
+        Pattern pattern = Pattern.compile("(^|[^\\p{L}\\p{Nd}])" + escapedKeyword + "([^\\p{L}\\p{Nd}]|$)");
+        return pattern.matcher(normalizedName).find();
     }
 
     private boolean invalidCoordinates(Double latitude, Double longitude) {

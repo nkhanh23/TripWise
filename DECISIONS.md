@@ -306,3 +306,55 @@ Migrate router, bootstrap và source UI cần thiết từ `web-archive-vite-ui/
 - Routing web production dùng React Router thay cho Next.js App Router.
 - Biến môi trường frontend chuẩn hóa theo Vite, dùng `VITE_API_BASE_URL`.
 - Tài liệu kỹ thuật frontend phải cập nhật để tránh tiếp tục chỉ dẫn phát triển theo Next.js.
+
+---
+
+## ADR-015: Geofabrik làm primary POI source; Overpass chỉ cho batch enrichment/dry-run
+
+**Status:** Accepted
+
+### Context
+
+TripWise cần nguồn dữ liệu POI ổn định, có thể import offline, không phụ thuộc runtime API public. Overpass public server có rate limit và không phù hợp cho production traffic.
+
+### Decision
+
+- **Geofabrik Vietnam Extract** là primary source cho dữ liệu POI nền của TripWise.
+- **OpenStreetMap/Overpass** chỉ được dùng cho batch enrichment, dry-run tag exploration, debug mapping, và backfill có kiểm soát — không được dùng làm runtime dependency production.
+- Public API của TripWise không gọi external POI APIs tại runtime.
+- Source of truth là PostgreSQL + PostGIS nội bộ.
+
+### Consequences
+
+- Giảm rủi ro rate limit, outage từ external API.
+- Dữ liệu POI có thể được import, enrich, và kiểm duyệt trước khi public.
+- Overpass vẫn có ích cho audit và enrichment batch nhưng không ảnh hưởng production availability.
+- Cần pipeline download + import Geofabrik định kỳ.
+
+---
+
+## ADR-016: TripWise targets nationwide POI coverage across ATTRACTION, FOOD, HOTEL, SERVICE
+
+**Status:** Accepted
+
+### Context
+
+MVP ban đầu tập trung Nha Trang, nhưng sản phẩm cần dữ liệu du lịch toàn Việt Nam. Việc chỉ giới hạn một vài thành phố sẽ hạn chế giá trị sản phẩm và khả năng mở rộng.
+
+### Decision
+
+TripWise nhắm mục tiêu phủ POI toàn quốc (63 tỉnh/thành) với 4 PlaceType chính:
+
+- **ATTRACTION** — điểm tham quan du lịch
+- **FOOD** — ẩm thực (là travel POI hợp lệ, không đổi thành ATTRACTION)
+- **HOTEL** — lưu trú
+- **SERVICE** — dịch vụ du lịch bổ trợ
+
+TP.HCM và Nha Trang là pilot/debug case để kiểm tra pipeline import, moderation rules và chất lượng dữ liệu trước khi mở rộng toàn quốc.
+
+### Consequences
+
+- Pipeline import và moderation phải thiết kế cho scale toàn quốc ngay từ đầu.
+- Mỗi PlaceType có quality score threshold riêng cho auto-public.
+- Dữ liệu OSM Việt Nam không đồng đều — cần audit từng vùng trước khi mở rộng auto-public.
+- Batch rollout theo province/city, không chạy toàn quốc không kiểm soát.

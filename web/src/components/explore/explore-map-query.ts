@@ -1,6 +1,6 @@
 import type { PlaceMapMarkerResponse } from "../../lib/api/contracts.js";
 
-export type ExplorePlaceGroup = "ATTRACTION" | "FOOD" | "HOTEL";
+export type ExplorePlaceGroup = "ALL" | "ATTRACTION" | "FOOD" | "HOTEL" | "SERVICE";
 
 export type ExploreViewportBounds = {
   minLat: number;
@@ -15,7 +15,7 @@ export type ExploreViewportPreset = {
   bounds: ExploreViewportBounds;
 };
 
-export const DEFAULT_EXPLORE_PLACE_GROUP: ExplorePlaceGroup = "ATTRACTION";
+export const DEFAULT_EXPLORE_PLACE_GROUP: ExplorePlaceGroup = "ALL";
 export const MAP_MARKER_FETCH_DEBOUNCE_MS = 350;
 export const VIETNAM_BOUNDS: ExploreViewportBounds = {
   minLat: 8.18,
@@ -109,7 +109,7 @@ export function buildExplorePlaceSearchParams(
   return {
     province: input.province || undefined,
     city: input.city || undefined,
-    placeType: input.placeType ?? DEFAULT_EXPLORE_PLACE_GROUP,
+    placeType: input.placeType || undefined,
     keyword: input.keyword || undefined,
     sortBy: input.sortBy,
     sortDirection: input.sortDirection,
@@ -128,7 +128,7 @@ export function buildExploreMarkerParams(
     maxLng: input.viewportBounds.maxLng,
     province: input.province || undefined,
     city: input.city || undefined,
-    placeType: input.placeType ?? DEFAULT_EXPLORE_PLACE_GROUP,
+    placeType: input.placeType || undefined,
     limit: input.limit,
   };
 }

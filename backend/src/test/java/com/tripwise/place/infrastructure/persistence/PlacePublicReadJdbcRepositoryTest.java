@@ -150,4 +150,199 @@ class PlacePublicReadJdbcRepositoryTest {
         assertThat(parameters.getSqlType("verificationStatus")).isEqualTo(Types.VARCHAR);
         assertThat(parameters.getSqlType("minRating")).isEqualTo(Types.NUMERIC);
     }
+
+    @Test
+    void searchShouldUseMinQualityScore75ForFood() {
+        when(namedParameterJdbcTemplate.queryForObject(anyString(), any(MapSqlParameterSource.class), any(Class.class)))
+                .thenReturn(0L);
+
+        repository.search(
+                SearchPlacesQuery.builder()
+                        .placeType("FOOD")
+                        .build(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                "name",
+                "asc"
+        );
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).queryForObject(anyString(), captor.capture(), any(Class.class));
+
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(75);
+    }
+
+    @Test
+    void searchShouldUseMinQualityScore80ForAttraction() {
+        when(namedParameterJdbcTemplate.queryForObject(anyString(), any(MapSqlParameterSource.class), any(Class.class)))
+                .thenReturn(0L);
+
+        repository.search(
+                SearchPlacesQuery.builder()
+                        .placeType("ATTRACTION")
+                        .build(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                "name",
+                "asc"
+        );
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).queryForObject(anyString(), captor.capture(), any(Class.class));
+
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(80);
+    }
+
+    @Test
+    void searchShouldUseDefaultMinQualityScore80WhenNoPlaceType() {
+        when(namedParameterJdbcTemplate.queryForObject(anyString(), any(MapSqlParameterSource.class), any(Class.class)))
+                .thenReturn(0L);
+
+        repository.search(
+                SearchPlacesQuery.builder().build(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                "name",
+                "asc"
+        );
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).queryForObject(anyString(), captor.capture(), any(Class.class));
+
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(80);
+    }
+
+    @Test
+    void findMapMarkersShouldUseMinQualityScore75ForFood() {
+        when(namedParameterJdbcTemplate.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
+                .thenReturn(List.of());
+
+        repository.findMapMarkers(MapPlacesQuery.builder()
+                .minLatitude(10.0)
+                .minLongitude(100.0)
+                .maxLatitude(11.0)
+                .maxLongitude(101.0)
+                .placeType("FOOD")
+                .limit(10)
+                .build());
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).query(anyString(), captor.capture(), any(RowMapper.class));
+
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(75);
+    }
+
+    @Test
+    void findMapMarkersShouldUseMinQualityScore80ForAttraction() {
+        when(namedParameterJdbcTemplate.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
+                .thenReturn(List.of());
+
+        repository.findMapMarkers(MapPlacesQuery.builder()
+                .minLatitude(10.0)
+                .minLongitude(100.0)
+                .maxLatitude(11.0)
+                .maxLongitude(101.0)
+                .placeType("ATTRACTION")
+                .limit(10)
+                .build());
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).query(anyString(), captor.capture(), any(RowMapper.class));
+
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(80);
+    }
+
+    @Test
+    void searchWithPlaceTypeAllShouldUseInClauseAndPerTypeThreshold() {
+        when(namedParameterJdbcTemplate.queryForObject(anyString(), any(MapSqlParameterSource.class), any(Class.class)))
+                .thenReturn(0L);
+
+        repository.search(
+                SearchPlacesQuery.builder()
+                        .placeType("ALL")
+                        .build(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                "name",
+                "asc"
+        );
+
+        ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<MapSqlParameterSource> parametersCaptor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).queryForObject(sqlCaptor.capture(), parametersCaptor.capture(), any(Class.class));
+
+        String sql = sqlCaptor.getValue();
+        assertThat(sql).contains("p.place_type IN ('ATTRACTION', 'FOOD', 'HOTEL', 'SERVICE')");
+        assertThat(sql).contains("p.place_type = 'FOOD' AND COALESCE(p.quality_score, 0) >= 75");
+        assertThat(sql).contains("p.place_type IN ('ATTRACTION', 'HOTEL', 'SERVICE') AND COALESCE(p.quality_score, 0) >= 80");
+        assertThat(sql).doesNotContain("COALESCE(:placeType, 'ATTRACTION')");
+        assertThat(sql).contains("p.verification_status IN ('AUTO_APPROVED', 'VERIFIED')");
+        assertThat(sql).contains("p.is_recommendable = TRUE");
+        assertThat(sql).contains("p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE");
+    }
+
+    @Test
+    void searchWithPlaceTypeAllShouldBindMinQualityScore75() {
+        when(namedParameterJdbcTemplate.queryForObject(anyString(), any(MapSqlParameterSource.class), any(Class.class)))
+                .thenReturn(0L);
+
+        repository.search(
+                SearchPlacesQuery.builder()
+                        .placeType("ALL")
+                        .build(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                "name",
+                "asc"
+        );
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).queryForObject(anyString(), captor.capture(), any(Class.class));
+
+        assertThat(captor.getValue().getValue("placeType")).isEqualTo("ALL");
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(75);
+    }
+
+    @Test
+    void findMapMarkersWithPlaceTypeAllShouldUseInClauseAndPerTypeThreshold() {
+        when(namedParameterJdbcTemplate.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
+                .thenReturn(List.of());
+
+        repository.findMapMarkers(MapPlacesQuery.builder()
+                .minLatitude(10.0)
+                .minLongitude(100.0)
+                .maxLatitude(11.0)
+                .maxLongitude(101.0)
+                .placeType("ALL")
+                .limit(10)
+                .build());
+
+        ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<MapSqlParameterSource> parametersCaptor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).query(sqlCaptor.capture(), parametersCaptor.capture(), any(RowMapper.class));
+
+        String sql = sqlCaptor.getValue();
+        assertThat(sql).contains("p.place_type IN ('ATTRACTION', 'FOOD', 'HOTEL', 'SERVICE')");
+        assertThat(sql).contains("p.place_type = 'FOOD' AND COALESCE(p.quality_score, 0) >= 75");
+        assertThat(sql).contains("p.place_type IN ('ATTRACTION', 'HOTEL', 'SERVICE') AND COALESCE(p.quality_score, 0) >= 80");
+        assertThat(sql).doesNotContain("COALESCE(:placeType, 'ATTRACTION')");
+        assertThat(sql).contains("p.verification_status IN ('AUTO_APPROVED', 'VERIFIED')");
+        assertThat(sql).contains("p.is_recommendable = TRUE");
+    }
+
+    @Test
+    void findMapMarkersWithPlaceTypeAllShouldBindParamsCorrectly() {
+        when(namedParameterJdbcTemplate.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
+                .thenReturn(List.of());
+
+        repository.findMapMarkers(MapPlacesQuery.builder()
+                .minLatitude(10.0)
+                .minLongitude(100.0)
+                .maxLatitude(11.0)
+                .maxLongitude(101.0)
+                .placeType("ALL")
+                .limit(10)
+                .build());
+
+        ArgumentCaptor<MapSqlParameterSource> captor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).query(anyString(), captor.capture(), any(RowMapper.class));
+
+        assertThat(captor.getValue().getValue("placeType")).isEqualTo("ALL");
+        assertThat(captor.getValue().getValue("minQualityScore")).isEqualTo(75);
+    }
 }

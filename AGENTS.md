@@ -18,6 +18,7 @@ Trước khi tạo hoặc sửa bất kỳ file nào, AI phải đọc và hiể
 6. Task cụ thể mà người dùng giao ở lượt hiện tại
 7. `docs/08-project-roadmap/phases.md`
 8. Toàn bộ các file `.md` trong thư mục `docs/`
+8a. `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — bắt buộc đọc trước mọi task liên quan: place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
 9. Source code liên quan trực tiếp đến task hiện tại
 10. Test code liên quan trực tiếp đến task hiện tại
 
@@ -270,6 +271,7 @@ Trước khi sửa code, AI phải đọc lại:
 - `DECISIONS.md` nếu có
 - `TASKS.md` nếu có
 - `docs/08-project-roadmap/phases.md`
+- `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — ưu tiên đọc nếu task liên quan place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
 - toàn bộ file `.md` trong `docs/`
 - `backend/README.md`
 - `backend/pom.xml`

@@ -609,3 +609,25 @@ logging config, actuator/metrics, rate limit, Docker/CI docs, deployment config
 - P13-T004: Actuator health/readiness security.
 - P13-T005: Production checklist.
 
+---
+
+### Place Data Enrichment (xem chi tiết tại `docs/08-project-roadmap/place-data-enrichment-roadmap.md`)
+
+- PDE-T001 — Phase A: Geofabrik Nationwide Audit for ATTRACTION/HOTEL/SERVICE.
+
+  **Goal:** Audit raw OSM/Geofabrik tags toàn quốc, phát hiện bottleneck parser/moderation cho ATTRACTION, HOTEL, SERVICE.
+
+  **Context:** ATTRACTION nationwide thấp do OSM Việt Nam đánh tag không đồng đều. Cần baseline data trước khi cải thiện rules.
+
+  **Scope:**
+  - DRY_RUN only
+  - không update DB
+  - không import mới
+  - không APPLY
+  - mục tiêu toàn quốc
+  - report theo province/city/placeType
+  - tập trung phát hiện bottleneck parser/moderation cho ATTRACTION/HOTEL/SERVICE
+  - output report dạng CSV/JSON
+
+  **How to verify:** Chạy dry-run, kiểm tra output report có số liệu theo province/city/placeType, không có thay đổi DB.
+

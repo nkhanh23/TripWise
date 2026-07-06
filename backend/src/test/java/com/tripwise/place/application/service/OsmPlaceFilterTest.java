@@ -80,7 +80,7 @@ class OsmPlaceFilterTest {
         assertThat(result.placeType()).isEqualTo(OsmPlaceType.ATTRACTION);
         assertThat(result.normalizedCategory()).isEqualTo("check-in");
         assertThat(result.qualityScore()).isGreaterThanOrEqualTo(80);
-        assertThat(result.strongTourismSignal()).isFalse();
+        assertThat(result.strongTourismSignal()).isTrue();
     }
 
     @Test
@@ -736,15 +736,37 @@ class OsmPlaceFilterTest {
     }
 
     @Test
-    void genericTourismAttractionShouldNotHaveStrongSignal() {
+    void genericTourismAttractionNowHasStrongSignal() {
         OsmPlaceFilterResult result = filter.filter(sparseRecord(
                 "Dia Danh Chung",
                 Map.of("tourism", "attraction")
         ));
 
         assertThat(result.placeType()).isEqualTo(OsmPlaceType.ATTRACTION);
-        assertThat(result.strongTourismSignal()).isFalse();
+        assertThat(result.strongTourismSignal()).isTrue();
         assertThat(result.isPromotionGuarded()).isFalse();
+    }
+
+    @Test
+    void shouldRejectNameWithOnlySpecialCharacters() {
+        OsmPlaceFilterResult result = filter.filter(sparseRecord(
+                "???",
+                Map.of("tourism", "attraction")
+        ));
+
+        assertThat(result.placeType()).isEqualTo(OsmPlaceType.REJECTED);
+        assertThat(result.rejectReason()).contains("special characters");
+    }
+
+    @Test
+    void shouldRejectNullName() {
+        OsmPlaceFilterResult result = filter.filter(sparseRecord(
+                null,
+                Map.of("tourism", "attraction")
+        ));
+
+        assertThat(result.placeType()).isEqualTo(OsmPlaceType.REJECTED);
+        assertThat(result.rejectReason()).contains("Missing place name");
     }
 
     @Test

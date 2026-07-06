@@ -87,26 +87,36 @@ const categoryMeta: Record<
   Khac: { label: "Khác", icon: "place", badge: "neutral" },
 };
 
-const placeGroups: ExplorePlaceGroup[] = ["ATTRACTION", "FOOD", "HOTEL"];
+const placeGroups: ExplorePlaceGroup[] = ["ALL", "ATTRACTION", "FOOD", "HOTEL", "SERVICE"];
 
 const placeGroupMeta: Record<
   ExplorePlaceGroup,
   { label: string; icon: string; description: string }
 > = {
+  ALL: {
+    label: "Tất cả",
+    icon: "apps",
+    description: "Hiển thị tất cả địa điểm phù hợp.",
+  },
   ATTRACTION: {
-    label: "Dia diem du lich",
+    label: "Địa điểm du lịch",
     icon: "explore",
-    description: "Chi hien thi cac dia diem tham quan da duoc loc sach.",
+    description: "Chỉ hiển thị các địa điểm tham quan đã được lọc sạch.",
   },
   FOOD: {
-    label: "An uong",
+    label: "Ăn uống",
     icon: "restaurant",
-    description: "Kham pha quan an, cafe va bar phu hop cho chuyen di.",
+    description: "Khám phá quán ăn, cafe và bar phù hợp cho chuyến đi.",
   },
   HOTEL: {
-    label: "Khach san",
+    label: "Khách sạn",
     icon: "hotel",
-    description: "Tim khach san va noi luu tru phu hop theo khu vuc.",
+    description: "Tìm khách sạn và nơi lưu trú phù hợp theo khu vực.",
+  },
+  SERVICE: {
+    label: "Dịch vụ",
+    icon: "miscellaneous_services",
+    description: "Tìm dịch vụ du lịch, spa, và tiện ích khác.",
   },
 };
 
@@ -845,7 +855,7 @@ export const ExplorePlacesPage: React.FC = () => {
                     ? `Tìm thấy ${totalElements} địa điểm`
                     : "Đang tải..."}
                 </span>
-                {activeGroup !== "ATTRACTION" || searchQuery || provinceQuery || cityQuery ? (
+                {activeGroup !== "ALL" || searchQuery || provinceQuery || cityQuery ? (
                   <button type="button" onClick={resetFilters} className={styles.clearFilters}>
                     Xóa bộ lọc
                   </button>

@@ -448,6 +448,9 @@ public class OsmPlaceFilter {
         if (looksLikeSlogan(normalizedName)) {
             return "Name looks like a slogan or campaign text";
         }
+        if (hasOnlySpecialCharacters(normalizedName)) {
+            return "Name consists only of special characters or punctuation";
+        }
         return null;
     }
 
@@ -467,6 +470,10 @@ public class OsmPlaceFilter {
         );
 
         return sloganTokens.stream().anyMatch(normalizedName::contains);
+    }
+
+    private boolean hasOnlySpecialCharacters(String normalizedName) {
+        return normalizedName.replaceAll("[\\p{P}\\p{S}]", "").isBlank();
     }
 
     private int computeTourismRelevanceScore(OsmPlaceType placeType, Map<String, String> rawTags) {
@@ -572,7 +579,7 @@ public class OsmPlaceFilter {
         String natural = rawTags.get("natural");
         String historic = rawTags.get("historic");
 
-        return (tourism != null && SPECIFIC_STRONG_TOURISM_VALUES.contains(tourism))
+        return (tourism != null && (SPECIFIC_STRONG_TOURISM_VALUES.contains(tourism) || "attraction".equals(tourism)))
                 || (natural != null && ATTRACTION_NATURAL_VALUES.contains(natural))
                 || (leisure != null && ATTRACTION_LEISURE_VALUES.contains(leisure))
                 || (amenity != null && ATTRACTION_AMENITY_VALUES.contains(amenity))

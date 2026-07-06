@@ -767,6 +767,83 @@ public class PlaceImportJdbcRepository {
                 .addValue("syncedAt", Timestamp.from(syncedAt)));
     }
 
+    public List<ProvinceNormalizationCandidate> findProvinceNullCandidates() {
+        String sql = """
+                SELECT p.id,
+                       p.source,
+                       p.source_external_id,
+                       p.name,
+                       p.province,
+                       p.city,
+                       p.place_type,
+                       p.verification_status,
+                       p.is_recommendable,
+                       ST_Y(p.location::geometry) AS latitude,
+                       ST_X(p.location::geometry) AS longitude
+                FROM places p
+                WHERE p.source = :sourceName
+                  AND (p.province IS NULL OR LOWER(p.province) IN ('unknown'))
+                  AND p.city IS NOT NULL
+                  AND LOWER(p.city) != 'unknown'
+                  AND p.city != ''
+                ORDER BY p.id
+                """;
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("sourceName", "OSM_GEOFABRIK");
+
+        return namedParameterJdbcTemplate.query(sql, parameters, this::mapProvinceNormalizationCandidate);
+    }
+
+    public int updateProvinceBatch(String sourceName, List<ProvinceUpdateCommand> updates) {
+        if (updates == null || updates.isEmpty()) {
+            return 0;
+        }
+
+        String sql = """
+                UPDATE places
+                SET province = :province,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = :placeId
+                  AND source = :sourceName
+                """;
+
+        List<Map<String, Object>> batchValues = updates.stream()
+                .map(update -> {
+                    Map<String, Object> values = new java.util.LinkedHashMap<>();
+                    values.put("placeId", update.placeId());
+                    values.put("province", update.province());
+                    values.put("sourceName", sourceName);
+                    return values;
+                })
+                .toList();
+
+        SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchValues.toArray());
+        int[] rows = namedParameterJdbcTemplate.batchUpdate(sql, batch);
+        int updatedCount = 0;
+        for (int rowCount : rows) {
+            updatedCount += rowCount;
+        }
+        return updatedCount;
+    }
+
+    private ProvinceNormalizationCandidate mapProvinceNormalizationCandidate(ResultSet resultSet, int rowNum)
+            throws SQLException {
+        return new ProvinceNormalizationCandidate(
+                resultSet.getLong("id"),
+                resultSet.getString("source"),
+                resultSet.getString("source_external_id"),
+                resultSet.getString("name"),
+                resultSet.getString("province"),
+                resultSet.getString("city"),
+                resultSet.getString("place_type"),
+                resultSet.getString("verification_status"),
+                resultSet.getObject("is_recommendable", Boolean.class),
+                resultSet.getObject("latitude", Double.class),
+                resultSet.getObject("longitude", Double.class)
+        );
+    }
+
     private ExistingPlaceRecord mapExistingPlace(ResultSet resultSet, int rowNum) throws SQLException {
         return new ExistingPlaceRecord(
                 resultSet.getLong("id"),
@@ -868,6 +945,27 @@ public class PlaceImportJdbcRepository {
             String verificationStatus,
             boolean recommendable,
             String rejectReason
+    ) {
+    }
+
+    public record ProvinceNormalizationCandidate(
+            long id,
+            String source,
+            String sourceExternalId,
+            String name,
+            String province,
+            String city,
+            String placeType,
+            String verificationStatus,
+            Boolean recommendable,
+            Double latitude,
+            Double longitude
+    ) {
+    }
+
+    public record ProvinceUpdateCommand(
+            long placeId,
+            String province
     ) {
     }
 

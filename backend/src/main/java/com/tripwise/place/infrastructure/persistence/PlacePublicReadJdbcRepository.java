@@ -33,12 +33,14 @@ import java.util.stream.Collectors;
 public class PlacePublicReadJdbcRepository {
 
     private static final int DEFAULT_PUBLIC_MIN_QUALITY_SCORE = 80;
+    private static final int FOOD_PUBLIC_MIN_QUALITY_SCORE = 75;
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("name", "rating", "popularityScore");
     private static final Set<String> ALLOWED_PLACE_TYPES = Set.of(
             "ATTRACTION",
             "FOOD",
             "HOTEL",
-            "SERVICE"
+            "SERVICE",
+            "ALL"
     );
     private static final Set<String> ALLOWED_VERIFICATION_STATUSES = Set.of(
             "AUTO_APPROVED",
@@ -144,23 +146,26 @@ public class PlacePublicReadJdbcRepository {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = jdbcTemplate();
         LocationAliasFilter provinceFilter = resolveProvinceFilter(query.getProvince());
         LocationAliasFilter cityFilter = resolveCityFilter(query.getCity());
+        String normalizedPlaceType = normalizePlaceType(query.getPlaceType());
+        int minQualityScore = resolveMinQualityScore(normalizedPlaceType);
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("minLatitude", query.getMinLatitude())
                 .addValue("minLongitude", query.getMinLongitude())
                 .addValue("maxLatitude", query.getMaxLatitude())
                 .addValue("maxLongitude", query.getMaxLongitude())
-                .addValue("placeType", normalizePlaceType(query.getPlaceType()), Types.VARCHAR)
+                .addValue("placeType", normalizedPlaceType, Types.VARCHAR)
                 .addValue("categoryId", query.getCategoryId(), Types.BIGINT)
                 .addValue("verificationStatus", normalizeVerificationStatus(query.getVerificationStatus()), Types.VARCHAR)
                 .addValue("minRating", query.getMinRating(), Types.NUMERIC)
-                .addValue("minQualityScore", DEFAULT_PUBLIC_MIN_QUALITY_SCORE)
+                .addValue("minQualityScore", minQualityScore)
                 .addValue("limit", query.getLimit());
         bindLocationFilter(parameters, "province", provinceFilter);
         bindLocationFilter(parameters, "city", cityFilter);
 
         List<String> normalizedTags = normalizeTags(query.getTags());
 
-        StringBuilder sql = new StringBuilder("""
+        StringBuilder sql = new StringBuilder()
+                .append("""
                 SELECT p.id,
                        p.name,
                        p.province,
@@ -185,23 +190,49 @@ public class PlacePublicReadJdbcRepository {
                 ) img ON TRUE
                 WHERE p.is_active = TRUE
                   AND p.is_recommendable = TRUE
-                  AND (
-                      p.place_type = COALESCE(:placeType, 'ATTRACTION')
-                      OR (
-                          p.place_type IS NULL
-                          AND COALESCE(:placeType, 'ATTRACTION') = 'ATTRACTION'
+                """);
+
+        if ("ALL".equals(normalizedPlaceType)) {
+            sql.append("\n  AND p.place_type IN ('ATTRACTION', 'FOOD', 'HOTEL', 'SERVICE')");
+        } else {
+            sql.append("""
+                      AND (
+                          p.place_type = COALESCE(:placeType, 'ATTRACTION')
+                          OR (
+                              p.place_type IS NULL
+                              AND COALESCE(:placeType, 'ATTRACTION') = 'ATTRACTION'
+                          )
                       )
-                  )
+                    """);
+        }
+
+        sql.append("""
                   AND p.verification_status IN ('AUTO_APPROVED', 'VERIFIED')
-                  AND (
-                      COALESCE(p.quality_score, 0) >= :minQualityScore
-                      OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
-                  )
+                """);
+
+        if ("ALL".equals(normalizedPlaceType)) {
+            sql.append("""
+                      AND (
+                          (p.place_type = 'FOOD' AND COALESCE(p.quality_score, 0) >= 75)
+                          OR (p.place_type IN ('ATTRACTION', 'HOTEL', 'SERVICE') AND COALESCE(p.quality_score, 0) >= 80)
+                          OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
+                      )
+                    """);
+        } else {
+            sql.append("""
+                      AND (
+                          COALESCE(p.quality_score, 0) >= :minQualityScore
+                          OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
+                      )
+                    """);
+        }
+
+        sql.append("""
                   AND p.location::geometry && ST_MakeEnvelope(:minLongitude, :minLatitude, :maxLongitude, :maxLatitude, 4326)
                   AND (:categoryId IS NULL OR p.category_id = :categoryId)
                   AND (:verificationStatus IS NULL OR p.verification_status = :verificationStatus)
                   AND (:minRating IS NULL OR p.rating >= :minRating)
-                  """);
+                """);
         appendLocationFilter(sql, "province", provinceFilter);
         appendLocationFilter(sql, "city", cityFilter);
 
@@ -285,13 +316,15 @@ public class PlacePublicReadJdbcRepository {
     private QueryParts buildSearchQueryParts(SearchPlacesQuery query) {
         LocationAliasFilter provinceFilter = resolveProvinceFilter(query.getProvince());
         LocationAliasFilter cityFilter = resolveCityFilter(query.getCity());
+        String normalizedPlaceType = normalizePlaceType(query.getPlaceType());
+        int minQualityScore = resolveMinQualityScore(normalizedPlaceType);
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("placeType", normalizePlaceType(query.getPlaceType()), Types.VARCHAR)
+                .addValue("placeType", normalizedPlaceType, Types.VARCHAR)
                 .addValue("categoryId", query.getCategoryId(), Types.BIGINT)
                 .addValue("priceLevel", normalizeText(query.getPriceLevel()), Types.VARCHAR)
                 .addValue("verificationStatus", normalizeVerificationStatus(query.getVerificationStatus()), Types.VARCHAR)
                 .addValue("minRating", query.getMinRating(), Types.NUMERIC)
-                .addValue("minQualityScore", DEFAULT_PUBLIC_MIN_QUALITY_SCORE);
+                .addValue("minQualityScore", minQualityScore);
         bindLocationFilter(parameters, "province", provinceFilter);
         bindLocationFilter(parameters, "city", cityFilter);
 
@@ -305,7 +338,8 @@ public class PlacePublicReadJdbcRepository {
                 : "%" + normalizeText(query.getKeyword()).toLowerCase(Locale.ROOT) + "%";
         parameters.addValue("keywordPattern", keywordPattern, Types.VARCHAR);
 
-        StringBuilder where = new StringBuilder("""
+        StringBuilder where = new StringBuilder()
+                .append("""
                 FROM places p
                 JOIN place_categories pc ON pc.id = p.category_id
                 LEFT JOIN place_popularity_metrics ppm ON ppm.place_id = p.id
@@ -318,23 +352,49 @@ public class PlacePublicReadJdbcRepository {
                 ) img ON TRUE
                 WHERE p.is_active = TRUE
                   AND p.is_recommendable = TRUE
-                  AND (
-                      p.place_type = COALESCE(:placeType, 'ATTRACTION')
-                      OR (
-                          p.place_type IS NULL
-                          AND COALESCE(:placeType, 'ATTRACTION') = 'ATTRACTION'
+                """);
+
+        if ("ALL".equals(normalizedPlaceType)) {
+            where.append("\n  AND p.place_type IN ('ATTRACTION', 'FOOD', 'HOTEL', 'SERVICE')");
+        } else {
+            where.append("""
+                      AND (
+                          p.place_type = COALESCE(:placeType, 'ATTRACTION')
+                          OR (
+                              p.place_type IS NULL
+                              AND COALESCE(:placeType, 'ATTRACTION') = 'ATTRACTION'
+                          )
                       )
-                  )
+                    """);
+        }
+
+        where.append("""
                   AND p.verification_status IN ('AUTO_APPROVED', 'VERIFIED')
-                  AND (
-                      COALESCE(p.quality_score, 0) >= :minQualityScore
-                      OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
-                  )
+                """);
+
+        if ("ALL".equals(normalizedPlaceType)) {
+            where.append("""
+                      AND (
+                          (p.place_type = 'FOOD' AND COALESCE(p.quality_score, 0) >= 75)
+                          OR (p.place_type IN ('ATTRACTION', 'HOTEL', 'SERVICE') AND COALESCE(p.quality_score, 0) >= 80)
+                          OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
+                      )
+                    """);
+        } else {
+            where.append("""
+                      AND (
+                          COALESCE(p.quality_score, 0) >= :minQualityScore
+                          OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
+                      )
+                    """);
+        }
+
+        where.append("""
                   AND (:categoryId IS NULL OR p.category_id = :categoryId)
                   AND (:priceLevel IS NULL OR LOWER(COALESCE(p.price_level, '')) = LOWER(:priceLevel))
                   AND (:verificationStatus IS NULL OR p.verification_status = :verificationStatus)
                   AND (:minRating IS NULL OR p.rating >= :minRating)
-                  """);
+                """);
         appendLocationFilter(where, "province", provinceFilter);
         appendLocationFilter(where, "city", cityFilter);
 
@@ -543,6 +603,13 @@ public class PlacePublicReadJdbcRepository {
         }
         String normalized = value.trim().toUpperCase(Locale.ROOT);
         return ALLOWED_PLACE_TYPES.contains(normalized) ? normalized : null;
+    }
+
+    private int resolveMinQualityScore(String normalizedPlaceType) {
+        if ("FOOD".equals(normalizedPlaceType) || "ALL".equals(normalizedPlaceType)) {
+            return FOOD_PUBLIC_MIN_QUALITY_SCORE;
+        }
+        return DEFAULT_PUBLIC_MIN_QUALITY_SCORE;
     }
 
     private PlaceResponse mapPlaceResponse(ResultSet resultSet, int rowNum) throws SQLException {

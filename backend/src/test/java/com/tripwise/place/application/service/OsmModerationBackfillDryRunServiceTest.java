@@ -159,6 +159,114 @@ class OsmModerationBackfillDryRunServiceTest {
     }
 
     @Test
+    void shouldBlockBusinessLikeFoodCandidatesButKeepLegitimateFoodNames() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository,
+                evaluator,
+                OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(10L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(1000L, "food-guard-1", "ACC Panel mien nam", Map.of("amenity", "fast_food")));
+            consumer.accept(record(
+                    1001L,
+                    "food-guard-2",
+                    "Vina Talents - Khai Sang Tai Nang Viet",
+                    Map.of("amenity", "cafe")
+            ));
+            consumer.accept(record(1002L, "food-guard-3", "Tinh Dau Loi An", Map.of("amenity", "restaurant")));
+            consumer.accept(record(1003L, "food-guard-4", "Cua hang dien thoai ABC", Map.of("amenity", "restaurant")));
+            consumer.accept(record(1004L, "food-allow-1", "Cua Hang Kem Baskin-Robbins", Map.of("amenity", "restaurant")));
+            consumer.accept(record(1005L, "food-allow-2", "Ca Phe San Vuon Ca Koi", Map.of("amenity", "cafe")));
+            consumer.accept(record(1006L, "food-allow-3", "Bun Bo O Huyen", Map.of("amenity", "restaurant")));
+            consumer.accept(record(1007L, "food-allow-4", "18 BEER CLUB", Map.of("amenity", "restaurant")));
+            consumer.accept(record(1008L, "food-pending-bar", "Broma Not A Bar", Map.of("amenity", "bar")));
+            consumer.accept(record(1009L, "food-generic-1", "Quan an", Map.of("amenity", "restaurant")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 30);
+
+        assertThat(report.wouldAutoApproved()).isEqualTo(4);
+        assertThat(report.wouldPending()).isEqualTo(6);
+        assertThat(report.countByPromotionGuardReason())
+                .containsEntry("Business-like keyword in FOOD name: panel", 1L)
+                .containsEntry("Business-like keyword in FOOD name: tai nang", 1L)
+                .containsEntry("Non-food retail keyword in FOOD name: tinh dau", 1L)
+                .containsEntry("Non-food retail keyword in FOOD name: dien thoai", 1L)
+                .containsEntry("Generic food name", 1L);
+        assertThat(report.evaluatedRecords())
+                .anySatisfy(record -> {
+                    if ("food-guard-1".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+                        assertThat(record.predictedRecommendable()).isFalse();
+                        assertThat(record.promotionGuardReason()).isEqualTo("Business-like keyword in FOOD name: panel");
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-guard-2".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+                        assertThat(record.promotionGuardReason()).isEqualTo("Business-like keyword in FOOD name: tai nang");
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-guard-3".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+                        assertThat(record.promotionGuardReason()).isEqualTo("Non-food retail keyword in FOOD name: tinh dau");
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-guard-4".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+                        assertThat(record.promotionGuardReason()).isEqualTo("Non-food retail keyword in FOOD name: dien thoai");
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-allow-1".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("AUTO_APPROVED");
+                        assertThat(record.predictedRecommendable()).isTrue();
+                        assertThat(record.promotionGuardReason()).isNull();
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-allow-2".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("AUTO_APPROVED");
+                        assertThat(record.predictedRecommendable()).isTrue();
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-allow-3".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("AUTO_APPROVED");
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-allow-4".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("AUTO_APPROVED");
+                        assertThat(record.promotionGuardReason()).isNull();
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-pending-bar".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+                        assertThat(record.predictedRecommendable()).isFalse();
+                        assertThat(record.promotionGuardReason()).isNull();
+                    }
+                })
+                .anySatisfy(record -> {
+                    if ("food-generic-1".equals(record.sourceExternalId())) {
+                        assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+                        assertThat(record.promotionGuardReason()).isEqualTo("Generic food name");
+                    }
+                });
+    }
+
+    @Test
     void shouldNotCountUnknownCityAsCompletenessSignalDuringBackfill() {
         PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
         PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
@@ -311,6 +419,100 @@ class OsmModerationBackfillDryRunServiceTest {
         ))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("APPLY mode is restricted to source=OSM_GEOFABRIK");
+    }
+
+    @Test
+    void shouldAutoApproveTourismAttractionInDryRun() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository, evaluator, OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(1000L, "attraction-1", "Thap Ba Po Nagar", Map.of("tourism", "attraction")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(
+                eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 50);
+
+        assertThat(report.wouldAutoApproved()).isEqualTo(1);
+        assertThat(report.wouldAttraction()).isEqualTo(1);
+        assertThat(report.recommendableCount()).isEqualTo(1);
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedPlaceType()).isEqualTo("ATTRACTION");
+            assertThat(record.predictedVerificationStatus()).isEqualTo("AUTO_APPROVED");
+            assertThat(record.predictedRecommendable()).isTrue();
+            assertThat(record.strongTourismSignal()).isTrue();
+        });
+    }
+
+    @Test
+    void shouldNotAutoApproveJunkNameAttractionInDryRun() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository, evaluator, OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(2000L, "junk-1", "???", Map.of("tourism", "attraction")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(
+                eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 50);
+
+        assertThat(report.wouldAutoApproved()).isZero();
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedVerificationStatus()).isEqualTo("REJECTED");
+            assertThat(record.predictedRecommendable()).isFalse();
+        });
+        assertThat(report.noDbUpdateExecuted()).isTrue();
+    }
+
+    @Test
+    void shouldKeepTourismAttractionWithLowQualityPending() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository, evaluator, OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(new PlaceImportJdbcRepository.BackfillSourcePlaceRecord(
+                    1001L, "OSM_GEOFABRIK", "attraction-low", "Dia Danh Nho",
+                    null, null, null, null, null,
+                    null, null, null, 60, false, true,
+                    null, "PENDING", null, 0, false, null,
+                    OBJECT_MAPPER.valueToTree(Map.of("tourism", "attraction")).toString(), Set.of()
+            ));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(
+                eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 50);
+
+        assertThat(report.wouldAutoApproved()).isZero();
+        assertThat(report.wouldPending()).isEqualTo(1);
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedPlaceType()).isEqualTo("ATTRACTION");
+            assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+            assertThat(record.predictedRecommendable()).isFalse();
+        });
     }
 
     @Test
