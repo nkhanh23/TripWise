@@ -16,6 +16,7 @@ public class SearchPlacesQuery {
 
     private String province;
     private String city;
+    private String placeType;
     private Long categoryId;
     private List<String> tags;
     private String priceLevel;

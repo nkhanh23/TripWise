@@ -93,6 +93,28 @@ export interface PlaceMapMarkerResponse {
   longitude: number;
 }
 
+export interface AdminPlaceReviewResponse {
+  id: number;
+  name: string;
+  source: string;
+  sourceExternalId?: string;
+  province?: string;
+  city?: string;
+  district?: string;
+  ward?: string;
+  placeType?: string;
+  verificationStatus?: string;
+  recommendable?: boolean;
+  qualityScore?: number;
+  rejectReason?: string;
+  durationMinutes?: number;
+  latitude?: number;
+  longitude?: number;
+  tags?: string[];
+  rawTags?: string;
+  updatedAt?: string;
+}
+
 export interface TransportSuggestionResponse {
   mode: string;
   reason: string;

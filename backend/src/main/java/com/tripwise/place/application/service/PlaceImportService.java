@@ -6,7 +6,8 @@ import com.tripwise.place.application.dto.PlaceImportMode;
 import com.tripwise.place.application.dto.PlaceImportRecord;
 import com.tripwise.place.application.dto.PlaceImportReport;
 import com.tripwise.place.domain.entity.PlaceCategory;
-import com.tripwise.place.infrastructure.ingestion.OsmPlaceCategoryMapper;
+import com.tripwise.place.domain.model.VerificationStatus;
+import com.tripwise.place.infrastructure.ingestion.OsmPlaceFilterResult;
 import com.tripwise.place.infrastructure.ingestion.PlaceImportFileReader;
 import com.tripwise.place.infrastructure.persistence.PlaceImportJdbcRepository;
 import com.tripwise.place.infrastructure.persistence.repository.PlaceCategoryRepository;
@@ -29,31 +30,23 @@ import java.util.stream.Collectors;
 @Service
 public class PlaceImportService {
 
-    private static final Set<String> SUPPORTED_VERIFICATION_STATUSES = Set.of(
-            "UNVERIFIED",
-            "PARTIALLY_VERIFIED",
-            "VERIFIED",
-            "REJECTED",
-            "NEEDS_REVIEW"
-    );
-
     private final ObjectProvider<PlaceCategoryRepository> placeCategoryRepositoryProvider;
     private final ObjectProvider<PlaceImportJdbcRepository> placeImportJdbcRepositoryProvider;
     private final PlaceImportFileReader placeImportFileReader;
-    private final OsmPlaceCategoryMapper osmPlaceCategoryMapper;
+    private final PlaceModerationEvaluator placeModerationEvaluator;
     private final ObjectMapper objectMapper;
 
     public PlaceImportService(
             ObjectProvider<PlaceCategoryRepository> placeCategoryRepositoryProvider,
             ObjectProvider<PlaceImportJdbcRepository> placeImportJdbcRepositoryProvider,
             PlaceImportFileReader placeImportFileReader,
-            OsmPlaceCategoryMapper osmPlaceCategoryMapper,
+            PlaceModerationEvaluator placeModerationEvaluator,
             ObjectMapper objectMapper
     ) {
         this.placeCategoryRepositoryProvider = placeCategoryRepositoryProvider;
         this.placeImportJdbcRepositoryProvider = placeImportJdbcRepositoryProvider;
         this.placeImportFileReader = placeImportFileReader;
-        this.osmPlaceCategoryMapper = osmPlaceCategoryMapper;
+        this.placeModerationEvaluator = placeModerationEvaluator;
         this.objectMapper = objectMapper;
     }
 
@@ -169,12 +162,19 @@ public class PlaceImportService {
             return;
         }
 
-        String categorySlug = osmPlaceCategoryMapper.resolveCategorySlug(record).orElse(null);
+        PlaceModerationPreview moderationPreview = placeModerationEvaluator.evaluate(record);
+        if (moderationPreview.isRejectedByFilter()) {
+            counters.skippedCount++;
+            appendLimited(notes, "Rejected " + record.name() + ": " + moderationPreview.rejectReason());
+            return;
+        }
+
+        String categorySlug = moderationPreview.normalizedCategory();
         Long categoryId = categorySlug == null ? null : categoryIdsBySlug.get(categorySlug);
         if (categoryId == null) {
             counters.skippedCount++;
-            counters.errorCount++;
-            String message = "Unmapped category for " + record.name();
+            String message = "Unsupported normalized category " + categorySlug + " for " + record.name()
+                    + " (" + moderationPreview.placeType() + ")";
             appendLimited(notes, message);
             if (failOnMappingError) {
                 throw new IllegalStateException(message);
@@ -182,8 +182,9 @@ public class PlaceImportService {
             return;
         }
 
-        String verificationStatus = normalizeVerificationStatus(record.verificationStatus());
-        boolean verified = isVerified(verificationStatus);
+        VerificationStatus verificationStatus = moderationPreview.verificationStatus();
+        boolean verified = verificationStatus == VerificationStatus.VERIFIED;
+        boolean recommendable = moderationPreview.recommendable();
         boolean active = record.active() == null || record.active();
         boolean indoor = record.indoor() != null && record.indoor();
         int durationMinutes = record.durationMinutes() == null || record.durationMinutes() <= 0 ? 60 : record.durationMinutes();
@@ -218,8 +219,12 @@ public class PlaceImportService {
                     active,
                     verified,
                     trimToNull(record.priceLevel()),
+                    moderationPreview.placeType().name(),
+                    moderationPreview.qualityScore(),
+                    recommendable,
+                    moderationPreview.rejectReason(),
                     rawTagsJson,
-                    verificationStatus,
+                    verificationStatus.name(),
                     syncedAt
             );
             placeImportJdbcRepository.replaceTags(exactMatch.get().id(), placeTags);
@@ -227,7 +232,7 @@ public class PlaceImportService {
                     exactMatch.get().id(),
                     sourceName,
                     sourceReference,
-                    verificationStatus,
+                    verificationStatus.name(),
                     "Matched by source/source_external_id",
                     syncedAt
             );
@@ -258,8 +263,12 @@ public class PlaceImportService {
                     indoor,
                     active,
                     trimToNull(record.priceLevel()),
+                    moderationPreview.placeType().name(),
+                    moderationPreview.qualityScore(),
+                    recommendable,
+                    moderationPreview.rejectReason(),
                     rawTagsJson,
-                    verificationStatus,
+                    verificationStatus.name(),
                     verified,
                     syncedAt
             );
@@ -267,7 +276,7 @@ public class PlaceImportService {
                     fuzzyDuplicate.get().id(),
                     sourceName,
                     sourceReference,
-                    verificationStatus,
+                    verificationStatus.name(),
                     "Deduplicated by normalized name + nearby location",
                     syncedAt
             );
@@ -294,8 +303,12 @@ public class PlaceImportService {
                 active,
                 verified,
                 trimToNull(record.priceLevel()),
+                moderationPreview.placeType().name(),
+                moderationPreview.qualityScore(),
+                recommendable,
+                moderationPreview.rejectReason(),
                 rawTagsJson,
-                verificationStatus,
+                verificationStatus.name(),
                 syncedAt
         );
         placeImportJdbcRepository.replaceTags(placeId, placeTags);
@@ -303,23 +316,11 @@ public class PlaceImportService {
                 placeId,
                 sourceName,
                 sourceReference,
-                verificationStatus,
+                verificationStatus.name(),
                 "Inserted from nationwide import",
                 syncedAt
         );
         counters.insertedCount++;
-    }
-
-    private String normalizeVerificationStatus(String verificationStatus) {
-        if (verificationStatus == null || verificationStatus.isBlank()) {
-            return "UNVERIFIED";
-        }
-        String normalized = verificationStatus.trim().toUpperCase(Locale.ROOT);
-        return SUPPORTED_VERIFICATION_STATUSES.contains(normalized) ? normalized : "NEEDS_REVIEW";
-    }
-
-    private boolean isVerified(String verificationStatus) {
-        return "VERIFIED".equals(verificationStatus) || "PARTIALLY_VERIFIED".equals(verificationStatus);
     }
 
     private String bestEffortCity(PlaceImportRecord record) {
@@ -429,7 +430,6 @@ public class PlaceImportService {
         private int errorCount;
         private int staleMarkedCount;
     }
-
     private PlaceCategoryRepository requirePlaceCategoryRepository() {
         PlaceCategoryRepository repository = placeCategoryRepositoryProvider.getIfAvailable();
         if (repository == null) {

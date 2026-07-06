@@ -4,6 +4,16 @@ const STORAGE_KEY = "tripwise.auth.session";
 
 let sessionCache: AuthTokens | null = null;
 
+export type AuthJwtClaims = {
+  sub?: string;
+  userId?: number | string;
+  email?: string;
+  role?: string;
+  roles?: string[];
+  exp?: number;
+  iat?: number;
+};
+
 function canUseSessionStorage() {
   return typeof window !== "undefined" && typeof window.sessionStorage !== "undefined";
 }
@@ -72,4 +82,60 @@ export function getRefreshToken() {
 
 export function hasRefreshToken() {
   return getRefreshToken() !== null;
+}
+
+function decodeBase64Url(value: string) {
+  if (typeof window === "undefined" || typeof window.atob !== "function") {
+    return null;
+  }
+
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padding = normalized.length % 4;
+  const padded = padding === 0 ? normalized : normalized.padEnd(normalized.length + (4 - padding), "=");
+
+  try {
+    return window.atob(padded);
+  } catch {
+    return null;
+  }
+}
+
+export function getAuthJwtClaims(): AuthJwtClaims | null {
+  const accessToken = getAccessToken();
+  if (!accessToken) {
+    return null;
+  }
+
+  const segments = accessToken.split(".");
+  if (segments.length < 2) {
+    return null;
+  }
+
+  const decodedPayload = decodeBase64Url(segments[1]);
+  if (!decodedPayload) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(decodedPayload) as AuthJwtClaims;
+  } catch {
+    return null;
+  }
+}
+
+export function getAuthRoles(): string[] {
+  const claims = getAuthJwtClaims();
+  if (!claims) {
+    return [];
+  }
+
+  if (Array.isArray(claims.roles)) {
+    return claims.roles.filter((role): role is string => typeof role === "string");
+  }
+
+  if (typeof claims.role === "string" && claims.role.length > 0) {
+    return [claims.role];
+  }
+
+  return [];
 }

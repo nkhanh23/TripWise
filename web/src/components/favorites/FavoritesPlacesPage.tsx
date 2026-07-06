@@ -314,7 +314,7 @@ export const FavoritesPlacesPage: React.FC = () => {
   }));
 
   return (
-    <AppContent variant="wide" className="relative pb-24 md:pb-10 pt-4">
+    <AppContent variant="standard" className="relative px-0 pb-24 pt-0 sm:px-0 md:pb-10 lg:px-0">
       <FilmGrainOverlay />
 
       {/* Floating Retro Toast notifications */}
@@ -347,7 +347,7 @@ export const FavoritesPlacesPage: React.FC = () => {
       )}
 
       {/* Main 12-column template layout */}
-      <div className="mt-4">
+      <div style={{ width: '100%', marginTop: '1.5rem', padding: '0 1rem' }}>
         
         {/* Toggle States dev-only toolbar */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 16, overflowX: 'auto', paddingBottom: 6 }}>

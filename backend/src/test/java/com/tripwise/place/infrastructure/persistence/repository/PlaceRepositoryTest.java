@@ -3,6 +3,8 @@ package com.tripwise.place.infrastructure.persistence.repository;
 import com.tripwise.BaseIntegrationTest;
 import com.tripwise.place.domain.entity.Place;
 import com.tripwise.place.domain.entity.PlaceCategory;
+import com.tripwise.place.domain.model.PlaceType;
+import com.tripwise.place.domain.model.VerificationStatus;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -45,6 +47,11 @@ class PlaceRepositoryTest extends BaseIntegrationTest {
                 .indoor(false)
                 .isActive(true)
                 .isVerified(true)
+                .verificationStatus(VerificationStatus.VERIFIED)
+                .placeType(PlaceType.ATTRACTION)
+                .qualityScore(95)
+                .isRecommendable(true)
+                .source("MANUAL_SEED")
                 .priceLevel("MEDIUM")
                 .rating(new BigDecimal("4.6"))
                 .tags(Set.of("scenic", "coastal"))
@@ -60,6 +67,10 @@ class PlaceRepositoryTest extends BaseIntegrationTest {
         assertThat(foundPlace.getLocation().getY()).isEqualTo(12.2761);
         assertThat(foundPlace.getTags()).containsExactlyInAnyOrder("scenic", "coastal");
         assertThat(foundPlace.getCategory().getId()).isEqualTo(category.getId());
+        assertThat(foundPlace.getVerificationStatus()).isEqualTo(VerificationStatus.VERIFIED);
+        assertThat(foundPlace.getPlaceType()).isEqualTo(PlaceType.ATTRACTION);
+        assertThat(foundPlace.getQualityScore()).isEqualTo(95);
+        assertThat(foundPlace.getIsRecommendable()).isTrue();
     }
 
     @Test

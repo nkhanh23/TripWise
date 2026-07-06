@@ -5,40 +5,42 @@ Không viết business logic thật; chỉ mô tả kiến trúc, cách tách co
 
 ---
 
-## Web (Next.js)
+## Web (ReactJS + Vite)
 
 ### Quyết định hiện tại
 
-- Frontend web production đã chốt dùng `Next.js`.
-- Hướng triển khai nhất quán là `App Router`.
-- Mock UI React/Vite ban đầu được giữ tại `web-archive-vite-ui/` làm visual reference.
-- Ở các phase UI tiếp theo, code có thể thay đổi theo chuẩn Next.js nhưng giao diện phải bám sát mock React đã chốt.
+- Frontend web production đã chốt dùng `ReactJS + Vite`.
+- Hướng triển khai nhất quán là `React Router`.
+- Source UI từ `web-archive-vite-ui/` đã được dùng làm nền chính cho production web trong `web/`.
+- Ở các phase UI tiếp theo, code mới phải bám cấu trúc Vite hiện tại nhưng giao diện vẫn phải giữ đúng visual language đã chốt.
 
-### Vì sao chọn App Router
+### Vì sao chọn Vite
 
-- Phù hợp với project Next.js đã tạo ở Phase 12.1.
-- Dễ mở rộng cho nested layout, loading/error boundary và route-level organization ở các phase sau.
-- Giữ cấu hình đơn giản, ít boilerplate, phù hợp với frontend tách riêng backend.
+- Phù hợp với yêu cầu mới là dùng ReactJS thuần cho production web mà không phụ thuộc Next.js.
+- Giữ cấu hình frontend đơn giản, build nhanh, phù hợp với web client tách riêng backend Spring Boot.
+- Dễ tái sử dụng trực tiếp các page/component/layout từ `web-archive-vite-ui/`.
 
 ### Visual reference rules
 
 - `web-archive-vite-ui/` là nguồn tham chiếu chính cho layout, spacing, phân cấp component và phong cách retro.
-- Không port nguyên xi code cũ vào app mới.
-- Khi có khác biệt giữa code Next.js và mock archive, ưu tiên:
+- Sau migration, `web/` là codebase production chính còn `web-archive-vite-ui/` là archive/source tham chiếu.
+- Khi có khác biệt giữa code production trong `web/` và archive UI, ưu tiên:
   1. Giữ đúng trải nghiệm thị giác và flow người dùng của mock UI.
-  2. Chuyển implementation sang pattern phù hợp với Next.js.
+  2. Chuyển implementation sang pattern phù hợp với ReactJS + Vite.
   3. Chỉ điều chỉnh nhỏ nếu cần cho SSR/client boundary hoặc maintainability.
 
 ### Khuyến nghị stack UI
 
-- Framework: Next.js + React + TypeScript.
+- Framework: ReactJS + Vite + TypeScript.
 - Styling nền tảng: CSS tokens và CSS modules hoặc giải pháp nhẹ tương đương theo scope phase.
 - UI primitives: xây theo design system nội bộ, không cần kéo thêm framework lớn nếu chưa thật sự cần.
 - Map: Leaflet / react-leaflet + OpenStreetMap tiles ở phase map integration.
 
 ### Cấu trúc UI modules gợi ý
 
-- `src/app`: route segments, layout, loading/error boundaries.
+- `src/main.tsx`: bootstrap Vite app.
+- `src/App.tsx`: route tree chính bằng React Router.
+- `src/pages`: page-level wrappers/components cho route production.
 - `src/components/layout`: app shell, split-screen layout, responsive wrappers.
 - `src/components/ui`: primitive components như button, input, card, status, skeleton.
 - `src/components/features/*`: component theo màn hình hoặc flow nghiệp vụ.
@@ -132,7 +134,7 @@ Luôn đối chiếu theo thứ tự ưu tiên:
 
 ## Các điểm đã chốt trước khi code UI
 
-- Web production dùng `Next.js App Router`.
+- Web production dùng `React Router` trong app Vite.
 - UI web phải bám mock archive tại `web-archive-vite-ui/`.
 - Backend vẫn là nguồn dữ liệu duy nhất; frontend không gọi trực tiếp Gemini, OSRM hay Weather.
 - Leaflet/OSM và route polyline để đúng phase map integration, không kéo sớm vào phase setup/design system.

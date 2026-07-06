@@ -58,7 +58,10 @@ class PlaceImportServiceIntegrationTest extends BaseIntegrationTest {
                 WHERE source = 'TEST_OSM_IMPORT_A'
                   AND source_external_id = 'geo-run-1'
                   AND name = 'Nui Co Tien Test'
-                  AND verification_status = 'UNVERIFIED'
+                  AND place_type = 'ATTRACTION'
+                  AND verification_status = 'AUTO_APPROVED'
+                  AND is_recommendable = TRUE
+                  AND quality_score >= 80
                 """,
                 Integer.class
         );
@@ -102,6 +105,161 @@ class PlaceImportServiceIntegrationTest extends BaseIntegrationTest {
         );
 
         assertThat(importRunRows).isEqualTo(1);
+    }
+
+    @Test
+    void shouldSkipRejectedNoiseAndKeepFoodSeparatedFromAttractions() throws IOException {
+        Path inputFile = tempDir.resolve("noise-filter-import.ndjson");
+        Files.writeString(inputFile, """
+                {"sourceExternalId":"noise-1","name":"Chung tay bảo vệ môi trường","province":"Khanh Hoa","city":"Nha Trang","latitude":12.2501,"longitude":109.1901,"rawTags":{"tourism":"artwork"}}
+                {"sourceExternalId":"noise-2","name":"0 km","province":"Khanh Hoa","city":"Nha Trang","latitude":12.2502,"longitude":109.1902,"rawTags":{"tourism":"attraction"}}
+                {"sourceExternalId":"noise-3","name":"04 Nguyễn Huy Tự","province":"Khanh Hoa","city":"Nha Trang","latitude":12.2503,"longitude":109.1903,"rawTags":{"amenity":"restaurant"}}
+                {"sourceExternalId":"noise-4","name":"0971685111","province":"Khanh Hoa","city":"Nha Trang","latitude":12.2504,"longitude":109.1904,"rawTags":{"amenity":"bar"}}
+                {"sourceExternalId":"service-low-1","name":"Old Fountain Spot","province":"Khanh Hoa","city":"Nha Trang","latitude":12.25045,"longitude":109.19045,"rawTags":{"amenity":"fountain"}}
+                {"sourceExternalId":"food-1","name":"Bun Ca Sua Test","province":"Khanh Hoa","city":"Nha Trang","displayAddress":"123 Tran Phu","description":"Quan an dac san","latitude":12.2505,"longitude":109.1905,"tags":["bun-ca"],"rawTags":{"amenity":"restaurant"}}
+                {"sourceExternalId":"attraction-1","name":"Hon Chong Scenic Spot","province":"Khanh Hoa","city":"Nha Trang","displayAddress":"Pham Van Dong","description":"Diem ngam canh noi tieng","latitude":12.2650,"longitude":109.2010,"tags":["viewpoint"],"rawTags":{"tourism":"attraction","leisure":"park"}}
+                """);
+
+        PlaceImportReport report = placeImportService.importFile(
+                inputFile,
+                "TEST_OSM_IMPORT_FILTERING",
+                PlaceImportMode.FULL_SYNC,
+                80.0,
+                false
+        );
+
+        assertThat(report.processedCount()).isEqualTo(7);
+        assertThat(report.insertedCount()).isEqualTo(3);
+        assertThat(report.skippedCount()).isEqualTo(4);
+
+        Integer rejectedNoiseRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_FILTERING'
+                  AND source_external_id IN ('noise-1', 'noise-2', 'noise-3', 'noise-4')
+                """,
+                Integer.class
+        );
+
+        assertThat(rejectedNoiseRows).isZero();
+
+        Integer foodRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_FILTERING'
+                  AND source_external_id = 'food-1'
+                  AND place_type = 'FOOD'
+                  AND verification_status = 'PENDING'
+                  AND is_recommendable = FALSE
+                """,
+                Integer.class
+        );
+
+        assertThat(foodRows).isEqualTo(1);
+
+        Integer rejectedServiceRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_FILTERING'
+                  AND source_external_id = 'service-low-1'
+                  AND place_type = 'SERVICE'
+                  AND verification_status = 'REJECTED'
+                  AND is_recommendable = FALSE
+                  AND reject_reason IS NOT NULL
+                """,
+                Integer.class
+        );
+
+        assertThat(rejectedServiceRows).isEqualTo(1);
+
+        Integer attractionRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_FILTERING'
+                  AND source_external_id = 'attraction-1'
+                  AND place_type = 'ATTRACTION'
+                  AND verification_status = 'AUTO_APPROVED'
+                  AND is_recommendable = TRUE
+                """,
+                Integer.class
+        );
+
+        assertThat(attractionRows).isEqualTo(1);
+    }
+
+    @Test
+    void shouldPromoteSparseStrongAttractionsButKeepWeakHistoricRecordsPending() throws IOException {
+        Path inputFile = tempDir.resolve("promotion-balance-import.ndjson");
+        Files.writeString(inputFile, """
+                {"sourceExternalId":"strong-attraction-1","name":"Mui Doi Viewpoint","latitude":12.7450,"longitude":109.4300,"rawTags":{"tourism":"viewpoint"}}
+                {"sourceExternalId":"strong-attraction-2","name":"Bai Nom Beach","latitude":12.8700,"longitude":109.3900,"rawTags":{"natural":"beach"}}
+                {"sourceExternalId":"weak-historic-1","name":"Bia Tuong Niem Ven Nui","latitude":12.5100,"longitude":109.1800,"rawTags":{"historic":"memorial"}}
+                {"sourceExternalId":"artwork-1","name":"Pho Tuong Nghe Thuat","latitude":12.5200,"longitude":109.1700,"rawTags":{"tourism":"artwork"}}
+                """);
+
+        PlaceImportReport report = placeImportService.importFile(
+                inputFile,
+                "TEST_OSM_IMPORT_PROMOTION",
+                PlaceImportMode.FULL_SYNC,
+                80.0,
+                false
+        );
+
+        assertThat(report.processedCount()).isEqualTo(4);
+        assertThat(report.insertedCount()).isEqualTo(4);
+        assertThat(report.skippedCount()).isZero();
+
+        Integer strongAttractionRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_PROMOTION'
+                  AND source_external_id IN ('strong-attraction-1', 'strong-attraction-2')
+                  AND place_type = 'ATTRACTION'
+                  AND verification_status = 'AUTO_APPROVED'
+                  AND is_recommendable = TRUE
+                  AND quality_score >= 80
+                """,
+                Integer.class
+        );
+
+        assertThat(strongAttractionRows).isEqualTo(2);
+
+        Integer weakHistoricRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_PROMOTION'
+                  AND source_external_id = 'weak-historic-1'
+                  AND place_type = 'ATTRACTION'
+                  AND verification_status = 'PENDING'
+                  AND is_recommendable = FALSE
+                  AND quality_score >= 50
+                  AND quality_score < 80
+                """,
+                Integer.class
+        );
+
+        assertThat(weakHistoricRows).isEqualTo(1);
+
+        Integer artworkRows = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM places
+                WHERE source = 'TEST_OSM_IMPORT_PROMOTION'
+                  AND source_external_id = 'artwork-1'
+                  AND place_type = 'SERVICE'
+                  AND verification_status = 'REJECTED'
+                  AND is_recommendable = FALSE
+                """,
+                Integer.class
+        );
+
+        assertThat(artworkRows).isEqualTo(1);
     }
 
     @Test

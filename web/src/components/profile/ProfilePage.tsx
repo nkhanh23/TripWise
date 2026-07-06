@@ -191,7 +191,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   return (
-    <AppContent variant="wide" className="relative pb-36 md:pb-24 pt-4">
+    <AppContent variant="standard" className="relative px-0 pb-36 pt-0 sm:px-0 md:pb-24 lg:px-0">
       <FilmGrainOverlay />
 
       {/* Retro Floating Toast Notification */}
@@ -224,7 +224,7 @@ export const ProfilePage: React.FC = () => {
       )}
 
       {/* Main 12-column template layout */}
-      <div className="mt-4">
+      <div style={{ width: '100%', marginTop: '1.5rem', padding: '0 1rem' }}>
         
         {/* Toggle States dev-only toolbar */}
         <div style={{ display: 'flex', gap: 10, marginBottom: 16, overflowX: 'auto', paddingBottom: 6 }}>

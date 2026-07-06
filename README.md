@@ -4,7 +4,7 @@
 
 **AI Smart Travel Planner** là hệ thống lập lịch du lịch thông minh, cho phép người dùng nhập nhu cầu du lịch bằng tiếng Việt tự nhiên, ví dụ: "Tôi muốn đi Nha Trang 3 ngày 2 đêm, thích biển, hải sản, check-in và tiết kiệm chi phí".
 
-Hệ thống sử dụng **Gemini API** để phân tích yêu cầu, sau đó dùng dữ liệu địa điểm thật đã chuẩn hóa trong **PostgreSQL + PostGIS** để gợi ý địa điểm phù hợp. Tuyến đường thực tế giữa các điểm được tính bằng **OSRM**, bản đồ hiển thị bằng **OpenStreetMap**, web client production dùng **Next.js**, mobile client dùng **Flutter**.
+Hệ thống sử dụng **Gemini API** để phân tích yêu cầu, sau đó dùng dữ liệu địa điểm thật đã chuẩn hóa trong **PostgreSQL + PostGIS** để gợi ý địa điểm phù hợp. Tuyến đường thực tế giữa các điểm được tính bằng **OSRM**, bản đồ hiển thị bằng **OpenStreetMap**, web client production dùng **ReactJS + Vite**, mobile client dùng **Flutter**.
 
 Dự án được thiết kế theo hướng sản phẩm thật: có authentication, dữ liệu thật, cache, kiểm soát chi phí API ngoài, nguyên tắc bảo mật secret, khả năng mở rộng dần và quy trình phát triển theo SDLC + Agile Scrum.
 
@@ -50,7 +50,7 @@ Mục tiêu không chỉ là demo AI, mà là xây dựng nền tảng có thể
 | AI | Gemini API |
 | Routing | OSRM |
 | Map | OpenStreetMap, Leaflet ở web client |
-| Web | Next.js, tách riêng backend |
+| Web | ReactJS + Vite, tách riêng backend |
 | Mobile | Flutter |
 | Media/static assets | Object Storage + CDN |
 | Monitoring | Logging ngay từ đầu; metrics/tracing chuẩn bị cho production |
@@ -59,9 +59,9 @@ Mục tiêu không chỉ là demo AI, mà là xây dựng nền tảng có thể
 
 ### Frontend web decision
 
-- Codebase web production hiện tại dùng `Next.js + TypeScript` trong thư mục `web/`.
-- Mock UI React/Vite ban đầu được giữ tại `web-archive-vite-ui/` làm visual reference.
-- Các phase UI tiếp theo phải bám sát giao diện mock archive, nhưng code implementation sẽ đi theo Next.js.
+- Codebase web production hiện tại dùng `ReactJS + Vite + TypeScript` trong thư mục `web/`.
+- Source UI gốc được lấy từ `web-archive-vite-ui/` và đã được migrate vào `web/`.
+- `web-archive-vite-ui/` tiếp tục được giữ làm snapshot/archive tham chiếu cho giao diện đã chốt.
 
 ---
 
@@ -71,7 +71,7 @@ Dự án đi theo mô hình **Modular Monolith** để giữ tốc độ phát t
 
 ```text
 clients
-├── web: Next.js
+├── web: ReactJS + Vite
 └── mobile: Flutter
 
 backend: Java 21 + Spring Boot 3.x

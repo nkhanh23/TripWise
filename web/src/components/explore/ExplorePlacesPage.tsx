@@ -12,9 +12,21 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { RetroImage } from "@/components/ui/RetroImage";
-import { searchPlaces, getPlaceMapMarkers, getPlaceDetail } from "@/lib/api";
+import { searchPlaces, getPlaceMapMarkers } from "@/lib/api";
 import type { PlaceResponse, PageResponse, PlaceMapMarkerResponse } from "@/lib/api/contracts";
 import type { MapMarkerData } from "./ExploreLeafletMap";
+import {
+  areViewportBoundsEqual,
+  buildExploreMarkerParams,
+  buildExplorePlaceSearchParams,
+  DEFAULT_EXPLORE_PLACE_GROUP,
+  filterMarkersByVisiblePlaces,
+  MAP_MARKER_FETCH_DEBOUNCE_MS,
+  resolveLocationViewport,
+  type ExplorePlaceGroup,
+  type ExploreViewportBounds,
+  VIETNAM_BOUNDS,
+} from "./explore-map-query";
 import styles from "./ExplorePlacesPage.module.css";
 
 const ExploreLeafletMap = dynamic(() => import("./ExploreLeafletMap"), {
@@ -22,7 +34,7 @@ const ExploreLeafletMap = dynamic(() => import("./ExploreLeafletMap"), {
   loading: () => (
     <div className={styles.mapLoading}>
       <span className="material-symbols-outlined">map</span>
-      <span>Dang tai ban do...</span>
+      <span>Đang tải bản đồ...</span>
     </div>
   ),
 });
@@ -39,6 +51,7 @@ type ExploreCategory =
   | "Khac";
 
 type ViewState = "default" | "loading" | "empty" | "error";
+type ActiveLocationField = "province" | "city" | null;
 
 type ExplorePlaceData = {
   id: string;
@@ -59,48 +72,129 @@ type ExplorePlaceData = {
   verificationStatus: string;
 };
 
-const categories: ExploreCategory[] = [
-  "Tat ca",
-  "Bien",
-  "Van hoa",
-  "An uong",
-  "Cafe",
-  "Check-in",
-  "Mua sam",
-  "Thien nhien",
-];
-
 const categoryMeta: Record<
   ExploreCategory,
   { label: string; icon: string; badge: "info" | "success" | "warn" | "neutral" }
 > = {
-  "Tat ca": { label: "Tat ca", icon: "apps", badge: "neutral" },
-  Bien: { label: "Bien", icon: "water", badge: "info" },
-  "Van hoa": { label: "Van hoa", icon: "temple_hindu", badge: "warn" },
-  "An uong": { label: "An uong", icon: "restaurant", badge: "warn" },
-  Cafe: { label: "Cafe", icon: "local_cafe", badge: "neutral" },
+  "Tat ca": { label: "Tất cả", icon: "apps", badge: "neutral" },
+  Bien: { label: "Biển", icon: "water", badge: "info" },
+  "Van hoa": { label: "Văn hóa", icon: "temple_hindu", badge: "warn" },
+  "An uong": { label: "Ăn uống", icon: "restaurant", badge: "warn" },
+  Cafe: { label: "Cà phê", icon: "local_cafe", badge: "neutral" },
   "Check-in": { label: "Check-in", icon: "photo_camera", badge: "success" },
-  "Mua sam": { label: "Mua sam", icon: "shopping_bag", badge: "warn" },
-  "Thien nhien": { label: "Thien nhien", icon: "park", badge: "success" },
-  Khac: { label: "Khac", icon: "place", badge: "neutral" },
+  "Mua sam": { label: "Mua sắm", icon: "shopping_bag", badge: "warn" },
+  "Thien nhien": { label: "Thiên nhiên", icon: "park", badge: "success" },
+  Khac: { label: "Khác", icon: "place", badge: "neutral" },
+};
+
+const placeGroups: ExplorePlaceGroup[] = ["ATTRACTION", "FOOD", "HOTEL"];
+
+const placeGroupMeta: Record<
+  ExplorePlaceGroup,
+  { label: string; icon: string; description: string }
+> = {
+  ATTRACTION: {
+    label: "Dia diem du lich",
+    icon: "explore",
+    description: "Chi hien thi cac dia diem tham quan da duoc loc sach.",
+  },
+  FOOD: {
+    label: "An uong",
+    icon: "restaurant",
+    description: "Kham pha quan an, cafe va bar phu hop cho chuyen di.",
+  },
+  HOTEL: {
+    label: "Khach san",
+    icon: "hotel",
+    description: "Tim khach san va noi luu tru phu hop theo khu vuc.",
+  },
 };
 
 const SORT_OPTIONS = [
-  { value: "popularityScore_desc", label: "Pho bien" },
-  { value: "rating_desc", label: "Danh gia cao" },
-  { value: "name_asc", label: "Ten A-Z" },
-  { value: "name_desc", label: "Ten Z-A" },
+  { value: "popularityScore_desc", label: "Phổ biến" },
+  { value: "rating_desc", label: "Đánh giá cao" },
+  { value: "name_asc", label: "Tên A-Z" },
+  { value: "name_desc", label: "Tên Z-A" },
 ] as const;
+
+const VIETNAM_PROVINCES = [
+  "An Giang", "Bà Rịa - Vũng Tàu", "Bắc Giang", "Bắc Kạn", "Bạc Liêu", "Bắc Ninh",
+  "Bến Tre", "Bình Định", "Bình Dương", "Bình Phước", "Bình Thuận", "Cà Mau",
+  "Cần Thơ", "Cao Bằng", "Đà Nẵng", "Đắk Lắk", "Đắk Nông", "Điện Biên", "Đồng Nai",
+  "Đồng Tháp", "Gia Lai", "Hà Giang", "Hà Nam", "Hà Nội", "Hà Tĩnh", "Hải Dương",
+  "Hải Phòng", "Hậu Giang", "Hòa Bình", "Hồ Chí Minh", "Hưng Yên", "Khánh Hòa",
+  "Kiên Giang", "Kon Tum", "Lai Châu", "Lâm Đồng", "Lạng Sơn", "Lào Cai", "Long An",
+  "Nam Định", "Nghệ An", "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên",
+  "Quảng Bình", "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", "Quảng Trị", "Sóc Trăng",
+  "Sơn La", "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa", "Thừa Thiên Huế",
+  "Tiền Giang", "Trà Vinh", "Tuyên Quang", "Vĩnh Long", "Vĩnh Phúc", "Yên Bái",
+] as const;
+
+const VIETNAM_CITIES = [
+  "Hà Nội", "Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Cần Thơ", "Nha Trang",
+  "Đà Lạt", "Hội An", "Huế", "Phan Thiết", "Vũng Tàu", "Quy Nhơn", "Hạ Long",
+  "Phú Quốc", "Sa Pa", "Tuy Hòa", "Buôn Ma Thuột", "Pleiku", "Biên Hòa", "Thủ Dầu Một",
+  "Ninh Bình", "Tam Đảo", "Móng Cái", "Việt Trì", "Thái Bình", "Nam Định", "Thanh Hóa",
+  "Vinh", "Đồng Hới", "Đông Hà", "Quảng Ngãi", "Tam Kỳ", "Rạch Giá", "Hà Tiên",
+  "Long Xuyên", "Châu Đốc", "Mỹ Tho", "Bến Tre", "Cà Mau", "Sóc Trăng", "Trà Vinh",
+  "Vĩnh Long", "Cao Lãnh", "Sa Đéc", "Bạc Liêu", "Dĩ An", "Thuận An",
+] as const;
+
+const CITY_OPTIONS_BY_PROVINCE: Record<string, string[]> = {
+  "Hà Nội": ["Hà Nội"],
+  "Hồ Chí Minh": ["Hồ Chí Minh", "Dĩ An", "Thuận An"],
+  "Đà Nẵng": ["Đà Nẵng"],
+  "Hải Phòng": ["Hải Phòng"],
+  "Cần Thơ": ["Cần Thơ"],
+  "Khánh Hòa": ["Nha Trang"],
+  "Lâm Đồng": ["Đà Lạt"],
+  "Quảng Nam": ["Hội An", "Tam Kỳ"],
+  "Thừa Thiên Huế": ["Huế"],
+  "Bình Thuận": ["Phan Thiết"],
+  "Bà Rịa - Vũng Tàu": ["Vũng Tàu"],
+  "Bình Định": ["Quy Nhơn"],
+  "Quảng Ninh": ["Hạ Long", "Móng Cái"],
+  "Kiên Giang": ["Phú Quốc", "Rạch Giá", "Hà Tiên"],
+  "Lào Cai": ["Sa Pa"],
+  "Phú Yên": ["Tuy Hòa"],
+  "Đắk Lắk": ["Buôn Ma Thuột"],
+  "Gia Lai": ["Pleiku"],
+  "Đồng Nai": ["Biên Hòa"],
+  "Bình Dương": ["Thủ Dầu Một", "Dĩ An", "Thuận An"],
+  "Ninh Bình": ["Ninh Bình", "Tam Đảo"],
+  "Phú Thọ": ["Việt Trì"],
+  "Thái Bình": ["Thái Bình"],
+  "Nam Định": ["Nam Định"],
+  "Thanh Hóa": ["Thanh Hóa"],
+  "Nghệ An": ["Vinh"],
+  "Quảng Bình": ["Đồng Hới"],
+  "Quảng Trị": ["Đông Hà"],
+  "Quảng Ngãi": ["Quảng Ngãi"],
+  "An Giang": ["Long Xuyên", "Châu Đốc"],
+  "Tiền Giang": ["Mỹ Tho"],
+  "Bến Tre": ["Bến Tre"],
+  "Cà Mau": ["Cà Mau"],
+  "Sóc Trăng": ["Sóc Trăng"],
+  "Trà Vinh": ["Trà Vinh"],
+  "Vĩnh Long": ["Vĩnh Long"],
+  "Đồng Tháp": ["Cao Lãnh", "Sa Đéc"],
+  "Bạc Liêu": ["Bạc Liêu"],
+};
 
 const PAGE_SIZE = 20;
 const MAP_MARKER_LIMIT = 200;
 
-function normalizeCategory(value?: string): ExploreCategory {
-  const normalized = (value ?? "")
+function normalizeSearchValue(value?: string): string {
+  return (value ?? "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/gi, "d")
     .trim()
     .toLowerCase();
+}
+
+function normalizeCategory(value?: string): ExploreCategory {
+  const normalized = normalizeSearchValue(value);
 
   if (normalized.includes("bien")) return "Bien";
   if (normalized.includes("van hoa")) return "Van hoa";
@@ -130,7 +224,7 @@ function mapPlaceToExplorePlace(place: PlaceResponse): ExplorePlaceData {
     tags: place.tags ?? [],
     rating: place.rating ?? 0,
     priceLevel: place.priceLevel ?? "",
-    durationLabel: place.durationMinutes ? `${place.durationMinutes} phut` : "30 phut",
+    durationLabel: place.durationMinutes ? `${place.durationMinutes} phút` : "30 phút",
     costLabel: place.estimatedCost
       ? `${place.estimatedCost.toLocaleString("vi-VN")} ₫`
       : "",
@@ -159,22 +253,66 @@ function parseSortOption(value: string): { sortBy: string; sortDirection: string
 
 export const ExplorePlacesPage: React.FC = () => {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<ExploreCategory>("Tat ca");
+  const [activeGroup, setActiveGroup] = useState<ExplorePlaceGroup>(DEFAULT_EXPLORE_PLACE_GROUP);
   const [searchQuery, setSearchQuery] = useState("");
   const [provinceQuery, setProvinceQuery] = useState("");
+  const [cityQuery, setCityQuery] = useState("");
+  const [activeLocationField, setActiveLocationField] = useState<ActiveLocationField>(null);
   const [sortOption, setSortOption] = useState<string>("popularityScore_desc");
   const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>([]);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
   const [addToTripMenuOpen, setAddToTripMenuOpen] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [viewState, setViewState] = useState<ViewState>("loading");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [places, setPlaces] = useState<ExplorePlaceData[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [mapMarkers, setMapMarkers] = useState<MapMarkerData[]>([]);
+  const [viewportBounds, setViewportBounds] = useState<ExploreViewportBounds>(VIETNAM_BOUNDS);
+  const [mapCenter, setMapCenter] = useState<[number, number] | undefined>(undefined);
   const hasSelectedRef = useRef(false);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const markerDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const locationComboboxRef = useRef<HTMLDivElement | null>(null);
+
+  const appliedProvinceQuery = provinceQuery.trim();
+  const appliedCityQuery = cityQuery.trim();
+  const locationViewportPreset = useMemo(
+    () => resolveLocationViewport({
+      province: appliedProvinceQuery,
+      city: appliedCityQuery,
+    }),
+    [appliedProvinceQuery, appliedCityQuery],
+  );
+
+  const filteredProvinceOptions = useMemo(() => {
+    const normalizedQuery = normalizeSearchValue(provinceQuery);
+    if (!normalizedQuery) {
+      return [...VIETNAM_PROVINCES].slice(0, 12);
+    }
+
+    return VIETNAM_PROVINCES
+      .filter((option) => normalizeSearchValue(option).includes(normalizedQuery))
+      .slice(0, 12);
+  }, [provinceQuery]);
+
+  const cityOptions = useMemo(() => {
+    const provinceCities = CITY_OPTIONS_BY_PROVINCE[appliedProvinceQuery];
+    return provinceCities && provinceCities.length > 0 ? provinceCities : [...VIETNAM_CITIES];
+  }, [appliedProvinceQuery]);
+
+  const filteredCityOptions = useMemo(() => {
+    const normalizedQuery = normalizeSearchValue(cityQuery);
+    if (!normalizedQuery) {
+      return cityOptions.slice(0, 12);
+    }
+
+    return cityOptions
+      .filter((option) => normalizeSearchValue(option).includes(normalizedQuery))
+      .slice(0, 12);
+  }, [cityOptions, cityQuery]);
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -182,62 +320,141 @@ export const ExplorePlacesPage: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, [toastMessage]);
 
+  useEffect(() => {
+    return () => {
+      if (markerDebounceTimerRef.current) {
+        clearTimeout(markerDebounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!locationComboboxRef.current) return;
+      if (locationComboboxRef.current.contains(event.target as Node)) return;
+      setActiveLocationField(null);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (locationViewportPreset) {
+      setMapCenter(locationViewportPreset.center);
+      setViewportBounds((currentBounds) => (
+        areViewportBoundsEqual(currentBounds, locationViewportPreset.bounds)
+          ? currentBounds
+          : locationViewportPreset.bounds
+      ));
+      return;
+    }
+
+    setMapCenter(undefined);
+
+    if (!appliedProvinceQuery && !appliedCityQuery) {
+      setViewportBounds((currentBounds) => (
+        areViewportBoundsEqual(currentBounds, VIETNAM_BOUNDS)
+          ? currentBounds
+          : VIETNAM_BOUNDS
+      ));
+    }
+  }, [appliedProvinceQuery, appliedCityQuery, locationViewportPreset]);
+
+  const normalizeExploreError = useCallback((error: unknown) => {
+    if (error instanceof TypeError) {
+      return "Không thể kết nối tới backend http://localhost:8080. Hãy kiểm tra backend đã chạy chưa.";
+    }
+
+    if (error instanceof Error && error.message.trim().length > 0) {
+      return error.message;
+    }
+
+    return "Không thể tải được danh sách địa điểm từ hệ thống.";
+  }, []);
+
   const loadPlaces = useCallback(async (pageNum: number) => {
-    setViewState("loading");
+    const { sortBy, sortDirection } = parseSortOption(sortOption);
 
-    try {
-      const { sortBy, sortDirection } = parseSortOption(sortOption);
-
-      const response: PageResponse<PlaceResponse> = await searchPlaces({
-        province: provinceQuery || undefined,
-        keyword: searchQuery || undefined,
-        categoryId: activeCategory === "Tat ca" ? undefined : undefined,
+    const response: PageResponse<PlaceResponse> = await searchPlaces(
+      buildExplorePlaceSearchParams({
+        province: appliedProvinceQuery,
+        city: appliedCityQuery,
+        placeType: activeGroup,
+        keyword: searchQuery,
         sortBy,
         sortDirection,
         page: pageNum,
         size: PAGE_SIZE,
-      });
+      }),
+    );
 
-      const mapped = response.content.map(mapPlaceToExplorePlace);
-      setPlaces(mapped);
-      setPage(response.page);
-      setTotalPages(response.totalPages);
-      setTotalElements(response.totalElements);
-      setViewState(mapped.length === 0 ? "empty" : "default");
+    const mapped = response.content.map(mapPlaceToExplorePlace);
+    setPlaces(mapped);
+    setPage(response.page);
+    setTotalPages(response.totalPages);
+    setTotalElements(response.totalElements);
+    setViewState(mapped.length === 0 ? "empty" : "default");
 
-      if (mapped.length > 0 && !hasSelectedRef.current) {
-        hasSelectedRef.current = true;
-        setSelectedPlaceId(mapped[0].id);
-      }
-    } catch {
-      setViewState("error");
+    if (mapped.length > 0 && !hasSelectedRef.current) {
+      hasSelectedRef.current = true;
+      setSelectedPlaceId(mapped[0].id);
     }
-  }, [provinceQuery, searchQuery, activeCategory, sortOption]);
 
-  const loadMapMarkers = useCallback(async () => {
+    return mapped;
+  }, [
+    appliedProvinceQuery,
+    appliedCityQuery,
+    searchQuery,
+    activeGroup,
+    sortOption,
+  ]);
+
+  const loadMapMarkers = useCallback(async (
+    currentViewportBounds: ExploreViewportBounds,
+    mappedPlaces: ExplorePlaceData[],
+  ) => {
+    if (mappedPlaces.length === 0) {
+      setMapMarkers([]);
+      return;
+    }
+
     try {
-      const markers = await getPlaceMapMarkers({
-        minLat: -90,
-        minLng: -180,
-        maxLat: 90,
-        maxLng: 180,
-        province: provinceQuery || undefined,
-        categoryId: activeCategory === "Tat ca" ? undefined : undefined,
-        limit: MAP_MARKER_LIMIT,
-      });
-      setMapMarkers(toExploreMarkers(markers));
+      const markers = await getPlaceMapMarkers(
+        buildExploreMarkerParams({
+          viewportBounds: currentViewportBounds,
+          province: appliedProvinceQuery,
+          city: appliedCityQuery,
+          placeType: activeGroup,
+          limit: MAP_MARKER_LIMIT,
+        }),
+      );
+      const visibleMarkers = filterMarkersByVisiblePlaces(
+        markers,
+        mappedPlaces.map((place) => place.id),
+      );
+      setMapMarkers(toExploreMarkers(visibleMarkers));
     } catch {
       setMapMarkers([]);
     }
-  }, [provinceQuery, activeCategory]);
+  }, [appliedProvinceQuery, appliedCityQuery, activeGroup]);
 
-  const triggerSearch = useCallback((pageNum: number) => {
+  const triggerSearch = useCallback(async (pageNum: number) => {
     setPage(pageNum);
     setSelectedPlaceId(null);
+    setMapMarkers([]);
     hasSelectedRef.current = false;
-    void loadPlaces(pageNum);
-    void loadMapMarkers();
-  }, [loadPlaces, loadMapMarkers]);
+    setViewState("loading");
+    setErrorMessage(null);
+
+    try {
+      await loadPlaces(pageNum);
+    } catch (error) {
+      setErrorMessage(normalizeExploreError(error));
+      setMapMarkers([]);
+      setViewState("error");
+    }
+  }, [loadPlaces, normalizeExploreError]);
 
   const scheduleDebouncedSearch = useCallback((pageNum: number) => {
     if (debounceTimerRef.current) {
@@ -249,16 +466,42 @@ export const ExplorePlacesPage: React.FC = () => {
   }, [triggerSearch]);
 
   useEffect(() => {
-    void loadPlaces(0);
-    void loadMapMarkers();
-  }, [loadPlaces, loadMapMarkers]);
+    void triggerSearch(0);
+  }, [triggerSearch]);
 
   useEffect(() => {
     scheduleDebouncedSearch(0);
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
-  }, [provinceQuery, searchQuery, activeCategory, sortOption, scheduleDebouncedSearch]);
+  }, [provinceQuery, cityQuery, searchQuery, activeGroup, sortOption, scheduleDebouncedSearch]);
+
+  const handleViewportChange = useCallback((nextBounds: ExploreViewportBounds) => {
+    setViewportBounds((currentBounds) => (
+      areViewportBoundsEqual(currentBounds, nextBounds) ? currentBounds : nextBounds
+    ));
+  }, []);
+
+  useEffect(() => {
+    if (markerDebounceTimerRef.current) {
+      clearTimeout(markerDebounceTimerRef.current);
+    }
+
+    if (viewState === "error" || places.length === 0) {
+      setMapMarkers([]);
+      return;
+    }
+
+    markerDebounceTimerRef.current = window.setTimeout(() => {
+      void loadMapMarkers(viewportBounds, places);
+    }, MAP_MARKER_FETCH_DEBOUNCE_MS);
+
+    return () => {
+      if (markerDebounceTimerRef.current) {
+        clearTimeout(markerDebounceTimerRef.current);
+      }
+    };
+  }, [loadMapMarkers, places, viewportBounds, viewState]);
 
   const handleSearch = useCallback(() => {
     if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -267,11 +510,11 @@ export const ExplorePlacesPage: React.FC = () => {
 
   const handlePageChange = useCallback((newPage: number) => {
     if (newPage < 0 || newPage >= totalPages) return;
-    void loadPlaces(newPage);
-  }, [loadPlaces, totalPages]);
+    void triggerSearch(newPage);
+  }, [totalPages, triggerSearch]);
 
-  const handleCategorySelect = useCallback((category: ExploreCategory) => {
-    setActiveCategory(category);
+  const handleGroupSelect = useCallback((group: ExplorePlaceGroup) => {
+    setActiveGroup(group);
     setSelectedPlaceId(null);
     setPage(0);
     hasSelectedRef.current = false;
@@ -287,10 +530,10 @@ export const ExplorePlacesPage: React.FC = () => {
 
     setSavedPlaceIds((prev) => {
       if (prev.includes(id)) {
-        setToastMessage("Da bo luu dia diem nay.");
+        setToastMessage("Đã bỏ lưu địa điểm này.");
         return prev.filter((pid) => pid !== id);
       }
-      setToastMessage("Da them vao danh sach yeu thich.");
+      setToastMessage("Đã thêm vào danh sách yêu thích.");
       return [...prev, id];
     });
   }, []);
@@ -301,19 +544,18 @@ export const ExplorePlacesPage: React.FC = () => {
   }, []);
 
   const resetFilters = useCallback(() => {
-    setActiveCategory("Tat ca");
+    setActiveGroup(DEFAULT_EXPLORE_PLACE_GROUP);
     setSearchQuery("");
     setProvinceQuery("");
+    setCityQuery("");
+    setActiveLocationField(null);
     setSortOption("popularityScore_desc");
     setPage(0);
     setSelectedPlaceId(null);
     hasSelectedRef.current = false;
   }, []);
 
-  const filteredPlaces = useMemo(() => {
-    if (activeCategory === "Tat ca") return places;
-    return places.filter((p) => p.category === activeCategory);
-  }, [places, activeCategory]);
+  const filteredPlaces = useMemo(() => places, [places]);
 
   const activePlaceObj = useMemo(
     () => places.find((p) => p.id === selectedPlaceId) ?? filteredPlaces[0] ?? null,
@@ -346,9 +588,9 @@ export const ExplorePlacesPage: React.FC = () => {
       <div className={styles.stateLeftCenter}>
         <Card>
           <EmptyState
-            title="Khong tim thay dia diem"
-            message="Khong co dia danh nao khop voi bo loc hien tai."
-            actions={<Button onClick={resetFilters}>Xoa bo loc</Button>}
+            title="Không tìm thấy địa điểm"
+            message="Không có địa danh nào khớp với bộ lọc hiện tại."
+            actions={<Button onClick={resetFilters}>Xóa bộ lọc</Button>}
           />
         </Card>
       </div>
@@ -363,10 +605,10 @@ export const ExplorePlacesPage: React.FC = () => {
   const renderErrorState = () => (
     <div className={styles.stateGrid}>
       <div className={styles.stateLeftCenter}>
-        <Card title="Da co loi xay ra">
+        <Card title="Đã có lỗi xảy ra">
           <ErrorBanner
-            message="Khong the tai duoc danh sach dia diem tu he thong."
-            onRetry={() => { setPage(0); void loadPlaces(0); }}
+            message={errorMessage ?? "Không thể tải được danh sách địa điểm từ hệ thống."}
+            onRetry={() => { void triggerSearch(0); }}
           />
         </Card>
       </div>
@@ -394,18 +636,18 @@ export const ExplorePlacesPage: React.FC = () => {
         {viewState === "empty" ? renderEmptyState() : null}
         {viewState === "error" ? renderErrorState() : null}
 
-        {viewState !== "loading" || filteredPlaces.length > 0 ? (
+        {viewState === "default" || (viewState === "loading" && filteredPlaces.length > 0) ? (
           <div className={styles.splitLayout}>
             <aside className={styles.leftColumn}>
               <Card variant="ticket" className={styles.headerCard}>
                 <div className={styles.headerRow}>
-                  <KineticTitle text="Kham pha dia diem" size="card" variant="pop" />
+                  <KineticTitle text="Khám phá địa điểm" size="card" variant="pop" />
                   <Badge variant="sticker" icon="explore">
-                    Toan quoc
+                    Toàn quốc
                   </Badge>
                 </div>
                 <p className={styles.headerText}>
-                  Tim dia danh, an uong va vui choi tren khap ca nuoc.
+                  Tìm địa danh, ăn uống và vui chơi trên khắp cả nước.
                 </p>
               </Card>
 
@@ -418,7 +660,7 @@ export const ExplorePlacesPage: React.FC = () => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
-                      placeholder="Tim ten dia diem..."
+                      placeholder="Tìm tên địa điểm..."
                       className={styles.searchInput}
                     />
                     {searchQuery ? (
@@ -432,18 +674,142 @@ export const ExplorePlacesPage: React.FC = () => {
                   </button>
                 </div>
 
-                <div className={styles.filterRow}>
-                  <div className={styles.filterInputWrap}>
-                    <span className={`material-symbols-outlined ${styles.filterIcon}`}>location_city</span>
-                    <input
-                      type="text"
-                      value={provinceQuery}
-                      onChange={(e) => setProvinceQuery(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
-                      placeholder="Tinh/Thanh pho..."
-                      className={styles.filterInput}
-                    />
+                <div className={styles.filterRow} ref={locationComboboxRef}>
+                  <div className={styles.locationCombobox}>
+                    <div className={styles.filterInputWrap}>
+                      <span className={`material-symbols-outlined ${styles.filterIcon}`}>location_city</span>
+                      <input
+                        type="text"
+                        value={provinceQuery}
+                        onChange={(e) => {
+                          setProvinceQuery(e.target.value);
+                          setActiveLocationField("province");
+                          if (cityQuery && CITY_OPTIONS_BY_PROVINCE[e.target.value.trim()]?.includes(cityQuery) !== true) {
+                            setCityQuery("");
+                          }
+                        }}
+                        onFocus={() => setActiveLocationField("province")}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            if (filteredProvinceOptions.length > 0) {
+                              setProvinceQuery(filteredProvinceOptions[0]);
+                            }
+                            setActiveLocationField(null);
+                            handleSearch();
+                          }
+                          if (e.key === "Escape") {
+                            setActiveLocationField(null);
+                          }
+                        }}
+                        placeholder="Tìm tỉnh..."
+                        className={styles.filterInput}
+                      />
+                      {provinceQuery ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProvinceQuery("");
+                            setCityQuery("");
+                            setActiveLocationField("province");
+                          }}
+                          className={styles.clearLocation}
+                        >
+                          <span className="material-symbols-outlined">close</span>
+                        </button>
+                      ) : null}
+                    </div>
+
+                    {activeLocationField === "province" ? (
+                      <div className={styles.locationDropdown}>
+                        {filteredProvinceOptions.length > 0 ? (
+                          filteredProvinceOptions.map((option) => (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => {
+                                setProvinceQuery(option);
+                                if (cityQuery && CITY_OPTIONS_BY_PROVINCE[option]?.includes(cityQuery) !== true) {
+                                  setCityQuery("");
+                                }
+                                setActiveLocationField(null);
+                              }}
+                              className={styles.locationOption}
+                            >
+                              {option}
+                            </button>
+                          ))
+                        ) : (
+                          <div className={styles.locationOption}>Không tìm thấy tỉnh phù hợp</div>
+                        )}
+                      </div>
+                    ) : null}
                   </div>
+
+                  <div className={styles.locationCombobox}>
+                    <div className={styles.filterInputWrap}>
+                      <span className={`material-symbols-outlined ${styles.filterIcon}`}>apartment</span>
+                      <input
+                        type="text"
+                        value={cityQuery}
+                        onChange={(e) => {
+                          setCityQuery(e.target.value);
+                          setActiveLocationField("city");
+                        }}
+                        onFocus={() => setActiveLocationField("city")}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            if (filteredCityOptions.length > 0) {
+                              setCityQuery(filteredCityOptions[0]);
+                            }
+                            setActiveLocationField(null);
+                            handleSearch();
+                          }
+                          if (e.key === "Escape") {
+                            setActiveLocationField(null);
+                          }
+                        }}
+                        placeholder={provinceQuery ? `Tìm thành phố trong ${provinceQuery}...` : "Tìm thành phố..."}
+                        className={styles.filterInput}
+                      />
+                      {cityQuery ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCityQuery("");
+                            setActiveLocationField("city");
+                          }}
+                          className={styles.clearLocation}
+                        >
+                          <span className="material-symbols-outlined">close</span>
+                        </button>
+                      ) : null}
+                    </div>
+
+                    {activeLocationField === "city" ? (
+                      <div className={styles.locationDropdown}>
+                        {filteredCityOptions.length > 0 ? (
+                          filteredCityOptions.map((option) => (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => {
+                                setCityQuery(option);
+                                setActiveLocationField(null);
+                              }}
+                              className={styles.locationOption}
+                            >
+                              {option}
+                            </button>
+                          ))
+                        ) : (
+                          <div className={styles.locationOption}>
+                            {provinceQuery ? "Không có thành phố phù hợp trong tỉnh đã chọn" : "Không tìm thấy thành phố phù hợp"}
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+
                   <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
@@ -457,14 +823,14 @@ export const ExplorePlacesPage: React.FC = () => {
               </Card>
 
               <div className={styles.categoryRow}>
-                {categories.map((category) => {
-                  const meta = categoryMeta[category];
+                {placeGroups.map((group) => {
+                  const meta = placeGroupMeta[group];
                   return (
                     <button
-                      key={category}
+                      key={group}
                       type="button"
-                      onClick={() => handleCategorySelect(category)}
-                      className={`${styles.categoryChip} ${activeCategory === category ? styles.categoryChipActive : ""}`}
+                      onClick={() => handleGroupSelect(group)}
+                      className={`${styles.categoryChip} ${activeGroup === group ? styles.categoryChipActive : ""}`}
                     >
                       <span className="material-symbols-outlined">{meta.icon}</span>
                       <span>{meta.label}</span>
@@ -476,12 +842,12 @@ export const ExplorePlacesPage: React.FC = () => {
               <div className={styles.filterSummary}>
                 <span className={styles.resultCount}>
                   {totalElements > 0
-                    ? `Tim thay ${totalElements} dia diem`
-                    : "Dang tai..."}
+                    ? `Tìm thấy ${totalElements} địa điểm`
+                    : "Đang tải..."}
                 </span>
-                {activeCategory !== "Tat ca" || searchQuery || provinceQuery ? (
+                {activeGroup !== "ATTRACTION" || searchQuery || provinceQuery || cityQuery ? (
                   <button type="button" onClick={resetFilters} className={styles.clearFilters}>
-                    Xoa bo loc
+                    Xóa bộ lọc
                   </button>
                 ) : null}
               </div>
@@ -497,7 +863,7 @@ export const ExplorePlacesPage: React.FC = () => {
                     const isSaved = savedPlaceIds.includes(place.id);
                     const isMenuOpen = addToTripMenuOpen === place.id;
                     const meta = categoryMeta[place.category];
-                    const verified = place.verificationStatus === "VERIFIED" || place.verificationStatus === "PARTIALLY_VERIFIED";
+                    const verified = place.verificationStatus === "VERIFIED" || place.verificationStatus === "AUTO_APPROVED";
 
                     return (
                       <div
@@ -596,7 +962,7 @@ export const ExplorePlacesPage: React.FC = () => {
                                 className={`${styles.smallAction} ${styles.smallActionPrimary}`}
                               >
                                 <span className="material-symbols-outlined">add_circle</span>
-                                Them vao trip
+                                Thêm vào trip
                               </button>
                               <button
                                 type="button"
@@ -608,7 +974,7 @@ export const ExplorePlacesPage: React.FC = () => {
                                 className={styles.smallAction}
                               >
                                 <span className="material-symbols-outlined">info</span>
-                                Chi tiet
+                                Chi tiết
                               </button>
                             </div>
                             {place.costLabel ? (
@@ -620,16 +986,16 @@ export const ExplorePlacesPage: React.FC = () => {
 
                             {isMenuOpen ? (
                               <div className={styles.tripMenu}>
-                                <div className={styles.tripMenuHeader}>Chon trip</div>
+                                <div className={styles.tripMenuHeader}>Chọn trip</div>
                                 <button
                                   type="button"
                                   className={styles.tripMenuItem}
                                   onClick={() => {
-                                    setToastMessage(`Da them "${place.name}" vao trip.`);
+                                    setToastMessage(`Đã thêm "${place.name}" vào trip.`);
                                     setAddToTripMenuOpen(null);
                                   }}
                                 >
-                                  + Tao trip moi
+                                  + Tạo trip mới
                                 </button>
                               </div>
                             ) : null}
@@ -671,17 +1037,20 @@ export const ExplorePlacesPage: React.FC = () => {
                 <ExploreLeafletMap
                   markers={safeMarkers}
                   onMarkerClick={handleMarkerClick}
+                  onViewportChange={handleViewportChange}
+                  center={mapCenter}
                   selectedMarkerId={selectedPlaceId}
+                  fitBoundsKey={`${activeGroup}|${appliedProvinceQuery}|${appliedCityQuery}|${searchQuery}|${page}`}
                 />
 
                 <Card variant="mapOverlay" className={styles.mapCountOverlay}>
                   <div className={styles.mapCountContent}>
                     <span className="material-symbols-outlined">travel_explore</span>
-                    <span>{mapMarkers.length} markers</span>
-                    {provinceQuery ? (
+                    <span>{mapMarkers.length} điểm</span>
+                    {provinceQuery || cityQuery ? (
                       <>
                         <span className={styles.mapCountDot}>•</span>
-                        <span>{provinceQuery}</span>
+                        <span>{[provinceQuery, cityQuery].filter(Boolean).join(" · ")}</span>
                       </>
                     ) : null}
                   </div>
@@ -734,7 +1103,7 @@ export const ExplorePlacesPage: React.FC = () => {
                         >
                           favorite
                         </span>
-                        Luu
+                        Lưu
                       </button>
                       <button
                         type="button"
@@ -742,7 +1111,7 @@ export const ExplorePlacesPage: React.FC = () => {
                         className={`${styles.overlayAction} ${styles.overlayActionPrimary}`}
                       >
                         <span className="material-symbols-outlined">add_circle</span>
-                        Them
+                        Thêm
                       </button>
                       <button
                         type="button"
@@ -802,7 +1171,7 @@ export const ExplorePlacesPage: React.FC = () => {
                             <span className="material-symbols-outlined">star</span>
                             Danh gia
                           </span>
-                          <strong>{activePlaceObj.rating > 0 ? `${activePlaceObj.rating.toFixed(1)} / 5` : "Chua co"}</strong>
+                          <strong>{activePlaceObj.rating > 0 ? `${activePlaceObj.rating.toFixed(1)} / 5` : "Chưa có"}</strong>
                         </div>
                         <div className={styles.drawerStatRow}>
                           <span>
@@ -843,7 +1212,7 @@ export const ExplorePlacesPage: React.FC = () => {
                         style={{ flex: 1 }}
                         onClick={() => handleSaveToggle(activePlaceObj.id)}
                       >
-                        {savedPlaceIds.includes(activePlaceObj.id) ? "Da luu" : "Luu"}
+                        {savedPlaceIds.includes(activePlaceObj.id) ? "Đã lưu" : "Lưu"}
                       </Button>
                       <Button
                         variant="primary"
@@ -851,7 +1220,7 @@ export const ExplorePlacesPage: React.FC = () => {
                         style={{ flex: 1.3 }}
                         onClick={() => setAddToTripMenuOpen(activePlaceObj.id)}
                       >
-                        Them vao trip
+                        Thêm vào trip
                       </Button>
                     </div>
                   </div>

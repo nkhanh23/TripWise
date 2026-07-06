@@ -4,6 +4,7 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./SavedTripsPage.module.css";
+import { AppContent } from "@/components/layout/AppContent";
 import { Button, Card, EmptyState, ErrorMessage, Loading, Badge } from "@/components/ui";
 import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
@@ -250,7 +251,7 @@ export function SavedTripsPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <AppContent variant="standard" className={`${styles.page} px-0 pt-0 sm:px-0 lg:px-0`}>
       <FilmGrainOverlay />
       
       <div className={styles.shell}>
@@ -559,6 +560,6 @@ export function SavedTripsPage() {
         )}
 
       </div>
-    </div>
+    </AppContent>
   );
 }

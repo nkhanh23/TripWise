@@ -56,6 +56,7 @@ public class PlaceController {
     public ResponseEntity<ApiResponse<PageResponse<PlaceResponse>>> searchPlaces(
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String city,
+            @RequestParam(required = false) String placeType,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) List<String> tags,
             @RequestParam(required = false) String priceLevel,
@@ -70,6 +71,7 @@ public class PlaceController {
         SearchPlacesQuery query = SearchPlacesQuery.builder()
                 .province(province)
                 .city(city)
+                .placeType(placeType)
                 .categoryId(categoryId)
                 .tags(tags)
                 .priceLevel(priceLevel)
@@ -110,6 +112,7 @@ public class PlaceController {
             Double maxLongitude,
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String city,
+            @RequestParam(required = false) String placeType,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) List<String> tags,
             @RequestParam(required = false) String verificationStatus,
@@ -126,6 +129,7 @@ public class PlaceController {
                 .maxLongitude(maxLongitude)
                 .province(province)
                 .city(city)
+                .placeType(placeType)
                 .categoryId(categoryId)
                 .tags(tags)
                 .verificationStatus(verificationStatus)

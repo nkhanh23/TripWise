@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -31,13 +32,53 @@ import java.util.stream.Collectors;
 @Repository
 public class PlacePublicReadJdbcRepository {
 
+    private static final int DEFAULT_PUBLIC_MIN_QUALITY_SCORE = 80;
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("name", "rating", "popularityScore");
+    private static final Set<String> ALLOWED_PLACE_TYPES = Set.of(
+            "ATTRACTION",
+            "FOOD",
+            "HOTEL",
+            "SERVICE"
+    );
     private static final Set<String> ALLOWED_VERIFICATION_STATUSES = Set.of(
-            "UNVERIFIED",
-            "PARTIALLY_VERIFIED",
-            "VERIFIED",
-            "REJECTED",
-            "NEEDS_REVIEW"
+            "AUTO_APPROVED",
+            "VERIFIED"
+    );
+    private static final Set<String> HO_CHI_MINH_ALIAS_KEYS = Set.of(
+            "ho chi minh",
+            "ho chi minh city",
+            "thanh pho ho chi minh",
+            "tp ho chi minh",
+            "tphcm",
+            "hcm",
+            "saigon",
+            "sai gon",
+            "thu duc",
+            "thanh pho thu duc"
+    );
+    private static final List<String> HO_CHI_MINH_CITY_DB_ALIASES_CANONICAL = List.of(
+            "h\u1ed3 ch\u00ed minh",
+            "ho chi minh",
+            "ho chi minh city",
+            "th\u00e0nh ph\u1ed1 h\u1ed3 ch\u00ed minh",
+            "th\u1ee7 \u0111\u1ee9c",
+            "th\u00e0nh ph\u1ed1 th\u1ee7 \u0111\u1ee9c"
+    );
+    private static final List<String> HO_CHI_MINH_PROVINCE_DB_ALIASES_CANONICAL = List.of(
+            "h\u1ed3 ch\u00ed minh",
+            "th\u00e0nh ph\u1ed1 h\u1ed3 ch\u00ed minh"
+    );
+    private static final List<String> HO_CHI_MINH_CITY_DB_ALIASES = List.of(
+            "hồ chí minh",
+            "ho chi minh",
+            "ho chi minh city",
+            "thành phố hồ chí minh",
+            "thủ đức",
+            "thành phố thủ đức"
+    );
+    private static final List<String> HO_CHI_MINH_PROVINCE_DB_ALIASES = List.of(
+            "hồ chí minh",
+            "thành phố hồ chí minh"
     );
 
     private final ObjectProvider<NamedParameterJdbcTemplate> jdbcTemplateProvider;
@@ -101,17 +142,21 @@ public class PlacePublicReadJdbcRepository {
 
     public List<PlaceMapMarkerResponse> findMapMarkers(MapPlacesQuery query) {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = jdbcTemplate();
+        LocationAliasFilter provinceFilter = resolveProvinceFilter(query.getProvince());
+        LocationAliasFilter cityFilter = resolveCityFilter(query.getCity());
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("minLatitude", query.getMinLatitude())
                 .addValue("minLongitude", query.getMinLongitude())
                 .addValue("maxLatitude", query.getMaxLatitude())
                 .addValue("maxLongitude", query.getMaxLongitude())
-                .addValue("province", normalizeText(query.getProvince()), Types.VARCHAR)
-                .addValue("city", normalizeText(query.getCity()), Types.VARCHAR)
+                .addValue("placeType", normalizePlaceType(query.getPlaceType()), Types.VARCHAR)
                 .addValue("categoryId", query.getCategoryId(), Types.BIGINT)
                 .addValue("verificationStatus", normalizeVerificationStatus(query.getVerificationStatus()), Types.VARCHAR)
                 .addValue("minRating", query.getMinRating(), Types.NUMERIC)
+                .addValue("minQualityScore", DEFAULT_PUBLIC_MIN_QUALITY_SCORE)
                 .addValue("limit", query.getLimit());
+        bindLocationFilter(parameters, "province", provinceFilter);
+        bindLocationFilter(parameters, "city", cityFilter);
 
         List<String> normalizedTags = normalizeTags(query.getTags());
 
@@ -139,14 +184,26 @@ public class PlacePublicReadJdbcRepository {
                     LIMIT 1
                 ) img ON TRUE
                 WHERE p.is_active = TRUE
+                  AND p.is_recommendable = TRUE
+                  AND (
+                      p.place_type = COALESCE(:placeType, 'ATTRACTION')
+                      OR (
+                          p.place_type IS NULL
+                          AND COALESCE(:placeType, 'ATTRACTION') = 'ATTRACTION'
+                      )
+                  )
+                  AND p.verification_status IN ('AUTO_APPROVED', 'VERIFIED')
+                  AND (
+                      COALESCE(p.quality_score, 0) >= :minQualityScore
+                      OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
+                  )
                   AND p.location::geometry && ST_MakeEnvelope(:minLongitude, :minLatitude, :maxLongitude, :maxLatitude, 4326)
-                  AND (:province IS NULL OR LOWER(COALESCE(p.province, '')) = LOWER(:province))
-                  AND (:city IS NULL OR LOWER(COALESCE(p.city, '')) = LOWER(:city))
                   AND (:categoryId IS NULL OR p.category_id = :categoryId)
-                  AND ((:verificationStatus IS NULL AND p.verification_status <> 'REJECTED')
-                       OR (:verificationStatus IS NOT NULL AND p.verification_status = :verificationStatus))
+                  AND (:verificationStatus IS NULL OR p.verification_status = :verificationStatus)
                   AND (:minRating IS NULL OR p.rating >= :minRating)
                   """);
+        appendLocationFilter(sql, "province", provinceFilter);
+        appendLocationFilter(sql, "city", cityFilter);
 
         if (!normalizedTags.isEmpty()) {
             parameters.addValue("tags", normalizedTags);
@@ -205,6 +262,7 @@ public class PlacePublicReadJdbcRepository {
                 ) img ON TRUE
                 WHERE p.id = :placeId
                   AND p.is_active = TRUE
+                  AND p.is_recommendable = TRUE
                   AND p.verification_status <> 'REJECTED'
                 LIMIT 1
                 """;
@@ -225,13 +283,17 @@ public class PlacePublicReadJdbcRepository {
     }
 
     private QueryParts buildSearchQueryParts(SearchPlacesQuery query) {
+        LocationAliasFilter provinceFilter = resolveProvinceFilter(query.getProvince());
+        LocationAliasFilter cityFilter = resolveCityFilter(query.getCity());
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("province", normalizeText(query.getProvince()), Types.VARCHAR)
-                .addValue("city", normalizeText(query.getCity()), Types.VARCHAR)
+                .addValue("placeType", normalizePlaceType(query.getPlaceType()), Types.VARCHAR)
                 .addValue("categoryId", query.getCategoryId(), Types.BIGINT)
                 .addValue("priceLevel", normalizeText(query.getPriceLevel()), Types.VARCHAR)
                 .addValue("verificationStatus", normalizeVerificationStatus(query.getVerificationStatus()), Types.VARCHAR)
-                .addValue("minRating", query.getMinRating(), Types.NUMERIC);
+                .addValue("minRating", query.getMinRating(), Types.NUMERIC)
+                .addValue("minQualityScore", DEFAULT_PUBLIC_MIN_QUALITY_SCORE);
+        bindLocationFilter(parameters, "province", provinceFilter);
+        bindLocationFilter(parameters, "city", cityFilter);
 
         List<String> normalizedTags = normalizeTags(query.getTags());
         if (!normalizedTags.isEmpty()) {
@@ -255,14 +317,26 @@ public class PlacePublicReadJdbcRepository {
                     LIMIT 1
                 ) img ON TRUE
                 WHERE p.is_active = TRUE
-                  AND (:province IS NULL OR LOWER(COALESCE(p.province, '')) = LOWER(:province))
-                  AND (:city IS NULL OR LOWER(COALESCE(p.city, '')) = LOWER(:city))
+                  AND p.is_recommendable = TRUE
+                  AND (
+                      p.place_type = COALESCE(:placeType, 'ATTRACTION')
+                      OR (
+                          p.place_type IS NULL
+                          AND COALESCE(:placeType, 'ATTRACTION') = 'ATTRACTION'
+                      )
+                  )
+                  AND p.verification_status IN ('AUTO_APPROVED', 'VERIFIED')
+                  AND (
+                      COALESCE(p.quality_score, 0) >= :minQualityScore
+                      OR (p.source = 'MANUAL_SEED' AND p.is_recommendable = TRUE)
+                  )
                   AND (:categoryId IS NULL OR p.category_id = :categoryId)
                   AND (:priceLevel IS NULL OR LOWER(COALESCE(p.price_level, '')) = LOWER(:priceLevel))
-                  AND ((:verificationStatus IS NULL AND p.verification_status <> 'REJECTED')
-                       OR (:verificationStatus IS NOT NULL AND p.verification_status = :verificationStatus))
+                  AND (:verificationStatus IS NULL OR p.verification_status = :verificationStatus)
                   AND (:minRating IS NULL OR p.rating >= :minRating)
                   """);
+        appendLocationFilter(where, "province", provinceFilter);
+        appendLocationFilter(where, "city", cityFilter);
 
         if (!normalizedTags.isEmpty()) {
             where.append("""
@@ -367,12 +441,108 @@ public class PlacePublicReadJdbcRepository {
         return value.trim();
     }
 
+    private LocationAliasFilter resolveProvinceFilter(String value) {
+        String normalized = normalizeText(value);
+        if (normalized == null) {
+            return LocationAliasFilter.empty();
+        }
+        if (isHoChiMinhAlias(normalized)) {
+            return new LocationAliasFilter(
+                    normalized,
+                    HO_CHI_MINH_PROVINCE_DB_ALIASES_CANONICAL,
+                    HO_CHI_MINH_CITY_DB_ALIASES_CANONICAL
+            );
+        }
+        return LocationAliasFilter.exact(normalized);
+    }
+
+    private LocationAliasFilter resolveCityFilter(String value) {
+        String normalized = normalizeText(value);
+        if (normalized == null) {
+            return LocationAliasFilter.empty();
+        }
+        if (isHoChiMinhAlias(normalized)) {
+            return new LocationAliasFilter(
+                    normalized,
+                    HO_CHI_MINH_CITY_DB_ALIASES_CANONICAL,
+                    HO_CHI_MINH_PROVINCE_DB_ALIASES_CANONICAL
+            );
+        }
+        return LocationAliasFilter.exact(normalized);
+    }
+
+    private boolean isHoChiMinhAlias(String value) {
+        return HO_CHI_MINH_ALIAS_KEYS.contains(normalizeAliasKey(value));
+    }
+
+    private String normalizeAliasKey(String value) {
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .replace('đ', 'd')
+                .replace('Đ', 'D')
+                .toLowerCase(Locale.ROOT);
+        return normalized.replaceAll("[^a-z0-9]+", " ").trim().replaceAll("\\s+", " ");
+    }
+
+    private void bindLocationFilter(
+            MapSqlParameterSource parameters,
+            String parameterName,
+            LocationAliasFilter filter
+    ) {
+        parameters.addValue(parameterName, filter.exactValue(), Types.VARCHAR);
+        parameters.addValue(parameterName + "Aliases", filter.aliases());
+        parameters.addValue(parameterName + "RelatedAliases", filter.relatedAliases());
+    }
+
+    private void appendLocationFilter(
+            StringBuilder sql,
+            String parameterName,
+            LocationAliasFilter filter
+    ) {
+        if (filter.isEmpty()) {
+            sql.append(" AND (:").append(parameterName).append(" IS NULL)");
+            return;
+        }
+
+        if (filter.hasAliases()) {
+            String fieldName = parameterName.equals("province") ? "province" : "city";
+            String relatedFieldName = parameterName.equals("province") ? "city" : "province";
+            sql.append(" AND (")
+                    .append("LOWER(COALESCE(p.")
+                    .append(fieldName)
+                    .append(", '')) IN (:")
+                    .append(parameterName)
+                    .append("Aliases)")
+                    .append(" OR LOWER(COALESCE(p.")
+                    .append(relatedFieldName)
+                    .append(", '')) IN (:")
+                    .append(parameterName)
+                    .append("RelatedAliases))");
+            return;
+        }
+
+        String fieldName = parameterName.equals("province") ? "province" : "city";
+        sql.append(" AND LOWER(COALESCE(p.")
+                .append(fieldName)
+                .append(", '')) = LOWER(:")
+                .append(parameterName)
+                .append(")");
+    }
+
     private String normalizeVerificationStatus(String value) {
         if (value == null || value.isBlank()) {
             return null;
         }
         String normalized = value.trim().toUpperCase(Locale.ROOT);
         return ALLOWED_VERIFICATION_STATUSES.contains(normalized) ? normalized : null;
+    }
+
+    private String normalizePlaceType(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String normalized = value.trim().toUpperCase(Locale.ROOT);
+        return ALLOWED_PLACE_TYPES.contains(normalized) ? normalized : null;
     }
 
     private PlaceResponse mapPlaceResponse(ResultSet resultSet, int rowNum) throws SQLException {
@@ -447,5 +617,27 @@ public class PlacePublicReadJdbcRepository {
     }
 
     private record QueryParts(String fromAndWhereClause, MapSqlParameterSource parameters) {
+    }
+
+    private record LocationAliasFilter(
+            String exactValue,
+            List<String> aliases,
+            List<String> relatedAliases
+    ) {
+        private static LocationAliasFilter empty() {
+            return new LocationAliasFilter(null, List.of(), List.of());
+        }
+
+        private static LocationAliasFilter exact(String exactValue) {
+            return new LocationAliasFilter(exactValue, List.of(), List.of());
+        }
+
+        private boolean isEmpty() {
+            return exactValue == null;
+        }
+
+        private boolean hasAliases() {
+            return !aliases.isEmpty();
+        }
     }
 }

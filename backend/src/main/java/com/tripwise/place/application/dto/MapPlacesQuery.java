@@ -20,6 +20,7 @@ public class MapPlacesQuery {
     private Double maxLongitude;
     private String province;
     private String city;
+    private String placeType;
     private Long categoryId;
     private List<String> tags;
     private String verificationStatus;

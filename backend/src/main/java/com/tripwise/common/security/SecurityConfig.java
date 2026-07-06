@@ -46,6 +46,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> {
                 auth.requestMatchers("/api/v1/health").permitAll();
                 auth.requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/refresh", "/api/v1/auth/logout").permitAll();
+                auth.requestMatchers("/api/v1/admin/login").permitAll();
+                auth.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
                 if (appSecurityProperties.isDocsPublicEnabled()) {
                     auth.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
                 }

@@ -111,7 +111,7 @@ tripwise:
   itinerary:
     places-per-day: ${TRIPWISE_ITINERARY_PLACES_PER_DAY:4}
   place-import:
-    enabled: ${TRIPWISE_PLACE_IMPORT_ENABLED:false}
+    enabled: ${TRIPWISE_PLACE_IMPORT_ENABLED:true}
     source-name: ${TRIPWISE_PLACE_IMPORT_SOURCE:OSM_GEOFABRIK}
     input-file: ${TRIPWISE_PLACE_IMPORT_INPUT_FILE:}
     import-mode: ${TRIPWISE_PLACE_IMPORT_MODE:FULL_SYNC}

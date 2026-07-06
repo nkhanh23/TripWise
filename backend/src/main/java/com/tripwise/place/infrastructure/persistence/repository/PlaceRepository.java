@@ -28,7 +28,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
             FROM Place p
             WHERE p.id = :placeId
               AND p.isActive = true
-              AND p.isVerified = true
+              AND p.isRecommendable = true
             """)
     Optional<Place> findPublicDetailById(Long placeId);
 
@@ -61,7 +61,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
                    ) AS distanceMeters
             FROM places p
             WHERE p.is_active = true
-              AND p.is_verified = true
+              AND p.is_recommendable = true
               AND (:categoryId IS NULL OR p.category_id = :categoryId)
               AND ST_DWithin(
                   p.location,

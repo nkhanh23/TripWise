@@ -15,6 +15,8 @@ public interface PlaceMapper {
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "categorySlug", source = "category.slug")
     @Mapping(target = "verified", source = "isVerified")
+    @Mapping(target = "verificationStatus",
+            expression = "java(place.getVerificationStatus() == null ? null : place.getVerificationStatus().name())")
     @Mapping(target = "latitude", expression = "java(extractLatitude(place.getLocation()))")
     @Mapping(target = "longitude", expression = "java(extractLongitude(place.getLocation()))")
     PlaceResponse toResponse(Place place);
@@ -23,6 +25,8 @@ public interface PlaceMapper {
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "categorySlug", source = "category.slug")
     @Mapping(target = "verified", source = "isVerified")
+    @Mapping(target = "verificationStatus",
+            expression = "java(place.getVerificationStatus() == null ? null : place.getVerificationStatus().name())")
     @Mapping(target = "latitude", expression = "java(extractLatitude(place.getLocation()))")
     @Mapping(target = "longitude", expression = "java(extractLongitude(place.getLocation()))")
     PlaceDetailResponse toDetailResponse(Place place);

@@ -1,9 +1,15 @@
 import { httpClient } from "./http-client";
-import { type PageResponse, type PlaceMapMarkerResponse, type PlaceResponse } from "./contracts";
+import {
+  type AdminPlaceReviewResponse,
+  type PageResponse,
+  type PlaceMapMarkerResponse,
+  type PlaceResponse
+} from "./contracts";
 
 export interface SearchPlacesParams {
   province?: string;
   city?: string;
+  placeType?: string;
   categoryId?: number;
   tags?: string[];
   priceLevel?: string;
@@ -23,11 +29,26 @@ export interface MapMarkersParams {
   maxLng: number;
   province?: string;
   city?: string;
+  placeType?: string;
   categoryId?: number;
   tags?: string[];
   verificationStatus?: string;
   minRating?: number;
   limit?: number;
+}
+
+export interface AdminPlaceReviewParams {
+  source?: string;
+  province?: string;
+  city?: string;
+  placeType?: string;
+  verificationStatus?: string;
+  recommendable?: boolean;
+  keyword?: string;
+  sortBy?: string;
+  sortDirection?: string;
+  page?: number;
+  size?: number;
 }
 
 export async function searchPlaces(
@@ -37,6 +58,7 @@ export async function searchPlaces(
 
   if (params.province) searchParams.append("province", params.province);
   if (params.city) searchParams.append("city", params.city);
+  if (params.placeType) searchParams.append("placeType", params.placeType);
   if (params.categoryId !== undefined)
     searchParams.append("categoryId", params.categoryId.toString());
   if (params.tags && params.tags.length > 0) {
@@ -71,6 +93,7 @@ export async function getPlaceMapMarkers(
   searchParams.append("maxLng", params.maxLng.toString());
   if (params.province) searchParams.append("province", params.province);
   if (params.city) searchParams.append("city", params.city);
+  if (params.placeType) searchParams.append("placeType", params.placeType);
   if (params.categoryId !== undefined)
     searchParams.append("categoryId", params.categoryId.toString());
   if (params.tags && params.tags.length > 0) {
@@ -87,4 +110,31 @@ export async function getPlaceMapMarkers(
 
 export async function getPlaceDetail(id: number): Promise<PlaceResponse> {
   return httpClient.get<PlaceResponse>(`/places/${id}`);
+}
+
+export async function searchAdminPlacesForReview(
+  params: AdminPlaceReviewParams = {}
+): Promise<PageResponse<AdminPlaceReviewResponse>> {
+  const searchParams = new URLSearchParams();
+
+  if (params.source) searchParams.append("source", params.source);
+  if (params.province) searchParams.append("province", params.province);
+  if (params.city) searchParams.append("city", params.city);
+  if (params.placeType) searchParams.append("placeType", params.placeType);
+  if (params.verificationStatus) searchParams.append("verificationStatus", params.verificationStatus);
+  if (params.recommendable !== undefined) {
+    searchParams.append("recommendable", String(params.recommendable));
+  }
+  if (params.keyword) searchParams.append("keyword", params.keyword);
+  if (params.sortBy) searchParams.append("sortBy", params.sortBy);
+  if (params.sortDirection) searchParams.append("sortDirection", params.sortDirection);
+  if (params.page !== undefined) searchParams.append("page", params.page.toString());
+  if (params.size !== undefined) searchParams.append("size", params.size.toString());
+
+  const queryString = searchParams.toString();
+  const url = queryString ? `/admin/places/review?${queryString}` : "/admin/places/review";
+
+  return httpClient.get<PageResponse<AdminPlaceReviewResponse>>(url, {
+    requiresAuth: true
+  });
 }

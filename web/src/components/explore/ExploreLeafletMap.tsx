@@ -5,9 +5,11 @@ import {
   MapContainer,
   Marker,
   TileLayer,
-  useMap
+  useMap,
+  useMapEvents,
 } from "react-leaflet";
 import L, { type DivIcon } from "leaflet";
+import type { ExploreViewportBounds } from "./explore-map-query";
 import styles from "./ExploreLeafletMap.module.css";
 
 export type MapMarkerData = {
@@ -22,8 +24,10 @@ export type MapMarkerData = {
 type ExploreLeafletMapProps = {
   markers: MapMarkerData[];
   onMarkerClick?: (id: string) => void;
+  onViewportChange?: (bounds: ExploreViewportBounds) => void;
   center?: [number, number];
   selectedMarkerId?: string | null;
+  fitBoundsKey?: string;
 };
 
 const DEFAULT_CENTER: [number, number] = [12.2415, 109.1960];
@@ -48,10 +52,12 @@ function MapController({
   markers,
   defaultCenter,
   selectedMarkerId,
+  fitBoundsKey,
 }: {
   markers: MapMarkerData[];
   defaultCenter: [number, number];
   selectedMarkerId?: string | null;
+  fitBoundsKey: string;
 }) {
   const map = useMap();
   const hasAppliedInitialBounds = useRef(false);
@@ -61,6 +67,11 @@ function MapController({
   const previousMarkerPositionKey = useRef<string | null>(null);
 
   useEffect(() => {
+    hasAppliedInitialBounds.current = false;
+    previousMarkerPositionKey.current = null;
+  }, [fitBoundsKey]);
+
+  useEffect(() => {
     if (previousMarkerPositionKey.current === markerPositionKey) {
       return;
     }
@@ -68,8 +79,13 @@ function MapController({
     previousMarkerPositionKey.current = markerPositionKey;
 
     if (markers.length === 0) {
-      map.setView(defaultCenter, 13);
-      hasAppliedInitialBounds.current = false;
+      if (!hasAppliedInitialBounds.current) {
+        map.setView(defaultCenter, 13);
+      }
+      return;
+    }
+
+    if (hasAppliedInitialBounds.current) {
       return;
     }
 
@@ -103,11 +119,45 @@ function MapController({
   return null;
 }
 
+function ViewportListener({
+  onViewportChange,
+}: {
+  onViewportChange?: (bounds: ExploreViewportBounds) => void;
+}) {
+  const map = useMap();
+  const emitViewportBounds = useMemo(() => () => {
+    if (!onViewportChange) {
+      return;
+    }
+
+    const bounds = map.getBounds();
+    onViewportChange({
+      minLat: bounds.getSouth(),
+      minLng: bounds.getWest(),
+      maxLat: bounds.getNorth(),
+      maxLng: bounds.getEast(),
+    });
+  }, [map, onViewportChange]);
+
+  useMapEvents({
+    moveend: emitViewportBounds,
+    zoomend: emitViewportBounds,
+  });
+
+  useEffect(() => {
+    emitViewportBounds();
+  }, [emitViewportBounds]);
+
+  return null;
+}
+
 export function ExploreLeafletMap({
   markers,
   onMarkerClick,
+  onViewportChange,
   center = DEFAULT_CENTER,
   selectedMarkerId = null,
+  fitBoundsKey = "default",
 }: ExploreLeafletMapProps) {
 
   const createMarkerIcon = useMemo(() => {
@@ -145,7 +195,9 @@ export function ExploreLeafletMap({
           markers={markers}
           defaultCenter={center}
           selectedMarkerId={selectedMarkerId}
+          fitBoundsKey={fitBoundsKey}
         />
+        <ViewportListener onViewportChange={onViewportChange} />
 
         {markers.map((m) => (
           <Marker

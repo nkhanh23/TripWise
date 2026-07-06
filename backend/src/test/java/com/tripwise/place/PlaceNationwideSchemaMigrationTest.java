@@ -26,9 +26,13 @@ class PlaceNationwideSchemaMigrationTest extends BaseIntegrationTest {
                       'district',
                       'ward',
                       'display_address',
+                      'is_recommendable',
                       'source',
                       'source_external_id',
                       'raw_tags',
+                      'quality_score',
+                      'reject_reason',
+                      'place_type',
                       'verification_status',
                       'last_synced_at',
                       'stale_at'
@@ -41,9 +45,13 @@ class PlaceNationwideSchemaMigrationTest extends BaseIntegrationTest {
         assertThat(placeColumns).containsExactly(
                 "district",
                 "display_address",
+                "is_recommendable",
                 "last_synced_at",
+                "place_type",
                 "province",
+                "quality_score",
                 "raw_tags",
+                "reject_reason",
                 "source",
                 "source_external_id",
                 "stale_at",
@@ -58,6 +66,7 @@ class PlaceNationwideSchemaMigrationTest extends BaseIntegrationTest {
                 WHERE city = 'Nha Trang'
                   AND source = 'MANUAL_SEED'
                   AND verification_status = 'VERIFIED'
+                  AND is_recommendable = TRUE
                   AND raw_tags = '{}'::jsonb
                 """,
                 Integer.class
@@ -104,6 +113,7 @@ class PlaceNationwideSchemaMigrationTest extends BaseIntegrationTest {
                   AND indexname IN (
                       'uq_places_source_external_id',
                       'idx_places_province_city_category_active',
+                      'idx_places_recommendable_active',
                       'idx_places_verification_status_active',
                       'idx_places_source_last_synced_at',
                       'idx_places_raw_tags_gin',
@@ -119,6 +129,7 @@ class PlaceNationwideSchemaMigrationTest extends BaseIntegrationTest {
                 "idx_place_popularity_metrics_popularity",
                 "idx_places_province_city_category_active",
                 "idx_places_raw_tags_gin",
+                "idx_places_recommendable_active",
                 "idx_places_source_last_synced_at",
                 "idx_places_verification_status_active",
                 "uq_place_images_primary_per_place",

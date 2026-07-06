@@ -1,4 +1,6 @@
 .page {
+  height: 100%;
+  min-height: 0;
   padding-top: 16px;
   padding-bottom: 24px;
   padding-left: 28px;
@@ -8,7 +10,8 @@
 .shell {
   position: relative;
   display: flex;
-  min-height: 100%;
+  min-height: 0;
+  flex: 1;
   flex-direction: column;
 }
 
@@ -70,7 +73,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
-  height: calc(100vh - 180px);
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -129,7 +133,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
-  height: calc(100vh - 180px);
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   padding-bottom: 4px;
 }
@@ -145,7 +150,7 @@
 
 .rightColumn {
   position: relative;
-  min-height: 420px;
+  min-height: 0;
 }
 
 .headerCard {
@@ -248,9 +253,10 @@
 
 .categoryRow {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 8px;
+  overflow-x: visible;
+  padding-bottom: 0;
 }
 
 .categoryChip {
@@ -539,6 +545,28 @@
   flex-wrap: wrap;
 }
 
+.scopeSelect {
+  min-width: 110px;
+  cursor: pointer;
+  border: 2px solid var(--stroke-ink);
+  border-radius: 10px;
+  background: var(--color-surface);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  outline: none;
+}
+
+.scopeSelect:focus {
+  border-color: var(--color-brand);
+}
+
+.locationCombobox {
+  position: relative;
+  flex: 1;
+  min-width: 190px;
+}
+
 .filterInputWrap {
   position: relative;
   display: flex;
@@ -560,7 +588,7 @@
   border: 2px solid var(--stroke-ink);
   border-radius: 10px;
   background: var(--color-surface);
-  padding: 8px 12px 8px 34px;
+  padding: 8px 36px 8px 34px;
   font-size: 12px;
   font-weight: 700;
   outline: none;
@@ -568,6 +596,51 @@
 
 .filterInput:focus {
   border-color: var(--color-brand);
+}
+
+.clearLocation {
+  position: absolute;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.clearLocation :global(.material-symbols-outlined) {
+  font-size: 16px;
+}
+
+.locationDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 120;
+  overflow: hidden;
+  border: 2px solid var(--stroke-ink);
+  border-radius: 12px;
+  background: var(--color-panel);
+  box-shadow: var(--shadow-card);
+}
+
+.locationOption {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.locationOption:hover {
+  background: var(--color-yellow-soft);
 }
 
 .sortSelect {

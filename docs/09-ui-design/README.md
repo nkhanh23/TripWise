@@ -19,15 +19,15 @@ Mục tiêu của `09-ui-design/`:
 4. Đọc `screen-list.md` để biết phạm vi màn hình, dữ liệu hiển thị và hành động người dùng.
 5. Đọc lần lượt các spec còn lại như `landing-page-spec.md`, `dashboard-spec.md`, `ai-trip-planner-spec.md`.
 6. Đọc `component-spec.md` để biết component nào cần tạo và behavior mong đợi.
-7. Đọc `implementation-notes.md` để hiểu hướng triển khai frontend hiện tại bằng Next.js.
+7. Đọc `implementation-notes.md` để hiểu hướng triển khai frontend hiện tại bằng ReactJS + Vite.
 
 ## Quy ước hiện tại cho frontend web
 
-- Codebase production web đã chốt dùng `Next.js` trong thư mục `web/`.
-- App Router là hướng triển khai mặc định cho code mới.
-- Mock UI React/Vite cũ không bị xóa; nó được lưu tại `web-archive-vite-ui/`.
-- `web-archive-vite-ui/` là nguồn tham chiếu visual chính trong các phase UI tiếp theo.
-- Không copy nguyên xi code Vite cũ sang production app, nhưng giao diện mới phải bám sát layout, mood, component hierarchy và trải nghiệm đã chốt từ mock UI.
+- Codebase production web đã chốt dùng `ReactJS + Vite` trong thư mục `web/`.
+- React Router là hướng triển khai mặc định cho code mới.
+- `web-archive-vite-ui/` không còn chỉ là mock reference; đây là nguồn UI gốc đã được migrate vào `web/`.
+- `web-archive-vite-ui/` vẫn được giữ lại như archive/reference để so đối chiếu giao diện khi cần.
+- Giao diện production phải tiếp tục bám sát layout, mood, component hierarchy và trải nghiệm đã chốt từ archive UI.
 
 ## Thứ tự đọc khuyến nghị
 
@@ -63,4 +63,4 @@ Mục tiêu của `09-ui-design/`:
 2. `ui-layout-*.md`
 3. `trip-detail-map-spec.md`
 4. `component-spec.md`
-5. Quy ước Next.js + `web-archive-vite-ui/` trong file này và `implementation-notes.md`
+5. Quy ước ReactJS + Vite + `web-archive-vite-ui/` trong file này và `implementation-notes.md`

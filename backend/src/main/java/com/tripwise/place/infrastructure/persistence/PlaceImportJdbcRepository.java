@@ -1,22 +1,69 @@
 package com.tripwise.place.infrastructure.persistence;
 
+import com.tripwise.place.application.dto.PlaceModerationBackfillScope;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
+import java.text.Normalizer;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 @Repository
 public class PlaceImportJdbcRepository {
+
+    private static final Set<String> ALLOWED_PLACE_TYPES = Set.of(
+            "ATTRACTION",
+            "FOOD",
+            "HOTEL",
+            "SERVICE",
+            "REJECTED"
+    );
+    private static final Set<String> ALLOWED_VERIFICATION_STATUSES = Set.of(
+            "PENDING",
+            "AUTO_APPROVED",
+            "VERIFIED",
+            "REJECTED"
+    );
+    private static final Set<String> HO_CHI_MINH_ALIAS_KEYS = Set.of(
+            "ho chi minh",
+            "ho chi minh city",
+            "thanh pho ho chi minh",
+            "tp ho chi minh",
+            "tphcm",
+            "hcm",
+            "saigon",
+            "sai gon",
+            "thu duc",
+            "thanh pho thu duc"
+    );
+    private static final List<String> HO_CHI_MINH_CITY_DB_ALIASES = List.of(
+            "hồ chí minh",
+            "ho chi minh",
+            "ho chi minh city",
+            "thành phố hồ chí minh",
+            "thủ đức",
+            "thành phố thủ đức"
+    );
+    private static final List<String> HO_CHI_MINH_PROVINCE_DB_ALIASES = List.of(
+            "hồ chí minh",
+            "thành phố hồ chí minh"
+    );
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final JdbcTemplate jdbcTemplate;
@@ -194,7 +241,11 @@ public class PlaceImportJdbcRepository {
                       ST_GeogFromText(CONCAT('SRID=4326;POINT(', :longitude, ' ', :latitude, ')')),
                       :dedupeRadiusMeters
                   )
-                ORDER BY CASE WHEN verification_status = 'VERIFIED' THEN 0 ELSE 1 END,
+                ORDER BY CASE
+                             WHEN verification_status = 'VERIFIED' THEN 0
+                             WHEN verification_status = 'AUTO_APPROVED' THEN 1
+                             ELSE 2
+                         END,
                          ST_Distance(
                              location,
                              ST_GeogFromText(CONCAT('SRID=4326;POINT(', :longitude, ' ', :latitude, ')'))
@@ -216,6 +267,135 @@ public class PlaceImportJdbcRepository {
         return rows.stream().findFirst();
     }
 
+    public long countPlacesForModerationBackfill(PlaceModerationBackfillScope scope) {
+        QueryParts queryParts = buildModerationBackfillQueryParts(scope);
+        String sql = "SELECT COUNT(*) " + queryParts.fromAndWhereClause();
+
+        Long count = namedParameterJdbcTemplate.queryForObject(sql, queryParts.parameters(), Long.class);
+        return count == null ? 0 : count;
+    }
+
+    public void scanSourcePlacesForModerationBackfill(
+            PlaceModerationBackfillScope scope,
+            int scanLimit,
+            Consumer<BackfillSourcePlaceRecord> consumer
+    ) {
+        StringBuilder sql = new StringBuilder("""
+                SELECT p.id,
+                       p.source,
+                       p.source_external_id,
+                       p.name,
+                       p.province,
+                       p.city,
+                       p.district,
+                       p.ward,
+                       p.display_address,
+                       ST_Y(p.location::geometry) AS latitude,
+                       ST_X(p.location::geometry) AS longitude,
+                       p.description,
+                       p.duration_minutes,
+                       p.indoor,
+                       p.is_active,
+                       p.price_level,
+                       p.verification_status,
+                       p.place_type,
+                       p.quality_score,
+                       p.is_recommendable,
+                       p.reject_reason,
+                       p.raw_tags::text AS raw_tags_json,
+                       ARRAY(
+                           SELECT pt.tag
+                           FROM place_tags pt
+                           WHERE pt.place_id = p.id
+                           ORDER BY pt.tag
+                       ) AS tags
+                """);
+        QueryParts queryParts = buildModerationBackfillQueryParts(scope);
+        sql.append(queryParts.fromAndWhereClause())
+                .append(" ORDER BY p.id");
+
+        MapSqlParameterSource parameters = queryParts.parameters();
+        if (scanLimit > 0) {
+            sql.append(" LIMIT :scanLimit");
+            parameters.addValue("scanLimit", scanLimit);
+        }
+
+        namedParameterJdbcTemplate.query(
+                sql.toString(),
+                parameters,
+                (RowCallbackHandler) resultSet -> consumer.accept(mapBackfillSourcePlace(resultSet))
+        );
+    }
+
+    private QueryParts buildModerationBackfillQueryParts(PlaceModerationBackfillScope scope) {
+        LocationAliasFilter provinceFilter = resolveProvinceFilter(scope.province());
+        LocationAliasFilter cityFilter = resolveCityFilter(scope.city());
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("sourceName", normalizeText(scope.sourceName()), Types.VARCHAR)
+                .addValue("currentPlaceType", normalizePlaceType(scope.currentPlaceType()), Types.VARCHAR)
+                .addValue(
+                        "currentVerificationStatus",
+                        normalizeVerificationStatus(scope.currentVerificationStatus()),
+                        Types.VARCHAR
+                )
+                .addValue("currentRecommendable", scope.currentRecommendable(), Types.BOOLEAN);
+        bindLocationFilter(parameters, "province", provinceFilter);
+        bindLocationFilter(parameters, "city", cityFilter);
+
+        StringBuilder where = new StringBuilder("""
+                FROM places p
+                WHERE p.source = :sourceName
+                  AND (:currentPlaceType IS NULL OR p.place_type = :currentPlaceType)
+                  AND (:currentVerificationStatus IS NULL OR p.verification_status = :currentVerificationStatus)
+                  AND (:currentRecommendable IS NULL OR p.is_recommendable = :currentRecommendable)
+                """);
+        appendLocationFilter(where, "province", provinceFilter);
+        appendLocationFilter(where, "city", cityFilter);
+
+        return new QueryParts(where.toString(), parameters);
+    }
+
+    public int updatePlaceModerationBatch(String sourceName, List<ModerationUpdateCommand> updates) {
+        if (updates == null || updates.isEmpty()) {
+            return 0;
+        }
+
+        String sql = """
+                UPDATE places
+                SET place_type = :placeType,
+                    quality_score = :qualityScore,
+                    verification_status = :verificationStatus,
+                    is_recommendable = :recommendable,
+                    reject_reason = :rejectReason,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = :placeId
+                  AND source = :sourceName
+                """;
+
+        List<Map<String, Object>> batchValues = updates.stream()
+                .map(update -> {
+                    Map<String, Object> values = new java.util.LinkedHashMap<>();
+                    values.put("placeId", update.placeId());
+                    values.put("placeType", update.placeType());
+                    values.put("qualityScore", update.qualityScore());
+                    values.put("verificationStatus", update.verificationStatus());
+                    values.put("recommendable", update.recommendable());
+                    values.put("rejectReason", update.rejectReason());
+                    values.put("sourceName", sourceName);
+                    return values;
+                })
+                .toList();
+
+        SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(batchValues.toArray());
+        int[] rows = namedParameterJdbcTemplate.batchUpdate(sql, batch);
+        int updatedCount = 0;
+        for (int rowCount : rows) {
+            updatedCount += rowCount;
+        }
+        return updatedCount;
+    }
+
     public long insertPlace(
             String sourceName,
             String sourceExternalId,
@@ -235,6 +415,10 @@ public class PlaceImportJdbcRepository {
             boolean active,
             boolean verified,
             String priceLevel,
+            String placeType,
+            int qualityScore,
+            boolean recommendable,
+            String rejectReason,
             String rawTagsJson,
             String verificationStatus,
             Instant syncedAt
@@ -256,6 +440,10 @@ public class PlaceImportJdbcRepository {
                     is_active,
                     is_verified,
                     price_level,
+                    place_type,
+                    quality_score,
+                    is_recommendable,
+                    reject_reason,
                     source,
                     source_external_id,
                     raw_tags,
@@ -281,6 +469,10 @@ public class PlaceImportJdbcRepository {
                     :active,
                     :verified,
                     :priceLevel,
+                    :placeType,
+                    :qualityScore,
+                    :recommendable,
+                    :rejectReason,
                     :sourceName,
                     :sourceExternalId,
                     CAST(:rawTagsJson AS jsonb),
@@ -310,6 +502,10 @@ public class PlaceImportJdbcRepository {
                 .addValue("active", active)
                 .addValue("verified", verified)
                 .addValue("priceLevel", priceLevel)
+                .addValue("placeType", placeType)
+                .addValue("qualityScore", qualityScore)
+                .addValue("recommendable", recommendable)
+                .addValue("rejectReason", rejectReason)
                 .addValue("sourceName", sourceName)
                 .addValue("sourceExternalId", sourceExternalId)
                 .addValue("rawTagsJson", rawTagsJson)
@@ -342,6 +538,10 @@ public class PlaceImportJdbcRepository {
             boolean active,
             boolean verified,
             String priceLevel,
+            String placeType,
+            int qualityScore,
+            boolean recommendable,
+            String rejectReason,
             String rawTagsJson,
             String verificationStatus,
             Instant syncedAt
@@ -363,6 +563,10 @@ public class PlaceImportJdbcRepository {
                     is_active = :active,
                     is_verified = :verified,
                     price_level = :priceLevel,
+                    place_type = :placeType,
+                    quality_score = :qualityScore,
+                    is_recommendable = :recommendable,
+                    reject_reason = :rejectReason,
                     source_external_id = :sourceExternalId,
                     raw_tags = CAST(:rawTagsJson AS jsonb),
                     verification_status = :verificationStatus,
@@ -390,6 +594,10 @@ public class PlaceImportJdbcRepository {
                 .addValue("active", active)
                 .addValue("verified", verified)
                 .addValue("priceLevel", priceLevel)
+                .addValue("placeType", placeType)
+                .addValue("qualityScore", qualityScore)
+                .addValue("recommendable", recommendable)
+                .addValue("rejectReason", rejectReason)
                 .addValue("sourceExternalId", sourceExternalId)
                 .addValue("rawTagsJson", rawTagsJson)
                 .addValue("verificationStatus", verificationStatus)
@@ -409,6 +617,10 @@ public class PlaceImportJdbcRepository {
             Boolean indoor,
             Boolean active,
             String priceLevel,
+            String placeType,
+            Integer qualityScore,
+            Boolean recommendable,
+            String rejectReason,
             String rawTagsJson,
             String verificationStatus,
             boolean verified,
@@ -446,9 +658,16 @@ public class PlaceImportJdbcRepository {
                         ELSE :verified
                     END,
                     price_level = COALESCE(price_level, :priceLevel),
+                    place_type = COALESCE(place_type, :placeType),
+                    quality_score = GREATEST(COALESCE(quality_score, 0), COALESCE(:qualityScore, 0)),
+                    is_recommendable = CASE
+                        WHEN is_recommendable = TRUE THEN TRUE
+                        ELSE COALESCE(:recommendable, FALSE)
+                    END,
+                    reject_reason = COALESCE(reject_reason, :rejectReason),
                     raw_tags = COALESCE(raw_tags, '{}'::jsonb) || CAST(:rawTagsJson AS jsonb),
                     verification_status = CASE
-                        WHEN verification_status = 'VERIFIED' THEN verification_status
+                        WHEN verification_status IN ('VERIFIED', 'AUTO_APPROVED') THEN verification_status
                         ELSE :verificationStatus
                     END,
                     last_synced_at = :syncedAt,
@@ -471,6 +690,10 @@ public class PlaceImportJdbcRepository {
                 .addValue("active", active)
                 .addValue("verified", verified)
                 .addValue("priceLevel", priceLevel)
+                .addValue("placeType", placeType)
+                .addValue("qualityScore", qualityScore)
+                .addValue("recommendable", recommendable)
+                .addValue("rejectReason", rejectReason)
                 .addValue("rawTagsJson", rawTagsJson)
                 .addValue("verificationStatus", verificationStatus)
                 .addValue("syncedAt", Timestamp.from(syncedAt)));
@@ -554,6 +777,54 @@ public class PlaceImportJdbcRepository {
         );
     }
 
+    private BackfillSourcePlaceRecord mapBackfillSourcePlace(ResultSet resultSet) throws SQLException {
+        return new BackfillSourcePlaceRecord(
+                resultSet.getLong("id"),
+                resultSet.getString("source"),
+                resultSet.getString("source_external_id"),
+                resultSet.getString("name"),
+                resultSet.getString("province"),
+                resultSet.getString("city"),
+                resultSet.getString("district"),
+                resultSet.getString("ward"),
+                resultSet.getString("display_address"),
+                resultSet.getObject("latitude", Double.class),
+                resultSet.getObject("longitude", Double.class),
+                resultSet.getString("description"),
+                resultSet.getObject("duration_minutes", Integer.class),
+                resultSet.getObject("indoor", Boolean.class),
+                resultSet.getObject("is_active", Boolean.class),
+                resultSet.getString("price_level"),
+                resultSet.getString("verification_status"),
+                resultSet.getString("place_type"),
+                resultSet.getObject("quality_score", Integer.class),
+                resultSet.getObject("is_recommendable", Boolean.class),
+                resultSet.getString("reject_reason"),
+                resultSet.getString("raw_tags_json"),
+                toTagSet(resultSet)
+        );
+    }
+
+    private Set<String> toTagSet(ResultSet resultSet) throws SQLException {
+        java.sql.Array sqlArray = resultSet.getArray("tags");
+        if (sqlArray == null) {
+            return Set.of();
+        }
+
+        Object arrayObject = sqlArray.getArray();
+        if (!(arrayObject instanceof String[] tags) || tags.length == 0) {
+            return Set.of();
+        }
+
+        LinkedHashSet<String> values = new LinkedHashSet<>();
+        for (String tag : tags) {
+            if (tag != null && !tag.isBlank()) {
+                values.add(tag);
+            }
+        }
+        return values;
+    }
+
     public record ExistingPlaceRecord(
             long id,
             String source,
@@ -561,5 +832,178 @@ public class PlaceImportJdbcRepository {
             String verificationStatus,
             boolean verified
     ) {
+    }
+
+    public record BackfillSourcePlaceRecord(
+            long id,
+            String source,
+            String sourceExternalId,
+            String name,
+            String province,
+            String city,
+            String district,
+            String ward,
+            String displayAddress,
+            Double latitude,
+            Double longitude,
+            String description,
+            Integer durationMinutes,
+            Boolean indoor,
+            Boolean active,
+            String priceLevel,
+            String verificationStatus,
+            String currentPlaceType,
+            Integer currentQualityScore,
+            Boolean currentRecommendable,
+            String currentRejectReason,
+            String rawTagsJson,
+            Set<String> tags
+    ) {
+    }
+
+    public record ModerationUpdateCommand(
+            long placeId,
+            String placeType,
+            int qualityScore,
+            String verificationStatus,
+            boolean recommendable,
+            String rejectReason
+    ) {
+    }
+
+    private String normalizeText(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
+    }
+
+    private String normalizePlaceType(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String normalized = value.trim().toUpperCase(Locale.ROOT);
+        return ALLOWED_PLACE_TYPES.contains(normalized) ? normalized : null;
+    }
+
+    private String normalizeVerificationStatus(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String normalized = value.trim().toUpperCase(Locale.ROOT);
+        return ALLOWED_VERIFICATION_STATUSES.contains(normalized) ? normalized : null;
+    }
+
+    private LocationAliasFilter resolveProvinceFilter(String value) {
+        String normalized = normalizeText(value);
+        if (normalized == null) {
+            return LocationAliasFilter.empty();
+        }
+        if (isHoChiMinhAlias(normalized)) {
+            return new LocationAliasFilter(
+                    normalized,
+                    HO_CHI_MINH_PROVINCE_DB_ALIASES,
+                    HO_CHI_MINH_CITY_DB_ALIASES
+            );
+        }
+        return LocationAliasFilter.exact(normalized);
+    }
+
+    private LocationAliasFilter resolveCityFilter(String value) {
+        String normalized = normalizeText(value);
+        if (normalized == null) {
+            return LocationAliasFilter.empty();
+        }
+        if (isHoChiMinhAlias(normalized)) {
+            return new LocationAliasFilter(
+                    normalized,
+                    HO_CHI_MINH_CITY_DB_ALIASES,
+                    HO_CHI_MINH_PROVINCE_DB_ALIASES
+            );
+        }
+        return LocationAliasFilter.exact(normalized);
+    }
+
+    private boolean isHoChiMinhAlias(String value) {
+        return HO_CHI_MINH_ALIAS_KEYS.contains(normalizeAliasKey(value));
+    }
+
+    private String normalizeAliasKey(String value) {
+        String normalized = Normalizer.normalize(value, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .replace('đ', 'd')
+                .replace('Đ', 'D')
+                .toLowerCase(Locale.ROOT);
+        return normalized.replaceAll("[^a-z0-9]+", " ").trim().replaceAll("\\s+", " ");
+    }
+
+    private void bindLocationFilter(
+            MapSqlParameterSource parameters,
+            String parameterName,
+            LocationAliasFilter filter
+    ) {
+        parameters.addValue(parameterName, filter.exactValue(), Types.VARCHAR);
+        parameters.addValue(parameterName + "Aliases", filter.aliases());
+        parameters.addValue(parameterName + "RelatedAliases", filter.relatedAliases());
+    }
+
+    private void appendLocationFilter(
+            StringBuilder sql,
+            String parameterName,
+            LocationAliasFilter filter
+    ) {
+        if (filter.isEmpty()) {
+            sql.append(" AND (:").append(parameterName).append(" IS NULL)");
+            return;
+        }
+
+        if (filter.hasAliases()) {
+            String fieldName = parameterName.equals("province") ? "province" : "city";
+            String relatedFieldName = parameterName.equals("province") ? "city" : "province";
+            sql.append(" AND (")
+                    .append("LOWER(COALESCE(p.")
+                    .append(fieldName)
+                    .append(", '')) IN (:")
+                    .append(parameterName)
+                    .append("Aliases)")
+                    .append(" OR LOWER(COALESCE(p.")
+                    .append(relatedFieldName)
+                    .append(", '')) IN (:")
+                    .append(parameterName)
+                    .append("RelatedAliases))");
+            return;
+        }
+
+        String fieldName = parameterName.equals("province") ? "province" : "city";
+        sql.append(" AND LOWER(COALESCE(p.")
+                .append(fieldName)
+                .append(", '')) = LOWER(:")
+                .append(parameterName)
+                .append(")");
+    }
+
+    private record QueryParts(String fromAndWhereClause, MapSqlParameterSource parameters) {
+    }
+
+    private record LocationAliasFilter(
+            String exactValue,
+            List<String> aliases,
+            List<String> relatedAliases
+    ) {
+        private static LocationAliasFilter empty() {
+            return new LocationAliasFilter(null, List.of(), List.of());
+        }
+
+        private static LocationAliasFilter exact(String exactValue) {
+            return new LocationAliasFilter(exactValue, List.of(), List.of());
+        }
+
+        private boolean isEmpty() {
+            return exactValue == null;
+        }
+
+        private boolean hasAliases() {
+            return !aliases.isEmpty();
+        }
     }
 }

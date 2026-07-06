@@ -215,6 +215,19 @@ Nếu không có, ghi: Không có.
 
 Cách kiểm tra thủ công hoặc tự động.
 
+### Scalability check
+
+AI phải ghi rõ implementation hiện tại có an toàn cho dữ liệu lớn / traffic cao không, bao gồm nếu liên quan:
+
+- Có pagination/filter/sort chưa?
+- Có nguy cơ query toàn bảng không?
+- Có nguy cơ N+1 query không?
+- Có cần index mới không?
+- Có cần cache/rate limit/idempotency không?
+- Payload response có quá lớn không?
+- External API call có timeout/fallback/cost control chưa?
+- Bottleneck còn lại là gì?
+
 ### Test result
 
 Ghi rõ test đã chạy và kết quả.
@@ -309,21 +322,38 @@ cd backend
 ./mvnw test
 ```
 
-## 16. Quy tắc thiết kế cho hệ thống nhiều người dùng
+## 16. Quy tắc thiết kế cho hệ thống nhiều người dùng / hàng triệu người dùng
 
-AI phải thiết kế code theo hướng có thể mở rộng:
+AI phải luôn thiết kế và code theo giả định dự án có thể mở rộng lên hàng triệu người dùng.
 
-- Không query toàn bộ bảng nếu dữ liệu có thể lớn
-- List API phải có pagination/filter/sort nếu phù hợp
-- Tránh N+1 query
-- Chú ý index database, unique constraint, foreign key
-- External API phải có timeout và error handling
-- Dữ liệu gọi lặp lại nhiều lần nên cân nhắc cache nếu phase yêu cầu
-- Không thêm cache ngoài scope nếu chưa được yêu cầu
-- Không đưa logic nặng vào controller
-- Transaction boundary phải rõ ràng
-- Không thiết kế làm cản trở việc thêm metrics, tracing, monitoring sau này
-- Với API tốn chi phí như Gemini/trip generation, phải cân nhắc rate limit/cache khi đến đúng phase
+Điều này KHÔNG có nghĩa là được tự ý thêm microservices, Kafka, Kubernetes, Elasticsearch, sharding hoặc kiến trúc phức tạp ngoài scope.  
+Điều này có nghĩa là mọi implementation phải tránh tạo ra nút thắt cổ chai khiến hệ thống khó scale trong tương lai.
+
+Bắt buộc tuân thủ:
+
+- Backend phải stateless, không lưu session hoặc trạng thái request trong memory của server.
+- Không query toàn bộ bảng nếu dữ liệu có thể lớn.
+- List/search API phải có pagination/filter/sort khi dữ liệu có thể tăng.
+- Tránh N+1 query; dùng fetch strategy, projection DTO, batch query hoặc query tối ưu khi cần.
+- Khi thêm truy vấn thường xuyên dùng WHERE, JOIN, ORDER BY, unique lookup hoặc foreign key lookup, phải cân nhắc index phù hợp.
+- Truy vấn không gian phải dùng đúng PostGIS index, ví dụ GIST.
+- Không đưa logic nặng vào controller.
+- Business logic phải nằm trong application/domain layer.
+- Transaction boundary phải rõ ràng, không mở transaction quá rộng.
+- Không trả payload quá lớn cho frontend; dùng DTO gọn, pagination, projection, marker DTO riêng cho bản đồ nếu cần.
+- Không serve ảnh/file nặng trực tiếp từ Spring Boot; media phải đi theo hướng Object Storage + CDN khi đến đúng phase.
+- External API như Gemini, OSRM, Weather, Google Places phải có timeout, retry có giới hạn, fallback/circuit breaker khi phù hợp.
+- Endpoint tốn chi phí như trip generation/Gemini/route/weather phải cân nhắc rate limit, cache và idempotency khi đến đúng phase.
+- Dữ liệu gọi lặp lại nhiều lần nên cân nhắc Redis/PostgreSQL cache theo đúng scope phase.
+- Cache key phải có namespace dự án, ví dụ `tripwise:...`.
+- Cache phải có TTL hoặc chính sách invalidation rõ ràng.
+- Không cache dữ liệu nhạy cảm dạng plaintext như password, refresh token, access token hoặc API key.
+- Tác vụ dài như import dữ liệu địa điểm, enrich dữ liệu, xử lý ảnh, gửi email, tạo báo cáo, refresh cache phải được thiết kế để có thể chuyển sang async/queue sau này.
+- MVP ưu tiên Spring `@Async`, scheduler hoặc background job đơn giản nếu cần; không tự ý thêm RabbitMQ/Kafka nếu chưa được yêu cầu.
+- Không thiết kế làm cản trở metrics, tracing, correlation ID, structured logging sau này.
+- Luôn cân nhắc connection pool, query cost, cache hit rate, response size, external API cost và bottleneck khi code.
+- Nếu giải pháp scale tốt cần thay đổi kiến trúc lớn, AI phải báo trade-off và hỏi trước khi triển khai.
+- Không mặc định dùng microservices để scale. Dự án vẫn ưu tiên Modular Monolith cho MVP/trung hạn.
 
 ```
 

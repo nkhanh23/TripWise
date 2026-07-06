@@ -1,15 +1,15 @@
 .page {
-  min-height: 100vh;
+  min-height: 100%;
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.35), transparent 32%),
     linear-gradient(180deg, var(--color-canvas) 0%, var(--color-canvas-alt) 100%);
-  padding: 32px;
   font-family: var(--font-body);
 }
 
 .shell {
-  width: min(100%, 1280px);
-  margin: 0 auto;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
   gap: 24px;

@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OsmPlaceCategoryMapperTest {
 
-    private final OsmPlaceCategoryMapper mapper = new OsmPlaceCategoryMapper();
+    private final OsmPlaceCategoryMapper mapper = new OsmPlaceCategoryMapper(new com.tripwise.place.infrastructure.ingestion.OsmPlaceFilter());
 
     @Test
     void shouldPreferExplicitCategorySlug() {
