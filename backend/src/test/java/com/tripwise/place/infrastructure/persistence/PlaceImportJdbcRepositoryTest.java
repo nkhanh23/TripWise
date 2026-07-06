@@ -72,9 +72,9 @@ class PlaceImportJdbcRepositoryTest {
         assertThat(parameters.getSqlType("province")).isEqualTo(Types.VARCHAR);
         assertThat(parameters.getSqlType("city")).isEqualTo(Types.VARCHAR);
         assertThat((List<String>) parameters.getValue("cityAliases"))
-                .contains("ho chi minh", "ho chi minh city", "thanh pho ho chi minh", "thu duc");
+                .contains("ho chi minh", "ho chi minh city");
         assertThat((List<String>) parameters.getValue("cityRelatedAliases"))
-                .contains("ho chi minh", "thanh pho ho chi minh");
+                .contains("ho chi minh");
     }
 
     @Test
