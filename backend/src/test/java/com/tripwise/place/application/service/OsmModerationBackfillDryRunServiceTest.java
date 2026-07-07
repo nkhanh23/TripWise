@@ -159,6 +159,122 @@ class OsmModerationBackfillDryRunServiceTest {
     }
 
     @Test
+    void shouldBlockLodgingLikeFoodCandidateWithoutFoodCue() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository,
+                evaluator,
+                OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(700L, "food-lodging-1", "SnapStay Hoi An", Map.of("amenity", "cafe")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 20);
+
+        assertThat(report.wouldAutoApproved()).isZero();
+        assertThat(report.wouldPending()).isEqualTo(1);
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+            assertThat(record.promotionGuardReason()).contains("Lodging keyword");
+        });
+    }
+
+    @Test
+    void shouldBlockCinemaLikeFoodCandidateWithoutFoodCue() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository,
+                evaluator,
+                OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(701L, "food-cinema-1", "GenZ Cinema Bac Ninh", Map.of("amenity", "cafe")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 20);
+
+        assertThat(report.wouldAutoApproved()).isZero();
+        assertThat(report.wouldPending()).isEqualTo(1);
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+            assertThat(record.promotionGuardReason()).contains("Entertainment keyword");
+        });
+    }
+
+    @Test
+    void shouldBlockShopLikeFoodCandidateWithoutFoodCue() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository,
+                evaluator,
+                OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(702L, "food-shop-1", "Shop 34", Map.of("amenity", "cafe")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 20);
+
+        assertThat(report.wouldAutoApproved()).isZero();
+        assertThat(report.wouldPending()).isEqualTo(1);
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedVerificationStatus()).isEqualTo("PENDING");
+            assertThat(record.promotionGuardReason()).contains("Shop/store keyword");
+        });
+    }
+
+    @Test
+    void shouldNotBlanketBlockCoffeeShopWithFoodCue() {
+        PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
+        PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());
+        OsmModerationBackfillDryRunService service = new OsmModerationBackfillDryRunService(
+                repository,
+                evaluator,
+                OBJECT_MAPPER
+        );
+
+        when(repository.countPlacesForModerationBackfill(DEFAULT_SCOPE)).thenReturn(1L);
+        doAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            java.util.function.Consumer<PlaceImportJdbcRepository.BackfillSourcePlaceRecord> consumer =
+                    invocation.getArgument(2, java.util.function.Consumer.class);
+            consumer.accept(record(703L, "food-coffee-shop-1", "The Coffee Shop", Map.of("amenity", "cafe")));
+            return null;
+        }).when(repository).scanSourcePlacesForModerationBackfill(eq(DEFAULT_SCOPE), eq(0), any());
+
+        var report = service.runDryRun(DEFAULT_SCOPE, 0, 20);
+
+        assertThat(report.wouldAutoApproved()).isEqualTo(1);
+        assertThat(report.wouldPending()).isZero();
+        assertThat(report.evaluatedRecords()).singleElement().satisfies(record -> {
+            assertThat(record.predictedVerificationStatus()).isEqualTo("AUTO_APPROVED");
+            assertThat(record.promotionGuardReason()).isNull();
+        });
+    }
+
+    @Test
     void shouldBlockBusinessLikeFoodCandidatesButKeepLegitimateFoodNames() {
         PlaceImportJdbcRepository repository = mock(PlaceImportJdbcRepository.class);
         PlaceModerationEvaluator evaluator = new PlaceModerationEvaluator(new OsmPlaceFilter());

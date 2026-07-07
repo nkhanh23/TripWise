@@ -100,6 +100,59 @@ public class OsmModerationBackfillDryRunService {
             "quan cafe",
             "quan ca phe"
     );
+    private static final Set<String> FOOD_NAME_CUES = Set.of(
+            "restaurant",
+            "cafe",
+            "coffee",
+            "ca phe",
+            "tea",
+            "tra sua",
+            "sua chua",
+            "food",
+            "fast food",
+            "food court",
+            "bistro",
+            "bakery",
+            "bbq",
+            "grill",
+            "pho",
+            "bun",
+            "com",
+            "banh",
+            "lau",
+            "nuong",
+            "noodle",
+            "an vat",
+            "snack",
+            "meal",
+            "breakfast",
+            "brunch",
+            "lunch",
+            "dinner",
+            "ice cream"
+    );
+    private static final Set<String> FOOD_LODGING_KEYWORDS = Set.of(
+            "hotel",
+            "hostel",
+            "homestay",
+            "stay",
+            "villa",
+            "apartment",
+            "resort",
+            "farmstay"
+    );
+    private static final Set<String> FOOD_ENTERTAINMENT_KEYWORDS = Set.of(
+            "cinema",
+            "karaoke",
+            "dance",
+            "milonga",
+            "gym",
+            "massage"
+    );
+    private static final Set<String> FOOD_SHOP_KEYWORDS = Set.of(
+            "shop",
+            "store"
+    );
     private static final TypeReference<Map<String, String>> RAW_TAGS_TYPE = new TypeReference<>() {
     };
 
@@ -408,6 +461,36 @@ public class OsmModerationBackfillDryRunService {
             return "Non-food retail keyword in FOOD name: " + retailKeyword;
         }
 
+        String lodgingKeyword = findLodgingKeyword(normalizedName);
+        if (lodgingKeyword != null && !hasFoodCue(normalizedName)) {
+            return "Lodging keyword in FOOD name: " + lodgingKeyword;
+        }
+
+        String entertainmentKeyword = firstMatchingKeyword(normalizedName, FOOD_ENTERTAINMENT_KEYWORDS);
+        if (entertainmentKeyword != null && !hasFoodCue(normalizedName)) {
+            return "Entertainment keyword in FOOD name: " + entertainmentKeyword;
+        }
+
+        String shopKeyword = firstMatchingKeyword(normalizedName, FOOD_SHOP_KEYWORDS);
+        if (shopKeyword != null && !hasFoodCue(normalizedName)) {
+            return "Shop/store keyword in FOOD name: " + shopKeyword;
+        }
+
+        return null;
+    }
+
+    private boolean hasFoodCue(String normalizedName) {
+        return firstMatchingKeyword(normalizedName, FOOD_NAME_CUES) != null;
+    }
+
+    private String findLodgingKeyword(String normalizedName) {
+        String keyword = firstMatchingKeyword(normalizedName, FOOD_LODGING_KEYWORDS);
+        if (keyword != null) {
+            return keyword;
+        }
+        if (normalizedName.contains("stay")) {
+            return "stay";
+        }
         return null;
     }
 
