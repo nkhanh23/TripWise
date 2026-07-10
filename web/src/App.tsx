@@ -19,6 +19,8 @@ import { TripDetailPage } from "@/pages/TripDetailPage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { AdminDashboardPage } from "@/pages/AdminDashboardPage";
 import { AdminPlacesReviewPage } from "@/pages/AdminPlacesReviewPage";
+import { AdminStagingModerationPage } from "@/pages/AdminStagingModerationPage";
+import { AdminCityPipelinePage } from "@/pages/AdminCityPipelinePage";
 
 function PublicLayout() {
   return (
@@ -74,6 +76,8 @@ export default function App() {
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
       <Route path="/admin/places-review" element={<AdminPlacesReviewPage />} />
+      <Route path="/admin/staging-moderation" element={<AdminStagingModerationPage />} />
+      <Route path="/admin/place-pipelines" element={<AdminCityPipelinePage />} />
       <Route path="/trip/:id" element={<LegacyTripRedirect />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

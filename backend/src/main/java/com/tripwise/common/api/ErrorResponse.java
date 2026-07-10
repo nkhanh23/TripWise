@@ -22,6 +22,7 @@ public class ErrorResponse {
     private String errorCode;
     private String correlationId;
     private List<ValidationError> details;
+    private Object detailsData;
 
     @Data
     @AllArgsConstructor

@@ -17,6 +17,7 @@ export interface ErrorResponse {
   errorCode?: string;
   correlationId?: string;
   details?: ValidationErrorDetail[];
+  detailsData?: any;
 }
 
 export interface LoginRequest {
@@ -91,6 +92,66 @@ export interface PlaceMapMarkerResponse {
   popularityScore?: number;
   latitude: number;
   longitude: number;
+}
+
+export interface StagingPlaceResponse {
+  id: number;
+  importRunId?: number;
+  name: string;
+  placeTypeDraft?: string;
+  latitude?: number;
+  longitude?: number;
+  region?: string;
+  locality?: string;
+  address?: string;
+  source?: string;
+  sourcePlaceId?: string;
+  dedupStatus?: string;
+  coordinateStatus?: string;
+  validationStatus?: string;
+  moderationStatus?: string;
+  needsAdminReview?: boolean;
+  applied?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CategoryResponse {
+  sourceCategoryId?: string;
+  categoryLabel?: string;
+  categoryPath?: string;
+  isPrimary?: boolean;
+}
+
+export interface DedupCandidateResponse {
+  id: number;
+  existingPlaceId?: number;
+  matchedStagingPlaceId?: number;
+  matchType?: string;
+  matchConfidence?: string;
+  distanceMeters?: number;
+  nameSimilarity?: number;
+  categorySimilarity?: number;
+  evidence?: string;
+  decision?: string;
+  existingPlaceName?: string;
+  existingPlaceType?: string;
+  existingPlaceCity?: string;
+}
+
+export interface StagingPlaceDetailResponse {
+  stagingPlace?: StagingPlaceResponse;
+  categories?: CategoryResponse[];
+  candidates?: DedupCandidateResponse[];
+  existingPublicDuplicate?: {
+    existingPublicType: "PLACE" | "HOTEL";
+    existingPublicId: number;
+    existingName: string;
+    existingCity?: string;
+    existingProvince?: string;
+    existingSource: string;
+    existingSourcePlaceId: string;
+  };
 }
 
 export interface AdminPlaceReviewResponse {
@@ -214,6 +275,43 @@ export interface TripDetailResponse {
   status: string;
   aiMetadata?: Record<string, unknown>;
   itinerary: ItineraryResponse;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CityPipelineRunRequest {
+  source: "FOURSQUARE_OS_PLACES" | "OSM_GEOFABRIK";
+  province: string;
+  city: string;
+  inputPath?: string;
+  importRunId?: number;
+  releaseDate?: string;
+  bbox?: string;
+  limit?: number;
+  step?: "all" | "import" | "dedup" | "moderation" | "report";
+  dryRun?: boolean;
+  confirmWriteStaging?: boolean;
+}
+
+export interface CityPipelineRunResponse {
+  id: number;
+  source: string;
+  province: string;
+  city: string;
+  inputPath?: string;
+  importRunId?: number;
+  releaseDate?: string;
+  bbox?: string;
+  limitCount?: number;
+  step: string;
+  dryRun: boolean;
+  confirmWriteStaging: boolean;
+  status: string;
+  summaryText?: string;
+  adminQueueUrl?: string;
+  startedAt?: string;
+  finishedAt?: string;
+  errorMessage?: string;
   createdAt?: string;
   updatedAt?: string;
 }

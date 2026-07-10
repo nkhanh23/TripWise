@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "C:\Users\PC\Documents\TripWise\backend\tools\run_city_place_pipeline.py", line 871, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\PC\Documents\TripWise\backend\tools\run_city_place_pipeline.py", line 368, in main
+    conn = open_connection()
+  File "C:\Users\PC\Documents\TripWise\backend\tools\run_city_place_pipeline.py", line 83, in open_connection
+    db_url, db_username, db_password = resolve_db_env()
+                                       ~~~~~~~~~~~~~~^^
+  File "C:\Users\PC\Documents\TripWise\backend\tools\run_city_place_pipeline.py", line 72, in resolve_db_env
+    raise RuntimeError("Missing DB_URL or SPRING_DATASOURCE_URL environment variable.")
+RuntimeError: Missing DB_URL or SPRING_DATASOURCE_URL environment variable.

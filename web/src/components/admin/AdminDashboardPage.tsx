@@ -46,10 +46,10 @@ const quickActions: QuickAction[] = [
     href: "/admin/places-review",
   },
   {
-    title: "Duyệt địa điểm",
-    description: "Điểm bắt đầu cho luồng editorial review thủ công của admin.",
+    title: "Staging Moderation",
+    description: "Duyệt staging PENDING_ADMIN_REVIEW records trước khi apply lên public DB (Batch 2B).",
     icon: "fact_check",
-    disabled: true,
+    href: "/admin/staging-moderation",
   },
   {
     title: "Quay về Explore",

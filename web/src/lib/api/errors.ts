@@ -6,6 +6,7 @@ export class ApiError extends Error {
   readonly errorCode?: string;
   readonly correlationId?: string;
   readonly details?: ErrorResponse["details"];
+  readonly detailsData?: any;
 
   constructor(payload: ErrorResponse) {
     super(payload.message);
@@ -15,6 +16,7 @@ export class ApiError extends Error {
     this.errorCode = payload.errorCode;
     this.correlationId = payload.correlationId;
     this.details = payload.details;
+    this.detailsData = payload.detailsData;
   }
 }
 

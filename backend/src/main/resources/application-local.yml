@@ -19,6 +19,8 @@ tripwise:
       allowed-origins:
         - http://localhost:5173
         - http://localhost:3000
+  place-import:
+    enabled: false
   gemini:
     api-key: ${GEMINI_API_KEY:your-gemini-api-key-here}
   osrm:

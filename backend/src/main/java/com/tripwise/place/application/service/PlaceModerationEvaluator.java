@@ -27,6 +27,17 @@ public class PlaceModerationEvaluator {
     }
 
     public PlaceModerationPreview evaluate(PlaceImportRecord record) {
+        return evaluateInternal(record);
+    }
+
+    public PlaceModerationPreview evaluate(PlaceImportRecord record, String source) {
+        if ("FOURSQUARE_OS_PLACES".equals(source)) {
+            return evaluateFoursquare(record);
+        }
+        return evaluateInternal(record);
+    }
+
+    private PlaceModerationPreview evaluateInternal(PlaceImportRecord record) {
         OsmPlaceFilterResult filterResult = osmPlaceFilter.filter(record);
         if (filterResult.isRejected()) {
             return new PlaceModerationPreview(
@@ -73,6 +84,55 @@ public class PlaceModerationEvaluator {
         }
 
         if (qualityScore >= 80 && filterResult.strongTourismSignal()) {
+            VerificationStatus promotedStatus = requestedStatus == VerificationStatus.VERIFIED
+                    ? VerificationStatus.VERIFIED
+                    : VerificationStatus.AUTO_APPROVED;
+            return preview(placeType, filterResult, promotedStatus, true, null);
+        }
+
+        return preview(placeType, filterResult, VerificationStatus.PENDING, false, null);
+    }
+
+    private PlaceModerationPreview evaluateFoursquare(PlaceImportRecord record) {
+        OsmPlaceFilterResult filterResult = osmPlaceFilter.filter(record);
+        if (filterResult.isRejected()) {
+            return new PlaceModerationPreview(
+                    PlaceType.REJECTED,
+                    null,
+                    0,
+                    0,
+                    0,
+                    false,
+                    VerificationStatus.REJECTED,
+                    false,
+                    filterResult.rejectReason(),
+                    null
+            );
+        }
+
+        int qualityScore = filterResult.qualityScore();
+        PlaceType placeType = PlaceType.valueOf(filterResult.placeType().name());
+        VerificationStatus requestedStatus = normalizeVerificationStatus(record.verificationStatus());
+
+        if (qualityScore < 50) {
+            return preview(
+                    placeType,
+                    filterResult,
+                    VerificationStatus.REJECTED,
+                    false,
+                    "Quality score below acceptance threshold: " + qualityScore
+            );
+        }
+
+        int threshold = switch (placeType) {
+            case ATTRACTION -> 80;
+            case FOOD -> 75;
+            case HOTEL -> 70;
+            case SERVICE -> 70;
+            default -> Integer.MAX_VALUE;
+        };
+
+        if (qualityScore >= threshold) {
             VerificationStatus promotedStatus = requestedStatus == VerificationStatus.VERIFIED
                     ? VerificationStatus.VERIFIED
                     : VerificationStatus.AUTO_APPROVED;

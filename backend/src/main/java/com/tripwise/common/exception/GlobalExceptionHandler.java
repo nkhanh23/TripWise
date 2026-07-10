@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.connector.ClientAbortException;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,6 +35,7 @@ public class GlobalExceptionHandler {
                 .message(ex.getMessage())
                 .errorCode(ex.getErrorCode())
                 .correlationId(correlationId)
+                .detailsData(ex.getDetailsData())
                 .build();
 
         return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
@@ -117,6 +120,24 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ClientAbortException.class)
+    public void handleClientAbort(ClientAbortException ex) {
+        String correlationId = MDC.get(CORRELATION_ID_KEY);
+        log.warn("[ClientAbort] CorrelationId: {} - Client disconnected before response completed", correlationId);
+    }
+
+    @ExceptionHandler(java.io.IOException.class)
+    public void handleIoException(java.io.IOException ex) {
+        String message = ex.getMessage();
+        if (message != null && (message.contains("Broken pipe") || message.contains("Connection reset") || message.contains("connection was aborted"))) {
+            String correlationId = MDC.get(CORRELATION_ID_KEY);
+            log.warn("[ConnectionReset] CorrelationId: {} - {}", correlationId, message);
+            return;
+        }
+        String correlationId = MDC.get(CORRELATION_ID_KEY);
+        log.warn("[IOException] CorrelationId: {} - {}: {}", correlationId, ex.getClass().getSimpleName(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

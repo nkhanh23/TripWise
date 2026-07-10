@@ -20,6 +20,18 @@ const adminNavItems = [
     disabled: false,
   },
   {
+    label: "Staging Moderation",
+    icon: "fact_check",
+    to: "/admin/staging-moderation",
+    disabled: false,
+  },
+  {
+    label: "Place Pipelines",
+    icon: "play_circle",
+    to: "/admin/place-pipelines",
+    disabled: false,
+  },
+  {
     label: "Import Data",
     icon: "cloud_upload",
     to: "/admin/import-data",

@@ -127,6 +127,62 @@ class PlacePublicReadJdbcRepositoryTest {
     }
 
     @Test
+    void searchShouldBindNhaTrangAliasesForCityFilter() {
+        when(namedParameterJdbcTemplate.queryForObject(anyString(), any(MapSqlParameterSource.class), any(Class.class)))
+                .thenReturn(0L);
+
+        repository.search(
+                SearchPlacesQuery.builder()
+                        .city("TP. Nha Trang, KH")
+                        .build(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                "name",
+                "asc"
+        );
+
+        ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<MapSqlParameterSource> parametersCaptor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).queryForObject(sqlCaptor.capture(), parametersCaptor.capture(), any(Class.class));
+
+        MapSqlParameterSource parameters = parametersCaptor.getValue();
+        assertThat(sqlCaptor.getValue()).contains("LOWER(COALESCE(p.city, '')) IN (:cityAliases)");
+        assertThat(sqlCaptor.getValue()).contains("LOWER(COALESCE(p.province, '')) IN (:cityRelatedAliases)");
+        assertThat(parameters.getValue("city")).isEqualTo("TP. Nha Trang, KH");
+        assertThat((List<String>) parameters.getValue("cityAliases"))
+                .contains("nha trang", "tp. nha trang", "thành phố nha trang");
+        assertThat((List<String>) parameters.getValue("cityRelatedAliases"))
+                .contains("khánh hòa", "khanh hoa");
+    }
+
+    @Test
+    void findMapMarkersShouldBindKhanhHoaAliasesForProvinceFilter() {
+        when(namedParameterJdbcTemplate.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
+                .thenReturn(List.of());
+
+        repository.findMapMarkers(MapPlacesQuery.builder()
+                .minLatitude(10.0)
+                .minLongitude(100.0)
+                .maxLatitude(11.0)
+                .maxLongitude(101.0)
+                .province("Khánh Hòa Province")
+                .limit(10)
+                .build());
+
+        ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<MapSqlParameterSource> parametersCaptor = ArgumentCaptor.forClass(MapSqlParameterSource.class);
+        verify(namedParameterJdbcTemplate).query(sqlCaptor.capture(), parametersCaptor.capture(), any(RowMapper.class));
+
+        MapSqlParameterSource parameters = parametersCaptor.getValue();
+        assertThat(sqlCaptor.getValue()).contains("LOWER(COALESCE(p.province, '')) IN (:provinceAliases)");
+        assertThat(sqlCaptor.getValue()).contains("LOWER(COALESCE(p.city, '')) IN (:provinceRelatedAliases)");
+        assertThat(parameters.getValue("province")).isEqualTo("Khánh Hòa Province");
+        assertThat((List<String>) parameters.getValue("provinceAliases"))
+                .contains("khánh hòa", "khanh hoa", "khánh hòa province");
+        assertThat((List<String>) parameters.getValue("provinceRelatedAliases"))
+                .contains("nha trang", "tp. nha trang", "thành phố nha trang");
+    }
+
+    @Test
     void findMapMarkersShouldBindNullableFiltersWithExplicitSqlTypes() {
         when(namedParameterJdbcTemplate.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
                 .thenReturn(List.of());

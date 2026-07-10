@@ -83,6 +83,71 @@ public class PlacePublicReadJdbcRepository {
             "thành phố hồ chí minh"
     );
 
+    private static final Set<String> NHA_TRANG_ALIAS_KEYS = Set.of(
+            "nha trang",
+            "tp nha trang",
+            "tp. nha trang",
+            "t.p. nha trang",
+            "thanh pho nha trang",
+            "tp nha trang kh",
+            "tp. nha trang, kh",
+            "tp. nha trang kh",
+            "tp nha trang, kh",
+            "nha trang city",
+            "thanh pho nha trang khanh hoa",
+            "khanh hoa nha trang",
+            "nha trang khanh hoa",
+            "nha trang vietnam",
+            "nha trang viet nam"
+    );
+    private static final List<String> NHA_TRANG_CITY_DB_ALIASES_CANONICAL = List.of(
+            "nha trang",
+            "tp. nha trang",
+            "tp nha trang",
+            "t.p. nha trang",
+            "thành phố nha trang",
+            "nha trang, tỉnh khánh hòa",
+            "nha trang, tinh khanh hoa",
+            "bắc nha trang",
+            "bac nha trang",
+            "nha trang city",
+            "nha trang, khanh hoa",
+            "nha trang, khánh hòa",
+            "nha trang, khánh hoá",
+            "khánh hoá, nha trang",
+            "nha trang-khánh hòa",
+            "nha trang - khanh hoa",
+            "thanh pho nha trang",
+            "nha trang / vietnam",
+            "nha trang, vietnam",
+            "nha trang viet nam",
+            "nha trang,",
+            "nam nha trang",
+            "p. nam nha trang",
+            "tay nha trang",
+            "p. nha trang",
+            "nha trang (нячанг)",
+            "t.p. nha trang city",
+            "khánh hòa",
+            "khanh hoa"
+    );
+    private static final Set<String> KHANH_HOA_ALIAS_KEYS = Set.of(
+            "khanh hoa",
+            "khanh hoa province",
+            "khánh hòa",
+            "tỉnh khánh hòa",
+            "tinh khanh hoa",
+            "tinh khanh hoa province",
+            "khánh hòa province"
+    );
+    private static final List<String> KHANH_HOA_PROVINCE_DB_ALIASES_CANONICAL = List.of(
+            "khánh hòa",
+            "khanh hoa",
+            "khánh hòa province",
+            "tỉnh khánh hòa",
+            "tinh khanh hoa"
+    );
+
     private final ObjectProvider<NamedParameterJdbcTemplate> jdbcTemplateProvider;
 
     public PlacePublicReadJdbcRepository(ObjectProvider<NamedParameterJdbcTemplate> jdbcTemplateProvider) {
@@ -513,6 +578,13 @@ public class PlacePublicReadJdbcRepository {
                     HO_CHI_MINH_CITY_DB_ALIASES_CANONICAL
             );
         }
+        if (isKhanhHoaAlias(normalized)) {
+            return new LocationAliasFilter(
+                    normalized,
+                    KHANH_HOA_PROVINCE_DB_ALIASES_CANONICAL,
+                    NHA_TRANG_CITY_DB_ALIASES_CANONICAL
+            );
+        }
         return LocationAliasFilter.exact(normalized);
     }
 
@@ -528,11 +600,26 @@ public class PlacePublicReadJdbcRepository {
                     HO_CHI_MINH_PROVINCE_DB_ALIASES_CANONICAL
             );
         }
+        if (isNhaTrangAlias(normalized)) {
+            return new LocationAliasFilter(
+                    normalized,
+                    NHA_TRANG_CITY_DB_ALIASES_CANONICAL,
+                    KHANH_HOA_PROVINCE_DB_ALIASES_CANONICAL
+            );
+        }
         return LocationAliasFilter.exact(normalized);
     }
 
     private boolean isHoChiMinhAlias(String value) {
         return HO_CHI_MINH_ALIAS_KEYS.contains(normalizeAliasKey(value));
+    }
+
+    private boolean isNhaTrangAlias(String value) {
+        return NHA_TRANG_ALIAS_KEYS.contains(normalizeAliasKey(value));
+    }
+
+    private boolean isKhanhHoaAlias(String value) {
+        return KHANH_HOA_ALIAS_KEYS.contains(normalizeAliasKey(value));
     }
 
     private String normalizeAliasKey(String value) {

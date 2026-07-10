@@ -207,8 +207,8 @@ export function AdminPlacesReviewPage() {
             <p className={styles.eyebrow}>Read-only moderation review</p>
             <h1 className={styles.title}>Places Review</h1>
             <p className={styles.subtitle}>
-              Kiểm tra dữ liệu địa điểm và trạng thái kiểm duyệt trong DB. Màn này chỉ đọc dữ liệu để
-              đối chiếu raw import, moderation và public visibility, đặc biệt cho TP.HCM.
+               Kiểm tra dữ liệu địa điểm public và trạng thái kiểm duyệt trong DB. Màn này chỉ đọc dữ liệu để
+               đối chiếu raw import, moderation và public visibility.
             </p>
           </div>
 
@@ -231,7 +231,7 @@ export function AdminPlacesReviewPage() {
             <div>
               <h2 className={styles.sectionTitle}>Bộ lọc review</h2>
               <p className={styles.sectionText}>
-                Có thể lọc riêng OSM, MANUAL_SEED, trạng thái PENDING/REJECTED hoặc thử các alias Hồ Chí Minh.
+                Lọc theo source, province, city, trạng thái kiểm duyệt hoặc từ khóa.
               </p>
             </div>
           </div>
@@ -280,7 +280,7 @@ export function AdminPlacesReviewPage() {
                 className={styles.input}
                 value={draftFilters.city}
                 onChange={(event) => updateDraft("city", event.target.value)}
-                placeholder="Hồ Chí Minh"
+                placeholder="Ví dụ: Nha Trang"
               />
             </div>
 

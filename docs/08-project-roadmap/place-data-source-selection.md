@@ -1,4 +1,4 @@
-# Place Data Source Selection
+                                                    # Place Data Source Selection
 
 Mục tiêu của tài liệu này là chọn nguồn POI sạch nhất và phù hợp nhất cho TripWise sau khi Geofabrik/OSM raw đã cho thấy chi phí lọc quá cao.
 

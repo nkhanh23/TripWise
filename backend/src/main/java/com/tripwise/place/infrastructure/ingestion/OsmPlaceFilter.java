@@ -90,7 +90,8 @@ public class OsmPlaceFilter {
             "cafe",
             "bar",
             "fast_food",
-            "food_court"
+            "food_court",
+            "bakery"
     );
 
     private static final Set<String> HOTEL_TOURISM_VALUES = Set.of(

@@ -1,0 +1,237 @@
+import { httpClient } from "./http-client";
+import type {
+  PageResponse,
+  StagingPlaceDetailResponse,
+  StagingPlaceResponse
+} from "./contracts";
+
+export interface SearchStagingParams {
+  importRunId?: number;
+  province?: string;
+  city?: string;
+  moderationStatus?: string;
+  dedupStatus?: string;
+  placeTypeDraft?: string;
+  keyword?: string;
+  sortBy?: string;
+  sortDirection?: string;
+  page?: number;
+  size?: number;
+}
+
+export async function searchStagingPlaces(
+  params: SearchStagingParams = {}
+): Promise<PageResponse<StagingPlaceResponse>> {
+  const searchParams = new URLSearchParams();
+
+  if (params.importRunId !== undefined)
+    searchParams.append("importRunId", params.importRunId.toString());
+  if (params.province) searchParams.append("province", params.province);
+  if (params.city) searchParams.append("city", params.city);
+  if (params.moderationStatus)
+    searchParams.append("moderationStatus", params.moderationStatus);
+  if (params.dedupStatus) searchParams.append("dedupStatus", params.dedupStatus);
+  if (params.placeTypeDraft)
+    searchParams.append("placeTypeDraft", params.placeTypeDraft);
+  if (params.keyword) searchParams.append("keyword", params.keyword);
+  if (params.sortBy) searchParams.append("sortBy", params.sortBy);
+  if (params.sortDirection)
+    searchParams.append("sortDirection", params.sortDirection);
+  if (params.page !== undefined)
+    searchParams.append("page", params.page.toString());
+  if (params.size !== undefined)
+    searchParams.append("size", params.size.toString());
+
+  const queryString = searchParams.toString();
+  const url = queryString
+    ? `/admin/place-moderation/staging?${queryString}`
+    : "/admin/place-moderation/staging";
+
+  return httpClient.get<PageResponse<StagingPlaceResponse>>(url, {
+    requiresAuth: true
+  });
+}
+
+export async function getStagingPlaceDetail(
+  id: number
+): Promise<StagingPlaceDetailResponse> {
+  return httpClient.get<StagingPlaceDetailResponse>(
+    `/admin/place-moderation/staging/${id}`,
+    { requiresAuth: true }
+  );
+}
+
+export async function approveStagingPlaceAsNew(
+  id: number
+): Promise<void> {
+  await httpClient.post<void>(
+    `/admin/place-moderation/staging/${id}/approve-as-new`,
+    undefined,
+    { requiresAuth: true }
+  );
+}
+
+export async function approveAndPublishStagingPlace(
+  id: number
+): Promise<number> {
+  return httpClient.post<number>(
+    `/admin/place-moderation/staging/${id}/approve-and-publish`,
+    undefined,
+    { requiresAuth: true }
+  );
+}
+
+export async function rejectStagingPlace(
+  id: number
+): Promise<void> {
+  await httpClient.post<void>(
+    `/admin/place-moderation/staging/${id}/reject`,
+    undefined,
+    { requiresAuth: true }
+  );
+}
+
+export interface MarkDuplicateRequest {
+  candidateId: number | null;
+  existingPlaceId: number;
+}
+
+export async function markStagingPlaceDuplicate(
+  id: number,
+  payload: MarkDuplicateRequest
+): Promise<void> {
+  await httpClient.post<void>(
+    `/admin/place-moderation/staging/${id}/mark-duplicate`,
+    payload,
+    { requiresAuth: true }
+  );
+}
+
+export interface SimulationResult {
+  province: string;
+  city: string;
+  totalStaging: number;
+  autoApprove: number;
+  autoDuplicate: number;
+  autoReject: number;
+  adminReview: number;
+  approveBreakdown: Record<string, number>;
+  duplicateBreakdown: Record<string, number>;
+  rejectBreakdown: Record<string, number>;
+  reviewBreakdown: Record<string, number>;
+  formattedReport: string;
+}
+
+export async function runAutoModerationSimulation(
+  province: string,
+  city: string
+): Promise<SimulationResult> {
+  const url = `/admin/place-moderation/staging/simulation?province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}`;
+  return httpClient.post<SimulationResult>(url, undefined, { requiresAuth: true });
+}
+
+export interface ExecutionResult {
+  totalScanned: number;
+  publishedAutomatically: number;
+  markedDuplicate: number;
+  rejected: number;
+  skippedForAdminReview: number;
+  failed: number;
+  executionTimeMs: number;
+  records: Array<{
+    stagingId: number;
+    name: string | null;
+    decision: string;
+    actionExecuted: string;
+    executionStatus: string;
+    failureReason: string | null;
+    executionDurationMs: number;
+  }>;
+}
+
+export async function executeAutoModeration(
+  province: string,
+  city: string
+): Promise<ExecutionResult> {
+  const url = `/admin/place-moderation/staging/auto-execute?province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}`;
+  return httpClient.post<ExecutionResult>(url, undefined, { requiresAuth: true });
+}
+
+export interface PreviewRecord {
+  stagingId: number;
+  name: string | null;
+  decision: string;
+  subCategory: string;
+}
+
+export interface PreviewResult {
+  province: string;
+  city: string;
+  totalStaging: number;
+  autoApprove: number;
+  autoDuplicate: number;
+  autoReject: number;
+  adminReview: number;
+  records: Array<PreviewRecord>;
+}
+
+export async function previewAutoModeration(
+  province: string,
+  city: string
+): Promise<PreviewResult> {
+  const url = `/admin/place-moderation/staging/auto-execute/preview?province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}`;
+  return httpClient.get<PreviewResult>(url, { requiresAuth: true });
+}
+
+export interface ExplainReport {
+  province: string;
+  city: string;
+  totalStaging: number;
+  totalNeedsAdminReview: number;
+  failureBreakdown: Record<string, number>;
+  combinationBreakdown: Record<string, number>;
+  categoryBreakdown: Record<string, number>;
+  placeTypeBreakdown: Record<string, number>;
+  recommendations: Array<{
+    recommendation: string;
+    reason: string;
+    expectedReduction: number;
+  }>;
+}
+
+export async function explainAutoModeration(
+  province: string,
+  city: string
+): Promise<ExplainReport> {
+  const url = `/admin/place-moderation/staging/explain?province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}`;
+  return httpClient.post<ExplainReport>(url, undefined, { requiresAuth: true });
+}
+
+export interface ExclusiveBucket {
+  name: string;
+  recordCount: number;
+  percentage: number;
+  sampleStagingIds: Array<number>;
+  safetyLabel: string;
+  safetyStars: string;
+  difficultyLabel: string;
+  difficultyStars: string;
+  roiScore: number;
+}
+
+export interface ExplainExclusiveReport {
+  province: string;
+  city: string;
+  totalStaging: number;
+  totalNeedsAdminReview: number;
+  buckets: Array<ExclusiveBucket>;
+  recommendations: Array<string>;
+}
+
+export async function explainExclusiveAutoModeration(
+  province: string,
+  city: string
+): Promise<ExplainExclusiveReport> {
+  const url = `/admin/place-moderation/staging/explain-exclusive?province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}`;
+  return httpClient.post<ExplainExclusiveReport>(url, undefined, { requiresAuth: true });
+}
