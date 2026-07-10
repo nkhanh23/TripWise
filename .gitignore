@@ -44,3 +44,6 @@ Thumbs.db
 pgdata-local/
 redisdata-local/
 miniodata-local/
+
+# Dataset/places data
+backend/data/
