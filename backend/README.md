@@ -1,16 +1,18 @@
-# TripWise Backend
+# TripWise Backend [LEGACY MIGRATION SOURCE]
 
-Đây là phần mã nguồn backend của hệ thống lập lịch du lịch thông minh **TripWise**, sử dụng Java 21, Spring Boot 3.x và Maven.
+> **THÔNG BÁO KIẾN TRÚC (ADR-018):**
+> Codebase Backend Monolith Spring Boot (`backend/`) hiện ở trạng thái **Legacy Migration Source** (đã đóng băng phát triển tính năng mới).
+> Mã nguồn được lưu giữ tạm thời để làm nguồn đối chiếu logic AI prompt, cấu trúc schema và hỗ trợ di chuyển dữ liệu sang **Supabase**. Toàn bộ thư mục này sẽ được xóa bỏ an toàn theo lộ trình D-series sau khi ứng dụng di động React Native hoạt động độc lập hoàn toàn.
 
 ---
 
-## 1. Stack công nghệ chính
+## 1. Stack công nghệ cũ (Tham chiếu)
 - **Java**: Phiên bản 21
 - **Framework**: Spring Boot 3.2.x
 - **Build Tool**: Maven Wrapper (included)
-- **Database**: PostgreSQL + PostGIS (chạy qua Docker local)
-- **Cache**: Redis (chạy qua Docker local)
-- **Migration**: Flyway
+- **Database**: PostgreSQL + PostGIS
+- **Cache**: Redis
+- **Migration**: Flyway (22 migrations)
 
 ---
 

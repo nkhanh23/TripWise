@@ -223,7 +223,9 @@ MVP chưa bắt buộc triển khai queue, nhưng kiến trúc phải chừa ch�
 
 ## ADR-011: Chọn Flutter cho mobile
 
-**Status:** Accepted
+**Status:** Superseded by ADR-017
+
+> **Lưu ý lịch sử:** Quyết định này đã bị thay thế bởi **ADR-017**. TripWise chuyển sang sử dụng **React Native + TypeScript** làm mobile client chính cho người dùng cuối.
 
 ### Context
 
@@ -231,7 +233,7 @@ Dự án cần mobile client có thể chạy đa nền tảng. MVP backend và 
 
 ### Decision
 
-Chọn **Flutter** cho mobile app.
+Chọn **Flutter** cho mobile app (quyết định ban đầu).
 
 ### Consequences
 
@@ -358,3 +360,97 @@ TP.HCM và Nha Trang là pilot/debug case để kiểm tra pipeline import, mode
 - Mỗi PlaceType có quality score threshold riêng cho auto-public.
 - Dữ liệu OSM Việt Nam không đồng đều — cần audit từng vùng trước khi mở rộng auto-public.
 - Batch rollout theo province/city, không chạy toàn quốc không kiểm soát.
+
+---
+
+## ADR-017: React Native + TypeScript as primary mobile client
+
+**Status:** Accepted
+
+### Context
+
+- Mobile client ban đầu được định hướng bằng Flutter trong ADR-011, nhưng chưa có implementation code đáng kể nào ngoài tài liệu định hướng ban đầu.
+- Web client hiện tại đã hoàn thiện và chuẩn hóa hoàn toàn trên stack **React + Vite + TypeScript**.
+- Định hướng sản phẩm của TripWise chuyển dịch mạnh mẽ: **Mobile App là client chính dành cho người dùng cuối (End-User Client)** trên Android và iOS để phục vụ tạo lịch trình, khám phá địa điểm, xem bản đồ và truy cập lịch trình khi di chuyển ngoài thực địa.
+- **Web client (React + Vite + TypeScript)** được tái định vị vai trò thành **TripWise Admin Portal (Internal Management Client)**, tập trung vào xác thực quản trị, dashboard thống kê, quản lý/kiểm duyệt địa điểm (Place Moderation), giám sát pipeline ingestion (City Pipeline), và quản lý hệ thống.
+- Việc lựa chọn **React Native + TypeScript** cho mobile client mang lại sự thống nhất cao về hệ sinh thái ngôn ngữ (TypeScript-first across all frontend clients), giảm gánh nặng bảo trì đồng thời hai hệ sinh thái Dart/Flutter và JavaScript/TypeScript.
+- Backend Spring Boot Clean Architecture đã được thiết kế hoàn toàn client-agnostic (`/api/v1`), phục vụ song song cho cả Mobile App và Admin Web Portal mà không bị ràng buộc bởi client framework.
+- **Lưu ý về tái sử dụng:** React DOM components và CSS của Web Admin không thể copy-paste trực tiếp sang React Native do khác biệt về render tree (`<div>`/`<span>` vs `<View>`/`<Text>`) và layout engine (Flexbox engine Yoga). Tuy nhiên, các cấu phần sau có thể tái sử dụng hoặc chia sẻ trực tiếp:
+  - TypeScript types, models và API contracts.
+  - Validation schemas (Zod / Yup nếu có).
+  - Business helper logic, formatting utilities (tiền tệ, ngày tháng, khoảng cách).
+  - Auth models, token refresh interceptor logic abstraction.
+  - Constants, design tokens và bảng màu (color palette, spacing scale).
+- **Đánh giá về Expo:** Expo là một lựa chọn đáng cân nhắc cho React Native tooling/workflow. Tuy nhiên, quyết định ADR này chỉ chốt nền tảng cốt lõi là **React Native + TypeScript**. Việc áp dụng Expo cụ thể sẽ được đánh giá kỹ lưỡng ở bước triển khai kỹ thuật (M0/M1) dựa trên tính tương thích với Google Maps SDK native, Google Places Autocomplete, Keystore/Keychain secure storage, Geolocation, Deep Links, OAuth và push notifications.
+
+### Decision
+
+1. Chọn **React Native + TypeScript** làm mobile client chính thức cho ứng dụng di động TripWise trên cả hai nền tảng Android và iOS (thay thế quyết định Flutter trong ADR-011).
+2. Định vị **Mobile App là Primary End-User Client** của hệ thống TripWise.
+3. Định vị **Web client (`web/` - ReactJS + Vite + TypeScript) là TripWise Admin Portal**, phục vụ nội bộ cho công tác quản trị, kiểm duyệt dữ liệu địa điểm và vận hành pipeline.
+
+### Consequences
+
+**Lợi ích:**
+- Thống nhất ngôn ngữ và hệ sinh thái frontend toàn dự án sang **TypeScript**.
+- Đội ngũ phát triển frontend có thể làm việc xuyên suốt giữa Admin Web Portal và Mobile App mà không cần học và duy trì runtime/toolchain Dart/Flutter.
+- Dễ dàng chia sẻ contracts, types, validation và logic tiện ích.
+- Định hướng sản phẩm mobile-first rõ ràng, tập trung trải nghiệm người dùng thực địa vào ứng dụng di động.
+
+**Trade-offs & Rủi ro:**
+- UI components và stylesheet giữa Web và Mobile không tái sử dụng trực tiếp được; phải xây dựng hệ thống component di động riêng theo chuẩn React Native.
+- React Native có độ phức tạp về native build/linking (Gradle trên Android, CocoaPods/Xcode trên iOS) và quản lý native permissions (Location, Notifications).
+- Cần kiểm tra cẩn thận compatibility của các thư viện native: Google Maps SDK, Secure Storage (`react-native-keychain` / `expo-secure-store`), Geolocation.
+- Phải thiết kế UX/UI tối ưu riêng cho màn hình cảm ứng di động (touch targets, gesture, bottom sheet, bottom navigation, keyboard avoidance).
+
+---
+
+## ADR-018: Simplify TripWise into a Personal Mobile App using Supabase
+
+**Status:** Accepted
+
+### Context
+
+- **Chuyển đổi định hướng sản phẩm:** TripWise chính thức chuyển đổi từ mô hình nền tảng du lịch công cộng (public platform/multi-user) sang **Ứng dụng di động cá nhân (Personal AI Travel Mobile App)** phục vụ trực tiếp cho chủ sở hữu.
+- **Client duy nhất:** Mobile App (**React Native + TypeScript + Expo**, đã chốt trong [ADR-017](#adr-017-react-native--typescript-as-primary-mobile-client)) là sản phẩm duy nhất dành cho người dùng cuối. Hệ thống Web Admin Portal (`web/`) không còn cần thiết.
+- **Thu gọn dữ liệu:** Không còn nhu cầu tự vận hành cơ sở dữ liệu POI toàn quốc với hàng triệu bản ghi và các pipeline phức tạp (Geofabrik, Overpass, Foursquare, Staging tables, Place Moderation, City Pipeline). Dữ liệu persistent cần lưu dài hạn thu gọn về:
+  - `profiles`: Thông tin cá nhân người dùng.
+  - `trips`: Danh sách các chuyến đi đã tạo.
+  - `itinerary_days`: Lịch trình chi tiết theo từng ngày (kèm snapshot thời tiết).
+  - `itinerary_items`: Chi tiết từng điểm dừng trong ngày.
+  - `user_preferences` (tùy chọn): Sở thích du lịch mặc định.
+- **Dữ liệu địa điểm linh hoạt:** Tận dụng Google Places API để tra cứu địa điểm, tìm kiếm, xem đánh giá, giờ mở cửa và hình ảnh tại runtime. Lịch trình chỉ snapshot các trường cốt lõi (`google_place_id`, `place_name`, `latitude`, `longitude`, `place_address`, `place_category`) để đảm bảo hiển thị và vẽ bản đồ ngoại tuyến mà không phụ thuộc 100% vào mạng.
+- **Loại bỏ Overengineering:** Kiến trúc Backend Monolith Spring Boot (Java 21 + Clean Architecture) và Redis Cache là quá nặng nề để bảo trì đối với một ứng dụng cá nhân. Việc chuyển sang nền tảng Backend-as-a-Service (BaaS) với PostgreSQL quản lý sẵn là giải pháp tối ưu.
+
+### Decision
+
+1. **Chọn Supabase** làm nền tảng Backend-as-a-Service cho TripWise Personal Mobile App:
+   - **Supabase Auth:** Xác thực người dùng (Email/Password với 1 tài khoản cá nhân).
+   - **Supabase PostgreSQL:** Lưu trữ dữ liệu quan hệ (`profiles`, `trips`, `itinerary_days`, `itinerary_items`) được bảo vệ nghiêm ngặt bằng **Row Level Security (RLS)**.
+   - **Supabase Edge Functions (Deno / TypeScript):** Đóng vai trò serverless backend proxy để bảo vệ các secret nhạy cảm:
+     - Edge Function `generate-trip`: Nhận yêu cầu, gọi **Gemini API** với `GEMINI_API_KEY` được bảo mật, parse và validate schema lịch trình.
+     - Edge Function `place-proxy` (nếu cần): Proxy an toàn cho Google Places Web Service.
+2. **Định nghĩa trạng thái các cấu phần hiện tại:**
+   - **Spring Boot Monolith (`backend/`):** Chuyển trạng thái thành `Legacy migration source`. Giữ nguyên mã nguồn để làm nguồn tham chiếu logic, porting AI prompt và export dữ liệu cũ. Sẽ xóa bỏ sau khi Mobile App hoạt động độc lập hoàn toàn.
+   - **Web Frontend (`web/` & `web-archive-vite-ui/`):** Chuyển trạng thái thành `Legacy / scheduled for removal`. Giữ lại làm visual reference cho đến khi hoàn tất dọn dẹp.
+   - **Redis & POI Pipeline:** Chuyển trạng thái thành `Legacy / scheduled for removal`.
+3. **Kiến trúc External APIs:**
+   - **Google Maps SDK:** Tích hợp trực tiếp trên React Native với Client API Key được giới hạn theo Android Package Name/SHA-1 và iOS Bundle ID.
+   - **Open-Meteo API:** React Native gọi trực tiếp (miễn phí, không yêu cầu API key).
+   - **OSRM Routing:** React Native gọi trực tiếp public routing endpoint cho nhu cầu cá nhân (kèm client timeout/fallback nếu server public bận).
+
+### Consequences
+
+**Lợi ích:**
+- **Tối giản hạ tầng (Zero Server Maintenance):** Không cần thuê VPS, quản lý Docker container, bảo trì Redis hay chạy database migration thủ công.
+- **Thống nhất TypeScript End-to-End:** Toàn bộ code logic từ React Native client đến Supabase Edge Functions đều sử dụng TypeScript.
+- **Bảo mật chuẩn hóa:** Dữ liệu được bảo vệ bằng PostgreSQL Row Level Security (RLS); không có secret nào bị lộ trên mã nguồn client.
+- **Tối ưu chi phí:** Phù hợp hoàn hảo với hạn mức sử dụng cá nhân (Supabase Free Plan, Gemini Developer API, Open-Meteo, và hạn mức sử dụng miễn phí hàng tháng theo từng SKU của Google Maps Platform).
+
+**Trade-offs & Rủi ro:**
+- Phụ thuộc vào dịch vụ đám mây Supabase (Vendor Managed Service).
+- Cần chuyển đổi (porting) logic prompt builder và JSON validator từ Java sang TypeScript Edge Functions.
+- OSRM public demo server không cam kết SLA, cần xử lý fallback vẽ polyline đơn giản hoặc thông báo khi timeout.
+- Cần theo dõi hạn mức sử dụng Google Maps Platform / Google Places theo dõi định kỳ để kiểm soát chi phí.
+
+

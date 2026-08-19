@@ -88,19 +88,19 @@ Nguyên tắc:
 
 ---
 
-## Mobile (Flutter)
+## Mobile (React Native + TypeScript)
 
 ### Khuyến nghị stack UI
 
-- Flutter UI theo `ui-layout-mobile.md`.
-- Map: `flutter_map` + OSM tiles.
-- Bottom sheet: `DraggableScrollableSheet` hoặc tương đương.
+- React Native UI theo `ui-layout-mobile.md` (ADR-017).
+- Map: Google Maps SDK (`react-native-maps`).
+- Bottom sheet: `@gorhom/bottom-sheet` hoặc custom gesture bottom sheet.
 
-### Kiến trúc widget gợi ý
+### Kiến trúc Component gợi ý
 
 - `TripDetailMapScreen`
-  - `Stack`
-  - `MapWidget`
+  - `View` (Container)
+  - `MapCanvas`
   - `TopSearchBarOverlay`
   - `TripSummaryOverlay`
   - `InstructionCardOverlay`

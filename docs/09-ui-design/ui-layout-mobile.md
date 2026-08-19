@@ -166,16 +166,16 @@ Quy tắc:
 
 ---
 
-## Flutter implementation notes (không code)
+## React Native implementation notes (không code)
 
-- Map: dùng `flutter_map` (OpenStreetMap tiles) + polyline route.
+- Map: dùng Google Maps SDK (`react-native-maps`) + polyline route.
 - Bottom sheet:
-  - dùng `DraggableScrollableSheet` hoặc `sliding_up_panel` (tuỳ quyết định sau).
+  - dùng `@gorhom/bottom-sheet` hoặc custom gesture bottom sheet.
 - Floating cards:
-  - dùng `Stack` + `Positioned` + `SafeArea`.
+  - dùng `View` (absolute positioned) + `SafeAreaView`.
 - Marker:
-  - custom widget marker để hỗ trợ trạng thái selected + badge số thứ tự.
+  - custom marker component để hỗ trợ trạng thái selected + badge số thứ tự.
 - Performance:
-  - route geometry dài nên simplify theo zoom (client-side) hoặc dùng polyline encoded (nếu backend cung cấp).
-  - tránh rebuild toàn map khi chỉ đổi selection; tách state.
+  - route geometry dài nên simplify theo zoom hoặc dùng polyline encoded từ backend.
+  - tránh re-render toàn map khi chỉ đổi active activity; tách state quản lý marker highlight.
 

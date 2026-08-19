@@ -28,41 +28,35 @@ Nếu chưa đọc đủ ngữ cảnh, không được tự suy đoán để cod
 
 ## 2. Stack không được tự ý thay đổi
 
-Stack đã chốt:
+Stack mục tiêu chính thức (theo ADR-017 & ADR-018):
 
-- Backend: Java 21 + Spring Boot 3.2.5
-- Build tool: Maven + Maven Wrapper
-- Architecture: Clean Architecture + Modular Monolith
-- Database: PostgreSQL + PostGIS
-- Cache: Redis
-- API: REST versioning `/api/v1`
-- Auth: Email/password + OAuth2 + JWT access token ngắn hạn + refresh token rotation
-- AI: Gemini API
-- Routing: OSRM
-- Map: OpenStreetMap
-- Web: ReactJS hoặc Next.js, tách riêng backend
-- Mobile: Flutter
-- Media/static assets: Object Storage + CDN
-- Monitoring: logging từ đầu, metrics/tracing chuẩn bị cho tương lai
+- **Mobile Client chính thức (Sản phẩm duy nhất):** React Native + TypeScript + Expo (`mobile/`) cho Android và iOS.
+- **Backend & Database:** **Supabase** (Managed PostgreSQL + Row Level Security (RLS) + Supabase Auth).
+- **Serverless Backend Logic:** **Supabase Edge Functions** (Deno / TypeScript) để proxy an toàn cho Gemini API & Google Places.
+- **AI Engine:** Google Gemini API (gọi qua Supabase Edge Function, không để secret trong mobile).
+- **Maps:** Google Maps SDK (native mobile, key restricted).
+- **Places:** Google Places API (tra cứu động tại runtime; itinerary chỉ snapshot các trường cốt lõi).
+- **Weather:** Open-Meteo API (gọi trực tiếp từ mobile).
+- **Routing:** OSRM (gọi trực tiếp từ mobile với client fallback).
+- **Legacy Components (Scheduled for removal / Freeze):**
+  - `backend/` (Java 21 + Spring Boot 3.2.5): Giữ làm legacy migration source; tuyệt đối KHÔNG thêm tính năng mới.
+  - `web/` (ReactJS + Vite + TypeScript): Giữ làm legacy visual reference; tuyệt đối KHÔNG thêm tính năng mới.
+  - Redis, PostGIS nationwide POI pipeline, Geofabrik/Overpass/Foursquare ingestion: Đã ngưng phát triển, giữ nguyên trạng thái chờ dọn dẹp theo D-series.
 
-AI không được tự ý thay đổi sang Node.js, NestJS, MongoDB, Google Maps-only, Firebase-only, microservices hoặc stack khác nếu chưa có yêu cầu rõ ràng.
+AI không được tự ý thay đổi sang Flutter, Node.js/NestJS server monolith, MongoDB, Firebase, microservices nếu chưa có yêu cầu. AI tuyệt đối không được tự ý xóa code legacy nếu chưa đến task D-series cụ thể.
 
 ---
 
-## 3. Kiến trúc không được tự ý thay đổi
+## 3. Kiến trúc mục tiêu (Personal Mobile App)
 
 Bắt buộc giữ hướng:
 
-- Clean Architecture
-- Modular Monolith
-- Tách domain, application, infrastructure, presentation
-- Module rõ ràng theo nghiệp vụ
-- Không tạo microservices trong MVP
-- Không đưa business logic vào controller
-- Không để persistence model quyết định API response
-- Không để external API adapter lẫn vào domain logic
-
-Microservices chỉ được xem xét sau MVP khi có bằng chứng về nhu cầu scale, ownership hoặc deployment độc lập.
+- **Mobile First / Mobile Only:** Mọi trải nghiệm người dùng tập trung 100% vào ứng dụng di động React Native.
+- **BaaS & Serverless:** Sử dụng Supabase PostgreSQL với Row Level Security (RLS) để đảm bảo dữ liệu thuộc về chính chủ sở hữu.
+- **Secret Isolation:** Mọi private API key (`GEMINI_API_KEY`, Google Server Key) bắt buộc đặt trong Supabase Vault/Secrets và gọi qua Supabase Edge Functions. Tuyệt đối không đặt secret trong React Native bundle.
+- **Client Direct for Public APIs:** Các API công cộng không cần secret như Open-Meteo và OSRM được gọi trực tiếp từ mobile client với timeout và fallback hợp lý.
+- **Place Snapshot Independence:** Lịch trình chuyến đi lưu trong database chỉ snapshot các trường định danh và tọa độ tối thiểu (`google_place_id`, `place_name`, `latitude`, `longitude`, `place_address`, `place_category`) để đảm bảo ứng dụng có thể hiển thị và vẽ bản đồ ngoại tuyến mà không phụ thuộc 100% vào mạng.
+- **Zero Enterprise Overhead:** Không xây dựng hệ thống enterprise phức tạp, không duy trì POI pipeline toàn quốc, không thêm Redis hay microservices.
 
 ---
 

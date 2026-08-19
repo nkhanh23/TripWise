@@ -1,12 +1,13 @@
-# TripWise Project Phases
+# TripWise Project Phases (Personal AI Travel Mobile App)
 
-> Tài liệu kế hoạch chi tiết từ trạng thái hiện tại đến production-ready.
-> Mỗi phase nhỏ, rõ ràng, dễ review, dễ thực hiện bởi AI assistant hoặc developer.
-> Tạo ngày: 2026-07-01
+> **QUYẾT ĐỊNH KIẾN TRÚC MỚI (ADR-018):**
+> TripWise chính thức chuyển đổi sang **Ứng dụng di động cá nhân (Personal AI Travel Mobile App)**.
+> Lộ trình phát triển chính thức từ nay là **Master Roadmap P-Series (P0 - P7)** và **Cleanup D-Series (D1 - D7)** (chi tiết tại [TASKS.md](../../TASKS.md)).
+> Các phase monolithic backend Spring Boot, Web Admin Portal và POI ingestion pipeline trước đây được lưu giữ làm tài liệu tham khảo lịch sử.
 
 ---
 
-## 0. Current Project State
+## 0. Current Project State (Target: React Native + Supabase)
 
 ### Đã hoàn thành
 
@@ -37,7 +38,7 @@
 - ❌ Chưa có Weather integration
 - ❌ Chưa có Hotel/Transport suggestion
 - ❌ Chưa có Frontend web
-- ❌ Chưa có Mobile Flutter
+- ❌ Chưa có Mobile App (React Native)
 - ❌ Chưa có Dockerfile backend
 - ❌ Chưa có CI/CD pipeline
 - ❌ Chưa deploy production
@@ -209,16 +210,18 @@
 - [ ] Phase 12.17 - Frontend tests
 - [x] Phase 12.18 - Nationwide places display on Explore map and list UI
 
-### M. Mobile Flutter
+### M. Mobile App (React Native + TypeScript - Primary User Client)
 
-- [ ] Phase 13.1 - Flutter project setup
-- [ ] Phase 13.2 - API client và auth flow
-- [ ] Phase 13.3 - Trip generation screen
-- [ ] Phase 13.4 - Itinerary display screen
-- [ ] Phase 13.5 - Map screen (Flutter map)
-- [ ] Phase 13.6 - Saved trips screen
-- [ ] Phase 13.7 - State management (Riverpod/Bloc)
-- [ ] Phase 13.8 - Mobile tests
+- [x] Phase M0 - Mobile Architecture & Documentation (ADR-017)
+- [ ] Phase M1 - Mobile Foundation & Project Setup
+- [ ] Phase M2 - Authentication & Secure Storage
+- [ ] Phase M3 - Home, Explore & Interactive Map
+- [ ] Phase M4 - Place Search & Detail
+- [ ] Phase M5 - AI Trip Planner
+- [ ] Phase M6 - Trip Detail & Itinerary Timeline
+- [ ] Phase M7 - Saved Trips & Offline Snapshots
+- [ ] Phase M8 - Profile & Settings
+- [ ] Phase M9 - Mobile Production Readiness (Android & iOS)
 
 ### N. DevOps / CI/CD
 
@@ -5130,234 +5133,138 @@ npm run build
 
 ---
 
-### M. Mobile Flutter
+### M. Mobile App (React Native + TypeScript - Primary User Client)
 
 ---
 
-## [ ] Phase 13.1 - Flutter project setup
+## [x] Phase M0 - Mobile Architecture & Documentation
 
 ### Goal
-
-Tạo Flutter project cho mobile app.
+Đặc tả kiến trúc, tech stack (React Native + TypeScript), security, contracts và roadmap cho ứng dụng di động TripWise theo [ADR-017](../../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client).
 
 ### What will be done
-
-- Tạo Flutter project trong `mobile/`
-- Setup project structure
-- Setup package dependencies (http, provider/riverpod)
-- Configure env (API base URL)
-- Verify build trên emulator
-
-### Files/Folders likely changed
-
-- `mobile/` (toàn bộ mới)
-
-### Done when
-
-- Flutter project builds
-- Default screen runs on emulator
-- Dependencies installed
-
-### How to verify
-
-```bash
-cd mobile
-flutter pub get
-flutter run
-```
-
-### Risks
-
-- Flutter SDK version compatibility
-- Android/iOS emulator required
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.1 - Flutter project setup.
-Flutter project trong mobile/. Structure, dependencies, env config. Verify on emulator.
-```
+- Chốt ADR-017 (React Native + TypeScript làm Primary End-User Client, Web chuyển thành Admin Portal).
+- Cập nhật tài liệu kỹ thuật: `mobile/README.md`, `web/README.md`, `react-native-coding-rules.md`.
+- Đặc tả ranh giới API (`/api/v1`), token secure storage, Google Maps SDK evaluation, offline snapshot.
 
 ---
 
-## [ ] Phase 13.2 - API client và auth flow
+## [ ] Phase M1 - Mobile Foundation & Project Setup
 
 ### Goal
-
-API client và authentication cho mobile.
+Khởi tạo cấu trúc dự án React Native + TypeScript, cấu hình environment, navigation và API client foundation.
 
 ### What will be done
-
-- HTTP client (dio)
-- Auth interceptor
-- Token storage (flutter_secure_storage)
-- Login/Register screens
-- Auth state management
-
-### Files/Folders likely changed
-
-- `mobile/lib/core/` (mới)
-- `mobile/lib/features/auth/` (mới)
-
-### Done when
-
-- Register and login work on mobile
-- Token management works
-
-### How to verify
-
-```bash
-# Run app → Register → Login → Verify auth state
-```
-
-### Risks
-
-- Secure token storage essential on mobile
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.2 - Mobile API client và auth.
-Dio HTTP client. Auth interceptor. Secure storage. Login/Register. Auth state.
-```
+- Khởi tạo thư mục `mobile/` với React Native + TypeScript.
+- Cấu hình TypeScript strict mode, linter và path aliases (`@components`, `@features`, `@api`, v.v.).
+- Cài đặt và thiết lập React Navigation (Native Stack + Bottom Tabs).
+- Xây dựng Axios client instance với base URL (`/api/v1`), logging và error handling.
+- Thiết lập Design Tokens (Colors, Typography, Spacing).
+- Cài đặt Jest & React Native Testing Library cho unit test.
 
 ---
 
-## [ ] Phase 13.3 - Trip generation screen
+## [ ] Phase M2 - Authentication & Secure Storage
 
 ### Goal
+Triển khai toàn bộ luồng xác thực người dùng trên mobile với lưu trữ token an toàn và silent refresh.
 
-Tạo screen nhập yêu cầu du lịch trên mobile.
-
-### Files/Folders likely changed
-
-- `mobile/lib/features/trip/` (mới)
-
-### Done when
-
-- Trip request form works on mobile
-- Loading state during processing
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.3 - Mobile trip generation screen.
-Natural language input. Submit to API. Loading state.
-```
+### What will be done
+- Tích hợp Secure Storage abstraction (Keychain trên iOS, Keystore trên Android).
+- Màn hình Đăng nhập (Email/Password, OAuth placeholder).
+- Màn hình Đăng ký tài khoản.
+- Quản lý phiên đăng nhập: Axios Request Interceptor chèn Bearer JWT, Response Interceptor xử lý 401 Silent Refresh Token Rotation.
+- Chức năng Đăng xuất an toàn và xóa token.
 
 ---
 
-## [ ] Phase 13.4 - Itinerary display screen
+## [ ] Phase M3 - Home, Explore & Interactive Map
 
 ### Goal
+Màn hình trang chủ, khám phá địa điểm theo danh mục và bản đồ tương tác cho mobile.
 
-Hiển thị itinerary trên mobile.
-
-### Files/Folders likely changed
-
-- `mobile/lib/features/itinerary/` (mới)
-
-### Done when
-
-- Itinerary displays correctly on mobile
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.4 - Mobile itinerary screen.
-Day-by-day display. Place details. Scrollable.
-```
+### What will be done
+- Màn hình Home: Điểm đến nổi bật, tìm kiếm nhanh, banner chào mừng.
+- Màn hình Explore: Lọc theo danh mục POI (Attraction, Food, Hotel, Service).
+- Tích hợp Map component (đánh giá Google Maps SDK cho mobile).
+- Marker Clustering và truy vấn địa điểm theo Bounding Box (bbox) / radius qua PostGIS API.
+- Bottom Sheet hiển thị thông tin tóm tắt của địa điểm khi bấm vào marker.
 
 ---
 
-## [ ] Phase 13.5 - Map screen (Flutter map)
+## [ ] Phase M4 - Place Search & Detail
 
 ### Goal
+Tìm kiếm địa điểm với debounce và màn hình chi tiết địa điểm du lịch.
 
-Bản đồ OpenStreetMap trên mobile.
-
-### Files/Folders likely changed
-
-- `mobile/lib/features/map/` (mới)
-
-### Done when
-
-- Map shows with markers and routes
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.5 - Mobile map screen.
-flutter_map + OpenStreetMap. Markers. Route polylines.
-```
+### What will be done
+- Search bar với cơ chế Debounce (300-500ms) và AbortController hủy request thừa.
+- Bộ lọc nâng cao: Tỉnh/thành phố, danh mục, đánh giá, khoảng cách.
+- Màn hình Place Detail: Thư viện ảnh, mô tả, tiện ích, giờ mở cửa, tọa độ bản đồ, nút "Thêm vào lịch trình".
 
 ---
 
-## [ ] Phase 13.6 - Saved trips screen
+## [ ] Phase M5 - AI Trip Planner
 
 ### Goal
+Giao diện tạo lịch trình thông minh bằng ngôn ngữ tự nhiên tiếng Việt cho người dùng di động.
 
-Xem danh sách trips đã lưu trên mobile.
-
-### Files/Folders likely changed
-
-- `mobile/lib/features/trips/` (mới)
-
-### Done when
-
-- List trips. View detail. Delete.
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.6 - Mobile saved trips.
-List, detail, delete. Pagination.
-```
+### What will be done
+- Form nhập nhu cầu du lịch: Điểm đến, số ngày, ngân sách, phong cách/sở thích.
+- Xử lý trạng thái tải: Thinking panel, skeleton shimmer, thông báo sinh động trong lúc chờ Gemini + Backend xử lý.
+- Xử lý lỗi: Hiển thị thông báo lỗi thân thiện nếu prompt không hợp lệ hoặc API quá tải kèm nút thử lại.
 
 ---
 
-## [ ] Phase 13.7 - State management (Riverpod/Bloc)
+## [ ] Phase M6 - Trip Detail & Itinerary Timeline
 
 ### Goal
+Hiển thị lịch trình chuyến đi chi tiết theo từng ngày/buổi, thời tiết và lộ trình bản đồ trên di động.
 
-Proper state management setup.
-
-### Files/Folders likely changed
-
-- `mobile/lib/` (refactor)
-
-### Done when
-
-- Consistent state management across screens
-
-### Suggested prompt
-
-```
-Đọc AGENTS.md. Thực hiện Phase 13.7 - Mobile state management.
-Riverpod hoặc Bloc. Consistent across screens.
-```
+### What will be done
+- Timeline Item cho từng hoạt động (thời gian, địa điểm, ghi chú, khoảng cách di chuyển).
+- Weather Card tích hợp dự báo thời tiết Open-Meteo theo từng ngày.
+- Bản đồ trực quan hiển thị Polyline tuyến đường OSRM và các điểm dừng trong ngày.
+- Cơ chế chuyển ngày mượt mà (Day Switching) với camera animation.
 
 ---
 
-## [ ] Phase 13.8 - Mobile tests
+## [ ] Phase M7 - Saved Trips & Offline Snapshots
 
 ### Goal
+Quản lý danh sách chuyến đi đã lưu của người dùng và hỗ trợ xem lại ngoại tuyến.
 
-Flutter tests.
+### What will be done
+- Danh sách Saved Trips với phân trang Lazy Loading / Infinite Scroll.
+- Xem chi tiết lịch trình đã lưu.
+- Lưu trữ offline snapshot vào local database (SQLite/MMKV) để mở lại khi mất sóng mạng.
+- Chức năng đổi tên, ghi chú và xóa chuyến đi.
 
-### Files/Folders likely changed
+---
 
-- `mobile/test/` (mới)
+## [ ] Phase M8 - Profile & Settings
 
-### Done when
+### Goal
+Màn hình quản lý tài khoản cá nhân, tùy chỉnh ứng dụng và chính sách.
 
-- Widget tests pass. Unit tests pass.
+### What will be done
+- Màn hình Profile: Thông tin người dùng, đổi mật khẩu, avatar.
+- Màn hình Settings: Tùy chỉnh ngôn ngữ, đơn vị tiền tệ/khoảng cách, xóa cache offline.
+- Điều khoản dịch vụ và chính sách bảo mật.
 
-### Suggested prompt
+---
 
-```
-Đọc AGENTS.md. Thực hiện Phase 13.8 - Mobile tests.
-Widget tests. Unit tests. API mocking.
+## [ ] Phase M9 - Mobile Production Readiness (Android & iOS)
+
+### Goal
+Hoàn thiện chất lượng sản phẩm, tối ưu hiệu năng, bảo mật và chuẩn bị phát hành lên App Store / Google Play.
+
+### What will be done
+- Cấu hình Native Permissions (Location, Notifications) với giải thích rõ ràng.
+- Tối ưu hiệu năng: FlashList, cache ảnh, memoization, giảm bundle size.
+- Kiểm thử Accessibility (a11y) và Responsive trên nhiều kích thước màn hình tablet/phone.
+- Kiểm tra bảo mật: Client API key restrictions, token rotation, ProGuard/R8 obfuscation trên Android.
+- Build release artifacts: Android App Bundle (.aab) và iOS Archive (.ipa).
 ```
 
 ---
@@ -6579,16 +6486,18 @@ Verify all features, tests, security, docs, deploy, monitoring, backups.
 - [ ] Phase 12.17 - Frontend tests
 - [ ] Phase 12.18 - Nationwide places display on Explore map and list UI
 
-### M. Mobile Flutter
+### M. Mobile App (React Native + TypeScript - Primary User Client)
 
-- [ ] Phase 13.1 - Flutter project setup
-- [ ] Phase 13.2 - API client và auth flow
-- [ ] Phase 13.3 - Trip generation screen
-- [ ] Phase 13.4 - Itinerary display screen
-- [ ] Phase 13.5 - Map screen (Flutter map)
-- [ ] Phase 13.6 - Saved trips screen
-- [ ] Phase 13.7 - State management (Riverpod/Bloc)
-- [ ] Phase 13.8 - Mobile tests
+- [x] Phase M0 - Mobile Architecture & Documentation (ADR-017)
+- [ ] Phase M1 - Mobile Foundation & Project Setup
+- [ ] Phase M2 - Authentication & Secure Storage
+- [ ] Phase M3 - Home, Explore & Interactive Map
+- [ ] Phase M4 - Place Search & Detail
+- [ ] Phase M5 - AI Trip Planner
+- [ ] Phase M6 - Trip Detail & Itinerary Timeline
+- [ ] Phase M7 - Saved Trips & Offline Snapshots
+- [ ] Phase M8 - Profile & Settings
+- [ ] Phase M9 - Mobile Production Readiness (Android & iOS)
 
 ### N. DevOps / CI/CD
 

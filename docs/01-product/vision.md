@@ -157,6 +157,6 @@ Sau MVP, sản phẩm có thể mở rộng theo các hướng:
 - Gợi ý khách sạn tốt hơn dựa trên vị trí lịch trình.
 - Gợi ý phương tiện liên tỉnh từ dữ liệu chính thức.
 - Chia sẻ lịch trình cho bạn bè.
-- Làm mobile app Flutter đầy đủ.
+- Làm mobile app React Native đầy đủ cho Android và iOS.
 - Tích hợp partner/operator du lịch.
 - Thêm booking/thanh toán khi đã đủ năng lực pháp lý, dữ liệu và vận hành.

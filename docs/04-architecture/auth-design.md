@@ -49,16 +49,17 @@ Hệ thống sử dụng cơ chế xác thực **stateless** kết hợp **OAuth
 
 ## 4. Khuyến nghị lưu trữ Token ở phía Client (Token Storage)
 
-### 4.1 Đối với ứng dụng Web (ReactJS / Next.js)
+### 4.1 Đối với ứng dụng Web (Admin Portal - ReactJS + Vite)
 - **Giải pháp khuyến nghị**: 
-  - Lưu trữ **Access Token** trong bộ nhớ ứng dụng (Memory/Application State - ví dụ: Redux, Context API). Access token sẽ mất khi tải lại trang, nhưng có thể lấy lại dễ dàng qua cơ chế silent refresh.
-  - Lưu trữ **Refresh Token** trong **HttpOnly, Secure, SameSite=Strict Cookie**. Cookie này được thiết lập trực tiếp bởi backend qua header `Set-Cookie`.
+  - Lưu trữ **Access Token** trong bộ nhớ ứng dụng (Memory / State / Context API). Access token sẽ mất khi tải lại trang, nhưng có thể lấy lại dễ dàng qua cơ chế silent refresh.
+  - Lưu trữ **Refresh Token** trong **HttpOnly, Secure, SameSite=Strict Cookie** hoặc cơ chế quản lý session an toàn.
   - **Lợi ích**: Ngăn chặn hoàn toàn các cuộc tấn công đánh cắp token qua lỗ hổng XSS (do mã JavaScript không thể đọc được HttpOnly cookie) và giảm thiểu rủi ro tấn công CSRF nhờ cơ chế `SameSite=Strict`.
 
-### 4.2 Đối với ứng dụng di động Flutter
+### 4.2 Đối với ứng dụng di động React Native (Primary End-User Client)
 - **Giải pháp khuyến nghị**:
-  - Lưu trữ cả Access Token và Refresh Token trong bộ nhớ an toàn của hệ điều hành thông qua thư viện `flutter_secure_storage`.
-  - Thư viện này tự động mã hóa dữ liệu trước khi lưu xuống thiết bị sử dụng **Keychain** (trên iOS) và **Keystore/Shared Preferences** (trên Android), ngăn chặn các ứng dụng khác đọc lén token.
+  - Lưu trữ Access Token và Refresh Token trong Secure Storage mã hóa phần cứng của hệ điều hành thông qua abstraction an toàn (như `react-native-keychain` hoặc `expo-secure-store`).
+  - Thư viện này tự động mã hóa dữ liệu trước khi lưu xuống thiết bị sử dụng **Keychain** (trên iOS) và **Android Keystore / EncryptedSharedPreferences** (trên Android), ngăn chặn hoàn toàn việc các ứng dụng khác đọc lén token.
+  - Tuyệt đối không lưu trữ refresh token hay access token dạng plaintext trong `AsyncStorage`.
 
 ---
 

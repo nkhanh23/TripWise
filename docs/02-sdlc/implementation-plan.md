@@ -44,7 +44,7 @@ gantt
     Thuật toán Scoring & Trip Generation   : des7, after des6, 7d
     section Frontend & Client
     Phát triển Web Frontend & Leaflet Map   : des8, after des7, 10d
-    Phát triển Mobile Flutter (Xem lại trip) : des9, after des8, 12d
+    Phát triển Mobile React Native (Primary App) : des9, after des8, 12d
 ```
 
 1. **Bước 1: Backend Foundation (Phase 1)**
@@ -59,10 +59,10 @@ gantt
    - Tích hợp Redis. Hiện thực Gemini Adapter (parse prompt sang JSON), OSRM Adapter (tính toán tuyến đường và nén geometry), và Weather Adapter.
 6. **Bước 6: Core Trip Generation Logic (Phase 6, 8)**
    - Hiện thực thuật toán chấm điểm (Place Scoring) theo sở thích/ngân sách. Viết Use Case tạo lịch trình và tự động tối ưu hóa thứ tự di chuyển (Nearest Neighbor).
-7. **Bước 7: Web Frontend & Leaflet (Phase 11)**
-   - Xây dựng giao diện nhập prompt và hiển thị lịch trình kèm bản đồ Leaflet vẽ polyline thực tế.
-8. **Bước 8: Flutter Mobile (Phase 12)**
-   - Xây dựng ứng dụng Flutter di động, kết nối API lấy danh sách chuyến đi đã lưu của user.
+7. **Bước 7: Web Admin Portal & Management (Phase 11 - 12)**
+   - Xây dựng hệ thống quản trị nội bộ (Admin Portal) với Dashboard, Place Moderation, Staging Review và City Pipeline.
+8. **Bước 8: React Native Mobile App (Mobile Phase M0 - M9)**
+   - Xây dựng ứng dụng di động React Native + TypeScript cho người dùng cuối trên Android/iOS: Auth, Explore, Map, AI Trip Planner, Itinerary Timeline, Saved Trips Offline.
 
 ---
 

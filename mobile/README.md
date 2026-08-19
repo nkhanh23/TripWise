@@ -1,40 +1,77 @@
-# Mobile Guide - AI Smart Travel Planner
+# TripWise Mobile (Personal AI Travel Mobile App)
 
-Tài liệu này đặc tả quy chuẩn phát triển dành cho cấu phần **Mobile Client (Flutter)** của dự án AI Smart Travel Planner.
+React Native + TypeScript + Expo personal travel companion client for TripWise (theo [ADR-017](../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](../DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)).
 
----
+Kiến trúc mục tiêu tích hợp:
+- **Supabase** (Auth + PostgreSQL + Edge Functions proxy cho Gemini AI).
+- **Google Maps SDK** & **Google Places API** cho bản đồ và tra cứu địa điểm.
+- **Open-Meteo API** & **OSRM** cho dự báo thời tiết và định tuyến.
+- Không còn phụ thuộc vào Spring Boot monolith sau khi hoàn tất Phase P1.
 
-## 1. Công nghệ & Ranh giới kết nối
-- **Công nghệ**: **Flutter SDK (Dart)** phát triển đa nền tảng cho Android và iOS.
-- **Ranh giới API**: Ứng dụng di động chỉ được kết nối trực tiếp tới Spring Boot API thông qua cổng `/api/v1/`. Tuyệt đối không nhúng hoặc gọi trực tiếp API Key của Gemini, OSRM hay Weather trên code mobile để tránh rò rỉ bảo mật khi dịch ngược file APK/IPA.
+## Prerequisites
 
----
+- Node.js 24.x LTS and npm 11.x
+- Android Studio, Android SDK, and an Android emulator or device for Android development
+- macOS with Xcode for local iOS Simulator development
 
-## 2. Quy tắc lập trình & Quản lý Token trên di động
-- **Lưu trữ Token an toàn (Secure Storage)**: 
-  - Sử dụng thư viện `flutter_secure_storage` để lưu mã hóa Access Token và Refresh Token vào phân vùng an toàn của hệ điều hành (Keychain của iOS và Keystore của Android).
-- **Bộ nhớ đệm ngoại tuyến (Offline Database)**:
-  - Tích hợp **SQLite (sqflite)** hoặc **Hive** để lưu trữ cấu trúc lịch trình (itinerary snapshot) của các chuyến đi đã lưu.
-  - Khi thiết bị mất sóng hoặc chạy offline, app tự động chuyển sang đọc dữ liệu lưu trữ cục bộ thay vì báo lỗi mất mạng, nâng cao trải nghiệm người dùng thực địa.
-- **State Management**: Khuyến nghị sử dụng **BLoC** hoặc **Riverpod** để tách biệt luồng UI và nghiệp vụ gọi API.
+## Install
 
----
-
-## 3. Tối ưu hóa hiệu năng & UX di động
-- **Performance**:
-  - Sử dụng từ khóa `const` trước các Widget tĩnh để tránh widget bị render lại (rebuild) không cần thiết khi state thay đổi.
-  - Sử dụng `CachedNetworkImage` để tự động cache ảnh CDN xuống bộ nhớ của máy, giới hạn kích thước render của ảnh (width/height) để tránh tràn bộ nhớ GPU của thiết bị di động cấu hình yếu.
-- **UX di động**:
-  - Phân trang (Pagination) thông qua Lazy Loading / Infinite Scroll khi hiển thị danh sách các chuyến đi đã lưu.
-  - Có nút "Thử lại" (Retry Button) rõ ràng khi gặp lỗi mất kết nối mạng và hiển thị widget Shimmer Loading trong lúc fetch API.
-  - Bản đồ: Sử dụng thư viện `flutter_map` trỏ vào OpenStreetMap tiles để đồng bộ hiển thị Polyline route và Marker.
-
----
-
-## 4. Cách khởi chạy dự án cục bộ (Local Run)
-*(Hướng dẫn chạy sau khi thư mục project mobile được tạo)*
-```bash
-flutter pub get
-flutter run
+```powershell
+cd mobile
+npm install
 ```
-Ứng dụng sẽ khởi chạy trình giả lập Android Emulator hoặc iOS Simulator để lập trình viên kiểm thử.
+
+## Environment
+
+Copy `.env.example` to `.env` and set the API address for the target runtime. Do not put server secrets or tokens in this file.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+`EXPO_PUBLIC_API_BASE_URL` must point to the shared backend. For the Android emulator, use `http://10.0.2.2:8080/api/v1`; a physical device needs a reachable LAN address instead.
+
+## Start development server
+
+```powershell
+npm start
+```
+
+## Run Android
+
+Start an emulator or connect a device, then run:
+
+```powershell
+npm run android
+```
+
+## Run iOS
+
+Local iOS Simulator builds require macOS and Xcode. On macOS:
+
+```bash
+npm run ios
+```
+
+## Quality checks
+
+```powershell
+npm run lint
+npm run typecheck
+npm test
+```
+
+## Project structure
+
+```text
+src/
+├── app/          # App bootstrap and providers
+├── api/          # Typed fetch client, config, and backend error mapping
+├── components/   # Minimal shared primitives
+├── features/     # End-user feature screens
+├── navigation/   # Typed bottom-tab navigation
+└── theme/        # TripWise design tokens
+tests/            # Foundation tests
+```
+
+M1 intentionally contains only five navigation placeholders: Home, Explore, Plan Trip, My Trips, and Profile. Authentication, token persistence, maps, places, and business API integrations are deferred to their assigned mobile phases.

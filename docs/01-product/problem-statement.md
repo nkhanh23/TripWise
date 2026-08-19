@@ -167,7 +167,5 @@ Nếu giải quyết tốt, sản phẩm có thể tạo ra các tác động sa
 
 ### 5.5 Ràng buộc trải nghiệm
 
-- Người dùng không muốn nhập form quá dài.
-- Kết quả phải dễ hiểu, không chỉ là JSON hoặc text dài.
-- Web MVP phải ưu tiên flow nhập prompt → xem itinerary → xem bản đồ → lưu.
-- Flutter app ở giai đoạn sau cần tối ưu xem lại lịch trình khi đang di chuyển.
+- Flow người dùng chính: nhập prompt → xem itinerary → tương tác bản đồ → lưu chuyến đi.
+- Mobile app (React Native) là trải nghiệm người dùng chính, tối ưu tra cứu và xem lại lịch trình khi đang di chuyển ngoài thực địa.

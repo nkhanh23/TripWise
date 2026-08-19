@@ -7,7 +7,8 @@ Hệ thống sử dụng mô hình **Modular Monolith** kết hợp **Clean Arch
 ┌────────────────────────────────────────────────────────┐
 │                        CLIENTS                         │
 │   ┌─────────────────────┐       ┌──────────────────┐   │
-│   │      Next.js        │       │     Flutter      │   │
+│   │  React Native (App) │       │ Web Admin Portal │   │
+│   │   [End-User Client] │       │ [ReactJS + Vite] │   │
 │   └──────────┬──────────┘       └────────┬─────────┘   │
 └──────────────┼───────────────────────────┼─────────────┘
                │ HTTPS (REST API /api/v1)  │
@@ -44,9 +45,9 @@ Backend được tổ chức thành các module nghiệp vụ tách biệt. Mỗ
 
 ---
 
-## 3. Web Frontend & Flutter Mobile
-- **Web Frontend**: Phát triển production trên nền tảng **Next.js**, giao tiếp hoàn toàn qua REST API. Mock UI React/Vite cũ được giữ lại làm visual reference để các phase frontend tiếp theo bám sát giao diện đã duyệt. Khi đến phase map, sử dụng **Leaflet** cùng với **OpenStreetMap** để kết xuất bản đồ, marker và route polyline mà không phát sinh chi phí giấy phép nền tảng đóng.
-- **Flutter Mobile**: Xây dựng ứng dụng đa nền tảng cho Android và iOS, tập trung tối ưu hóa trải nghiệm xem lại lịch trình đã lưu khi đang di chuyển ngoại tuyến (offline snapshot). Token được bảo vệ an toàn bằng `Flutter Secure Storage`.
+## 3. Mobile App & Web Admin Portal
+- **Mobile App (React Native + TypeScript)**: **Primary End-User Client** phát triển đa nền tảng cho Android và iOS, phục vụ người dùng cuối đăng nhập, khám phá địa điểm, tạo lịch trình AI, xem bản đồ (đánh giá Google Maps SDK), và mở lại lịch trình ngoại tuyến (offline snapshot). Token JWT được bảo vệ trong bộ nhớ bảo mật phần cứng (Keychain / Keystore).
+- **Web Admin Portal (`web/` - ReactJS + Vite + TypeScript)**: Hệ thống quản trị nội bộ dành cho Admin vận hành: Dashboard thống kê, Place Review, Place Moderation, Giám sát Ingestion Pipeline và cấu hình hệ thống. Các màn hình user web cũ được giữ làm visual reference / preview.
 
 ---
 

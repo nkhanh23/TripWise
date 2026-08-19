@@ -10,8 +10,8 @@ Tài liệu này xác lập các tiêu chuẩn lập trình chung áp dụng cho
 - **Tên hằng số (Constants)**: Sử dụng **UPPER_SNAKE_CASE** (ví dụ: `MAX_TRIP_DAYS`, `DEFAULT_SRID`).
 - **Tên tệp tin (Files/Folders)**:
   - Backend (Java): Khớp với tên Class (PascalCase).
-  - Frontend (React): Kebab-case cho thư mục và component không chứa UI, PascalCase cho UI Component (ví dụ: `TravelMap.jsx`).
-  - Mobile (Flutter/Dart): Snake_case cho mọi file (ví dụ: `trip_detail_screen.dart`).
+  - Frontend Web (React): PascalCase cho UI Component (ví dụ: `AdminDashboardPage.tsx`), camelCase cho hooks (`useAuth.ts`), kebab-case/camelCase cho thư mục.
+  - Mobile (React Native + TypeScript): PascalCase cho UI Component/Screen (ví dụ: `TripDetailScreen.tsx`, `PlaceCard.tsx`), camelCase cho custom hooks (`useMapCamera.ts`, `useTripPlanner.ts`), camelCase/kebab-case cho folders.
 
 ---
 

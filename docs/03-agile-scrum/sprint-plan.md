@@ -20,8 +20,8 @@ gantt
     Sprint 6: OSRM Integration, Route Caching  : s6, after s5, 7
     Sprint 7: Weather API, Weather-aware Scoring : s7, after s6, 7
     section Sprint 8-10: Clients & Hardening
-    Sprint 8: Web client MVP, Leaflet Map  : s8, after s7, 7
-    Sprint 9: Flutter Mobile Client (Saved Trips Offline) : s9, after s8, 7
+    Sprint 8: Web Admin Portal & Leaflet/MapLibre : s8, after s7, 7
+    Sprint 9: React Native Mobile App (Primary Client) : s9, after s8, 7
     Sprint 10: Monitoring, Scale, Prod Hardening : s10, after s9, 7
 ```
 
@@ -65,13 +65,12 @@ gantt
 ---
 
 ### Triển khai Giao diện & Vận hành (Sprints 8 - 10)
-- **Sprint 8: Web Frontend MVP**
-  - Triển khai web client bằng Next.js.
-  - Tích hợp bản đồ Leaflet hiển thị marker các địa điểm và polyline tuyến đường đi thực tế của OSRM (PBI-012).
-  - Hoàn thiện form nhập prompt tiếng Việt và hiển thị kết quả.
-- **Sprint 9: Flutter Mobile MVP**
-  - Xây dựng mobile client bằng Flutter, đồng bộ danh sách chuyến đi đã lưu từ backend.
-  - Hiện thực lưu trữ SQLite ngoại tuyến (offline snapshot) phục vụ xem lịch trình khi di chuyển không có mạng (PBI-013).
+- **Sprint 8: Web Admin Portal**
+  - Triển khai Web Admin Portal bằng ReactJS + Vite + TypeScript.
+  - Tích hợp Admin Dashboard, Place Review, Staging Moderation, City Pipeline và bản đồ trực quan.
+- **Sprint 9: React Native Mobile MVP**
+  - Xây dựng mobile client bằng React Native + TypeScript cho Android và iOS.
+  - Tích hợp Auth với Secure Storage, Bản đồ tương tác, Lập lịch AI, Itinerary Timeline và Saved Trips offline snapshot (PBI-013).
 - **Sprint 10: Production Readiness & Hardening**
   - Tích hợp Sentry theo dõi lỗi tự động, cấu hình Prometheus/Grafana thu thập metric (PBI-015).
   - Tiến hành Load test / Stress test bằng k6 đối với API tạo lịch trình để kiểm tra độ trễ.

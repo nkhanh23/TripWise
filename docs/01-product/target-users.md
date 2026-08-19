@@ -67,7 +67,7 @@ Registered User là người dùng đã đăng ký hoặc đăng nhập qua OAut
 - Lưu lại lịch trình.
 - Mở lại lịch trình trước hoặc trong chuyến đi.
 - Xem route, bản đồ, thời tiết.
-- Có trải nghiệm ổn định trên web và sau này trên Flutter app.
+- Có trải nghiệm ổn định và mượt mà trên Mobile App (React Native).
 
 ## 3.3 Quyền trong MVP
 

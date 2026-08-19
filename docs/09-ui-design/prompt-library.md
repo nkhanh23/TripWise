@@ -157,18 +157,18 @@ Output: cấu trúc thư mục + components + page layout, clean và dễ mở r
 
 ---
 
-## Prompt: Flutter mobile UI (Code generation)
+## Prompt: React Native mobile UI (Code generation)
 
 ```text
-Tạo UI Flutter cho TripWise (map-first) theo design tokens.
+Tạo UI React Native + TypeScript cho TripWise (map-first) theo design tokens.
 
 Yêu cầu:
-- Map layer dùng flutter_map (placeholder tiles ok).
-- Layout dùng Stack + Positioned + SafeArea.
-- Floating search bar, trip summary card, draggable bottom sheet itinerary, instruction card.
-- Marker custom widget (selected + order badge).
-- Không gọi API thật, dùng mock models.
+- Map layer dùng react-native-maps (Google Maps).
+- Layout dùng absolute positioning + SafeAreaView.
+- Floating search bar, trip summary card, bottom sheet itinerary, instruction card.
+- Marker custom component (selected + order badge).
+- Không gọi API thật, dùng mock typed models.
 
-Output: widget tree rõ ràng, tách component nhỏ, chuẩn bị cho state management.
+Output: component tree rõ ràng, tách component nhỏ, chuẩn bị cho custom hooks và state management.
 ```
 

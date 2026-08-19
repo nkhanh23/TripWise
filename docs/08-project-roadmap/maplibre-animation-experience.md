@@ -17,7 +17,7 @@ Xây dựng trải nghiệm bản đồ động, trực quan và đầy cảm x�
 ## Out of Scope
 - Tích hợp bản đồ 3D địa hình chi tiết nặng nề.
 - Tự host Vector Tiles Server trong phạm vi phase này (sử dụng Maptiler/OpenMapTiles CDN).
-- Custom animations cho mobile app Flutter (chỉ tập trung ở Frontend Web).
+- Custom animations cho mobile app React Native (phạm vi tài liệu này chỉ tập trung ở Web).
 
 ---
 

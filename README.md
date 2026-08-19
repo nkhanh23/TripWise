@@ -1,101 +1,79 @@
-# AI Smart Travel Planner
+# TripWise — Personal AI Travel Mobile App
 
 ## 1. Tổng quan dự án
 
-**AI Smart Travel Planner** là hệ thống lập lịch du lịch thông minh, cho phép người dùng nhập nhu cầu du lịch bằng tiếng Việt tự nhiên, ví dụ: "Tôi muốn đi Nha Trang 3 ngày 2 đêm, thích biển, hải sản, check-in và tiết kiệm chi phí".
+**TripWise** là ứng dụng di động cá nhân (**Personal AI Travel Mobile App**) hỗ trợ lập lịch và đồng hành du lịch thông minh, phát triển bằng **React Native + TypeScript + Expo** cho Android và iOS. Người dùng chỉ cần nhập nhu cầu bằng tiếng Việt tự nhiên (ví dụ: *"Tôi muốn đi Nha Trang 3 ngày 2 đêm, thích biển, hải sản, check-in và tiết kiệm chi phí"*), hệ thống AI sẽ tự động phân tích, gợi ý điểm tham quan, sắp xếp thứ tự di chuyển tối ưu và tạo lịch trình chi tiết theo từng ngày.
 
-Hệ thống sử dụng **Gemini API** để phân tích yêu cầu, sau đó dùng dữ liệu địa điểm thật đã chuẩn hóa trong **PostgreSQL + PostGIS** để gợi ý địa điểm phù hợp. Tuyến đường thực tế giữa các điểm được tính bằng **OSRM**, bản đồ hiển thị bằng **OpenStreetMap**, web client production dùng **ReactJS + Vite**, mobile client dùng **Flutter**.
-
-Dự án được thiết kế theo hướng sản phẩm thật: có authentication, dữ liệu thật, cache, kiểm soát chi phí API ngoài, nguyên tắc bảo mật secret, khả năng mở rộng dần và quy trình phát triển theo SDLC + Agile Scrum.
-
----
-
-## 2. Mục tiêu sản phẩm thật
-
-Mục tiêu không chỉ là demo AI, mà là xây dựng nền tảng có thể phát triển thành sản phẩm du lịch thực tế.
-
-### Mục tiêu người dùng
-
-- Người dùng nhập yêu cầu du lịch bằng ngôn ngữ tự nhiên.
-- Hệ thống hiểu điểm đến, số ngày, ngân sách, sở thích, phong cách du lịch.
-- Hệ thống gợi ý địa điểm thật có tọa độ rõ ràng.
-- Hệ thống tạo lịch trình theo từng ngày, từng buổi.
-- Hệ thống tính tuyến đường thực tế, khoảng cách và thời gian di chuyển.
-- Hệ thống hiển thị marker, route và chi tiết lịch trình trên bản đồ.
-- Người dùng có thể lưu lịch trình để xem lại.
-
-### Mục tiêu kỹ thuật
-
-- Backend tách riêng frontend/mobile.
-- Business logic không phụ thuộc controller, database framework hoặc API ngoài.
-- Dữ liệu không gian được lưu và truy vấn đúng bằng PostgreSQL + PostGIS.
-- AI không được tự bịa địa điểm trong production; AI chỉ phân tích yêu cầu, giải thích và viết mô tả từ dữ liệu đã xác minh.
-- API ngoài như Gemini, OSRM, Weather, Google Places phải có timeout, retry có giới hạn, fallback và cache.
-- Secret không được hardcode trong source code.
-- Thiết kế ban đầu phải đủ sạch để có thể mở rộng sang nhiều thành phố, nhiều client và nhiều nguồn dữ liệu.
+Kiến trúc mục tiêu chính thức của TripWise (theo [ADR-017](DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)):
+- **Client duy nhất:** Mobile App (**React Native + TypeScript + Expo**) cho cả Android và iOS.
+- **Backend & Database:** **Supabase** (Managed PostgreSQL + Row Level Security (RLS) + Supabase Auth).
+- **Serverless AI Gateway:** **Supabase Edge Functions** (TypeScript) để gọi **Gemini API** bảo mật.
+- **Bản đồ & Địa điểm:** **Google Maps SDK** kết hợp **Google Places API** để tra cứu dữ liệu địa điểm, hình ảnh và đánh giá tại runtime.
+- **Dẫn đường & Thời tiết:** **OSRM Routing Engine** tính toán lộ trình và **Open-Meteo API** cung cấp dự báo thời tiết trực tiếp trên thiết bị.
 
 ---
 
-## 3. Tech stack đã chốt
+## 2. Mục tiêu sản phẩm
 
-| Nhóm | Công nghệ |
-|---|---|
-| Backend | Java 21, Spring Boot 3.x |
-| Architecture | Clean Architecture + Modular Monolith |
-| Database | PostgreSQL + PostGIS |
-| Migration | Flyway |
-| Cache | Redis |
-| API | REST API versioning theo `/api/v1` |
-| Auth | OAuth2 + JWT access token ngắn hạn + refresh token rotation |
-| AI | Gemini API |
-| Routing | OSRM |
-| Map | OpenStreetMap, Leaflet ở web client |
-| Web | ReactJS + Vite, tách riêng backend |
-| Mobile | Flutter |
-| Media/static assets | Object Storage + CDN |
-| Monitoring | Logging ngay từ đầu; metrics/tracing chuẩn bị cho production |
-| DevOps | Docker/Docker Compose ở local, CI/CD sau khi có skeleton |
-| Testing | Unit test, integration test, API contract test sau khi backend foundation có code |
+TripWise được thiết kế tối giản, tinh gọn và tối ưu cho nhu cầu sử dụng cá nhân của chủ sở hữu:
 
-### Frontend web decision
+### Trải nghiệm cốt lõi
+- Nhập mong muốn du lịch bằng ngôn ngữ tự nhiên tiếng Việt.
+- AI hiểu điểm đến, số ngày, ngân sách, phong cách và phân bổ thời gian hợp lý.
+- Tra cứu địa điểm thật, hình ảnh và đánh giá mới nhất qua Google Places.
+- Tự động tính toán khoảng cách, thời gian di chuyển và vẽ tuyến đường thực tế trên Google Maps.
+- Lưu trữ lịch sử chuyến đi và snapshot địa điểm trên Supabase để dễ dàng xem lại khi đang di chuyển (kể cả khi mất mạng).
 
-- Codebase web production hiện tại dùng `ReactJS + Vite + TypeScript` trong thư mục `web/`.
-- Source UI gốc được lấy từ `web-archive-vite-ui/` và đã được migrate vào `web/`.
-- `web-archive-vite-ui/` tiếp tục được giữ làm snapshot/archive tham chiếu cho giao diện đã chốt.
+### Nguyên tắc kỹ thuật
+- **Zero Server Maintenance:** Sử dụng BaaS (Supabase) và Serverless Edge Functions, không cần quản lý máy chủ hay Docker riêng biệt.
+- **Bảo mật Secret tuyệt đối:** Private API keys (`GEMINI_API_KEY`, Google Server Key) được cô lập trên Supabase Secrets, không bao giờ xuất hiện trong mobile bundle.
+- **Chi phí tối ưu:** Tận dụng chính sách Free tier/hạn mức sử dụng miễn phí hàng tháng (Supabase Free Plan, Gemini Developer API, Open-Meteo, và free usage tier theo từng SKU của Google Maps Platform).
+- **Snapshot Independence:** Lịch trình lưu trong database có snapshot tối thiểu (`google_place_id`, `place_name`, `latitude`, `longitude`, `place_address`, `place_category`) để đảm bảo lịch sử chuyến đi không bị vỡ.
 
 ---
 
-## 4. Kiến trúc tổng quan
+## 3. Tech Stack Chính Thức (Target Architecture)
 
-Dự án đi theo mô hình **Modular Monolith** để giữ tốc độ phát triển nhanh trong MVP, nhưng vẫn tách module rõ ràng để sau này có thể tách service nếu thật sự cần.
+| Nhóm | Công nghệ | Vai trò / Ghi chú |
+|---|---|---|
+| **Mobile Client** | React Native, TypeScript, Expo | **Sản phẩm duy nhất** cho Android & iOS (`mobile/`) |
+| **Backend & Auth** | Supabase Auth | Quản lý phiên đăng nhập cá nhân (Email/Password) |
+| **Database** | Supabase PostgreSQL | Lưu trữ `profiles`, `trips`, `itinerary_days`, `itinerary_items` kèm **RLS** |
+| **Serverless Logic** | Supabase Edge Functions | Proxy gọi Gemini API bảo mật |
+| **AI Engine** | Google Gemini API | Phân tích prompt tiếng Việt, cấu trúc JSON và viết mô tả |
+| **Bản đồ** | Google Maps SDK | Hiển thị map, marker, polyline (Client key restricted) |
+| **Địa điểm** | Google Places API | Tìm kiếm, autocomplete, chi tiết địa điểm & ảnh |
+| **Định tuyến** | OSRM | Tính toán lộ trình thực tế (Client-side fetch kèm fallback) |
+| **Thời tiết** | Open-Meteo API | Dự báo thời tiết theo điểm đến (Client-side fetch) |
+
+### Trạng thái các cấu phần cũ (Legacy Components - Scheduled for Removal)
+- **`backend/` (Spring Boot Monolith)**: Trạng thái `Legacy migration source`. Được lưu giữ tạm thời để đối chiếu logic AI prompt và sẽ xóa bỏ theo lộ trình D-series.
+- **`web/` (ReactJS + Vite Admin)**: Trạng thái `Legacy / scheduled for removal`. Không còn sử dụng.
+- **Redis & PostGIS POI Pipeline**: Đã ngưng phát triển và lên kế hoạch dọn dẹp.
+
+---
+
+## 4. Kiến trúc Tổng quan
 
 ```text
-clients
-├── web: ReactJS + Vite
-└── mobile: Flutter
-
-backend: Java 21 + Spring Boot 3.x
-├── auth module
-├── user module
-├── place module
-├── trip module
-├── itinerary module
-├── ai module
-├── route module
-├── weather module
-├── media module
-└── admin/data-ingestion module
-
-infrastructure
-├── PostgreSQL + PostGIS
-├── Redis
-├── Object Storage
-├── CDN
-├── Gemini API
-├── OSRM
-├── Open-Meteo hoặc weather provider khác
-├── Google Places API nếu cần enrich dữ liệu thật
-└── OpenStreetMap/Overpass/Nominatim nếu được phép theo policy sử dụng
+TripWise Personal Mobile App (React Native + TypeScript)
+│
+├── Data & Auth Layer
+│    └── @supabase/supabase-js
+│          ├── Supabase Auth (Single User Login)
+│          └── Supabase Postgres (Profiles, Trips, Itinerary Days/Items với RLS)
+│
+├── AI Service Layer
+│    └── Supabase Edge Function (`/functions/v1/generate-trip`)
+│          └── Google Gemini API (GEMINI_API_KEY an toàn trên Supabase Vault)
+│
+├── Maps & Places Layer
+│    ├── React Native Maps (Google Maps SDK Client Key Restricted)
+│    └── Google Places API Client
+│
+└── Public Utility Services
+     ├── Open-Meteo Weather API (Direct fetch)
+     └── OSRM Routing Engine (Direct fetch kèm client fallback)
 ```
 
 ### Clean Architecture trong backend

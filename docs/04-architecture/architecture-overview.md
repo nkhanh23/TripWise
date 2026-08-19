@@ -1,73 +1,61 @@
-# Architecture Overview - AI Smart Travel Planner
+# Architecture Overview - TripWise Personal Mobile App
 
-## 1. Sơ đồ kiến trúc tổng quan
-Hệ thống được thiết kế theo mô hình **Stateless Backend** nhằm tối ưu hóa khả năng mở rộng (horizontal scaling) và giảm tải tài nguyên hệ thống. Giao diện người dùng Web và Di động giao tiếp với Backend thông qua REST API bảo mật.
+> **QUYẾT ĐỊNH KIẾN TRÚC MỚI (ADR-018):**
+> TripWise đã chính thức chuyển đổi từ nền tảng du lịch công cộng sang **Ứng dụng di động cá nhân (Personal AI Travel Mobile App)**.
+> Kiến trúc mục tiêu sử dụng **React Native + TypeScript** kết nối trực tiếp với **Supabase (Auth + PostgreSQL + Edge Functions)**.
+
+---
+
+## 1. Sơ đồ Kiến trúc Mục tiêu (Target Architecture)
 
 ```text
-                               ┌─────────────────┐
-                               │   Clients Web   │ (Leaflet, OpenStreetMap)
-                               └────────┬────────┘
-                                        │ HTTPS
-                                        ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        API Gateway & Load Balancer                     │
-│                        (Nginx / AWS ALB / Cloudflare)                  │
-└───────────────────────────────────────┬────────────────────────────────┘
-                                        │
-                         ┌──────────────┴──────────────┐
-                         ▼ (Round Robin / Least Conn)  ▼
-┌────────────────────────────────────────┐    ┌──────────────────────────┐
-│             Stateless Backend          │    │      Stateless Backend   │
-│             Java Spring Boot (JVM)     │    │      Java Spring Boot    │
-│  [Auth] [Place] [Trip] [Route] [Weather]│   │                          │
-└────────┬───────────┬────────────┬──────┘    └─────┬────────────────────┘
-         │           │            │                 │
-         ▼           ▼            ▼                 ▼
- ┌───────────────┐ ┌──────────┐ ┌──────────────────────┐ ┌───────────────┐
- │  PostgreSQL   │ │  Redis   │ │     External APIs    │ │Object Storage │
- │    PostGIS    │ │  Cache   │ │ OSRM, Gemini, Weather│ │    + CDN      │
- └───────────────┘ └──────────┘ └──────────────────────┘ └───────────────┘
+               ┌────────────────────────────────────────────────────────┐
+               │              TripWise Mobile Client                    │
+               │         (React Native + TypeScript + Expo)             │
+               └──────┬────────────────────┬────────────────────┬───────┘
+                      │                    │                    │
+        [Supabase SDK + RLS]     [Direct API Calls]    [Native Map SDK]
+                      │                    │                    │
+                      ▼                    ▼                    ▼
+     ┌────────────────────────┐  ┌──────────────────┐ ┌─────────────────┐
+     │        Supabase        │  │  Open-Meteo API  │ │ Google Maps SDK │
+     │  ┌──────────────────┐  │  │  (Weather Data)  │ │ (Map & Route UI)│
+     │  │  Supabase Auth   │  │  └──────────────────┘ └─────────────────┘
+     │  │  (User Session)  │  │  ┌──────────────────┐ ┌─────────────────┐
+     │  ├──────────────────┤  │  │   OSRM Engine    │ │  Google Places  │
+     │  │  PostgreSQL + RLS│  │  │ (Public Routing) │ │ (Search/Photos) │
+     │  │ (Trips/Itinerary)│  │  └──────────────────┘ └─────────────────┘
+     │  ├──────────────────┤  │
+     │  │  Edge Functions  │  │
+     │  │  (Deno / TS)     │──┼───────────────┐
+     │  └──────────────────┘  │               │ HTTPS (Secret Isolated)
+     └────────────────────────┘               ▼
+                                   ┌─────────────────────┐
+                                   │  Google Gemini API  │
+                                   │  (Trip Generation)  │
+                                   └─────────────────────┘
 ```
 
 ---
 
-## 2. Các thành phần chính trong kiến trúc
+## 2. Các Thành phần Chính trong Kiến trúc Đích
 
-### 2.1 API Gateway & Load Balancer
-- **Hiện tại (MVP)**: Sử dụng **Nginx** làm Reverse Proxy để điều phối request từ Web client đến backend Spring Boot, đồng thời xử lý SSL termination và cấu hình CORS.
-- **Tương lai (Future Scale)**: Chuyển dịch sang sử dụng **AWS ALB (Application Load Balancer)** hoặc **Nginx Cluster** hỗ trợ tự động mở rộng theo tải (Auto-scaling).
+### 2.1 Mobile Client (`mobile/`)
+- Xây dựng bằng **React Native + TypeScript + Expo**.
+- Đảm nhận 100% giao diện người dùng: xác thực, tạo chuyến đi bằng prompt AI, hiển thị timeline lịch trình theo ngày, bản đồ tương tác Google Maps, tìm kiếm địa điểm Google Places và lưu trữ offline.
 
-### 2.2 Stateless Backend
-- Bộ máy backend được xây dựng trên **Java 21 và Spring Boot 3.x**.
-- **Tính chất Stateless**: Không lưu trữ trạng thái phiên làm việc (HTTP Session) trong bộ nhớ của server. Mọi thông tin xác thực đều dựa trên JWT token được gửi trong header của mỗi request. Điều này cho phép chạy song song hàng chục instance backend phía sau Load Balancer mà không gặp lỗi đồng bộ phiên.
+### 2.2 BaaS Layer (Supabase)
+- **Supabase Auth:** Quản lý tài khoản và phiên đăng nhập bảo mật (JWT) cho chủ sở hữu.
+- **Supabase PostgreSQL & RLS:** Cơ sở dữ liệu quan hệ lưu trữ `profiles`, `trips`, `itinerary_days`, `itinerary_items`. Áp dụng chính sách **Row Level Security (RLS)** nghiêm ngặt để đảm bảo an toàn truy cập.
+- **Supabase Edge Functions:** Serverless TypeScript functions chạy trên Deno runtime. Đóng vai trò proxy bảo vệ `GEMINI_API_KEY`, bóc tách prompt và kiểm tra JSON schema lịch trình trước khi trả về client.
 
-### 2.3 Layer Dữ liệu & Caching
-- **PostgreSQL + PostGIS**: Nguồn dữ liệu tin cậy duy nhất (Single Source of Truth) cho thông tin người dùng, địa điểm (sử dụng spatial indices), lịch trình du lịch và cache tuyến đường OSRM.
-- **Redis Cache**: Đảm nhận lưu trữ các dữ liệu tạm thời có tần suất truy cập cao (thông tin thời tiết theo ngày, token metadata, lượt đếm rate limit) giúp giảm tối đa tải truy vấn trực tiếp vào PostgreSQL.
-
-### 2.4 CDN & Object Storage
-- Toàn bộ static assets (ảnh địa điểm, ảnh đại diện user, các file tài nguyên tĩnh) được tải trực tiếp lên **MinIO / AWS S3 (Object Storage)** và phân phối qua **Cloudflare CDN**. Backend tuyệt đối không lưu trữ hoặc phục vụ trực tiếp các file tĩnh nặng để giải phóng băng thông và CPU.
-
-### 2.5 Monitoring & Logging
-- **Logback + SLF4J**: Xuất log có cấu trúc dưới định dạng JSON, đính kèm Correlation ID giúp dễ dàng truy vết lỗi xuyên suốt qua hệ thống phân tích log tập trung.
-- **Spring Boot Actuator**: Cung cấp các thông số sức khỏe hệ thống phục vụ thu thập tự động.
+### 2.3 External Services
+- **Google Maps SDK & Google Places API:** Bản đồ nền và nguồn tra cứu địa điểm, hình ảnh, đánh giá. Client API key được giới hạn theo Android Package Name/SHA-1 fingerprint và iOS Bundle ID.
+- **Open-Meteo API:** Dự báo thời tiết theo tọa độ điểm đến (gọi trực tiếp từ mobile).
+- **OSRM Engine:** Tính toán khoảng cách và thời gian di chuyển giữa các điểm (gọi trực tiếp từ mobile kèm client-side fallback).
 
 ---
 
-## 3. Scaling Path (Lộ trình mở rộng hệ thống)
+## 3. Trạng thái Kiến trúc Cũ (Legacy Architecture Notice)
 
-```mermaid
-graph TD
-    A[Monolith Single DB] --> B[Backend Scale Out + DB Read Replicas]
-    B --> C[Self-hosted OSRM Cluster]
-    C --> D[Tách Service nhạy cảm thành Microservices]
-```
-
-1. **Giai đoạn 1 (Hiện tại)**: Monolith với 1 DB PostgreSQL và 1 Redis local. Phù hợp cho lượng người dùng nhỏ dưới 10,000 active users.
-2. **Giai đoạn 2 (Scale Out Backend & DB)**: 
-   - Triển khai nhiều instance Backend chạy song song sau Load Balancer.
-   - Thiết lập cấu trúc cơ sở dữ liệu PostgreSQL gồm 1 Master (xử lý ghi) và nhiều Read Replicas (xử lý đọc dữ liệu địa điểm, tìm kiếm).
-3. **Giai đoạn 3 (Self-hosted OSRM & API Cache)**:
-   - Thay thế việc gọi OSRM public server bằng cụm máy chủ tự host OSRM (OSRM cluster) để không bị rate limit và giảm độ trễ tính toán tuyến đường xuống dưới `50ms`.
-4. **Giai đoạn 4 (Tách Microservices)**:
-   - Khi lượng người dùng tăng mạnh, thực hiện bóc tách các module có tải cao hoặc cần tính bảo mật độc lập (ví dụ: `auth` module, `route` module) thành các microservices riêng biệt.
+Kiến trúc cũ sử dụng Java 21 + Spring Boot 3.x, Docker PostgreSQL + PostGIS, Redis, pipeline Geofabrik/Overpass và Web Admin Portal (`web/`) hiện ở trạng thái **Legacy Migration Source / Scheduled for Removal** (theo ADR-018). Chúng được lưu giữ tạm thời để làm nguồn đối chiếu và sẽ được xóa bỏ theo lộ trình D-series.

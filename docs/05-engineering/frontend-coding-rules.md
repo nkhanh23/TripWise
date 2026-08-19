@@ -1,49 +1,45 @@
-# Frontend Coding Rules - AI Smart Travel Planner
+# Frontend Coding Rules - TripWise Admin Portal
 
-Bộ quy tắc lập trình bắt buộc áp dụng cho Web Frontend của TripWise.
+Bộ quy tắc lập trình bắt buộc áp dụng cho Web Admin Portal (`web/`) của TripWise (theo [ADR-014](../../DECISIONS.md#adr-014-chuyen-web-production-sang-reactjs--vite-va-dung-web-lam-codebase-chinh) & [ADR-017](../../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client)).
 
 ---
 
-## 1. Framework boundary
+## 1. Framework Boundary & Role
 
-- Frontend web production dùng `Next.js + TypeScript`.
-- Hướng routing chuẩn là `App Router`.
-- Không tạo mới màn hình production bằng Vite/CRA song song với app `web/`.
-- Mock UI React/Vite cũ tại `web-archive-vite-ui/` chỉ dùng làm visual reference, không phải nơi phát triển production tiếp theo.
+- **Trọng tâm sản xuất**: `web/` là **TripWise Admin Portal** (hệ thống quản trị nội bộ), xây dựng bằng **ReactJS + Vite + TypeScript**.
+- **User Screens Classification**: Các màn hình user-facing cũ (Landing, PlanTrip, TripResult, Explore, SavedTrips) được giữ nguyên mã nguồn làm visual reference / legacy / preview tool cho Admin, không xóa code.
+- **Routing**: Sử dụng `react-router-dom` cho các tuyến đường quản trị `/admin/*` và hệ thống.
 
-## 2. Visual consistency với mock UI
+---
 
-- UI mới phải bám sát mock React đã chốt về layout, spacing, tone, phân cấp component và trải nghiệm chính.
-- Có thể thay đổi implementation để phù hợp Next.js, nhưng không tự ý đổi phong cách giao diện nếu chưa có quyết định mới.
-- Khi cần chuyển một màn từ mock sang app thật, ưu tiên map lại structure và states trước, rồi mới tinh chỉnh kỹ thuật.
+## 2. Kết nối API & Client Wrapper
 
-## 3. Kết nối API & client wrapper
+- Bắt buộc sử dụng Axios client instance tập trung (`web/src/lib/api/`).
+- Cấu hình API base URL thông qua biến môi trường chuẩn của Vite: `VITE_API_BASE_URL`.
+- Không hardcode URL backend trong component.
 
-- Bắt buộc dùng một API client tập trung, ví dụ Fetch wrapper hoặc Axios instance.
-- Chỉ đọc `NEXT_PUBLIC_*` env ở browser.
-- API base URL của frontend phải đi qua env public an toàn, ví dụ `NEXT_PUBLIC_API_BASE_URL`.
-- Không hardcode backend URL trong component.
+---
 
-## 4. Token & bảo mật
+## 3. Token & Bảo mật
 
-- Access token không được hardcode trong code hoặc commit vào file cấu hình.
-- Frontend không được chứa Gemini API key, JWT secret, database password hay secret backend khác.
-- Web client không được gọi trực tiếp Gemini API, OSRM API hoặc Weather API; mọi request phải đi qua backend TripWise.
+- Tự động gắn JWT Access Token qua Axios Request Interceptor.
+- Tự động xử lý Silent Refresh Token qua Axios Response Interceptor khi gặp mã `401`.
+- Web Admin Portal tuyệt đối không gọi trực tiếp Gemini API, OSRM API hay Weather API; mọi request đều phải đi qua Backend Spring Boot `/api/v1/`.
+- Không hardcode secret hoặc commit file `.env` thật lên Git.
+- Bảo vệ các tuyến đường quản trị với Role-Based Access Control (`ROLE_ADMIN`).
 
-## 5. UX states
+---
 
-- Tất cả thao tác có độ trễ lớn phải có loading/skeleton rõ ràng.
-- Thông báo lỗi phải thân thiện với người dùng cuối, không lộ chi tiết kỹ thuật thô.
-- Nút submit quan trọng phải có trạng thái disabled/pending để tránh double submit.
+## 4. UX & Component States
 
-## 6. Rendering & performance
+- Mọi thao tác tải dữ liệu (Place review list, Ingestion stats, Staging moderation) phải có Skeleton / Loading state rõ ràng.
+- Nút submit, phê duyệt, từ chối dữ liệu phải có trạng thái disabled/pending để tránh double submit.
+- Thông báo lỗi hiển thị rõ ràng, chuyên nghiệp cho người quản trị.
 
-- Tách map thành module riêng khi đến phase map integration.
-- Lazy load phần map hoặc các khối nặng khi phù hợp.
-- Tránh để thay đổi state nhỏ làm rerender toàn bộ layout hoặc map panel.
+---
 
-## 7. Map & media rules
+## 5. Rendering, Performance & Maps
 
-- Khi triển khai map, dùng Leaflet + OpenStreetMap theo đúng roadmap phase.
-- Marker, route, overlays nên nhận dữ liệu qua props rõ ràng để dễ test và tái sử dụng.
-- Ảnh hiển thị production nên đi qua CDN hoặc URL đã tối ưu, không dùng asset nặng bừa bãi.
+- Tách biệt component bản đồ (Leaflet / MapLibre) thành module riêng biệt (`MapCanvas`, `TripLeafletMap`, `TripMapLibreMap`).
+- Tối ưu hóa hiệu năng render bảng dữ liệu lớn với phân trang (Pagination).
+- Ảnh hiển thị qua CDN hoặc URL tối ưu.

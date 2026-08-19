@@ -119,18 +119,20 @@
 - **Acceptance Criteria**:
   - Form nhập có ví dụ prompt và chọn ngày đi.
   - Giao diện kết quả responsive chia 2 cột: Cột trái hiển thị timeline chi tiết, cột phải hiển thị bản đồ Leaflet (vẽ markers và polyline route).
-- **Notes**: Sử dụng Next.js cho production web. Giao diện phải bám mock UI React đã chốt.
+- **Notes**: Sử dụng ReactJS + Vite + TypeScript cho codebase web. Giao diện bám sát thiết kế đã duyệt.
 
 ---
 
-## 9. Flutter MVP Epic
-### PBI-013: Phát triển Mobile Client xem lịch trình đã lưu offline
-- **User Story**: Là người dùng đi du lịch thực địa, tôi muốn mở app điện thoại để xem lại lịch trình đã lưu ngay cả khi mất mạng để dễ theo dõi điểm đến.
-- **Priority**: Trung bình (Medium)
+## 9. Mobile App Epic (React Native)
+### PBI-013: Phát triển Mobile Client (Primary End-User App)
+- **User Story**: Là người dùng đi du lịch thực địa, tôi muốn sử dụng app di động để tạo lịch trình AI, khám phá bản đồ và xem lại lịch trình đã lưu ngay cả khi mất mạng.
+- **Priority**: Cao (High)
 - **Acceptance Criteria**:
-  - Đăng nhập và hiển thị danh sách Trip đã lưu của user.
-  - Cho phép lưu offline snapshot lịch trình vào SQLite của điện thoại.
-- **Notes**: Phát triển sau khi API backend và Web MVP đã chạy ổn định.
+  - Đăng ký, đăng nhập và tự động làm mới token an toàn (Secure Storage).
+  - Khám phá địa điểm, xem bản đồ tương tác với marker clustering.
+  - Tạo lịch trình bằng AI tiếng Việt tự nhiên và hiển thị timeline chi tiết.
+  - Quản lý danh sách Saved Trips và hỗ trợ lưu offline snapshot vào local storage của thiết bị.
+- **Notes**: Xây dựng bằng React Native + TypeScript cho cả Android và iOS.
 
 ---
 

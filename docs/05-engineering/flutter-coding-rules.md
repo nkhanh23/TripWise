@@ -1,10 +1,13 @@
-# Flutter Coding Rules - AI Smart Travel Planner
+# [DEPRECATED] Flutter Coding Rules - AI Smart Travel Planner
 
-Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứng dụng di động Flutter.
+> ⚠️ **THÔNG BÁO LỊCH SỬ (DEPRECATED / SUPERSEDED):**
+> Tài liệu này được lưu trữ chỉ nhằm mục đích ghi nhận lịch sử kiến trúc ban đầu.
+> Theo **ADR-017**, dự án TripWise đã chính thức chuyển đổi sang **React Native + TypeScript** làm mobile client chính cho người dùng cuối.
+> Vui lòng tham khảo bộ quy tắc chính thức tại: [react-native-coding-rules.md](./react-native-coding-rules.md).
 
 ---
 
-## 1. Nguyên tắc kết nối API & Bảo mật Token
+## 1. Nguyên tắc kết nối API & Bảo mật Token (Lịch sử)
 - **Chỉ gọi Spring Boot API**: Ứng dụng Flutter tuyệt đối không được gọi trực tiếp sang các API của bên thứ ba (Gemini, OSRM, Weather). Mọi yêu cầu tạo chuyến đi hay đọc thời tiết phải gửi qua endpoint `/api/v1/` của Spring Boot backend.
 - **Lưu trữ Token an toàn (Secure Storage)**: 
   - Access Token và Refresh Token phải được lưu trữ trong bộ nhớ mã hóa bảo mật của hệ điều hành sử dụng gói thư viện `flutter_secure_storage` (sử dụng Keychain trên iOS và Keystore/AES trên Android).

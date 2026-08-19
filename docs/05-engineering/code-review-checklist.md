@@ -36,7 +36,7 @@ Bảng hướng dẫn kiểm duyệt chất lượng mã nguồn (Code Review) d
 ---
 
 ## 5. Rà soát Kỹ thuật Coding & Nhật ký (Clean Code & Logging)
-- [ ] Tên lớp, tên biến, tên hàm đã tuân thủ đúng Naming Convention của từng cấu phần (Java, React, Flutter) chưa?
+- [ ] Tên lớp, tên biến, tên hàm đã tuân thủ đúng Naming Convention của từng cấu phần (Java, React, React Native) chưa?
 - [ ] Các đoạn thuật toán phức tạp (như thuật toán chấm điểm địa điểm, tối ưu quãng đường) có comment giải thích rõ ràng chưa?
 - [ ] Việc ghi nhận log đã sử dụng đúng log level (`INFO`, `WARN`, `ERROR`) chưa? Có in ra log Correlation ID (`MDC`) không?
 - [ ] Định dạng dữ liệu API trả về (JSON) có khớp chính xác với Spec thiết kế ban đầu không?

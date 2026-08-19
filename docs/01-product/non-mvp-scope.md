@@ -340,29 +340,30 @@ Sau khi có nhu cầu thật:
 
 ---
 
-## 11. Chưa mobile app đầy đủ như web/admin
+## 11. Không đưa chức năng Admin vào Mobile App
 
-## 11.1 Không làm trong MVP đầu tiên
+## 11.1 Không làm trên Mobile
 
-Flutter app chưa cần đủ mọi tính năng:
+Mobile app (React Native) phục vụ người dùng cuối, không chứa các tính năng quản trị:
 
-- Admin quản lý địa điểm.
-- Data ingestion.
-- Dashboard.
+- Admin quản lý địa điểm và duyệt sửa thông tin.
+- Data ingestion & staging moderation pipeline.
+- Thống kê dashboard vận hành.
 - Cấu hình hệ thống.
 - Partner/operator tools.
 
-## 11.2 Hướng mobile hợp lý
+## 11.2 Hướng Mobile App cho người dùng cuối
 
-Flutter nên tập trung vào:
+Mobile App (React Native) tập trung vào:
 
-- Đăng nhập.
-- Xem lịch trình đã lưu.
-- Xem chi tiết ngày.
-- Xem bản đồ.
-- Mở lại lịch trình khi đang đi.
+- Đăng ký / Đăng nhập.
+- Khám phá địa điểm & tương tác bản đồ.
+- Tạo lịch trình AI thông minh.
+- Xem chi tiết lịch trình theo ngày, thời tiết, route di chuyển.
+- Xem lại lịch trình đã lưu (hỗ trợ offline snapshot khi đang đi du lịch thực địa).
+- Quản lý trang cá nhân & cài đặt.
 
-Web vẫn là nơi ưu tiên cho MVP tạo lịch trình đầu tiên.
+Các tính năng quản trị nội bộ được tập trung hoàn toàn trên **TripWise Admin Portal** (`web/`).
 
 ---
 

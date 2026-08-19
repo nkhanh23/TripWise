@@ -67,6 +67,6 @@ Hệ thống áp dụng mô hình kiểm thử dạng kim tự tháp (Testing Py
 - **Kiểm thử Web**:
   - Kiểm tra tính tương thích Responsive trên các thiết bị di động phổ biến (iPhone, Samsung Galaxy).
   - Kiểm tra tương tác trên bản đồ Leaflet: Click chọn marker phải hiển thị popup thông tin địa điểm và di chuyển tiêu điểm bản đồ (focus map) tương ứng.
-- **Kiểm thử Mobile Flutter**:
-  - Kiểm tra luồng lưu trữ token ngoại tuyến khi tắt hẳn app và mở lại.
-  - Kiểm tra việc hiển thị bản đồ và danh sách chuyến đi đã lưu trong điều kiện mạng yếu hoặc mất kết nối mạng.
+- **Kiểm thử Mobile React Native**:
+  - Kiểm tra luồng lưu trữ token trong Secure Storage khi tắt hẳn app và mở lại.
+  - Kiểm tra việc hiển thị bản đồ, marker clustering và danh sách chuyến đi đã lưu trong điều kiện mạng yếu hoặc mất kết nối mạng (offline snapshot).

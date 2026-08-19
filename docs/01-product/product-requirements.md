@@ -24,10 +24,10 @@ Lịch trình cần dựa trên:
 
 ## 1.4 Goal 4: Trải nghiệm xem kết quả trực quan
 
-Web MVP cần hiển thị:
+Ứng dụng hiển thị:
 
 - Lịch trình theo ngày.
-- Bản đồ OpenStreetMap.
+- Bản đồ trực quan (OpenStreetMap / MapLibre trên Web, Google Maps SDK trên Mobile).
 - Marker địa điểm.
 - Polyline route.
 - Thông tin thời tiết.
@@ -38,8 +38,9 @@ Web MVP cần hiển thị:
 
 Sản phẩm cần thiết kế để sau này mở rộng:
 
-- Flutter app.
-- Nhiều thành phố.
+- Mobile app (React Native + TypeScript cho Android/iOS - Primary End-User Client).
+- Web Admin Portal (ReactJS + Vite + TypeScript - Internal Management).
+- Nhiều thành phố (63 tỉnh/thành).
 - Partner/operator.
 - Booking/thanh toán.
 - Monitoring/rate limiting.
@@ -69,7 +70,7 @@ Người dùng có thể nhập nơi xuất phát, ví dụ TP.HCM, để hỗ t
 
 ### FR-004: Prompt examples
 
-Web MVP cần có prompt mẫu để giảm rào cản sử dụng.
+Cung cấp prompt mẫu để giảm rào cản sử dụng.
 
 ---
 
@@ -122,9 +123,9 @@ Hệ thống lấy địa điểm theo:
 
 Mỗi địa điểm dùng cho itinerary phải có latitude/longitude hợp lệ hoặc geometry hợp lệ.
 
-### FR-010: Admin quản lý địa điểm tối thiểu
+### FR-010: Admin quản lý địa điểm
 
-Admin có thể thêm/sửa/ẩn địa điểm cho thành phố MVP Nha Trang.
+Admin có thể thêm/sửa/ẩn địa điểm và kiểm duyệt dữ liệu trong Admin Portal.
 
 ### FR-011: Source và verification
 
@@ -244,7 +245,7 @@ Nếu Weather API lỗi:
 
 ---
 
-## 2.8 Web MVP
+## 2.8 Trải nghiệm người dùng (Mobile & Admin Web)
 
 ### FR-025: Trang nhập yêu cầu
 
@@ -306,10 +307,10 @@ User chỉ được xem/sửa/xóa lịch trình của chính mình.
 
 ## 3.4 Portability
 
-- Backend tách riêng web/mobile.
+- Backend tách riêng web/mobile qua `/api/v1`.
 - REST API versioning `/api/v1`.
-- Web production dùng Next.js; visual direction bám mock UI React đã chốt.
-- Mobile dùng Flutter ở phase sau.
+- Mobile app dùng **React Native + TypeScript** (Primary End-User Client).
+- Web client dùng **ReactJS + Vite + TypeScript** (TripWise Admin Portal).
 - Media/static assets dùng Object Storage + CDN.
 
 ---
@@ -318,12 +319,11 @@ User chỉ được xem/sửa/xóa lịch trình của chính mình.
 
 ## 4.1 Flow phải ngắn
 
-Flow MVP:
-
-1. Nhập prompt.
+Flow người dùng:
+1. Nhập prompt tiếng Việt.
 2. Bấm tạo lịch trình.
 3. Xem kết quả.
-4. Xem bản đồ.
+4. Tương tác bản đồ.
 5. Lưu lịch trình.
 
 ## 4.2 Kết quả dễ hiểu
@@ -349,9 +349,9 @@ Ví dụ:
 - "Chưa lấy được thời tiết, lịch trình vẫn được tạo bình thường."
 - "Yêu cầu quá dài, vui lòng nhập ngắn gọn hơn."
 
-## 4.5 Tối ưu mobile-first cho phần xem kết quả
+## 4.5 Tối ưu mobile-first cho trải nghiệm người dùng cuối
 
-Dù MVP là web, giao diện nên dễ responsive vì người dùng du lịch thường xem lại trên điện thoại.
+Mobile App là nền tảng chính phục vụ người dùng cuối xem lịch trình và bản đồ khi đang đi du lịch thực địa.
 
 ---
 
@@ -369,13 +369,14 @@ Dù MVP là web, giao diện nên dễ responsive vì người dùng du lịch t
 - Access token ngắn hạn.
 - Refresh token rotation.
 - Refresh token lưu dạng hash nếu persist.
+- Secure Storage trên thiết bị di động (Keychain/Keystore).
 - Logout/revoke token.
 - Detect refresh token reuse nếu có thể.
 
 ## 5.3 Authorization
 
 - User chỉ truy cập itinerary của chính mình.
-- Admin endpoint phải có role admin.
+- Admin endpoint phải có role admin (`ROLE_ADMIN`).
 - Không expose internal ID nhạy cảm nếu không cần.
 
 ## 5.4 Input validation
@@ -406,7 +407,7 @@ Validate:
 
 Mục tiêu tham khảo:
 
-- Load trang nhập yêu cầu: nhanh, dưới vài giây trong môi trường bình thường.
+- Load màn hình Home: nhanh, dưới vài giây trong môi trường bình thường.
 - Tạo itinerary: chấp nhận chờ lâu hơn vì có AI/route/weather, nhưng cần loading rõ.
 - Xem itinerary đã lưu: nhanh hơn tạo mới vì dữ liệu đã lưu/cache.
 - Xem map/marker: không block toàn bộ UI nếu route đang tải.
@@ -436,8 +437,8 @@ Cần cache:
 
 Thiết kế dữ liệu cần cho phép thêm:
 
-- Nhiều thành phố.
-- Nhiều loại địa điểm.
+- Nhiều thành phố (63 tỉnh/thành).
+- Nhiều loại địa điểm (Attraction, Food, Hotel, Service).
 - Khách sạn.
 - Phương tiện.
 - Activity.
@@ -448,8 +449,8 @@ Thiết kế dữ liệu cần cho phép thêm:
 
 Backend API tách riêng để phục vụ:
 
-- Web Next.js.
-- Flutter app.
+- Mobile App (React Native + TypeScript cho Android/iOS).
+- TripWise Admin Portal (ReactJS + Vite + TypeScript).
 - Future partner/internal tools.
 
 ## 7.3 Scale theo hệ thống

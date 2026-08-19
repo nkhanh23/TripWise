@@ -11,7 +11,7 @@ Journey chính của người dùng trong MVP:
 5. Lưu lịch trình.
 6. Mở lại lịch trình.
 
-MVP ưu tiên trải nghiệm web. Flutter app được định hướng cho trải nghiệm mở lại lịch trình và sử dụng khi đang di chuyển trong các giai đoạn sau.
+Mobile App (React Native) là client chính cho người dùng cuối tạo lịch trình, khám phá và mở lại khi đang di chuyển ngoài thực địa. Web client đóng vai trò Admin Portal quản trị dữ liệu.
 
 ---
 
@@ -272,7 +272,5 @@ Người dùng xem:
 
 ## 7.5 Improvement opportunities
 
-- Hiển thị card trip theo destination/start date.
-- Có search/filter trong future.
-- Flutter app ưu tiên mở nhanh lịch trình đã lưu.
-- Future: offline snapshot cơ bản cho mobile.
+- Mobile App (React Native) ưu tiên mở nhanh lịch trình đã lưu.
+- Hỗ trợ offline snapshot cơ bản cho mobile khi mất sóng GPS/4G.

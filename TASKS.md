@@ -1,3 +1,73 @@
+# TASKS.md - Master Task List (TripWise Personal Mobile App)
+
+Danh sách task tổng cho dự án **TripWise — Personal AI Travel Mobile App** (theo [ADR-017](DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)).
+
+---
+
+## 1. Master Roadmap: Personal Mobile App (P-Series)
+
+### [x] P0 — Architecture Simplification
+- [x] **P0.1 — Architecture Simplification Audit**: Rà soát hiện trạng, đánh giá Supabase, loại bỏ overengineering, phân loại module.
+- [x] **P0.2 — Finalize Supabase Architecture Decision & Roadmap Update**: Chốt ADR-018, cập nhật README, AGENTS, DECISIONS, TASKS.
+
+### [ ] P1 — Supabase Foundation
+- [ ] **P1-T001**: Khởi tạo cấu hình Supabase project, biến môi trường (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`).
+- [ ] **P1-T002**: Tạo Database Schema tối giản trên Supabase (`profiles`, `trips`, `itinerary_days`, `itinerary_items`).
+- [ ] **P1-T003**: Cấu hình Row Level Security (RLS) bảo vệ dữ liệu theo `auth.uid() = user_id`.
+- [ ] **P1-T004**: Tích hợp `@supabase/supabase-js` vào React Native client và kiểm tra kết nối.
+
+### [ ] P2 — Mobile Auth & Profile
+- [ ] **P2-T001**: Màn hình Sign In bằng Email/Password trên Mobile.
+- [ ] **P2-T002**: Tự động lưu và phục hồi Session qua Secure Storage (`expo-secure-store`).
+- [ ] **P2-T003**: Profile & Settings screen (đăng xuất, xem thông tin người dùng).
+
+### [ ] P3 — Gemini Edge Function
+- [ ] **P3-T001**: Khởi tạo Supabase Edge Function `generate-trip` (Deno / TypeScript).
+- [ ] **P3-T002**: Porting logic TripParsingPromptBuilder và DescriptionPromptBuilder từ Java sang TypeScript.
+- [ ] **P3-T003**: Cấu hình `GEMINI_API_KEY` trong Supabase Secrets và gọi Gemini API.
+- [ ] **P3-T004**: Validate cấu trúc JSON output của Gemini trước khi trả về client.
+
+### [ ] P4 — Trip Generation & Persistence
+- [ ] **P4-T001**: Màn hình Plan Trip (form nhập prompt tiếng Việt, chọn ngày, ngân sách, phong cách).
+- [ ] **P4-T002**: Kết nối Mobile với Edge Function `generate-trip`, hiển thị loading/skeleton.
+- [ ] **P4-T003**: Lưu trip và itinerary days/items vào Supabase PostgreSQL.
+- [ ] **P4-T004**: Màn hình hiển thị kết quả lịch trình chi tiết (Itinerary Timeline theo từng ngày).
+
+### [ ] P5 — Google Maps & OSRM Integration
+- [ ] **P5-T001**: Tích hợp Google Maps SDK trên React Native với API key đã restrict.
+- [ ] **P5-T002**: Hiển thị markers cho các địa điểm trong ngày theo thứ tự.
+- [ ] **P5-T003**: Gọi OSRM public API vẽ polyline tuyến đường di chuyển giữa các điểm.
+- [ ] **P5-T004**: Xử lý fallback (vẽ đường thẳng/khoảng cách ước tính) khi OSRM timeout.
+
+### [ ] P6 — Google Places Search & Place Details
+- [ ] **P6-T001**: Tích hợp Google Places Autocomplete / Search trên mobile.
+- [ ] **P6-T002**: Xem chi tiết địa điểm (Place Detail), giờ mở cửa, đánh giá, ảnh runtime.
+- [ ] **P6-T003**: Thêm / sửa / đổi địa điểm trong lịch trình với Google Place ID + snapshot tối thiểu.
+
+### [ ] P7 — Saved Trips, Offline Cache & Polish
+- [ ] **P7-T001**: Danh sách lịch sử các chuyến đi đã tạo (`SavedTripsScreen`).
+- [ ] **P7-T002**: Xem lại chi tiết chuyến đi từ database Supabase.
+- [ ] **P7-T003**: Caching dữ liệu lịch trình trên máy để xem ngoại tuyến 100% khi mất mạng.
+- [ ] **P7-T004**: Xóa chuyến đi, cập nhật ghi chú cá nhân (`custom_notes`).
+- [ ] **P7-T005**: Hoàn thiện build APK Android và tối ưu hiệu năng.
+
+---
+
+## 2. Deletion & Cleanup Roadmap (D-Series)
+*(Chỉ thực hiện lần lượt sau khi ứng dụng di động React Native + Supabase đã hoạt động độc lập và ổn định)*
+
+- [ ] **D1 — Export/Archive Legacy Data**: Export snapshot các chuyến đi cũ từ local PostgreSQL nếu có dữ liệu thật cần lưu.
+- [ ] **D2 — Remove Web Frontend**: Xóa thư mục `web/` và `web-archive-vite-ui/`.
+- [ ] **D3 — Remove POI Pipeline & Legacy Ingestion**: Xóa các scripts/docs liên quan đến Geofabrik, Overpass, Foursquare, Moderation.
+- [ ] **D4 — Verify Mobile Full Independence**: Xác nhận 100% request của mobile app đi qua Supabase/Google/Open-Meteo/OSRM, không còn request nào đến Spring Boot.
+- [ ] **D5 — Remove Spring Boot Monolith**: Xóa thư mục `backend/`.
+- [ ] **D6 — Remove Docker/Redis & Legacy Docs**: Xóa `docker-compose.yml`, dọn dẹp các tài liệu kiến trúc cũ trong `docs/`.
+- [ ] **D7 — Final Repository Cleanup**: Tinh gọn repository chỉ còn `mobile/`, `supabase/` và tài liệu chuẩn.
+
+---
+
+## 3. Historical Legacy Task Archive
+
 # TASKS.md - Master Task List
 
 Danh sách task tổng theo phase cho dự án **AI Smart Travel Planner**. Mỗi task là một đơn vị đủ nhỏ để giao cho AI/dev thực hiện và review. Không làm nhiều phase cùng lúc.
@@ -440,33 +510,37 @@ web app, API client, pages/components, map components
 
 ### Risk/notes
 
-- Framework web production đã chốt là Next.js; các phase web tiếp theo cần bám app `web/` và giữ giao diện nhất quán với mock archive tại `web-archive-vite-ui/`.
+- Web codebase trong `web/` là TripWise Admin Portal (ReactJS + Vite + TypeScript). Các user screen cũ được lưu giữ làm reference/preview.
 
 ---
 
-## P12-T001 - Phase 12: Flutter MVP
+## P12-T001 - Mobile App Architecture & Roadmap (React Native + TypeScript)
 
 ### Goal
 
-Tạo mobile MVP dựa trên API sẵn có.
+Đặc tả kiến trúc, tech stack (React Native + TypeScript) và lộ trình phát triển cho Mobile App (Primary End-User Client).
 
 ### Context
 
-Mobile là client riêng, không làm backend phụ.
+Mobile là client chính cho người dùng cuối trên Android/iOS. Web đóng vai trò Admin Portal. Backend Spring Boot Clean Architecture `/api/v1` là backend dùng chung.
 
 ### Files/modules likely changed
 
-flutter app, API client, auth storage, trip screens
+`docs/08-project-roadmap/phases.md`, `mobile/README.md`, `web/README.md`, `DECISIONS.md`, `AGENTS.md`
 
 ### Acceptance criteria
 
-- Mobile login/refresh token; tạo/xem/lưu trip; hiển thị itinerary cơ bản; map nếu scope cho phép; dùng API `/api/v1`.
+- Chốt ADR-017 (React Native + TypeScript cho mobile, Web là Admin Portal).
+- Document roadmap M0 - M9 và coding rules React Native.
+- Giữ nguyên backend và source code hiện tại.
 
 ### Test suggestion
 
-- Run Android emulator; test login/refresh; test generate trip; test offline/error state.
+- Kiểm tra tính nhất quán tài liệu toàn repository (không còn mâu thuẫn Flutter active).
 
 ### Security consideration
+
+- Token lưu trong Secure Storage (Keychain/Keystore). Client Map API Key có restriction.
 
 - Refresh token lưu secure storage; không hardcode API key; pinning/cert strategy xem xét sau.
 
@@ -596,11 +670,13 @@ logging config, actuator/metrics, rate limit, Docker/CI docs, deployment config
 - P11-T004: Web map component.
 - P11-T005: Web saved trips page.
 
-### Phase 12
+### Mobile Phases (React Native)
 
-- P12-T002: Flutter auth flow.
-- P12-T003: Flutter generate trip screen.
-- P12-T004: Flutter saved trip screen.
+- P12-T002: Mobile Foundation (React Native + TypeScript, Navigation, API client).
+- P12-T003: Mobile Auth flow & Secure Storage.
+- P12-T004: Mobile Home, Explore & Map (Google Maps SDK evaluation).
+- P12-T005: Mobile AI Trip Planner & Result screen.
+- P12-T006: Mobile Saved trips & Offline snapshots.
 
 ### Phase 13
 
