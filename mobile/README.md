@@ -36,6 +36,22 @@ Set these values from the Supabase project's Connect panel:
 
 The publishable key is designed for client use only with RLS enabled. Never add a service-role key, Gemini key, Google server key, or database password to `mobile/.env`.
 
+## Authentication
+
+P2 uses Supabase Email/Password Auth. Sessions persist through Expo SecureStore
+and are restored before the app renders the authenticated tab navigator.
+
+Profiles are created by the database trigger in
+`supabase/migrations/20260819010000_auth_profile_foundation.sql`. The client
+also uses an idempotent, RLS-protected upsert only when a profile is missing.
+
+After confirming the intended linked Supabase project, apply the P2 migration
+from the repository root:
+
+```powershell
+npx supabase db push
+```
+
 ## Start development server
 
 ```powershell

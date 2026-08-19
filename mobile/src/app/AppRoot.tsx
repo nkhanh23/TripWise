@@ -2,15 +2,18 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { getSupabaseConfig } from '../lib/supabase/config';
-import { MainTabs } from '../navigation/MainTabs';
+import { AuthProvider } from '../features/auth/AuthProvider';
+import { AppNavigator } from '../navigation/AppNavigator';
 
 export function AppRoot() {
   getSupabaseConfig();
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <MainTabs />
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <AppNavigator />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

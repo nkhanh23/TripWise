@@ -2,6 +2,10 @@
 
 `migrations/20260819000000_supabase_personal_app_foundation.sql` defines the P1 personal-app schema: `profiles`, `trips`, `itinerary_days`, and `itinerary_items`. Each table has Row Level Security enabled; no anonymous table privileges are granted.
 
+`migrations/20260819010000_auth_profile_foundation.sql` adds an idempotent
+`auth.users` trigger that creates a matching `public.profiles` row using the
+signup `display_name` metadata. It does not change RLS policies.
+
 ## Apply to a real project
 
 After installing the Supabase CLI and authenticating, initialize and link this repository to the intended project, then apply pending migrations:

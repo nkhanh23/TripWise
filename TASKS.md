@@ -16,10 +16,10 @@ Danh sách task tổng cho dự án **TripWise — Personal AI Travel Mobile App
 - [x] **P1-T003**: Cấu hình Row Level Security (RLS) bảo vệ dữ liệu theo `auth.uid() = user_id`.
 - [x] **P1-T004**: Tích hợp `@supabase/supabase-js` vào React Native client và kiểm tra kết nối.
 
-### [ ] P2 — Mobile Auth & Profile
-- [ ] **P2-T001**: Màn hình Sign In bằng Email/Password trên Mobile.
-- [ ] **P2-T002**: Tự động lưu và phục hồi Session qua Secure Storage (`expo-secure-store`).
-- [ ] **P2-T003**: Profile & Settings screen (đăng xuất, xem thông tin người dùng).
+### [x] P2 — Mobile Auth & Profile
+- [x] **P2-T001**: Màn hình Sign In bằng Email/Password trên Mobile.
+- [x] **P2-T002**: Tự động lưu và phục hồi Session qua Secure Storage (`expo-secure-store`).
+- [x] **P2-T003**: Profile & Settings screen (đăng xuất, xem thông tin người dùng).
 
 ### [ ] P3 — Gemini Edge Function
 - [ ] **P3-T001**: Khởi tạo Supabase Edge Function `generate-trip` (Deno / TypeScript).

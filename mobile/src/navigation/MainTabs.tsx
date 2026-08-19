@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 
 import { ExploreScreen } from '../features/explore/ExploreScreen';
 import { HomeScreen } from '../features/home/HomeScreen';
@@ -13,20 +12,18 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export function MainTabs() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: colors.brand.primary,
-          tabBarInactiveTintColor: colors.text.muted,
-          tabBarStyle: { backgroundColor: colors.background.surface },
-        }}>
-        <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
-        <Tab.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explore' }} />
-        <Tab.Screen name="Plan" component={PlanScreen} options={{ title: 'Plan Trip' }} />
-        <Tab.Screen name="Trips" component={TripsScreen} options={{ title: 'My Trips' }} />
-        <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.brand.primary,
+        tabBarInactiveTintColor: colors.text.muted,
+        tabBarStyle: { backgroundColor: colors.background.surface },
+      }}>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
+      <Tab.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explore' }} />
+      <Tab.Screen name="Plan" component={PlanScreen} options={{ title: 'Plan Trip' }} />
+      <Tab.Screen name="Trips" component={TripsScreen} options={{ title: 'My Trips' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+    </Tab.Navigator>
   );
 }
