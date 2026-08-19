@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,12 @@ import java.time.LocalDate;
 import java.util.Locale;
 
 @Entity
-@Table(name = "weather_cache")
+@Table(
+    name = "weather_cache",
+    indexes = {
+        @Index(name = "uidx_weather_cache_city_date", columnList = "city, forecast_date")
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor

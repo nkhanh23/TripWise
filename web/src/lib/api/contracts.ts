@@ -213,6 +213,10 @@ export interface ItineraryDayResponse {
   dayNumber: number;
   dayTitle?: string;
   weatherSummary?: string;
+  weatherCode?: number;
+  rainProbability?: number;
+  tempMin?: number;
+  tempMax?: number;
   totalDistanceMeters?: number;
   totalDurationSeconds?: number;
   items: ItineraryItemResponse[];

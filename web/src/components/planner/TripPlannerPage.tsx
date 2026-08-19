@@ -1,17 +1,106 @@
 "use client";
 
-import { startTransition, useMemo, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import gsap from "gsap";
 import styles from "./TripPlannerPage.module.css";
 import { AppContent } from "@/components/layout/AppContent";
-import { Button, Card, ErrorMessage, Loading, Badge } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
 import { KineticTitle, BounceCard, FilmGrainOverlay } from "@/components/motion";
 import {
   ApiError,
   AuthSessionExpiredError,
-  generateTrip
+  generateTrip,
+  getRoute
 } from "@/lib/api";
+import { MapCanvas } from "@/components/map/MapCanvas";
+import { type MapAdapter } from "@/lib/mapAdapter";
+import { MarkerLayer } from "@/lib/markerLayer";
+import { RouteLayer } from "@/lib/routeLayer";
+import { useMapCamera } from "@/hooks/useMapCamera";
+import { TransitionController, type TransitionState } from "./TransitionController";
+import { LoadingOverlay } from "./LoadingOverlay";
+import { type LoadingState } from "./ThinkingPanel";
+
+function mapTransportModeToProfile(mode?: string): "driving" | "walking" | "cycling" {
+  switch (mode) {
+    case "Đi bộ":
+    case "Di bo":
+    case "walking":
+      return "walking";
+    case "Xe đạp":
+    case "Xe dap":
+    case "cycling":
+      return "cycling";
+    default:
+      return "driving";
+  }
+}
+
+function decodePolyline(encoded: string, precision = 5): [number, number][] {
+  const factor = Math.pow(10, precision);
+  const coordinates: [number, number][] = [];
+  let index = 0;
+  const len = encoded.length;
+  let lat = 0;
+  let lng = 0;
+
+  while (index < len) {
+    let b;
+    let shift = 0;
+    let result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlat = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
+    lat += dlat;
+
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlng = (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
+    lng += dlng;
+
+    coordinates.push([lat / factor, lng / factor]);
+  }
+
+  return coordinates;
+}
+
+function parseGeometryPositionsToLngLat(geometry: string): [number, number][] {
+  if (!geometry) return [];
+  const trimmed = geometry.trim();
+
+  // Try parse if GeoJSON
+  if (trimmed.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed.type === "LineString" && Array.isArray(parsed.coordinates)) {
+        return parsed.coordinates.filter(
+          (c: any): c is [number, number] =>
+            Array.isArray(c) && c.length >= 2 && typeof c[0] === "number" && typeof c[1] === "number"
+        );
+      }
+    } catch {}
+  }
+
+  // Try decoded polyline
+  try {
+    const decoded5 = decodePolyline(trimmed, 5);
+    const isValid = decoded5.length > 0 && decoded5.every(([lat, lng]) => lat > -90 && lat < 90 && lng > -180 && lng < 180);
+    const coords = isValid && decoded5.length > 0 && Math.abs(decoded5[0][0]) > 0.1 ? decoded5 : decodePolyline(trimmed, 6);
+    // Swap [lat, lng] to [lng, lat]
+    return coords.map(([lat, lng]) => [lng, lat]);
+  } catch {
+    return [];
+  }
+}
 
 type BudgetLevel = "Tiet kiem" | "Vua phai" | "Thoai mai";
 type TransportMode = "Di bo" | "Xe may" | "O to" | "Xe dap";
@@ -21,8 +110,6 @@ type SuggestionFlags = {
   outdoor: boolean;
   seafood: boolean;
 };
-
-type PreviewDay = 1 | 2 | 3;
 
 const TRAVEL_STYLES = [
   "Chill",
@@ -187,6 +274,17 @@ export function TripPlannerPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [generatedTrip, setGeneratedTrip] = useState<any | null>(null);
+  const [transitionState, setTransitionState] = useState<TransitionState>("loading");
+  const [loadingState, setLoadingState] = useState<LoadingState>("Initializing");
+  const [loadingMessage, setLoadingMessage] = useState<string>("Đang kết nối hệ thống...");
+  const [mapAdapter, setMapAdapter] = useState<MapAdapter | null>(null);
+  const cameraController = useMapCamera(mapAdapter);
+
+  const handleMapLoad = useCallback((adapter: MapAdapter) => {
+    setMapAdapter(adapter);
+  }, []);
+
   const totalDays = countTripDays(startDate, endDate);
   const canSubmit = Boolean(destination.trim()) && Boolean(prompt.trim());
 
@@ -218,6 +316,266 @@ export function TripPlannerPage() {
     ]
   );
 
+  const animationTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const plannerContainerRef = useRef<HTMLDivElement>(null);
+  const mockTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const generationIdRef = useRef(0);
+
+  const markerLayer = useMemo(() => mapAdapter ? new MarkerLayer(mapAdapter) : null, [mapAdapter]);
+  const routeLayer = useMemo(() => mapAdapter ? new RouteLayer(mapAdapter) : null, [mapAdapter]);
+
+  // Vòng đời tải và vẽ các markers, tuyến đường OSRM thật trên bản đồ
+  useEffect(() => {
+    let active = true;
+    let animationTimeoutId: any = null;
+    if (!mapAdapter || !generatedTrip || !markerLayer || !routeLayer || transitionState !== "editor") return;
+
+    async function loadAndDrawRoutes() {
+      if (!mapAdapter || !markerLayer || !routeLayer) return;
+      const day = generatedTrip.itineraryDays?.[0];
+      if (!day || !day.items || day.items.length === 0) return;
+
+      // 1. Dọn dẹp cũ
+      if (animationTimelineRef.current) {
+        animationTimelineRef.current.kill();
+        animationTimelineRef.current = null;
+      }
+      routeLayer.clearRoutes();
+      markerLayer.clearMarkers();
+
+      // 2. Lấy danh sách điểm dừng hợp lệ
+      const stops = day.items
+        .map((item: any, idx: number) => {
+          const place = item.place;
+          if (
+            place &&
+            typeof place.latitude === "number" &&
+            !isNaN(place.latitude) &&
+            typeof place.longitude === "number" &&
+            !isNaN(place.longitude)
+          ) {
+            return {
+              id: `place-${place.id}-${idx}`,
+              latitude: place.latitude,
+              longitude: place.longitude,
+              title: place.name,
+              address: place.displayAddress || "",
+              orderIndex: idx,
+              transportMode: item.transportSuggestion?.mode,
+            };
+          }
+          return null;
+        })
+        .filter(Boolean) as {
+          id: string;
+          latitude: number;
+          longitude: number;
+          title: string;
+          address: string;
+          orderIndex: number;
+          transportMode?: string;
+        }[];
+
+      console.log("TripPlannerPage - loaded stops:", stops);
+
+      if (stops.length === 0) return;
+
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // 3. Vẽ markers (hoãn hoặc vẽ tức thì tùy giảm chuyển động)
+      stops.forEach((stop, idx) => {
+        const markerModel = {
+          id: stop.id,
+          center: [stop.longitude, stop.latitude] as [number, number],
+          label: String(idx + 1),
+          title: stop.title,
+          type: idx === 0 ? ("origin" as const) : ("place" as const),
+          selected: false,
+          active: false,
+        };
+        markerLayer.addMarker(markerModel, { animateEntry: !prefersReduced });
+      });
+
+      // 4. Phóng camera fitBounds
+      const lats = stops.map((s) => s.latitude);
+      const lngs = stops.map((s) => s.longitude);
+      const minLat = Math.min(...lats);
+      const maxLat = Math.max(...lats);
+      const minLng = Math.min(...lngs);
+      const maxLng = Math.max(...lngs);
+
+      if (isNaN(minLat) || isNaN(maxLat) || isNaN(minLng) || isNaN(maxLng)) {
+        console.error("Bounds calculation contains NaN, skipping fitBounds:", { minLng, minLat, maxLng, maxLat });
+        return;
+      }
+
+      if (stops.length === 1) {
+        cameraController.jumpTo({
+          center: [stops[0].longitude, stops[0].latitude],
+          zoom: 14,
+        });
+
+        if (!prefersReduced) {
+          animationTimeoutId = setTimeout(() => {
+            if (!active) return;
+            const pins = plannerContainerRef.current?.querySelectorAll(".custom-map-marker");
+            if (pins && pins.length > 0) {
+              gsap.to(pins, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.5,
+                ease: "back.out(1.7)",
+              });
+            }
+          }, 100);
+        }
+        return;
+      }
+
+      // 5. Tải tuyến đường OSRM
+      const segmentPromises = stops.slice(1).map(async (stop, idx) => {
+        const origin = stops[idx];
+        const profile = mapTransportModeToProfile(stop.transportMode);
+        try {
+          const response = await getRoute({
+            originLat: origin.latitude,
+            originLng: origin.longitude,
+            destLat: stop.latitude,
+            destLng: stop.longitude,
+            profile,
+          });
+          const coords = parseGeometryPositionsToLngLat(response.geometry);
+          return {
+            id: `${origin.id}-${stop.id}`,
+            coordinates: coords.length >= 2 ? coords : [[origin.longitude, origin.latitude], [stop.longitude, stop.latitude]] as [number, number][],
+          };
+        } catch (e) {
+          console.error("OSRM Route load failed, using straight fallback line:", e);
+          return {
+            id: `${origin.id}-${stop.id}`,
+            coordinates: [
+              [origin.longitude, origin.latitude],
+              [stop.longitude, stop.latitude],
+            ] as [number, number][],
+          };
+        }
+      });
+
+      const segments = await Promise.all(segmentPromises);
+      if (!active) return;
+
+      // 6. Vẽ và chạy hoạt cảnh
+      if (prefersReduced) {
+        // Tĩnh lập tức
+        segments.forEach((segment) => {
+          routeLayer.addRoute({
+            id: segment.id,
+            coordinates: segment.coordinates,
+            color: "#20A7D8",
+            width: 5,
+            opacity: 0.8,
+          });
+        });
+
+        cameraController.fitBounds({
+          bounds: [[minLng, minLat], [maxLng, maxLat]],
+          padding: 80,
+          duration: 0,
+        });
+
+        const pins = plannerContainerRef.current?.querySelectorAll(".custom-map-marker");
+        if (pins) {
+          pins.forEach((el: any) => {
+            el.style.transform = "scale(1)";
+            el.style.opacity = "1";
+          });
+        }
+      } else {
+        // Chạy camera bay mượt mà (2s)
+        cameraController.fitBounds({
+          bounds: [[minLng, minLat], [maxLng, maxLat]],
+          padding: 80,
+          duration: 2000,
+          essential: true,
+        });
+
+        // Thiết lập GSAP Timeline cho vẽ đường động và bouncy markers
+        const tl = gsap.timeline({
+          onStart: () => {
+            mapAdapter.disableInteractions();
+          },
+          onComplete: () => {
+            mapAdapter.enableInteractions();
+          },
+        });
+        animationTimelineRef.current = tl;
+
+        // Hoãn tạo timeline và animate cho đến khi DOM của markers đã được tạo
+        animationTimeoutId = setTimeout(() => {
+          if (!active) return;
+
+          // 1. Animate marker đầu tiên (Origin)
+          const firstMarker = plannerContainerRef.current?.querySelector(`[data-id="${stops[0].id}"]`);
+          if (firstMarker) {
+            tl.to(firstMarker, {
+              scale: 1,
+              opacity: 1,
+              duration: 0.4,
+              ease: "back.out(1.7)"
+            });
+          }
+
+          // 2. Animate từng chặng và marker kế tiếp tuần tự theo thời gian
+          const durationPerSegment = 1.5 / segments.length;
+          segments.forEach((segment, idx) => {
+            // Vẽ chặng đường động
+            routeLayer.addAnimatedRoute(
+              {
+                id: segment.id,
+                coordinates: segment.coordinates,
+                color: "#20A7D8",
+                width: 5,
+                opacity: 0.8,
+              },
+              tl,
+              durationPerSegment
+            );
+
+            // Bouncy marker tiếp theo xuất hiện ngay sau khi chặng đường vẽ xong
+            const nextStop = stops[idx + 1];
+            if (nextStop) {
+              const nextMarker = plannerContainerRef.current?.querySelector(`[data-id="${nextStop.id}"]`);
+              if (nextMarker) {
+                tl.to(nextMarker, {
+                  scale: 1,
+                  opacity: 1,
+                  duration: 0.4,
+                  ease: "back.out(1.7)"
+                });
+              }
+            }
+          });
+        }, 100);
+      }
+    }
+
+    void loadAndDrawRoutes();
+
+    return () => {
+      active = false;
+      if (animationTimeoutId) {
+        clearTimeout(animationTimeoutId);
+      }
+      if (animationTimelineRef.current) {
+        animationTimelineRef.current.kill();
+        animationTimelineRef.current = null;
+      }
+      if (mapAdapter) {
+        mapAdapter.enableInteractions();
+      }
+    };
+  }, [mapAdapter, generatedTrip, cameraController, transitionState, markerLayer, routeLayer]);
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setValidationError(null);
@@ -243,17 +601,62 @@ export function TripPlannerPage() {
       return;
     }
 
+    setLoadingState("Initializing");
+    setLoadingMessage("Đang kết nối hệ thống...");
     setIsSubmitting(true);
+    setTransitionState("loading");
+
+    // Cancel previous generation if exists
+    mockTimeoutsRef.current.forEach(clearTimeout);
+    mockTimeoutsRef.current = [];
+    generationIdRef.current += 1;
+    const currentGenId = generationIdRef.current;
+
+    // Simulate AI thinking states
+    const steps: { state: LoadingState; msg: string; delay: number }[] = [
+      { state: "Initializing", msg: "Đang khởi tạo các tham số...", delay: 0 },
+      { state: "Analyzing", msg: "Phân tích yêu cầu và phong cách chuyến đi...", delay: 1200 },
+      { state: "Planning", msg: "Truy vấn địa điểm thích hợp từ cơ sở dữ liệu...", delay: 3200 },
+      { state: "Optimizing", msg: "Tính toán khoảng cách di chuyển tối ưu...", delay: 5800 },
+      { state: "Finalizing", msg: "Thiết lập bưu thiếp và thời tiết...", delay: 8200 }
+    ];
+
+    // timeouts tracked via mockTimeoutsRef
+    steps.forEach((step) => {
+      if (step.delay > 0) {
+        const t = setTimeout(() => {
+          if (generationIdRef.current !== currentGenId) return;
+          setLoadingState(step.state);
+          setLoadingMessage(step.msg);
+        }, step.delay);
+        mockTimeoutsRef.current.push(t);
+      }
+    });
 
     try {
       const response = await generateTrip({ request: generatedRequest });
-      startTransition(() => {
-        router.push(`/trips/${response.id}`);
-      });
-    } catch (error) {
-      setSubmitError(normalizeApiError(error));
-    } finally {
+      if (generationIdRef.current !== currentGenId) return;
+      
+      // Clear timeouts and fast-forward to Finalizing
+      mockTimeoutsRef.current.forEach(clearTimeout);
+      mockTimeoutsRef.current = [];
+      setLoadingState("Finalizing");
+      setLoadingMessage("Hoàn thành! Đang chuẩn bị bản đồ...");
+
+      // Wait a short moment to show completion
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      if (generationIdRef.current !== currentGenId) return;
+      setGeneratedTrip(response);
       setIsSubmitting(false);
+      setTransitionState("transitioning");
+    } catch (error) {
+      if (generationIdRef.current !== currentGenId) return;
+      mockTimeoutsRef.current.forEach(clearTimeout);
+      mockTimeoutsRef.current = [];
+      setIsSubmitting(false);
+      setSubmitError(normalizeApiError(error));
+      setTransitionState("loading");
     }
   }
 
@@ -275,6 +678,109 @@ export function TripPlannerPage() {
     setPrompt("");
     setValidationError(null);
     setSubmitError(null);
+  }
+
+
+  // Cleanup mock timeouts on unmount
+  useEffect(() => {
+    return () => {
+      mockTimeoutsRef.current.forEach(clearTimeout);
+      mockTimeoutsRef.current = [];
+    };
+  }, []);
+
+  if (generatedTrip) {
+    const firstDay = generatedTrip.itineraryDays?.[0];
+    return (
+      <AppContent variant="standard" className={`${styles.page} px-0 pt-0 sm:px-0 lg:px-0 min-h-screen flex flex-col`}>
+        <FilmGrainOverlay />
+        <TransitionController
+          state={transitionState}
+          adapter={mapAdapter}
+          onTransitionComplete={() => {
+            setTransitionState("editor");
+            if (generatedTrip?.id) {
+              router.push(`/trips/${generatedTrip.id}`);
+            }
+          }}
+          className="w-full flex-1"
+        >
+          <div ref={plannerContainerRef} className="flex w-full h-[calc(100vh-64px)] overflow-hidden bg-[#FFFDF3] relative">
+            {/* Left sidebar - panel chi tiết lịch trình */}
+            <div className="sidebar-panel w-[448px] max-w-full flex-shrink-0 border-r-3 border-[#111111] flex flex-col h-full bg-[#FFFDF3] z-10 relative">
+              <div className="p-6 border-b-3 border-[#111111] bg-[#20A7D8] text-[#FFFDF3]">
+                <h2 className="text-2xl font-bold font-baloo text-[#FFFDF3]">
+                  Lịch trình {generatedTrip.destination} 🗺️
+                </h2>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <Badge variant="neutral" size="sm">
+                    {generatedTrip.days} ngày {generatedTrip.nights} đêm
+                  </Badge>
+                  {firstDay && (firstDay.weatherSummary || firstDay.tempMax) && (
+                    <Badge variant="sticker" size="sm" className="bg-[#FFBE1A] text-[#111111] border-2 border-[#111111] font-bold">
+                      ☀️ {firstDay.weatherSummary || "Nắng ấm"} ({firstDay.tempMin}°C - {firstDay.tempMax}°C)
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {firstDay?.items?.map((item: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="p-4 border-3 border-[#111111] shadow-[3px_3px_0_#111111] rounded-2xl bg-[#FFFDF3]"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-bold text-md text-[#111111] font-baloo">
+                        {idx + 1}. {item.place?.name}
+                      </div>
+                      {item.timeSlot && (
+                        <span className="text-xs font-bold border-2 border-[#111111] px-2 py-0.5 rounded-full bg-[#FFBE1A]">
+                          {item.timeSlot}
+                        </span>
+                      )}
+                    </div>
+                    {item.place?.displayAddress && (
+                      <div className="text-xs text-[#7A6A58] mt-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">location_on</span>
+                        {item.place?.displayAddress}
+                      </div>
+                    )}
+                    {item.aiDescription && (
+                      <p className="text-sm text-[#111111] mt-2 leading-relaxed bg-[#FFF6DE] p-3 rounded-xl border-2 border-dashed border-[#E8E3D7]">
+                        {item.aiDescription}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                <div className="pt-4 space-y-3">
+
+                  <Button
+                    variant="secondary"
+                    className="w-full justify-center text-center"
+                    onClick={() => {
+                      setGeneratedTrip(null);
+                      setTransitionState("loading");
+                    }}
+                  >
+                    Quay Lại Form Lên Lịch
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Map Canvas */}
+            <div className="map-container flex-1 h-full relative">
+              <MapCanvas
+                onMapLoad={handleMapLoad}
+                className="w-full h-full border-none rounded-none min-h-0 relative z-0"
+              />
+            </div>
+          </div>
+        </TransitionController>
+      </AppContent>
+    );
   }
 
   return (
@@ -474,7 +980,7 @@ export function TripPlannerPage() {
                 <div className={styles.formSection}>
                   <label className={styles.formLabel} htmlFor="naturalPromptInput">Mô tả chuyến đi bằng lời của bạn</label>
                   <textarea
-                    id="naturalPromptInput"
+                     id="naturalPromptInput"
                     className={styles.textarea}
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
@@ -694,6 +1200,12 @@ export function TripPlannerPage() {
           )}
         </div>
       </div>
+
+      <LoadingOverlay
+        state={loadingState}
+        message={loadingMessage}
+        isVisible={isSubmitting}
+      />
     </AppContent>
   );
 }

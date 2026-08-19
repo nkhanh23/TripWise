@@ -2,6 +2,9 @@ package com.tripwise.weather.infrastructure.persistence.repository;
 
 import com.tripwise.weather.domain.entity.WeatherCache;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -33,4 +36,8 @@ public interface WeatherCacheJpaRepository extends JpaRepository<WeatherCache, L
             LocalDate startDate,
             LocalDate endDate
     );
+
+    @Modifying
+    @Query("DELETE FROM WeatherCache w WHERE w.expiresAt <= :now")
+    void deleteExpiredForecasts(@Param("now") Instant now);
 }

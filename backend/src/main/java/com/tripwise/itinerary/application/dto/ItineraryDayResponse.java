@@ -15,6 +15,10 @@ public class ItineraryDayResponse {
     private Integer dayNumber;
     private String dayTitle;
     private String weatherSummary;
+    private Integer weatherCode;
+    private Integer rainProbability;
+    private Double tempMin;
+    private Double tempMax;
     private Integer totalDistanceMeters;
     private Integer totalDurationSeconds;
     private List<ItineraryItemResponse> items;

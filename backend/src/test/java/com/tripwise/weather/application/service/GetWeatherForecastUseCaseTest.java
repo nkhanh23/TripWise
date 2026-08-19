@@ -5,7 +5,7 @@ import com.tripwise.common.exception.ExternalServiceException;
 import com.tripwise.weather.domain.WeatherForecast;
 import com.tripwise.weather.domain.entity.WeatherCache;
 import com.tripwise.weather.domain.repository.WeatherCacheRepository;
-import com.tripwise.weather.infrastructure.WeatherClient;
+import com.tripwise.weather.domain.gateway.WeatherGateway;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +34,7 @@ class GetWeatherForecastUseCaseTest {
     private WeatherCacheRepository weatherCacheRepository;
 
     @Mock
-    private WeatherClient weatherClient;
+    private WeatherGateway weatherGateway;
 
     @InjectMocks
     private GetWeatherForecastUseCase getWeatherForecastUseCase;
@@ -76,7 +76,7 @@ class GetWeatherForecastUseCaseTest {
         assertThat(result.dailyForecasts()).hasSize(2);
         assertThat(result.dailyForecasts().getFirst().date()).isEqualTo(LocalDate.of(2026, 7, 2));
         assertThat(result.dailyForecasts().getFirst().weatherCode()).isEqualTo(1);
-        verify(weatherClient, never()).getForecast(anyDouble(), anyDouble(), any(LocalDate.class), any(LocalDate.class));
+        verify(weatherGateway, never()).getForecast(anyDouble(), anyDouble(), any(LocalDate.class), any(LocalDate.class));
         verify(weatherCacheRepository, never()).save(any(WeatherCache.class));
     }
 
@@ -94,7 +94,7 @@ class GetWeatherForecastUseCaseTest {
                         new WeatherForecast.DailyForecast(LocalDate.of(2026, 7, 3), 24.8, 30.9, 45, 61)
                 )
         );
-        when(weatherClient.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
+        when(weatherGateway.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
                 .thenReturn(apiForecast);
 
         WeatherForecast result = getWeatherForecastUseCase.execute(
@@ -142,7 +142,7 @@ class GetWeatherForecastUseCaseTest {
                         new WeatherForecast.DailyForecast(LocalDate.of(2026, 7, 3), 24.8, 30.9, 45, 61)
                 )
         );
-        when(weatherClient.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
+        when(weatherGateway.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
                 .thenReturn(apiForecast);
 
         WeatherForecast result = getWeatherForecastUseCase.execute(
@@ -154,7 +154,7 @@ class GetWeatherForecastUseCaseTest {
         );
 
         assertThat(result).isEqualTo(apiForecast);
-        verify(weatherClient).getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3));
+        verify(weatherGateway).getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3));
         verify(weatherCacheRepository, times(2)).save(any(WeatherCache.class));
     }
 
@@ -162,7 +162,7 @@ class GetWeatherForecastUseCaseTest {
     void execute_WhenApiFailsAndCachedFallbackExists_ShouldReturnCachedForecast() {
         when(weatherCacheRepository.findValidForecasts(anyString(), any(LocalDate.class), any(LocalDate.class), any(Instant.class)))
                 .thenReturn(List.of());
-        when(weatherClient.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
+        when(weatherGateway.getForecast(12.2388, 109.1967, LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3)))
                 .thenThrow(new ExternalServiceException("Open-Meteo timeout"));
         when(weatherCacheRepository.findForecasts(anyString(), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(List.of(
@@ -203,7 +203,7 @@ class GetWeatherForecastUseCaseTest {
     void execute_WhenApiFailsAndNoCachedFallback_ShouldReturnUnavailableForecast() {
         when(weatherCacheRepository.findValidForecasts(anyString(), any(LocalDate.class), any(LocalDate.class), any(Instant.class)))
                 .thenReturn(List.of());
-        when(weatherClient.getForecast(anyDouble(), anyDouble(), any(LocalDate.class), any(LocalDate.class)))
+        when(weatherGateway.getForecast(anyDouble(), anyDouble(), any(LocalDate.class), any(LocalDate.class)))
                 .thenThrow(new ExternalServiceException("Open-Meteo timeout"));
         when(weatherCacheRepository.findForecasts(anyString(), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(List.of());

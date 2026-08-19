@@ -22,7 +22,9 @@ tripwise:
   place-import:
     enabled: false
   gemini:
-    api-key: ${GEMINI_API_KEY:your-gemini-api-key-here}
+    api-key: ${GEMINI_API_KEY:change_me_local_gemini_api_key}
+    model: ${GEMINI_MODEL:gemini-2.5-flash}
+    api-url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta}
   osrm:
     api-url: ${OSRM_API_URL:https://router.project-osrm.org}
     timeout: ${OSRM_TIMEOUT:3s}

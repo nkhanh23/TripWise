@@ -7,10 +7,8 @@ import com.tripwise.place.domain.entity.Place;
 import com.tripwise.place.infrastructure.persistence.repository.PlaceRepository;
 import com.tripwise.trip.domain.entity.Trip;
 import com.tripwise.trip.infrastructure.persistence.repository.TripRepository;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,17 +20,14 @@ import java.util.stream.Collectors;
 @Service
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@RequiredArgsConstructor
 public class SelectCandidatePlacesUseCase {
 
-    private TripRepository tripRepository;
-    private PlaceRepository placeRepository;
-    private PlaceScoringService placeScoringService;
+    private final TripRepository tripRepository;
+    private final PlaceRepository placeRepository;
+    private final PlaceScoringService placeScoringService;
 
     @Value("${tripwise.itinerary.places-per-day:4}")
-    @Builder.Default
     private int placesPerDay = 4;
 
     @Transactional(readOnly = true)

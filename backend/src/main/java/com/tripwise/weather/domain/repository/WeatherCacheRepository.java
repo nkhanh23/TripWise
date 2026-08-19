@@ -16,4 +16,11 @@ public interface WeatherCacheRepository {
     List<WeatherCache> findForecasts(String city, LocalDate startDate, LocalDate endDate);
 
     WeatherCache save(WeatherCache weatherCache);
+
+    /**
+     * Clean up expired weather forecast cache records.
+     *
+     * @param now Current timestamp
+     */
+    void deleteExpiredForecasts(Instant now);
 }

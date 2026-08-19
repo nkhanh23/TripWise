@@ -26,13 +26,23 @@ public class ItineraryResponseMapper {
     }
 
     public ItineraryDayResponse toDayResponse(ItineraryDay itineraryDay) {
+        java.util.Set<Long> seenIds = new java.util.HashSet<>();
+        List<ItineraryItemResponse> uniqueItems = itineraryDay.getItems().stream()
+                .filter(item -> item.getId() != null && seenIds.add(item.getId()))
+                .map(this::toItemResponse)
+                .toList();
+
         return ItineraryDayResponse.builder()
                 .dayNumber(itineraryDay.getDayNumber())
                 .dayTitle(itineraryDay.getDayTitle())
                 .weatherSummary(itineraryDay.getWeatherSummary())
+                .weatherCode(itineraryDay.getWeatherCode())
+                .rainProbability(itineraryDay.getRainProbability())
+                .tempMin(itineraryDay.getTempMin())
+                .tempMax(itineraryDay.getTempMax())
                 .totalDistanceMeters(itineraryDay.getTotalDistanceMeters())
                 .totalDurationSeconds(itineraryDay.getTotalDurationSeconds())
-                .items(itineraryDay.getItems().stream().map(this::toItemResponse).toList())
+                .items(uniqueItems)
                 .build();
     }
 

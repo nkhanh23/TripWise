@@ -225,4 +225,39 @@ class JpaWeatherCacheRepositoryTest {
         assertThat(result.orElseThrow().getTempMax()).isEqualTo(32);
         assertThat(result.orElseThrow().getWeatherCode()).isEqualTo("1");
     }
+
+    @Test
+    void shouldDeleteExpiredForecasts() {
+        Instant now = Instant.parse("2026-07-02T09:00:00Z");
+
+        // Expired
+        weatherCacheRepository.save(WeatherCache.builder()
+                .city("nha trang")
+                .forecastDate(LocalDate.of(2026, 7, 2))
+                .tempMin(25)
+                .tempMax(31)
+                .rainProbability(40)
+                .weatherCode("61")
+                .expiresAt(now.minusSeconds(1))
+                .build());
+
+        // Not expired
+        weatherCacheRepository.save(WeatherCache.builder()
+                .city("nha trang")
+                .forecastDate(LocalDate.of(2026, 7, 3))
+                .tempMin(26)
+                .tempMax(32)
+                .rainProbability(20)
+                .weatherCode("1")
+                .expiresAt(now.plusSeconds(100))
+                .build());
+
+        // Perform cleanup
+        weatherCacheRepository.deleteExpiredForecasts(now);
+
+        var allForecasts = weatherCacheRepository.findForecasts("nha trang", LocalDate.of(2026, 7, 2), LocalDate.of(2026, 7, 3));
+
+        assertThat(allForecasts).hasSize(1);
+        assertThat(allForecasts.getFirst().getForecastDate()).isEqualTo(LocalDate.of(2026, 7, 3));
+    }
 }

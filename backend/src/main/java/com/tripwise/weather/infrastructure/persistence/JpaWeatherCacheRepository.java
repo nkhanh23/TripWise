@@ -57,4 +57,10 @@ public class JpaWeatherCacheRepository implements WeatherCacheRepository {
 
         return weatherCacheJpaRepository.save(weatherCache);
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteExpiredForecasts(Instant now) {
+        weatherCacheJpaRepository.deleteExpiredForecasts(now);
+    }
 }

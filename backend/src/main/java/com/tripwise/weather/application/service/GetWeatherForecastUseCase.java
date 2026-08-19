@@ -4,8 +4,8 @@ import com.tripwise.common.exception.BusinessException;
 import com.tripwise.common.exception.ExternalServiceException;
 import com.tripwise.weather.domain.WeatherForecast;
 import com.tripwise.weather.domain.entity.WeatherCache;
+import com.tripwise.weather.domain.gateway.WeatherGateway;
 import com.tripwise.weather.domain.repository.WeatherCacheRepository;
-import com.tripwise.weather.infrastructure.WeatherClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class GetWeatherForecastUseCase {
     private static final String UNAVAILABLE_TIMEZONE = "unavailable";
 
     private final WeatherCacheRepository weatherCacheRepository;
-    private final WeatherClient weatherClient;
+    private final WeatherGateway weatherGateway;
 
     public WeatherForecast execute(
             String city,
@@ -50,7 +50,7 @@ public class GetWeatherForecastUseCase {
         }
 
         try {
-            WeatherForecast forecast = weatherClient.getForecast(latitude, longitude, startDate, endDate);
+            WeatherForecast forecast = weatherGateway.getForecast(latitude, longitude, startDate, endDate);
             persistForecast(city, forecast, now);
             return forecast;
         } catch (ExternalServiceException ex) {

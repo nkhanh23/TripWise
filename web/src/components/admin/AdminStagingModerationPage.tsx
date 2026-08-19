@@ -314,7 +314,7 @@ export function AdminStagingModerationPage() {
       async function loadDetail() {
         setDetailLoading(true);
         try {
-          const detailResponse = await getStagingPlaceDetail(selectedId);
+          const detailResponse = await getStagingPlaceDetail(selectedId!);
           if (active) setDetail(detailResponse);
         } catch (err) {
           if (active && !isAbortError(err)) setDetail(null);

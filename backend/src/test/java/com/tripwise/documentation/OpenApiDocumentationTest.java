@@ -2,6 +2,7 @@ package com.tripwise.documentation;
 
 import com.tripwise.auth.infrastructure.persistence.repository.RefreshTokenRepository;
 import com.tripwise.hotel.infrastructure.persistence.repository.HotelRepository;
+import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryDayRepository;
 import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryItemRepository;
 import com.tripwise.place.infrastructure.persistence.repository.PlaceRepository;
 import com.tripwise.route.infrastructure.persistence.repository.RouteCacheJpaRepository;
@@ -30,13 +31,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "tripwise.jwt.secret=test_secret_key_with_minimum_length_32_chars",
         "tripwise.jwt.access-token-expiration=PT15M",
         "tripwise.rate-limit.enabled=false",
-        "tripwise.security.docs-public-enabled=true"
+        "tripwise.security.docs-public-enabled=true",
+        "spring.datasource.url=jdbc:postgresql://localhost:5432/tripwise",
+        "spring.datasource.username=postgres",
+        "spring.datasource.password=postgres",
+        "tripwise.place-import.enabled=false"
 })
 @AutoConfigureMockMvc
 class OpenApiDocumentationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+    @MockBean
+    private org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @MockBean
+    private org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
 
     @MockBean
     private JpaMetamodelMappingContext jpaMappingContext;
@@ -64,6 +78,9 @@ class OpenApiDocumentationTest {
 
     @MockBean
     private ItineraryItemRepository itineraryItemRepository;
+
+    @MockBean
+    private ItineraryDayRepository itineraryDayRepository;
 
     @Test
     void apiDocs_ShouldExposeOpenApiSpecification() throws Exception {

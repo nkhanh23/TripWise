@@ -54,6 +54,7 @@ public class SecurityConfig {
                 auth.requestMatchers(HttpMethod.GET, "/api/v1/places").permitAll();
                 auth.requestMatchers(HttpMethod.GET, "/api/v1/places/nearby").permitAll();
                 auth.requestMatchers(HttpMethod.GET, "/api/v1/places/*").permitAll();
+                auth.requestMatchers("/api/v1/trips/**").authenticated();
                 auth.requestMatchers("/actuator/health", "/actuator/health/liveness", "/actuator/health/readiness").permitAll();
                 auth.anyRequest().authenticated();
             })

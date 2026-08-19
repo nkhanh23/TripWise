@@ -96,7 +96,7 @@ function AdminCityPipelineContent() {
         return;
       }
       if (err instanceof ApiError) {
-        setError(err.apiError?.message || err.message || "Pipeline run failed");
+        setError(err.message || "Pipeline run failed");
       } else if (err instanceof Error) {
         setError(err.message);
       } else {

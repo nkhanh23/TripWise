@@ -88,4 +88,28 @@ class ItineraryResponseMapperTest {
         assertThat(response.getTransportSuggestion()).isNull();
         assertThat(response.getPlace().getName()).isEqualTo("Long Son Pagoda");
     }
+
+    @Test
+    void toDayResponse_ShouldMapStructuredWeatherFields() {
+        com.tripwise.itinerary.domain.entity.ItineraryDay itineraryDay = com.tripwise.itinerary.domain.entity.ItineraryDay.builder()
+                .dayNumber(1)
+                .dayTitle("Ngay 1")
+                .weatherSummary("Thoi tiet dep")
+                .weatherCode(0)
+                .rainProbability(10)
+                .tempMin(24.5)
+                .tempMax(31.2)
+                .items(java.util.Collections.emptyList())
+                .build();
+
+        com.tripwise.itinerary.application.dto.ItineraryDayResponse response = itineraryResponseMapper.toDayResponse(itineraryDay);
+
+        assertThat(response.getDayNumber()).isEqualTo(1);
+        assertThat(response.getDayTitle()).isEqualTo("Ngay 1");
+        assertThat(response.getWeatherSummary()).isEqualTo("Thoi tiet dep");
+        assertThat(response.getWeatherCode()).isEqualTo(0);
+        assertThat(response.getRainProbability()).isEqualTo(10);
+        assertThat(response.getTempMin()).isEqualTo(24.5);
+        assertThat(response.getTempMax()).isEqualTo(31.2);
+    }
 }

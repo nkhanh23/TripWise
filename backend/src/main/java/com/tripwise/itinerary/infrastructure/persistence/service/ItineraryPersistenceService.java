@@ -9,10 +9,8 @@ import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryDay
 import com.tripwise.itinerary.infrastructure.persistence.repository.ItineraryItemRepository;
 import com.tripwise.place.domain.entity.Place;
 import com.tripwise.trip.domain.entity.Trip;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +23,11 @@ import java.util.Map;
 @Service
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@RequiredArgsConstructor
 public class ItineraryPersistenceService {
 
-    private ItineraryDayRepository itineraryDayRepository;
-    private ItineraryItemRepository itineraryItemRepository;
+    private final ItineraryDayRepository itineraryDayRepository;
+    private final ItineraryItemRepository itineraryItemRepository;
 
     @Transactional
     public List<ItineraryDay> saveItinerary(Trip trip, List<ItineraryDayPlan> dayPlans, Map<Long, Place> placeMap) {
@@ -45,6 +41,10 @@ public class ItineraryPersistenceService {
                     .dayNumber(dayPlan.getDayNumber())
                     .dayTitle("Ngay " + dayPlan.getDayNumber())
                     .weatherSummary(dayPlan.getWeatherSummary())
+                    .weatherCode(dayPlan.getWeatherCode())
+                    .rainProbability(dayPlan.getRainProbability())
+                    .tempMin(dayPlan.getTempMin())
+                    .tempMax(dayPlan.getTempMax())
                     .totalDistanceMeters(0)
                     .totalDurationSeconds(0)
                     .build();

@@ -8,7 +8,7 @@ import com.tripwise.ai.infrastructure.dto.GeminiRequest;
 import com.tripwise.ai.infrastructure.dto.GeminiResponse;
 import com.tripwise.route.domain.RouteResult;
 import com.tripwise.route.infrastructure.OsrmClient;
-import com.tripwise.weather.infrastructure.WeatherClient;
+import com.tripwise.weather.domain.gateway.WeatherGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ class TripGenerationE2ETest extends BaseIntegrationTest {
     private OsrmClient osrmClient;
 
     @MockBean
-    private WeatherClient weatherClient;
+    private WeatherGateway weatherClient;
 
     @BeforeEach
     void cleanUp() {

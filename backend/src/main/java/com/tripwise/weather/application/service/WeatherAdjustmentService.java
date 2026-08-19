@@ -69,7 +69,15 @@ public class WeatherAdjustmentService {
 
         return mutableDayPlans.stream()
                 .sorted(Comparator.comparingInt(MutableDayPlan::dayNumber))
-                .map(day -> new ItineraryDayPlan(day.dayNumber(), day.summary(), List.copyOf(day.items())))
+                .map(day -> new ItineraryDayPlan(
+                        day.dayNumber(),
+                        day.summary(),
+                        day.weatherCode(),
+                        day.rainProbability(),
+                        day.tempMin(),
+                        day.tempMax(),
+                        List.copyOf(day.items())
+                ))
                 .toList();
     }
 
@@ -87,6 +95,12 @@ public class WeatherAdjustmentService {
         LocalDate forecastDate = startDate.plusDays(dayPlan.getDayNumber() - 1L);
         WeatherForecast.DailyForecast dailyForecast = forecastByDate.get(forecastDate);
         WeatherCondition weatherCondition = classifyWeather(dailyForecast);
+
+        Integer weatherCode = dailyForecast != null ? dailyForecast.weatherCode() : null;
+        Integer rainProbability = dailyForecast != null ? dailyForecast.precipitationProbabilityMax() : null;
+        Double tempMin = dailyForecast != null ? dailyForecast.temperatureMinCelsius() : null;
+        Double tempMax = dailyForecast != null ? dailyForecast.temperatureMaxCelsius() : null;
+
         return new MutableDayPlan(
                 dayPlan.getDayNumber(),
                 new ArrayList<>(dayPlan.getItems()),
@@ -94,7 +108,11 @@ public class WeatherAdjustmentService {
                 weatherCondition,
                 countOutdoorPlaces(dayPlan.getItems()),
                 countIndoorPlaces(dayPlan.getItems()),
-                hasBeachActivity(dayPlan.getItems())
+                hasBeachActivity(dayPlan.getItems()),
+                weatherCode,
+                rainProbability,
+                tempMin,
+                tempMax
         );
     }
 
@@ -285,6 +303,10 @@ public class WeatherAdjustmentService {
         private final int outdoorCount;
         private final int indoorCount;
         private final boolean hasBeachActivity;
+        private final Integer weatherCode;
+        private final Integer rainProbability;
+        private final Double tempMin;
+        private final Double tempMax;
         private List<ItineraryItemPlan> items;
         private String summary;
 
@@ -295,7 +317,11 @@ public class WeatherAdjustmentService {
                 WeatherCondition condition,
                 int outdoorCount,
                 int indoorCount,
-                boolean hasBeachActivity
+                boolean hasBeachActivity,
+                Integer weatherCode,
+                Integer rainProbability,
+                Double tempMin,
+                Double tempMax
         ) {
             this.dayNumber = dayNumber;
             this.items = items;
@@ -304,6 +330,10 @@ public class WeatherAdjustmentService {
             this.outdoorCount = outdoorCount;
             this.indoorCount = indoorCount;
             this.hasBeachActivity = hasBeachActivity;
+            this.weatherCode = weatherCode;
+            this.rainProbability = rainProbability;
+            this.tempMin = tempMin;
+            this.tempMax = tempMax;
         }
 
         int dayNumber() {
@@ -340,6 +370,22 @@ public class WeatherAdjustmentService {
 
         boolean hasBeachActivity() {
             return hasBeachActivity;
+        }
+
+        Integer weatherCode() {
+            return weatherCode;
+        }
+
+        Integer rainProbability() {
+            return rainProbability;
+        }
+
+        Double tempMin() {
+            return tempMin;
+        }
+
+        Double tempMax() {
+            return tempMax;
         }
     }
 }

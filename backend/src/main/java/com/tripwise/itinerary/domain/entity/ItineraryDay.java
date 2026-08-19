@@ -35,6 +35,18 @@ public class ItineraryDay extends BaseEntity {
     @Column(name = "weather_summary", length = 255)
     private String weatherSummary;
 
+    @Column(name = "weather_code")
+    private Integer weatherCode;
+
+    @Column(name = "rain_probability")
+    private Integer rainProbability;
+
+    @Column(name = "temp_min")
+    private Double tempMin;
+
+    @Column(name = "temp_max")
+    private Double tempMax;
+
     @Column(name = "total_distance_meters", nullable = false)
     @Builder.Default
     private Integer totalDistanceMeters = 0;
