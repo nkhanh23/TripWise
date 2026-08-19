@@ -23,13 +23,18 @@ npm install
 
 ## Environment
 
-Copy `.env.example` to `.env` and set the API address for the target runtime. Do not put server secrets or tokens in this file.
+Copy `.env.example` to `.env` and set the Supabase public client configuration. Do not put server secrets or tokens in this file.
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-`EXPO_PUBLIC_API_BASE_URL` must point to the shared backend. For the Android emulator, use `http://10.0.2.2:8080/api/v1`; a physical device needs a reachable LAN address instead.
+Set these values from the Supabase project's Connect panel:
+
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+The publishable key is designed for client use only with RLS enabled. Never add a service-role key, Gemini key, Google server key, or database password to `mobile/.env`.
 
 ## Start development server
 
@@ -74,4 +79,4 @@ src/
 tests/            # Foundation tests
 ```
 
-M1 intentionally contains only five navigation placeholders: Home, Explore, Plan Trip, My Trips, and Profile. Authentication, token persistence, maps, places, and business API integrations are deferred to their assigned mobile phases.
+P1 deliberately disables client session persistence. P2 will add a SecureStore-backed session adapter before login and session UX are implemented. The schema and RLS policies are in [`../supabase/migrations`](../supabase/migrations); use [`../supabase/README.md`](../supabase/README.md) after a real project is available to link it, apply migrations, and generate database types.

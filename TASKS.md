@@ -10,11 +10,11 @@ Danh sách task tổng cho dự án **TripWise — Personal AI Travel Mobile App
 - [x] **P0.1 — Architecture Simplification Audit**: Rà soát hiện trạng, đánh giá Supabase, loại bỏ overengineering, phân loại module.
 - [x] **P0.2 — Finalize Supabase Architecture Decision & Roadmap Update**: Chốt ADR-018, cập nhật README, AGENTS, DECISIONS, TASKS.
 
-### [ ] P1 — Supabase Foundation
-- [ ] **P1-T001**: Khởi tạo cấu hình Supabase project, biến môi trường (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`).
-- [ ] **P1-T002**: Tạo Database Schema tối giản trên Supabase (`profiles`, `trips`, `itinerary_days`, `itinerary_items`).
-- [ ] **P1-T003**: Cấu hình Row Level Security (RLS) bảo vệ dữ liệu theo `auth.uid() = user_id`.
-- [ ] **P1-T004**: Tích hợp `@supabase/supabase-js` vào React Native client và kiểm tra kết nối.
+### [x] P1 — Supabase Foundation
+- [x] **P1-T001**: Khởi tạo cấu hình Supabase project, biến môi trường (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`).
+- [x] **P1-T002**: Tạo Database Schema tối giản trên Supabase (`profiles`, `trips`, `itinerary_days`, `itinerary_items`).
+- [x] **P1-T003**: Cấu hình Row Level Security (RLS) bảo vệ dữ liệu theo `auth.uid() = user_id`.
+- [x] **P1-T004**: Tích hợp `@supabase/supabase-js` vào React Native client và kiểm tra kết nối.
 
 ### [ ] P2 — Mobile Auth & Profile
 - [ ] **P2-T001**: Màn hình Sign In bằng Email/Password trên Mobile.
