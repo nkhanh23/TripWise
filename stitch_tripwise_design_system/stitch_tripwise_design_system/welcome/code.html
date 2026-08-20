@@ -1,0 +1,149 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TripWise - Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "secondary-fixed": "#d8e4f2",
+                            "on-tertiary-container": "#fffbff",
+                            "on-error-container": "#93000a",
+                            "surface-bright": "#fcf9f8",
+                            "secondary-fixed-dim": "#bcc8d5",
+                            "surface-tint": "#005bc1",
+                            "on-primary": "#ffffff",
+                            "secondary": "#54606b",
+                            "tertiary-fixed": "#ffdad5",
+                            "outline-variant": "#c1c6d7",
+                            "inverse-on-surface": "#f3f0ef",
+                            "primary": "#0058bc",
+                            "error": "#ba1a1a",
+                            "secondary-container": "#d8e4f2",
+                            "surface-container": "#f0eded",
+                            "surface": "#fcf9f8",
+                            "tertiary-container": "#e2241f",
+                            "inverse-surface": "#313030",
+                            "on-primary-fixed-variant": "#004493",
+                            "surface-variant": "#e5e2e1",
+                            "outline": "#717786",
+                            "surface-container-high": "#eae7e7",
+                            "on-tertiary": "#ffffff",
+                            "on-secondary-container": "#5a6671",
+                            "surface-container-low": "#f6f3f2",
+                            "on-secondary": "#ffffff",
+                            "surface-dim": "#dcd9d9",
+                            "tertiary": "#bc000a",
+                            "error-container": "#ffdad6",
+                            "on-secondary-fixed-variant": "#3d4853",
+                            "on-background": "#1c1b1b",
+                            "on-surface-variant": "#414755",
+                            "on-primary-container": "#fefcff",
+                            "background": "#fcf9f8",
+                            "on-error": "#ffffff",
+                            "on-tertiary-fixed": "#410001",
+                            "on-secondary-fixed": "#111d26",
+                            "surface-container-highest": "#e5e2e1",
+                            "primary-fixed": "#d8e2ff",
+                            "primary-fixed-dim": "#adc6ff",
+                            "tertiary-fixed-dim": "#ffb4aa",
+                            "primary-container": "#0070eb",
+                            "surface-container-lowest": "#ffffff",
+                            "on-primary-fixed": "#001a41",
+                            "on-tertiary-fixed-variant": "#930005",
+                            "on-surface": "#1c1b1b",
+                            "inverse-primary": "#adc6ff"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "lg": "16px",
+                            "sm": "8px",
+                            "3xl": "32px",
+                            "2xl": "24px",
+                            "xl": "20px",
+                            "md": "12px",
+                            "xs": "4px"
+                    },
+                    "fontFamily": {
+                            "title-sm": ["Inter"],
+                            "label-md": ["Inter"],
+                            "body-md": ["Inter"],
+                            "display": ["Inter"],
+                            "caption": ["Inter"],
+                            "title-md": ["Inter"],
+                            "label-lg": ["Inter"],
+                            "title-lg": ["Inter"],
+                            "body-sm": ["Inter"],
+                            "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                            "title-sm": ["16px", {"lineHeight": "22px", "fontWeight": "600"}],
+                            "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                            "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                            "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                            "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .map-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c1c6d7' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-body-lg text-on-surface">
+<!-- Background Pattern -->
+<div class="absolute inset-0 map-pattern z-0 pointer-events-none"></div>
+<!-- Main Content Container -->
+<div class="relative z-10 w-full max-w-md px-2xl flex flex-col items-center text-center">
+<!-- Logo Area -->
+<div class="mb-3xl flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-[48px] mb-md" style="font-variation-settings: 'FILL' 1;">explore</span>
+<h1 class="font-display text-display text-primary tracking-tight">TripWise</h1>
+</div>
+<!-- Typography Context -->
+<div class="mb-3xl space-y-md">
+<h2 class="font-display text-display text-on-surface">Plan trips your way</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[280px] mx-auto">
+                Save places, organize your days, and keep your whole trip in one place.
+            </p>
+</div>
+<!-- Call to Action Area -->
+<div class="w-full flex flex-col gap-md mt-xl">
+<a href="{{DATA:SCREEN:SCREEN_13}}" class="w-full bg-primary text-on-primary font-label-lg text-label-lg py-md rounded-full hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm flex items-center justify-center gap-sm active:scale-[0.98]">
+                Get started
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a href="{{DATA:SCREEN:SCREEN_15}}" class="w-full bg-transparent text-primary font-label-lg text-label-lg py-md rounded-full hover:bg-surface-variant transition-colors active:scale-[0.98] flex items-center justify-center">
+                I already have an account
+            </a>
+</div>
+</div>
+
+
+</body></html>

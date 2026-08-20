@@ -1,0 +1,296 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TripWise - Saved Places</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#d8e4f2",
+                      "on-tertiary-container": "#fffbff",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#fcf9f8",
+                      "secondary-fixed-dim": "#bcc8d5",
+                      "surface-tint": "#005bc1",
+                      "on-primary": "#ffffff",
+                      "secondary": "#54606b",
+                      "tertiary-fixed": "#ffdad5",
+                      "outline-variant": "#c1c6d7",
+                      "inverse-on-surface": "#f3f0ef",
+                      "primary": "#0058bc",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#d8e4f2",
+                      "surface-container": "#f0eded",
+                      "surface": "#fcf9f8",
+                      "tertiary-container": "#e2241f",
+                      "inverse-surface": "#313030",
+                      "on-primary-fixed-variant": "#004493",
+                      "surface-variant": "#e5e2e1",
+                      "outline": "#717786",
+                      "surface-container-high": "#eae7e7",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-container": "#5a6671",
+                      "surface-container-low": "#f6f3f2",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#dcd9d9",
+                      "tertiary": "#bc000a",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#3d4853",
+                      "on-background": "#1c1b1b",
+                      "on-surface-variant": "#414755",
+                      "on-primary-container": "#fefcff",
+                      "background": "#fcf9f8",
+                      "on-error": "#ffffff",
+                      "on-tertiary-fixed": "#410001",
+                      "on-secondary-fixed": "#111d26",
+                      "surface-container-highest": "#e5e2e1",
+                      "primary-fixed": "#d8e2ff",
+                      "primary-fixed-dim": "#adc6ff",
+                      "tertiary-fixed-dim": "#ffb4aa",
+                      "primary-container": "#0070eb",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed": "#001a41",
+                      "on-tertiary-fixed-variant": "#930005",
+                      "on-surface": "#1c1b1b",
+                      "inverse-primary": "#adc6ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "16px",
+                      "sm": "8px",
+                      "3xl": "32px",
+                      "2xl": "24px",
+                      "xl": "20px",
+                      "md": "12px",
+                      "xs": "4px",
+                      "safe": "env(safe-area-inset-bottom, 16px)"
+              },
+              "fontFamily": {
+                      "title-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display": ["Inter"],
+                      "caption": ["Inter"],
+                      "title-md": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "title-sm": ["16px", {"lineHeight": "22px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcf9f8; /* background color */
+            color: #1c1b1b; /* on-background */
+        }
+        
+        /* Hide scrollbar for chip scroll area */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Glassmorphism utility for cards if needed */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background pb-32 pt-20">
+<!-- TopAppBar -->
+<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm dark:shadow-none fixed top-0 w-full z-50 flex justify-between items-center px-lg h-16 w-full">
+<div class="flex items-center gap-sm cursor-pointer hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</div>
+<h1 class="font-display text-display text-primary dark:text-primary-fixed-dim">TripWise</h1>
+<div class="flex items-center gap-sm cursor-pointer hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">search</span>
+</div>
+</header>
+<main class="px-lg max-w-7xl mx-auto">
+<!-- Page Title -->
+<div class="mt-md mb-xl">
+<h2 class="font-display text-display text-on-background">Saved</h2>
+</div>
+<!-- Filter Chips (Horizontal Scroll) -->
+<div class="flex overflow-x-auto hide-scrollbar gap-sm pb-md mb-xl -mx-lg px-lg snap-x snap-mandatory">
+<!-- Active Chip -->
+<button class="snap-start shrink-0 px-xl py-sm rounded-full bg-primary text-on-primary font-label-lg transition-colors active:scale-95 duration-150 shadow-[0_4px_8px_rgba(0,0,0,0.08)]">
+                All
+            </button>
+<!-- Inactive Chips -->
+<button class="snap-start shrink-0 px-xl py-sm rounded-full bg-surface text-on-surface border border-outline-variant font-label-lg hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+                Attractions
+            </button>
+<button class="snap-start shrink-0 px-xl py-sm rounded-full bg-surface text-on-surface border border-outline-variant font-label-lg hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+                Food
+            </button>
+<button class="snap-start shrink-0 px-xl py-sm rounded-full bg-surface text-on-surface border border-outline-variant font-label-lg hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+                Cafés
+            </button>
+<button class="snap-start shrink-0 px-xl py-sm rounded-full bg-surface text-on-surface border border-outline-variant font-label-lg hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+                Shopping
+            </button>
+<button class="snap-start shrink-0 px-xl py-sm rounded-full bg-surface text-on-surface border border-outline-variant font-label-lg hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+                Hotels
+            </button>
+</div>
+<!-- Saved Places List (Bento/Grid Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Card 1: Wat Arun -->
+<div class="bg-surface rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col group cursor-pointer hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] transition-shadow duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_35}}'">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A serene, high-resolution photograph of Wat Arun temple in Bangkok during golden hour. The sunlight softly illuminates the intricate, colorful porcelain details of the spires against a clear, light-blue sky. The mood is calm and culturally rich, embodying a modern, premium travel aesthetic with a bright, clean light-mode feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBstKN8GouX2YILOTum504xQoHKtnUPuXlz3Fe4u3FmwBS5RRxrCDLi1b-RvIV2wHzTdrR503Eyl3ZwAWr__yJt5RBnHwVGlUQ1f7-BcwawM3m-2aPGHvLC6ft44CPzy6PUbE7peRzijU0I6EIo_QtLcVyXykHnAQgkBaUMCLo3yqH6M4BEZPaBvCgrPDlLOQEwIcuiBseWgIk1XmzuYGAYdy15oEeMd4DmFGYZilL7o7SeLtz3lTL3mw">
+<button class="absolute top-sm right-sm bg-surface/80 backdrop-blur-sm p-sm rounded-full text-primary hover:bg-surface transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<div class="absolute bottom-sm left-sm bg-surface/90 backdrop-blur-sm px-md py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span class="font-caption text-caption text-secondary">Bangkok</span>
+</div>
+</div>
+<div class="p-lg flex flex-col gap-xs flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">Wat Arun</h3>
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg">4.8</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-secondary">Temple • Attraction</p>
+</div>
+</div>
+<!-- Card 2: ICONSIAM -->
+<div class="bg-surface rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col group cursor-pointer hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] transition-shadow duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_35}}'">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sleek, modern architectural shot of the ICONSIAM shopping mall exterior in Bangkok, captured during twilight. The glass facade reflects the soft, ambient city lights and the nearby river. The overall scene is upscale, clean, and vibrant, fitting a premium, minimalist travel app design in light mode with subtle depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd7RNMa7LfkTYcheeJHDvf0q0r5YdrDSZxXIpMGSduWrbfFuoR_s_O1g0_8IDZGDfC-756c_NIZc9GC2yhR01uiF-jYW70kBWlKSgTmPt6NyzIV-FWDqDW0pfHDGCpFBiu4yCIiHaUukSw5vq62LkJ94rw8cfTmXHkaTQsUSSHlDs68C7YFNHycLc8u-iE-lZpn0kynNvX_vgeIHS1kWujvkXgPvB0MVx4MAJMpbsG59Lbs4TPbKAbHA">
+<button class="absolute top-sm right-sm bg-surface/80 backdrop-blur-sm p-sm rounded-full text-primary hover:bg-surface transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<div class="absolute bottom-sm left-sm bg-surface/90 backdrop-blur-sm px-md py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span class="font-caption text-caption text-secondary">Bangkok</span>
+</div>
+</div>
+<div class="p-lg flex flex-col gap-xs flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">ICONSIAM</h3>
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg">4.9</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-secondary">Shopping • Luxury</p>
+</div>
+</div>
+<!-- Card 3: Yaowarat Road -->
+<div class="bg-surface rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col group cursor-pointer hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] transition-shadow duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_35}}'">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant, bustling street photography scene of Yaowarat Road in Bangkok's Chinatown at night. Neon signs glow warmly, illuminating the lively food stalls and crowds. The image is captured with a modern, high-quality lens to ensure clarity and a premium feel, avoiding clutter while conveying the energetic culinary atmosphere of the destination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKAP1N2rzaFzBL5t2PhZZ04r0VWL1dosVzmkEK28CDS_BA-szwSFcQCT0lGpt90cG8JnpfU2RH01-ZZfLINmnOMF4-Tu0d2OmJ-bSsjOF3JBGzBWo8v7IIKIP83KRiilhd50bZFf5IeacsZbcuWGHsLZab4VRpSe4vaPlMeeJ7P_yeTYwZzp3jmSSy5qiOu-_JxTqfl8IwlkDTa6tcITU4fjYw5ZC_Unl53n0f72UC7phVp7hwk0QAcA">
+<button class="absolute top-sm right-sm bg-surface/80 backdrop-blur-sm p-sm rounded-full text-primary hover:bg-surface transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<div class="absolute bottom-sm left-sm bg-surface/90 backdrop-blur-sm px-md py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span class="font-caption text-caption text-secondary">Bangkok</span>
+</div>
+</div>
+<div class="p-lg flex flex-col gap-xs flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">Yaowarat Road</h3>
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg">4.7</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-secondary">Food • Street Market</p>
+</div>
+</div>
+<!-- Card 4: Khao Chi Chan -->
+<div class="bg-surface rounded-xl shadow-[0_4px_8px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col group cursor-pointer hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] transition-shadow duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_35}}'">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A wide, breathtaking landscape shot of Khao Chi Chan (Buddha Mountain) near Pattaya during a bright, sunny day. The massive golden Buddha outline carved into the limestone cliff is clearly visible against a lush green foreground and a pristine blue sky. The visual style is crisp, clean, and majestic, fitting a modern travel application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA7A9lz8GquVzJBmWFmZKU0Y2OBYv9_CECG0MkfVTxeHJNx1wCthkCsqKVb9xqrHgi2iORsuy0AT0n7mciAbC6QVlIXyKwT-5rNmTTZbrd8275Nh-jmCalG4mukuKWyNpiLCPLuMcFZU35a2jTbRbmwBqYvs47jjyCv6v2zA8kumCCR2VVTnCqt3dfUIVWf3_BlKJG1HFvKPkRTYCDKKlPH_lyTVcAzylQq5yEe4CGJqG1NIjk2KnTEg">
+<button class="absolute top-sm right-sm bg-surface/80 backdrop-blur-sm p-sm rounded-full text-primary hover:bg-surface transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+<div class="absolute bottom-sm left-sm bg-surface/90 backdrop-blur-sm px-md py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">location_on</span>
+<span class="font-caption text-caption text-secondary">Pattaya</span>
+</div>
+</div>
+<div class="p-lg flex flex-col gap-xs flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-title-lg text-title-lg text-on-surface">Khao Chi Chan</h3>
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-lg text-label-lg">4.6</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-secondary">Attraction • Landmark</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface dark:bg-surface-dim fixed bottom-0 w-full rounded-t-xl z-50 shadow-[0_-4px_8px_rgba(0,0,0,0.08)] dark:border-t dark:border-outline-variant fixed bottom-0 left-0 w-full flex justify-around items-center pt-sm pb-safe px-md">
+<!-- Explore (Inactive) -->
+<a href="{{DATA:SCREEN:SCREEN_37}}" class="flex flex-col items-center justify-center text-secondary hover:text-primary-container transition-all active:scale-90 duration-200 cursor-pointer p-xs">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">explore</span>
+<span class="font-label-md text-label-md">Explore</span>
+</a>
+<!-- Trips (Inactive) -->
+<a href="{{DATA:SCREEN:SCREEN_29}}" class="flex flex-col items-center justify-center text-secondary hover:text-primary-container transition-all active:scale-90 duration-200 cursor-pointer p-xs">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">map</span>
+<span class="font-label-md text-label-md">Trips</span>
+</a>
+<!-- Saved (Active) -->
+<a href="{{DATA:SCREEN:SCREEN_12}}" class="flex flex-col items-center justify-center text-primary bg-primary-container/20 rounded-full px-4 py-1 hover:text-primary-container transition-all active:scale-90 duration-200 cursor-pointer p-xs">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+<span class="font-label-md text-label-md">Saved</span>
+</a>
+<!-- Profile (Inactive) -->
+<a href="{{DATA:SCREEN:SCREEN_10}}" class="flex flex-col items-center justify-center text-secondary hover:text-primary-container transition-all active:scale-90 duration-200 cursor-pointer p-xs">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+
+
+</body></html>

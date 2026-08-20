@@ -1,5 +1,5 @@
-import { PlaceholderScreen } from '../../components/PlaceholderScreen';
+import { CreateTripWizardScreen } from './screens/CreateTripWizardScreen';
 
 export function PlanScreen() {
-  return <PlaceholderScreen title="Plan Trip" />;
+  return <CreateTripWizardScreen />;
 }

@@ -1,4 +1,12 @@
-# TripWise Project Phases (Personal AI Travel Mobile App)
+# TripWise Historical Project Phases (Deprecated for Active Planning)
+
+> [!CAUTION]
+> File này lưu roadmap Spring Boot/PostGIS/Web/React Native lịch sử để tra cứu migration và quyết định cũ. Đây **không còn là active source of truth** và không được dùng để chọn task tiếp theo.
+>
+> Active roadmap index: [`../../PHASES.md`](../../PHASES.md)
+> Backend: [`../../PHASES_BE.md`](../../PHASES_BE.md)
+> React Native Mobile Frontend: [`../../PHASES_FE.md`](../../PHASES_FE.md)
+> FE ↔ BE Integration: [`../../PHASES_INTEGRATION.md`](../../PHASES_INTEGRATION.md)
 
 > **QUYẾT ĐỊNH KIẾN TRÚC MỚI (ADR-018):**
 > TripWise chính thức chuyển đổi sang **Ứng dụng di động cá nhân (Personal AI Travel Mobile App)**.

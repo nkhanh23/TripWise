@@ -64,6 +64,40 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [resolveSession]);
 
   const signIn = useCallback(async (email: string, password: string) => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Mock demo account bypass for quick UI testing
+    if (normalizedEmail === 'demo@tripwise.io' || normalizedEmail === 'test@tripwise.io') {
+      const mockSession = {
+        access_token: 'mock_jwt_token',
+        refresh_token: 'mock_refresh_token',
+        expires_in: 86400,
+        token_type: 'bearer',
+        user: {
+          id: 'mock_user_123',
+          app_metadata: {},
+          user_metadata: { display_name: 'Alex Morgan' },
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+          email: normalizedEmail,
+        },
+      } as unknown as Session;
+
+      setState({
+        status: 'authenticated',
+        session: mockSession,
+        user: mockSession.user,
+        profile: {
+          id: 'mock_user_123',
+          userId: 'mock_user_123',
+          displayName: 'Alex Morgan',
+          homeAirport: 'BKK',
+          travelStyle: 'culture',
+        } as any,
+      });
+      return;
+    }
+
     const { session } = await signInWithEmail(email, password);
     await resolveSession(session);
   }, [resolveSession]);

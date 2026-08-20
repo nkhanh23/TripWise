@@ -2,9 +2,17 @@
 
 Danh sách task tổng cho dự án **TripWise — Personal AI Travel Mobile App** (theo [ADR-017](DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)).
 
+> [!IMPORTANT]
+> **Source-of-truth roadmap hiện hành đã tách theo ownership:**
+> - Backend: [`PHASES_BE.md`](./PHASES_BE.md)
+> - React Native Mobile Frontend: [`PHASES_FE.md`](./PHASES_FE.md)
+> - FE ↔ BE Integration: [`PHASES_INTEGRATION.md`](./PHASES_INTEGRATION.md)
+>
+> `TASKS.md` được giữ làm compatibility backlog/historical record. Các ID không prefix như `P0`–`P7`, `P4-T003` hoặc legacy `Phase N` bên dưới thuộc roadmap hỗn hợp cũ, **không phải active ownership IDs**. Không dùng file này để chọn task kế tiếp và không suy ra BE/FE/INT completion từ checklist hỗn hợp.
+
 ---
 
-## 1. Master Roadmap: Personal Mobile App (P-Series)
+## 1. Historical Mixed P-Series Compatibility Snapshot
 
 ### [x] P0 — Architecture Simplification
 - [x] **P0.1 — Architecture Simplification Audit**: Rà soát hiện trạng, đánh giá Supabase, loại bỏ overengineering, phân loại module.
@@ -21,11 +29,11 @@ Danh sách task tổng cho dự án **TripWise — Personal AI Travel Mobile App
 - [x] **P2-T002**: Tự động lưu và phục hồi Session qua Secure Storage (`expo-secure-store`).
 - [x] **P2-T003**: Profile & Settings screen (đăng xuất, xem thông tin người dùng).
 
-### [ ] P3 — Gemini Edge Function
-- [ ] **P3-T001**: Khởi tạo Supabase Edge Function `generate-trip` (Deno / TypeScript).
-- [ ] **P3-T002**: Porting logic TripParsingPromptBuilder và DescriptionPromptBuilder từ Java sang TypeScript.
-- [ ] **P3-T003**: Cấu hình `GEMINI_API_KEY` trong Supabase Secrets và gọi Gemini API.
-- [ ] **P3-T004**: Validate cấu trúc JSON output của Gemini trước khi trả về client.
+### [x] P3 — Gemini Edge Function
+- [x] **P3-T001**: Khởi tạo Supabase Edge Function `generate-trip` (Deno / TypeScript).
+- [x] **P3-T002**: Porting logic TripParsingPromptBuilder và DescriptionPromptBuilder từ Java sang TypeScript.
+- [x] **P3-T003**: Cấu hình `GEMINI_API_KEY` trong Supabase Secrets và gọi Gemini API.
+- [x] **P3-T004**: Validate cấu trúc JSON output của Gemini trước khi trả về client.
 
 ### [ ] P4 — Trip Generation & Persistence
 - [ ] **P4-T001**: Màn hình Plan Trip (form nhập prompt tiếng Việt, chọn ngày, ngân sách, phong cách).

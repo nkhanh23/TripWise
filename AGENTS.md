@@ -16,9 +16,13 @@ Trước khi tạo hoặc sửa bất kỳ file nào, AI phải đọc và hiể
 4. `TASKS.md`
 5. Tài liệu dự án AI Smart Travel Planner được đính kèm trong workspace
 6. Task cụ thể mà người dùng giao ở lượt hiện tại
-7. `docs/08-project-roadmap/phases.md`
-8. Toàn bộ các file `.md` trong thư mục `docs/`
+7. Roadmap và handoff đúng ownership theo bảng sau; `PHASES.md` chỉ là index:
+   - Backend task: `PHASES_BE.md` + `HANDOFF_BE.md`
+   - React Native Mobile Frontend task: `PHASES_FE.md` + `HANDOFF_FE.md`
+   - FE ↔ BE Integration task: `PHASES_BE.md` + `PHASES_FE.md` + `PHASES_INTEGRATION.md` và cả ba handoff tương ứng
+8. Toàn bộ các file `.md` trong thư mục `docs/` liên quan trực tiếp đến task. `docs/08-project-roadmap/phases.md` là historical/deprecated reference, không phải active roadmap.
 8a. `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — bắt buộc đọc trước mọi task liên quan: place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
+8b. `PHASES_FE.md`, `HANDOFF_FE.md`, `docs/05-engineering/react-native-coding-rules.md`, `docs/09-ui-design/stitch-to-react-native-mapping-report.md` và các tài liệu liên quan trong `docs/09-ui-design/` — Đối với mọi task React Native/mobile UI, agent BẮT BUỘC phải đọc roadmap FE root, active Stitch mapping và các file chuẩn trước khi sửa code. `mobile/PHASES.md` chỉ là compatibility pointer. Agent chỉ được làm đúng FE phase/subtask active và tuyệt đối không thực hiện backend/API integration nếu người dùng chưa kích hoạt roadmap integration riêng. Các Stitch-to-Flutter mapping chỉ là historical reference.
 9. Source code liên quan trực tiếp đến task hiện tại
 10. Test code liên quan trực tiếp đến task hiện tại
 
@@ -30,7 +34,7 @@ Nếu chưa đọc đủ ngữ cảnh, không được tự suy đoán để cod
 
 Stack mục tiêu chính thức (theo ADR-017 & ADR-018):
 
-- **Mobile Client chính thức (Sản phẩm duy nhất):** React Native + TypeScript + Expo (`mobile/`) cho Android và iOS.
+- **Mobile Client chính thức (Sản phẩm duy nhất):** React Native + TypeScript + Expo (`mobile/`). **Android là target implementation/runtime hiện tại**; code không được khóa cứng để cản iOS về sau.
 - **Backend & Database:** **Supabase** (Managed PostgreSQL + Row Level Security (RLS) + Supabase Auth).
 - **Serverless Backend Logic:** **Supabase Edge Functions** (Deno / TypeScript) để proxy an toàn cho Gemini API & Google Places.
 - **AI Engine:** Google Gemini API (gọi qua Supabase Edge Function, không để secret trong mobile).
@@ -51,7 +55,7 @@ AI không được tự ý thay đổi sang Flutter, Node.js/NestJS server monol
 
 Bắt buộc giữ hướng:
 
-- **Mobile First / Mobile Only:** Mọi trải nghiệm người dùng tập trung 100% vào ứng dụng di động React Native.
+- **Mobile First / Mobile Only:** Mọi trải nghiệm người dùng tập trung 100% vào ứng dụng React Native + TypeScript + Expo; Android là target hiện tại.
 - **BaaS & Serverless:** Sử dụng Supabase PostgreSQL với Row Level Security (RLS) để đảm bảo dữ liệu thuộc về chính chủ sở hữu.
 - **Secret Isolation:** Mọi private API key (`GEMINI_API_KEY`, Google Server Key) bắt buộc đặt trong Supabase Vault/Secrets và gọi qua Supabase Edge Functions. Tuyệt đối không đặt secret trong React Native bundle.
 - **Client Direct for Public APIs:** Các API công cộng không cần secret như Open-Meteo và OSRM được gọi trực tiếp từ mobile client với timeout và fallback hợp lý.
@@ -234,11 +238,36 @@ cd backend
 .\mvnw.cmd test
 ```
 
+Đối với Mobile Frontend, chỉ dùng scripts thực tế trong `mobile/package.json`:
+
+```powershell
+cd mobile
+npm run lint
+npm run typecheck
+npm test
+npx expo-doctor
+```
+
+Android development build khi task yêu cầu runtime/native verification:
+
+```powershell
+cd mobile
+npm run android
+```
+
+Không dùng `flutter analyze`, `flutter test`, Dart hoặc `pubspec.yaml` để verify production mobile client.
+
 ---
 
 ## 13. Quy tắc roadmap phase
 
-Trước mỗi task, AI phải đọc `docs/08-project-roadmap/phases.md`.
+Trước mỗi task, AI phải chọn roadmap theo ownership:
+
+- Backend: `PHASES_BE.md` và `HANDOFF_BE.md`.
+- React Native Mobile Frontend: `PHASES_FE.md` và `HANDOFF_FE.md`.
+- Integration: `PHASES_BE.md`, `PHASES_FE.md`, `PHASES_INTEGRATION.md` và cả ba handoff.
+
+`PHASES.md` chỉ là index. `TASKS.md` và `docs/08-project-roadmap/phases.md` là compatibility/historical records, không dùng để tự chọn active task.
 
 AI phải:
 
@@ -264,7 +293,8 @@ Trước khi sửa code, AI phải đọc lại:
 - `README.md`
 - `DECISIONS.md` nếu có
 - `TASKS.md` nếu có
-- `docs/08-project-roadmap/phases.md`
+- `PHASES.md` và roadmap/handoff đúng ownership (`PHASES_BE.md`/`HANDOFF_BE.md`, `PHASES_FE.md`/`HANDOFF_FE.md`, hoặc bộ Integration)
+- `docs/08-project-roadmap/phases.md` chỉ khi cần tra cứu lịch sử; không coi là active source of truth
 - `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — ưu tiên đọc nếu task liên quan place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
 - toàn bộ file `.md` trong `docs/`
 - `backend/README.md`

@@ -1,42 +1,38 @@
+import { lightPalette } from './palettes';
+
 export const colors = {
-  background: {
-    canvas: '#F7E7C6',
-    surface: '#FFF6DE',
-  },
-  brand: {
-    primary: '#20A7D8',
-    red: '#E6392E',
-    yellow: '#FFD166',
-    lime: '#B8F24A',
-  },
-  text: {
-    primary: '#111111',
-    secondary: '#3A2F2A',
-    muted: '#7A6A58',
-    inverse: '#FFFFFF',
-  },
-  border: '#111111',
+  ...lightPalette,
+  border: lightPalette.border.default,
+  outlineVariant: lightPalette.border.default,
 } as const;
 
 export const spacing = {
   xs: 4,
   sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  xxxl: 32,
 } as const;
 
 export const typography = {
   body: 16,
+  bodySmall: 14,
   title: 28,
+  titleSmall: 18,
   lineHeight: 24,
   fontWeight: {
     regular: '400',
+    semibold: '600',
     bold: '700',
   },
 } as const;
 
 export const radius = {
-  card: 20,
+  sm: 4,
+  input: 8,
   control: 16,
+  card: 20,
+  pill: 9999,
 } as const;

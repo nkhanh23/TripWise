@@ -1,181 +1,94 @@
-# UI Layout Mobile (Vertical Layering)
+# UI Layout Mobile — Map-First & Vertical Layering
 
-Mobile định hướng theo “map-first”: **bản đồ full-screen** là background, UI phủ lên bằng **floating cards** và **bottom sheet**. Tinh thần giống Trek: ít chrome, tập trung vào route + step + summary nhanh.
-
----
-
-## Tổng quan nguyên tắc
-
-- Map luôn hiện (trừ một số màn “public/auth”).
-- Nội dung dày (timeline) nằm trong bottom sheet để:
-  - không che map liên tục
-  - dễ kéo lên/xuống theo nhu cầu
-- Thao tác chính:
-  - Search địa điểm
-  - Focus marker
-  - Xem itinerary theo ngày
-  - Xem hướng dẫn di chuyển (turn-by-turn)
+> **Authority:** This document defines the layout rules, spatial layering, safe area behavior, and responsive guidelines for the TripWise Mobile application (Android & iOS).
 
 ---
 
-## Full-screen map background
+## 1. Core Mobile Layout Philosophy
 
-### Layout
-
-- Map chiếm toàn màn hình, dưới tất cả lớp.
-- Các overlay “floating” có shadow mạnh hơn `shadow.mapOverlay` để nổi trên map.
-- Dành safe area cho:
-  - status bar/notch
-  - map attribution (góc dưới)
-  - gesture navigation bar (Android/iOS)
-
-### Map controls
-
-- Zoom controls: ưu tiên custom (nút +/-) đặt bên phải giữa màn hình, tránh bị bottom sheet che.
-- Recenter button: nút tròn (FAB phụ) đặt gần zoom controls.
+TripWise Mobile is built on a **Map-First, Layered Vertical Canvas** paradigm:
+1. **The Map is the Foundation (Base Layer):** On discovery and itinerary screens, the interactive vector map fills the screen edge-to-edge.
+2. **Floating HUD Elements (Mid Layer):** Search bars, category chip carousels, and map controls float over the map with ambient shadows (`shadow.level2` & `level3`).
+3. **Contextual Bottom Sheets & Panels (Top Layer):** Rich content (place previews, itinerary timelines, directions) slides up in draggable sheets without permanently obscuring the user's geographic context.
 
 ---
 
-## Floating top search bar
+## 2. Spatial Hierarchy & Layering
 
-### Vị trí
-
-- Top, cách status bar + 8–12px.
-- Canh giữa ngang hoặc canh trái (tùy phong cách).
-
-### Kích thước
-
-- Height: 44–48
-- Radius: 999 (pill) hoặc 18–20
-- Padding ngang: 14–16
-
-### Chức năng
-
-- Search place (địa điểm có trong DB + gợi ý).
-- Có icon leading (search) + trailing (filter hoặc voice optional).
-- Khi focus:
-  - dim map nhẹ (overlay 10–16% đen) để tập trung vào dropdown list.
-  - list kết quả hiển thị dạng card list, tối đa 60–70% chiều cao.
-
----
-
-## Floating trip summary card
-
-Card tóm tắt giúp user “nắm nhanh” tình trạng trip khi map đang chiếm màn hình.
-
-### Nội dung
-
-- Trip title
-- Date range hoặc “3N2Đ”
-- 2–3 status tags
-- Summary stats compact: distance / weather / cost
-- CTA nhỏ: “Mở chi tiết” (đẩy bottom sheet lên)
-
-### Vị trí
-
-Hai option:
-
-- **Option A (khuyến nghị)**: đặt dưới search bar, width gần full trừ margin 16.
-- Option B: đặt dạng “floating pill” ngang ở top, ít nội dung hơn.
-
-### Hành vi
-
-- Khi bottom sheet kéo lên mức cao: summary card collapse (chỉ còn 1 dòng) hoặc ẩn.
-- Khi user đang trong “Directions mode”: summary card ưu tiên nhường chỗ cho instruction card.
+```
++---------------------------------------------------+  <-- Status Bar / Notch
+| [TWIconButton]   [TWSearchBar (Floating)]   [Filter] |  <-- Floating Top Bar
++---------------------------------------------------+
+|  [TWChip: Attraction] [TWChip: Food] [TWChip: Hotel]|  <-- Horizontal Chip Row
+|                                                   |
+|                      [Pin]                        |
+|                                     [Re-center]   |  <-- Map HUD Controls
+|           MAP CANVAS (Base)         [Zoom +]      |
+|                                     [Zoom -]      |
+|                                                   |
+| +-----------------------------------------------+ |
+| |                    [Handle]                   | |  <-- TWBottomSheet (Draggable)
+| | [TWPlaceHeader]                               | |
+| | [TWPlaceGallery (Snappable Horizontal)]       | |
+| | [TWButton: Get Directions]  [TWButton: Save]  | |
+| +-----------------------------------------------+ |
++---------------------------------------------------+
+| [Home] [Explore] [Plan] [Trips] [Profile]        |  <-- React Navigation tabs
++---------------------------------------------------+  <-- Home Indicator (SafeArea)
+```
 
 ---
 
-## Bottom sheet itinerary
+## 3. Screen Layout Archetypes
 
-### Các mức (snap points)
+### 3.1 Archetype A: Map-First Discovery (`ExploreMapScreen`, `TripMapScreen`)
+- **Map View:** Fills 100% of the viewport.
+- **Top Safe Area:** Padded `16px` below status bar. Houses `TWSearchBar` (`48px` height, `radius.full` or `radius.lg`, `shadow.level2`).
+- **Category Filter Bar:** Directly below search bar, horizontal scroll without scrollbar, `16px` horizontal padding.
+- **Map Controls:** Positioned right edge, vertically centered, `16px` margin, stacked with `8px` gap.
+- **Bottom Sheet (`TWBottomSheet`):**
+  - Starts at Peek / Preview height (`~45%` height for selected places).
+  - Drag handle: `40x4px`, centered, `outlineVariant` color.
+  - Sits above map canvas (z-index / Stack overlay) but collapses neatly above the bottom tab bar.
 
-- `Collapsed` (~15–20%): chỉ hiển thị “handle” + day tabs + 1–2 item tiếp theo.
-- `Mid` (~45–55%): hiển thị timeline đủ để chọn item.
-- `Expanded` (~85–92%): gần full, cho phép xem lịch trình dài + details.
+### 3.2 Archetype B: Full-Screen Detail & Itinerary (`PlaceDetailScreen`, `TripDetailScreen`)
+- **Hero Header:** Top `35vh` to `40vh` dedicated to high-resolution photography with bottom gradient fade.
+- **Floating Back & Action Buttons:** Left back arrow and right bookmark/edit icon embedded inside top SafeArea (`40x40px` circular backdrop).
+- **Overlapping Content Card:** Content container shifts up `-16px` to overlap the bottom of the hero banner with rounded top corners (`radius.xl`).
+- **Sticky Day Selector:** On `TripDetailScreen`, `TWDaySelector` pins directly below the top app bar when scrolling.
+- **Bottom Action Footer:** Sticky bottom bar (`height: 72px` + SafeArea) with primary CTA ("Add to Itinerary" / "Start Directions").
 
-### Nội dung bottom sheet
+### 3.3 Archetype C: Multi-Step Creation Wizard (`CreateTripScreen`)
+- **Top Progress Indicator:** Step bar (`1 of 5`) or segmented progress indicator below top app bar.
+- **Scrollable Form Body:** Generous padding (`24px` horizontal), `20px` spacing between field sections.
+- **Fixed Navigation Footer:** Row containing "Back" (`TWButton.outline`) and "Continue" (`TWButton.primary`), pinned to the bottom above keyboard/SafeArea.
 
-1. Handle + title “Itinerary”
-2. Day tabs (Day 1/2/3)
-3. Timeline list:
-   - item có time chip, title, meta (cost/duration/tags)
-   - item click để focus marker trên map
-4. Section phụ (optional):
-   - Optimization score
-   - AI explanation (ngắn)
-
-### Interaction
-
-- Drag sheet: map vẫn tương tác khi sheet collapsed/mid (tuỳ threshold).
-- Khi sheet expanded: ưu tiên scroll list (map interaction giảm).
-- Khi user chọn timeline item:
-  - sheet tự “snap” về mid (để vẫn thấy map) hoặc giữ nguyên (tuỳ preference).
-
----
-
-## Turn-by-turn instruction card
-
-### Vị trí
-
-- Nằm trên map, ngay phía trên bottom sheet (tránh chồng lên).
-- Dạng card bo 16–20, shadow mạnh.
-
-### Nội dung
-
-- Next instruction (icon mũi tên + câu ngắn)
-- Distance + ETA
-- Progress: “Step 3/12”
-- Buttons: Previous/Next + Focus
-
-### Hành vi
-
-- Hiện khi:
-  - Directions mode bật, hoặc
-  - user chọn segment route từ timeline
-- Có thể swipe ngang để next/prev step (nice-to-have).
+### 3.4 Archetype D: Standard List / Grid Pages (`MyTripsScreen`, `SavedPlacesScreen`, `SettingsScreen`)
+- **Fixed / Collapsible App Bar:** Title `titleLarge` (`22px` SemiBold) with subtle separator line on scroll.
+- **List Padding:** `16px` horizontal screen margin, `16px` gap between cards (`TWTripCard` / `TWPlaceCard`).
+- **Bottom Scroll Clearance:** Scroll content uses tokenized bottom `contentContainerStyle` padding so the last item is never hidden behind the tab bar or floating CTA.
 
 ---
 
-## Bottom navigation bar
+## 4. SafeArea & Responsive Mobile Rules
 
-MVP gợi ý 4 tab:
+### 4.1 SafeArea Management
+- **Top Notch / Status Bar:** All interactive top elements must respect `react-native-safe-area-context` through `SafeAreaView` or `useSafeAreaInsets`; do not hardcode notch/status-bar padding.
+- **Bottom inset:** Use `react-native-safe-area-context` (`SafeAreaProvider`, `SafeAreaView`, or `useSafeAreaInsets`) rather than hardcoded device padding.
+- **Keyboard Avoidance:** Forms must use an appropriate React Native `KeyboardAvoidingView` + `ScrollView`/virtualized-list composition and keyboard tap behavior to prevent covered inputs and layout overflow.
 
-- Home/Dashboard
-- Plan (AI Trip Planner)
-- Trips (Saved trips)
-- Profile
+### 4.2 Breakpoints & Phone Adaptations
 
-Quy tắc:
-
-- Map screens (Trip detail) có thể ẩn bottom nav và dùng back + quick actions để tối ưu không gian.
-- Nếu vẫn giữ bottom nav: bottom sheet phải chừa safe area để không che tab bar.
-
----
-
-## Responsive behavior
-
-### Small phones
-
-- Giảm padding overlay xuống 12–14.
-- Summary card rút gọn (chỉ 1 hàng stats).
-- Bottom sheet default ở `Mid` để dễ thao tác.
-
-### Tablets
-
-- Có thể mở “split view” nhẹ: map + panel dạng side sheet nếu đủ rộng.
+| Screen Size Tier | Width Range | Layout Adaptation |
+|---|---|---|
+| **Small Phones** | `< 375px` (e.g. iPhone SE) | Reduce horizontal padding to `12px`. Place cards switch to compact 1-column layout. |
+| **Standard Phones**| `375px – 430px` (iPhone 14/15, Galaxy S23) | Standard 8pt grid (`16px` margin, `24px` card padding). 1-column list or 2-column compact grid. |
+| **Large Phones / Foldables** | `> 430px` | Center content in a maximum readable width container (`max-w-md` / `480px`), keep bottom sheet docked. |
 
 ---
 
-## React Native implementation notes (không code)
-
-- Map: dùng Google Maps SDK (`react-native-maps`) + polyline route.
-- Bottom sheet:
-  - dùng `@gorhom/bottom-sheet` hoặc custom gesture bottom sheet.
-- Floating cards:
-  - dùng `View` (absolute positioned) + `SafeAreaView`.
-- Marker:
-  - custom marker component để hỗ trợ trạng thái selected + badge số thứ tự.
-- Performance:
-  - route geometry dài nên simplify theo zoom hoặc dùng polyline encoded từ backend.
-  - tránh re-render toàn map khi chỉ đổi active activity; tách state quản lý marker highlight.
-
+## 5. Form & Input Spacing Rules
+- **Vertical Field Gap:** Exactly `16px` between consecutive `TWTextField` inputs.
+- **Label to Input Gap:** `8px` between text label and input field.
+- **Error Message Spacing:** `4px` below the input stroke, in `AppColors.error`.
+- **Primary Form Action Gap:** `24px` margin between last input and the submit `TWButton`.

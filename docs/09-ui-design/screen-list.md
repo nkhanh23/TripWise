@@ -1,237 +1,255 @@
-# Screen List (TripWise)
+# Screen Inventory & Specification (TripWise Mobile)
 
-Tài liệu này liệt kê toàn bộ màn hình cần thiết cho TripWise (MVP + mở rộng gần), theo nhóm chức năng.  
-Mỗi màn hình có: **mục đích**, **thành phần UI chính**, **dữ liệu hiển thị**, **hành động người dùng**.
-
-> Ghi chú: Nhóm “Admin pages” có thể tối giản hoặc hoãn nếu MVP chưa cần UI admin.
+> **Authority:** This document defines the authoritative list of mobile screens for TripWise based on the latest Google Stitch designs.
+> Total: **32 Mapped Screens, Wizard Steps & Dialogs**.
 
 ---
 
-## Public pages
+## 1. Authentication Module (`features/auth`)
 
-### Landing Page
+### 1.1 Welcome Screen (`WelcomeScreen`)
+- **Module:** `features/auth`
+- **Purpose:** Onboarding entry screen introducing TripWise core value proposition with high-impact visuals.
+- **Entry Points:** App launch (when unauthenticated).
+- **Navigation Exits:**
+  - "Get Started" → `SignUpScreen` (`/sign-up`)
+  - "I already have an account" → `SignInScreen` (`/sign-in`)
+- **Shared Components:** `TWButton` (Primary & Outline), `AppColors.background`, Stitch hero travel visual.
+- **State Variants:** Default.
 
-- Mục đích: giới thiệu TripWise, dẫn user vào flow tạo trip.
-- UI chính: hero + trip search prompt + feature cards + how-it-works + showcase + CTA.
-- Dữ liệu: nội dung marketing (tĩnh), ví dụ trip mẫu (tĩnh).
-- Hành động: nhập điểm đến/prompt, bấm “Bắt đầu lập kế hoạch”, scroll khám phá.
+### 1.2 Sign In Screen (`SignInScreen`)
+- **Module:** `features/auth`
+- **Purpose:** Secure email/password authentication and social provider sign-in.
+- **Entry Points:** `WelcomeScreen`, `SignUpScreen` ("Sign In" link).
+- **Navigation Exits:**
+  - Successful auth → current React Navigation five-tab shell (`MainTabs`)
+  - "Forgot Password?" → `ForgotPasswordScreen` (`/forgot-password`)
+  - "Sign Up" → `SignUpScreen` (`/sign-up`)
+- **Shared Components:** `TWTextField` (Email, Password), `TWButton` (Sign In), `TWIconButton` (Back).
+- **State Variants:** `idle`, `submitting` (loading on button), `authError` (banner feedback).
 
-### Pricing (optional)
+### 1.3 Sign Up Screen (`SignUpScreen`)
+- **Module:** `features/auth`
+- **Purpose:** New user account creation.
+- **Entry Points:** `WelcomeScreen`, `SignInScreen`.
+- **Navigation Exits:**
+  - Successful registration → `ExploreMapScreen` (`/explore`)
+  - "Sign In" → `SignInScreen` (`/sign-in`)
+- **Shared Components:** `TWTextField` (Name, Email, Password, Confirm Password), `TWButton` (Create Account), `TWIconButton` (Back).
+- **State Variants:** `idle`, `submitting`, `validationErrors`.
 
-- Mục đích: mô tả gói (free/pro), giới hạn AI, route, lưu trip.
-- UI chính: pricing cards, FAQ.
-- Dữ liệu: gói (tĩnh), FAQ (tĩnh).
-- Hành động: chọn gói, CTA đăng ký/đăng nhập.
-
-### About / Terms / Privacy (optional)
-
-- Mục đích: pháp lý + giới thiệu.
-- UI chính: content page.
-- Dữ liệu: văn bản tĩnh.
-- Hành động: đọc, mở link liên quan.
-
----
-
-## Authentication pages
-
-### Sign In
-
-- Mục đích: đăng nhập.
-- UI chính: form email/password hoặc OAuth buttons, error banner.
-- Dữ liệu: email, trạng thái auth, thông báo lỗi.
-- Hành động: submit, login với provider, quên mật khẩu.
-
-### Sign Up
-
-- Mục đích: tạo tài khoản.
-- UI chính: form đăng ký, password strength hint.
-- Dữ liệu: form state, validation errors.
-- Hành động: submit, chuyển sign in.
-
-### Forgot Password / Reset Password (optional)
-
-- Mục đích: khôi phục tài khoản.
-- UI chính: form email, OTP/reset link flow.
-- Dữ liệu: email, trạng thái gửi email.
-- Hành động: gửi yêu cầu, đặt lại mật khẩu.
+### 1.4 Forgot Password Screen (`ForgotPasswordScreen`)
+- **Module:** `features/auth`
+- **Purpose:** Password reset email delivery flow.
+- **Entry Points:** `SignInScreen`.
+- **Navigation Exits:**
+  - Back arrow / "Back to Sign In" → `SignInScreen`.
+- **Shared Components:** `TWTextField` (Email), `TWButton` (Send Reset Link), `TWIconButton` (Back).
+- **State Variants:** `formInput`, `successEmailSent`.
 
 ---
 
-## User dashboard
+## 2. Explore Module (`features/explore` & `features/place`)
 
-### Dashboard (Home)
+### 2.1 Explore Map Screen (`ExploreMapScreen`) — Explore Tab (current index 1)
+- **Module:** `features/explore`
+- **Purpose:** Primary discovery canvas. Fullscreen map with dynamic POI markers, floating search, and horizontal category chips.
+- **Entry Points:** React Navigation `Explore` tab. Current authenticated app initially follows navigator configuration; do not assume a URL route or Expo Router.
+- **Navigation Exits:**
+  - Tap on Map Marker / Place Card → `SelectedPlaceModal` (Bottom Sheet preview)
+  - Tap Search Bar → Search overlay mode
+- **Shared Components:** `TWSearchBar` (Floating), `TWChip` (Attraction, Food, Hotel, Nature), `TWMapMarker`, `TWMapControls`, `TWBottomNavigation`.
+- **State Variants:** `defaultMap`, `categoryFiltered`, `markerActive` (bounces selected marker).
 
-- Mục đích: overview các trip + gợi ý nhanh.
-- UI chính: trip list, “continue planning”, weather mini-cards, saved destinations, quick actions.
-- Dữ liệu: trips gần đây, trip draft, weather summary, saved places.
-- Hành động: mở trip, tạo trip mới, pin trip, xoá/rename.
+### 2.2 Selected Place Modal (`SelectedPlaceModal`)
+- **Module:** `features/place`
+- **Purpose:** Draggable bottom sheet previewing place highlights, photo gallery, ratings, and quick actions.
+- **Entry Points:** Tap any marker on `ExploreMapScreen` or `SavedPlacesScreen`.
+- **Navigation Exits:**
+  - Tap "Directions" → `RoutePreviewScreen` (`/route/preview`)
+  - Tap Place Card / Header → `PlaceDetailScreen` (`/place/:id`)
+  - Tap Close (X) / Drag down → Return to `ExploreMapScreen`
+- **Shared Components:** `TWBottomSheet`, `TWPlaceHeader`, `TWPlaceGallery`, `TWIconButton` (Directions, Save, Share).
+- **State Variants:** `compactPeek`, `mediumPreview`, `fullExpanded`.
 
-### Notifications (optional)
-
-- Mục đích: nhắc thay đổi thời tiết, trip sắp đến.
-- UI chính: list notifications.
-- Dữ liệu: notification items.
-- Hành động: mark read, open related trip.
-
----
-
-## Trip planning pages
-
-### AI Trip Planner
-
-- Mục đích: nhập thông tin để AI tạo lịch trình.
-- UI chính: form (destination/date/budget/style/...) + AI suggestion + itinerary preview.
-- Dữ liệu: form state, parsed requirement, preview itinerary, loading/progress.
-- Hành động: generate/regenerate, chỉnh field, lưu draft.
-
-### Trip Requirement Parser (optional, nếu tách riêng)
-
-- Mục đích: cho user nhập prompt tự nhiên và xem AI parse ra field.
-- UI chính: prompt textarea + parsed JSON view (human friendly).
-- Dữ liệu: raw prompt, parsed fields, validation.
-- Hành động: chỉnh prompt, “áp dụng vào form”.
-
----
-
-## Trip detail / map pages (core)
-
-### Trip Detail + Map View (Core screen)
-
-- Mục đích: xem toàn bộ itinerary, route, marker, hướng dẫn di chuyển; chỉnh nhẹ.
-- UI chính: split-screen (web) hoặc map + bottom sheet (mobile); timeline; search; route instruction card.
-- Dữ liệu:
-  - trip summary (title, duration, status)
-  - itinerary days/items
-  - route geometry + distance/duration
-  - weather per day
-  - selected marker/item state
-- Hành động:
-  - chọn day
-  - click item để focus map
-  - search place, add/remove stop (nếu cho phép)
-  - bật/tắt directions mode
-  - save/share/export
-
-### Place Detail (modal/side sheet)
-
-- Mục đích: xem thông tin chi tiết một địa điểm.
-- UI chính: ảnh, tên, category, tags, cost, duration, map mini, CTA.
-- Dữ liệu: place detail, ảnh, review summary (nếu có), open hours (nếu có).
-- Hành động: add to itinerary, open external link, save favorite.
-
-### Route Details (optional)
-
-- Mục đích: xem breakdown route theo step, total distance/time, phương tiện.
-- UI chính: list steps, filters, toggle show alternatives (nếu có).
-- Dữ liệu: steps, totals, selected profile.
-- Hành động: next/prev step, đổi profile, focus map.
-
-### Explore Places (Map Search) (khuyến nghị có)
-
-- Mục đích: cho user tìm và lưu địa điểm độc lập với trip; cũng là nơi “khám phá” dữ liệu trong hệ thống.
-- UI chính:
-  - Web: split layout nhẹ (trái list/filter, phải map) hoặc map full + side sheet.
-  - Mobile: map full-screen + search bar + results bottom sheet.
-- Dữ liệu:
-  - search query + filters (category, tags, budget range optional)
-  - place list + place detail preview
-- Hành động:
-  - search/filter
-  - mở place detail
-  - add to favorites
-  - “Add to trip…” (nếu user chọn trip mục tiêu)
+### 2.3 Place Detail Screen (`PlaceDetailScreen`)
+- **Module:** `features/place`
+- **Purpose:** Full-screen comprehensive place profile (photos, operating hours, address, reviews, admission prices).
+- **Entry Points:** `SelectedPlaceModal` header tap, `ItineraryCard` stop tap.
+- **Navigation Exits:**
+  - Tap "Directions" → `RoutePreviewScreen`
+  - Tap "Add to Trip" → `AddPlaceBottomSheet`
+  - Back arrow → Previous screen
+- **Shared Components:** `TWPlaceHeader`, `TWPlaceGallery`, `TWButton` (Add to Trip), `TWIconButton` (Back, Bookmark).
+- **State Variants:** `loading`, `contentReady`.
 
 ---
 
-## Saved / favorite pages
+## 3. Route Module (`features/route`)
 
-### Saved Trips (Trips library)
+### 3.1 Route Preview Screen (`RoutePreviewScreen`)
+- **Module:** `features/route`
+- **Purpose:** Overview of transit route between origin and destination over map polyline with mode selector.
+- **Entry Points:** "Directions" action from `SelectedPlaceModal` or `PlaceDetailScreen`.
+- **Navigation Exits:**
+  - Tap "Route Options" → `RouteOptionsScreen`
+  - Tap "Start Navigation / Steps" → `RouteDetailScreen`
+  - Back arrow → `ExploreMapScreen`
+- **Shared Components:** `TWTransportSelector`, `TWRouteCard`, `TWIconButton` (Back, Center), `TWButton` (Preview Steps).
+- **State Variants:** `calculatingRoute`, `routeFound`, `routeUnavailableFallback`.
 
-- Mục đích: quản lý các trip đã lưu.
-- UI chính: grid/list, filters (destination/date/status), search.
-- Dữ liệu: trip list, metadata, last updated.
-- Hành động: open trip, duplicate, rename, delete.
+### 3.2 Route Options Screen (`RouteOptionsScreen`)
+- **Module:** `features/route`
+- **Purpose:** Comparison view showing multiple route alternatives (Fastest, Scenic, Fewest Transfers).
+- **Entry Points:** `RoutePreviewScreen`.
+- **Navigation Exits:**
+  - Select an alternative → `RoutePreviewScreen` (updates selected route).
+- **Shared Components:** `TWRouteCard` (Multiple comparative items), `TWIconButton` (Back).
+- **State Variants:** `listAlternatives`.
 
-### Favorites (Saved places)
-
-- Mục đích: lưu địa điểm yêu thích để dùng lại.
-- UI chính: list cards + map toggle.
-- Dữ liệu: place list, tags.
-- Hành động: open place, remove favorite, add to trip.
-
-### Trip Share / Export (optional nhưng nên tính)
-
-- Mục đích: chia sẻ lịch trình qua link hoặc export (PDF/ảnh) (có thể làm sau).
-- UI chính: modal hoặc page:
-  - preview itinerary dạng gọn
-  - options: copy link, export file
-- Dữ liệu: trip summary + itinerary preview
-- Hành động: copy link, download/export
-
----
-
-## Profile / settings pages
-
-### Profile
-
-- Mục đích: quản lý thông tin user.
-- UI chính: avatar, name, email, preferences.
-- Dữ liệu: user profile.
-- Hành động: update profile, upload avatar (sau), logout.
-
-### Preferences
-
-- Mục đích: lưu sở thích du lịch mặc định.
-- UI chính: travel style, food preference, budget range, mobility.
-- Dữ liệu: preference model.
-- Hành động: save preferences.
-
-### Settings
-
-- Mục đích: settings chung.
-- UI chính: language, theme (future), data export.
-- Dữ liệu: settings.
-- Hành động: toggle, export data, delete account (optional).
+### 3.3 Route Detail Screen (`RouteDetailScreen`)
+- **Module:** `features/route`
+- **Purpose:** Turn-by-turn navigation list with distance snippets, maneuvers, and road instructions.
+- **Entry Points:** `RoutePreviewScreen`.
+- **Navigation Exits:**
+  - Back arrow → `RoutePreviewScreen`.
+- **Shared Components:** `TWRouteStep`, `TWItineraryTimeline`, `TWIconButton` (Back).
+- **State Variants:** `stepList`.
 
 ---
 
-## System pages (nên có tối thiểu)
+## 4. Trips & Creation Wizard (`features/trips`)
 
-### 404 / Not Found
+### 4.1 My Trips Screen (`MyTripsScreen`) — Trips Tab (current index 3)
+- **Module:** `features/trips`
+- **Purpose:** User journey dashboard organizing planned trips into Upcoming and Past segments.
+- **Entry Points:** React Navigation `Trips` tab.
+- **Navigation Exits:**
+  - Tap any `TWTripCard` → `TripDetailScreen` (`/trips/:id`)
+  - Tap Floating "+" / "Plan New Trip" → `CreateTripScreen` (`/trips/create`)
+- **Shared Components:** `TWTripCard` (Upcoming & Past variants), `TWBottomNavigation`, `TWEmptyState` (when 0 trips).
+- **State Variants:** `hasTrips`, `emptyTrips`.
 
-- Mục đích: xử lý link sai hoặc trip không tồn tại.
-- UI chính: empty state + CTA quay về dashboard.
-- Dữ liệu: route info.
-- Hành động: back home, search trip.
+### 4.2 Create Trip Wizard (`CreateTripScreen` / Multi-Step)
+- **Module:** `features/trips`
+- **Purpose:** Guided multi-step creation flow for AI-assisted itinerary generation:
+  1. **Destination & Dates Step (`TravelDatesStep`):** Destination search + `TWDateRangePicker`.
+  2. **Preferences Step (`TripPreferencesStep`):** Travel interests chips (`TWChip`, `TWSelectionCard`).
+  3. **Pace Step (`TravelPaceStep`):** Relaxed, Moderate, Fast-Paced selection.
+  4. **Budget Step (`BudgetStep`):** `TWBudgetSelector` (Backpacker, Moderate, Luxury).
+  5. **Summary Step (`TripSummaryStep`):** Review generated overview before final confirmation.
+- **Entry Points:** Floating "+" on `MyTripsScreen`.
+- **Navigation Exits:**
+  - Confirm & Generate → `CreateTripSuccessScreen` (`/trips/create/success`)
+  - Cancel / Back → `MyTripsScreen`
+- **Shared Components:** `TWButton` (Next / Back), `TWSelectionCard`, `TWBudgetSelector`, `TWDateRangePicker`.
+- **State Variants:** `step1` through `step5`, `generatingItinerary` (AI loading overlay).
 
-### 500 / Something went wrong
-
-- Mục đích: fallback khi lỗi hệ thống.
-- UI chính: error state + retry.
-- Dữ liệu: error code (ẩn chi tiết).
-- Hành động: retry, contact/support (optional).
+### 4.3 Create Trip Success Screen (`CreateTripSuccessScreen`)
+- **Module:** `features/trips`
+- **Purpose:** Celebration screen confirming itinerary generation completion.
+- **Entry Points:** Completion of `CreateTripScreen`.
+- **Navigation Exits:**
+  - "View Itinerary" → `TripDetailScreen` (`/trips/:id`)
+- **Shared Components:** `TWButton` (Primary CTA), Celebration illustration.
 
 ---
 
-## Admin pages (nếu cần cho MVP dữ liệu)
+## 5. Itinerary Module (`features/itinerary`)
 
-### Admin Login
+### 5.1 Trip Detail Screen (`TripDetailScreen`)
+- **Module:** `features/itinerary`
+- **Purpose:** The core itinerary management view. Shows destination banner, budget status progress bar, day tabs, and chronologically ordered stops.
+- **Entry Points:** `MyTripsScreen` card tap, `CreateTripSuccessScreen`.
+- **Navigation Exits:**
+  - Tap "View Map" → `TripMapScreen` (`/trips/:id/map`)
+  - Tap Stop card → `PlaceDetailScreen` (`/place/:id`)
+  - Tap "+" / "Add Place" → `AddPlaceBottomSheet`
+  - Back arrow → `MyTripsScreen`
+- **Shared Components:** `TWDaySelector`, `TWItineraryTimeline`, `TWItineraryCard`, `TWAvatar` (Companions), `TWIconButton` (Back, Edit, Share).
+- **State Variants:** `itineraryLoaded`, `emptyDay` (`EmptyItineraryView`), `loadingState`.
 
-- Mục đích: đăng nhập admin.
-- UI chính: form + role check.
-- Dữ liệu: auth state.
-- Hành động: login.
+### 5.2 Empty Itinerary State (`EmptyItineraryView`)
+- **Module:** `features/itinerary`
+- **Purpose:** Embedded view when a specific day has no stops assigned yet.
+- **Shared Components:** `TWEmptyState` ("No activities yet. Add places to explore!").
 
-### Place Management (Admin)
+### 5.3 Add Place Confirmation Sheet (`AddPlaceBottomSheet`)
+- **Module:** `features/itinerary`
+- **Purpose:** Bottom sheet search & confirmation to append a place to a specific itinerary day.
+- **Entry Points:** "+" action on `TripDetailScreen` or "Add to Trip" on `PlaceDetailScreen`.
+- **Shared Components:** `TWSearchBar`, `TWPlaceCard`, `TWButton` ("Add to Day X").
 
-- Mục đích: thêm/sửa/ẩn địa điểm trong DB (đảm bảo “data thật”).
-- UI chính: table + filters + create/edit form + map picker.
-- Dữ liệu: places, categories, tags, location.
-- Hành động: create/edit, verify status, import batch (optional).
+### 5.4 Trip Map Screen (`TripMapScreen`)
+- **Module:** `features/itinerary`
+- **Purpose:** Fullscreen map plotting all itinerary stops of the selected day with route lines connecting them.
+- **Entry Points:** "View Map" link on `TripDetailScreen`.
+- **Shared Components:** `TWMapMarker` (Numbered 1, 2, 3), `TWMapControls`, `TWDaySelector` (floating at top), `TWIconButton` (Back).
 
-### Hotel Management (Admin, optional)
+---
 
-- Mục đích: chuẩn hóa danh sách hotel.
-- UI chính: table + edit.
-- Dữ liệu: hotels, price level, location.
-- Hành động: verify/update.
+## 6. Saved Module (`features/saved`)
+
+### 6.1 Saved Places Screen (`SavedPlacesScreen`) — Future/nested screen
+- **Module:** `features/saved`
+- **Purpose:** Library of bookmarked places with category filters.
+- **Entry Points:** To be decided by a future navigation task. Saved Places is not a current root tab in `MainTabs.tsx`.
+- **Navigation Exits:**
+  - Tap place card → `PlaceDetailScreen`
+- **Shared Components:** `TWPlaceCard` (Vertical grid / list), `TWChip` (Filter chips), `TWBottomNavigation`.
+- **State Variants:** `hasSavedPlaces`, `empty` (`SavedEmptyStateView`).
+
+### 6.2 Saved Empty State (`SavedEmptyStateView`)
+- **Module:** `features/saved`
+- **Purpose:** Friendly empty state prompting user to explore and bookmark favorite spots.
+- **Shared Components:** `TWEmptyState` with "Explore Places" CTA button.
+
+---
+
+## 7. Profile & Settings (`features/profile` & `features/settings`)
+
+### 7.1 Profile Screen (`ProfileScreen`) — Profile Tab (current index 4)
+- **Module:** `features/profile`
+- **Purpose:** User profile overview, stats (trips planned, places visited), and quick settings links.
+- **Entry Points:** React Navigation `Profile` tab.
+- **Navigation Exits:**
+  - "Edit Profile" → `EditProfileScreen` (`/profile/edit`)
+  - "Settings" → `SettingsScreen` (`/settings`)
+  - "Sign Out" → `SignOutDialog`
+- **Shared Components:** `TWAvatar`, `TWSettingsRow`, `TWBottomNavigation`.
+
+### 7.2 Edit Profile Screen (`EditProfileScreen`)
+- **Module:** `features/profile`
+- **Purpose:** Modify display name, email, avatar image, and default travel preferences.
+- **Shared Components:** `TWTextField`, `TWAvatar`, `TWButton` (Save Changes), `TWIconButton` (Back).
+
+### 7.3 Settings Screen (`SettingsScreen`)
+- **Module:** `features/settings`
+- **Purpose:** App configurations: Language, Currency, Notifications, Offline data cache, Help.
+- **Navigation Exits:**
+  - "Language" → `LanguageScreen`
+  - "Currency" → `CurrencyScreen`
+  - "Help & Support" → `HelpSupportScreen`
+  - "Delete Account" → `DeleteAccountDialog`
+- **Shared Components:** `TWSettingsRow`, `TWIconButton` (Back).
+
+### 7.4 Language Screen (`LanguageScreen`) & Currency Screen (`CurrencyScreen`)
+- **Module:** `features/settings`
+- **Purpose:** Select preferred locale (English, Tiếng Việt) and currency (USD $, VND ₫, EUR €).
+- **Shared Components:** `TWSettingsRow` with checkmark indicators.
+
+### 7.5 Help & Support Screen (`HelpSupportScreen`)
+- **Module:** `features/settings`
+- **Purpose:** FAQ accordions and customer support contact links.
+
+---
+
+## 8. Modal Dialogs (`features/auth` & `features/profile`)
+
+### 8.1 Sign Out Confirmation (`SignOutDialog`)
+- **Purpose:** Modal confirmation before invalidating current user session.
+- **Shared Components:** Alert card with "Cancel" and "Sign Out" (`TWButton`).
+
+### 8.2 Delete Account Confirmation (`DeleteAccountDialog`)
+- **Purpose:** Destructive action confirmation with warning notes.
+- **Shared Components:** `TWButton(variant: danger)`, `TWButton(variant: outline)`.

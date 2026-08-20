@@ -381,7 +381,7 @@ TP.HCM và Nha Trang là pilot/debug case để kiểm tra pipeline import, mode
   - Business helper logic, formatting utilities (tiền tệ, ngày tháng, khoảng cách).
   - Auth models, token refresh interceptor logic abstraction.
   - Constants, design tokens và bảng màu (color palette, spacing scale).
-- **Đánh giá về Expo:** Expo là một lựa chọn đáng cân nhắc cho React Native tooling/workflow. Tuy nhiên, quyết định ADR này chỉ chốt nền tảng cốt lõi là **React Native + TypeScript**. Việc áp dụng Expo cụ thể sẽ được đánh giá kỹ lưỡng ở bước triển khai kỹ thuật (M0/M1) dựa trên tính tương thích với Google Maps SDK native, Google Places Autocomplete, Keystore/Keychain secure storage, Geolocation, Deep Links, OAuth và push notifications.
+- **Đánh giá về Expo tại thời điểm ADR-017:** Expo ban đầu được để ngỏ để đánh giá ở M0/M1. Quyết định này đã được chốt bởi **ADR-019** sau khi Expo project/config và Android development runtime được verify.
 
 ### Decision
 
@@ -452,5 +452,79 @@ TP.HCM và Nha Trang là pilot/debug case để kiểm tra pipeline import, mode
 - Cần chuyển đổi (porting) logic prompt builder và JSON validator từ Java sang TypeScript Edge Functions.
 - OSRM public demo server không cam kết SLA, cần xử lý fallback vẽ polyline đơn giản hoặc thông báo khi timeout.
 - Cần theo dõi hạn mức sử dụng Google Maps Platform / Google Places theo dõi định kỳ để kiểm soát chi phí.
+
+---
+
+## ADR-019: Expo workflow và Android là target implementation hiện tại
+
+**Status:** Accepted
+
+### Context
+
+ADR-017 đã chọn React Native + TypeScript nhưng để ngỏ quyết định tooling Expo. Repository production hiện có evidence rõ ràng:
+
+- `mobile/package.json` dùng Expo SDK 57, React Native 0.86 và TypeScript strict;
+- app bootstrap qua `registerRootComponent`;
+- native navigation dùng React Navigation, không dùng Expo Router;
+- Expo development build (`expo-dev-client`) và generated Android project tồn tại;
+- Android development build, Metro và runtime navigation đã được verify;
+- local iOS runtime chưa được verify trong môi trường Windows hiện tại.
+
+Repository đồng thời còn Dart/Flutter artifacts từ một nhánh thử nghiệm tài liệu/UI. Các artifacts này không được production React Native entry point, npm scripts hoặc Expo config sử dụng.
+
+### Decision
+
+1. Mobile production client là **React Native + TypeScript + Expo**.
+2. Workflow chính dùng project-local Expo tooling qua npm/npx; không dùng global Expo CLI hoặc React Native CLI init.
+3. Navigation hiện hành dùng **React Navigation**. Không tự chuyển sang Expo Router nếu chưa có ADR/task riêng.
+4. **Android là target implementation, build và runtime verification hiện tại.**
+5. Architecture, typed contracts và shared components phải giữ future compatibility với iOS; không thêm Android-only workaround nếu không có requirement rõ ràng.
+6. ADR-011 và mọi Flutter-specific implementation roadmap/mapping là **superseded/historical**. Không xóa artifacts lịch sử trong documentation-only task; cleanup cần task riêng.
+
+### Consequences
+
+- Active mobile documentation và verification commands phải dựa trên `mobile/package.json`, Expo config và TypeScript source.
+- Quality gate chuẩn là `npm run lint`, `npm run typecheck`, `npm test`, `npx expo-doctor`; Android native/runtime verification dùng `npm run android` khi phase yêu cầu.
+- Không dùng Dart, Flutter tooling, `pubspec.yaml` hoặc `mobile/lib/` làm source of truth cho production mobile.
+- iOS không được claim runtime PASS cho tới khi được build/test trong môi trường macOS/Xcode phù hợp.
+
+---
+
+## ADR-020: Theme (Light/Dark/System) & Localization (EN/VI) Architecture for React Native Mobile Frontend
+
+**Status:** Accepted
+
+### Context
+
+TripWise Mobile Frontend đã hoàn thành các màn hình nền tảng cốt lõi (Auth, Explore, Place Detail, Route Preview, My Trips, Create Trip Wizard, Trip Detail & Itinerary). Khi số lượng màn hình và tính năng mở rộng tiếp tục (Add Place, Trip Map, Saved Places, Profile, Settings), việc thiếu một kiến trúc chuẩn hóa cho:
+1. **Chế độ Sáng / Tối (Light Mode / Dark Mode / System Default)**
+2. **Đa ngôn ngữ (English / Tiếng Việt)**
+
+sẽ dẫn đến nợ kỹ thuật (technical debt) lớn, gây khó khăn cho việc retrofit về sau nếu để đến các phase cuối. Đồng thời, các chuỗi hiển thị và mã màu hex (`#FFFFFF`, `#000000`, `#0058BC`) đang xuất hiện rải rác trong một số feature components.
+
+### Decision
+
+1. **Chuẩn hóa kiến trúc Theme:**
+   - Hỗ trợ 3 tùy chọn: **System** (tự động theo hệ điều hành), **Light** (bám sát Google Stitch), và **Dark** (chế độ tối phái sinh ngữ nghĩa theo WCAG AA).
+   - Sử dụng **Semantic Color Tokens** (`background.canvas`, `background.surface`, `text.primary`, `text.secondary`, `brand.primary`, `border.default`, `icon.primary`, v.v.). Cấm dùng raw hex colors trong feature components mới.
+   - Google Stitch tiếp tục là source of truth tối cao về visual hierarchy, layout geometry, iconography, và Light Mode. Dark Mode phái sinh màu sắc mà không thay đổi cấu trúc component.
+   - Giữ nguyên 100% danh tính icon (`MaterialIcons`), theme switching chỉ thay đổi màu sắc icon.
+2. **Chuẩn hóa kiến trúc Localization:**
+   - Hỗ trợ chính thức 2 ngôn ngữ: **English (`en`)** và **Tiếng Việt (`vi`)**.
+   - Quản lý chuỗi hiển thị tập trung với hệ thống khóa ngữ nghĩa phân cấp (`common.*`, `navigation.*`, `auth.*`, `trips.*`, `planner.*`, v.v.). Cấm viết điều kiện ngôn ngữ inline trong JSX.
+   - Xây dựng ranh giới định dạng tập trung (Formatting Boundary) cho ngày tháng, số liệu và tiền tệ; tách biệt độc lập giữa Ngôn ngữ hiển thị và Đơn vị tiền tệ.
+   - Thiết kế layout co giãn linh hoạt (flex, padding, text wrapping), không fix cứng chiều rộng chỉ vừa cho tiếng Anh và không thu nhỏ cỡ chữ tiếng Việt tùy tiện.
+3. **Chiến lược Di chuyển & Roadmap:**
+   - Bổ sung checkpoint kiến trúc `FE-CROSSCUT-001 — Theme & Localization Foundation` ngay sau FE Phase 10.
+   - Không reset hay mở lại các phase FE đã hoàn thành (FE-P0 đến FE-P10 vẫn giữ nguyên trạng thái COMPLETED).
+   - Di chuyển dần các shared primitives, navigation, và các màn hình đã hoàn thành trong khuôn khổ checkpoint `FE-CROSSCUT-001`.
+   - Các phase mới từ FE-P11 trở đi bắt buộc áp dụng trực tiếp Theme & i18n từ lúc tạo mới.
+   - FE Phase 15 (Settings UI) sẽ đóng vai trò xây dựng giao diện người dùng để cấu hình Theme / Language / Currency.
+
+### Consequences
+
+- Tránh việc đập đi làm lại hoặc refactor quy mô lớn ở giai đoạn cuối dự án.
+- Codebase đồng nhất, có cấu trúc ngữ nghĩa rõ ràng, thân thiện với người dùng song ngữ.
+- Cần hoàn thành checkpoint `FE-CROSSCUT-001` trước khi bắt đầu FE-P11 để đảm bảo các component mới được viết đúng chuẩn ngay từ đầu.
 
 

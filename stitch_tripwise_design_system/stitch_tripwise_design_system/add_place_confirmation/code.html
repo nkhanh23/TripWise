@@ -1,0 +1,278 @@
+<!DOCTYPE html><html class="h-full" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>TripWise - Add Place Confirmation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "inverse-on-surface": "#f3f0ef",
+                            "primary-fixed": "#d8e2ff",
+                            "on-secondary": "#ffffff",
+                            "secondary-container": "#d8e4f2",
+                            "secondary-fixed": "#d8e4f2",
+                            "tertiary-fixed-dim": "#ffb4aa",
+                            "on-tertiary-fixed-variant": "#930005",
+                            "surface-container-highest": "#e5e2e1",
+                            "surface-container-lowest": "#ffffff",
+                            "on-tertiary-container": "#fffbff",
+                            "on-primary": "#ffffff",
+                            "error": "#ba1a1a",
+                            "on-secondary-container": "#5a6671",
+                            "surface-container-low": "#f6f3f2",
+                            "surface": "#fcf9f8",
+                            "surface-variant": "#e5e2e1",
+                            "outline-variant": "#c1c6d7",
+                            "primary-container": "#0070eb",
+                            "tertiary-fixed": "#ffdad5",
+                            "surface-container-high": "#eae7e7",
+                            "on-primary-container": "#fefcff",
+                            "outline": "#717786",
+                            "on-primary-fixed-variant": "#004493",
+                            "on-background": "#1c1b1b",
+                            "primary-fixed-dim": "#adc6ff",
+                            "tertiary-container": "#e2241f",
+                            "error-container": "#ffdad6",
+                            "on-tertiary-fixed": "#410001",
+                            "surface-dim": "#dcd9d9",
+                            "secondary": "#54606b",
+                            "tertiary": "#bc000a",
+                            "on-error": "#ffffff",
+                            "on-tertiary": "#ffffff",
+                            "inverse-surface": "#313030",
+                            "on-primary-fixed": "#001a41",
+                            "inverse-primary": "#adc6ff",
+                            "on-surface-variant": "#414755",
+                            "background": "#fcf9f8",
+                            "on-surface": "#1c1b1b",
+                            "primary": "#0058bc",
+                            "surface-container": "#f0eded",
+                            "on-secondary-fixed-variant": "#3d4853",
+                            "on-error-container": "#93000a",
+                            "on-secondary-fixed": "#111d26",
+                            "surface-tint": "#005bc1",
+                            "secondary-fixed-dim": "#bcc8d5",
+                            "surface-bright": "#fcf9f8"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "2xl": "24px",
+                            "lg": "16px",
+                            "sm": "8px",
+                            "xl": "20px",
+                            "md": "12px",
+                            "xs": "4px",
+                            "3xl": "32px"
+                    },
+                    "fontFamily": {
+                            "title-lg": ["Inter"],
+                            "body-sm": ["Inter"],
+                            "body-md": ["Inter"],
+                            "title-md": ["Inter"],
+                            "display": ["Inter"],
+                            "label-md": ["Inter"],
+                            "title-sm": ["Inter"],
+                            "label-lg": ["Inter"],
+                            "caption": ["Inter"],
+                            "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                            "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                            "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                            "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                            "title-sm": ["16px", {"lineHeight": "22px", "fontWeight": "600"}],
+                            "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                            "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface h-full w-full overflow-hidden text-on-surface relative font-sans antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Background Map Image -->
+<div class="absolute inset-0 z-0">
+<img alt="Map of Bangkok" class="w-full h-full object-cover opacity-80 mix-blend-multiply" data-alt="An expansive, high-resolution aerial map view of Bangkok, focusing on the Chao Phraya River area near Wat Arun. The map is rendered in a modern, light-mode minimalist style using a soft palette of whites, subtle grays, and pale blues for the water. The aesthetic is clean, efficient, and corporate, resembling a premium digital navigation interface. Soft, ambient lighting creates a calm, reliable mood without harsh shadows or clutter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-XGfz6WgA_iCGX3Dee3pQYRaOn1ltJSMiH-l5wytId88-4F4g58ecpyRhpUc0dThsnEFHBzqbXAhTBeK1LD3u0ZV1RO0LCDbUl2Lq-GZFi9lhLeeu69ml_FMMrbVrPscd3YIgdDDajQ9KVXf5KmJoCILRlsnppTimQdbk54hYjoR0ri3hNQyrXi1ITkSiooP7YcMUa9uwGnN9J_D3n03EOJnn3BGMD69ytuXkxxjv9w7EbbYPNNsgcw">
+</div>
+<!-- Top App Bar (Suppressed for this specific flow due to intent, but included a back button as a floating element for context) -->
+<div class="absolute top-0 left-0 w-full p-lg z-20 pt-safe">
+<button aria-label="Go back" class="w-12 h-12 bg-surface rounded-full flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.08)] text-primary hover:bg-surface-container-low transition-colors active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+</div>
+<!-- Map Marker Pin for Wat Arun -->
+<div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center drop-shadow-md">
+<div class="bg-primary text-on-primary p-2 rounded-full ring-2 ring-surface relative shadow-[0_4px_8px_rgba(0,0,0,0.12)]">
+<span class="material-symbols-outlined fill">temple_buddhist</span>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-primary"></div>
+</div>
+</div>
+<!-- Bottom Sheet Scrim (Dimming map slightly to focus on sheet) -->
+<div class="absolute inset-0 bg-black/5 z-20 pointer-events-none transition-opacity duration-300"></div>
+<!-- Add Itinerary Bottom Sheet -->
+<div class="absolute bottom-0 left-0 w-full bg-surface rounded-t-[24px] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] z-30 transition-transform duration-300 ease-out flex flex-col max-h-[90vh]" id="bottomSheet">
+<!-- Grabber Handle -->
+<div class="flex justify-center pt-md pb-sm touch-none">
+<div class="w-10 h-1 bg-outline-variant rounded-full"></div>
+</div>
+<!-- Sheet Header -->
+<div class="px-lg pb-md flex justify-between items-start shrink-0">
+<div>
+<h2 class="font-title-lg text-title-lg text-on-surface">Wat Arun</h2>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center mt-xs">
+<span class="material-symbols-outlined text-[16px] mr-1">location_on</span>
+                    Bangkok Yai, Bangkok
+                </p>
+</div>
+<div class="bg-surface-container-low px-md py-xs rounded-full flex items-center gap-1 border border-outline-variant/30">
+<span class="material-symbols-outlined text-[14px] text-primary fill">star</span>
+<span class="font-label-md text-label-md text-on-surface">4.8</span>
+</div>
+</div>
+<!-- Scrollable Content Area -->
+<div class="px-lg pb-2xl overflow-y-auto overscroll-contain flex-grow custom-scrollbar space-y-lg">
+<!-- Image Thumbnail (Optional context for the sheet) -->
+<div class="w-full h-32 rounded-lg overflow-hidden shrink-0">
+<img alt="Wat Arun Details" class="w-full h-full object-cover" data-alt="A close-up, highly detailed view of Wat Arun's intricate porcelain spires catching the soft morning light. The image embodies a modern, premium travel aesthetic, shot with shallow depth of field. The colors are bright and crisp, complementing the light-mode UI. The mood is serene and awe-inspiring, focusing on the architectural details against a clear, pale blue sky." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU41ahP7kbCwrCNNr4gRUlYtuOGRLI9DihqX3gpvN-7ViVfmchQ63xq3MRK93nSKizJ2CcEWCsAnuCiyftCpCPGs6FShKworaHfQD35_ucm4wT4LJyMu9jRfLe6DRUUcN1iS1T7Qiuon6L5OU1fqJVKUYqkg-zlXGSwaoNjLGS8J2ldsoiho1_YVhLdoHu2dsmWmHQmpw3AQkezZ5RpZSNpp_elhLgLyk0iKYpR3dYSW1U8ua0x_D8Tg">
+</div>
+<!-- Selection Fields Grid -->
+<div class="grid grid-cols-2 gap-md">
+<!-- Day Selector -->
+<div class="col-span-1">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs">Day</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-variant text-on-surface font-body-md text-body-md rounded-lg py-md pl-md pr-xl border-none focus:ring-2 focus:ring-primary focus:outline-none transition-shadow cursor-pointer">
+<option>Day 1</option>
+<option>Day 2</option>
+<option>Day 3</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Time Selector -->
+<div class="col-span-1">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs">Time</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-variant text-on-surface font-body-md text-body-md rounded-lg py-md pl-md pr-xl border-none focus:ring-2 focus:ring-primary focus:outline-none transition-shadow cursor-pointer">
+<option>09:00</option>
+<option>09:30</option>
+<option>10:00</option>
+<option>10:30</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Duration Selector -->
+<div class="col-span-2">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs">Estimated duration</label>
+<div class="flex gap-sm">
+<button class="flex-1 py-sm px-md rounded-full border border-outline-variant text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">1h</button>
+<button class="flex-1 py-sm px-md rounded-full bg-primary-container text-on-primary-container border-none font-body-md text-body-md transition-colors shadow-sm">1h 30m</button>
+<button class="flex-1 py-sm px-md rounded-full border border-outline-variant text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">2h</button>
+</div>
+</div>
+<!-- Notes Input -->
+<div class="col-span-2 mt-sm">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs">Notes (Optional)</label>
+<textarea class="w-full bg-surface-variant text-on-surface font-body-md text-body-md rounded-lg p-md border-none focus:ring-2 focus:ring-primary focus:outline-none transition-shadow resize-none h-24 placeholder:text-on-surface-variant/60" placeholder="Add details like booking refs or specific things to see..."></textarea>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom CTA Area -->
+<div class="px-lg pb-safe pt-md bg-surface border-t border-surface-variant shrink-0 mt-auto">
+<button class="w-full bg-primary text-on-primary font-title-sm text-title-sm py-md rounded-full shadow-[0_4px_8px_rgba(0,0,0,0.08)] hover:opacity-90 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                Add to itinerary
+            </button>
+</div>
+</div>
+<!-- BottomNavBar (Suppressed due to Task-Focused Intent: User is in a specific selection flow that implies a temporary departure from main nav) -->
+<style>
+        /* Safe area handling for mobile devices */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 16px); }
+        
+        /* Custom scrollbar for the bottom sheet content to look minimal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: var(--tw-colors-outline-variant);
+            border-radius: 4px;
+        }
+    </style>
+<script>
+        // Simple drag interaction script for bottom sheet feel
+        document.addEventListener('DOMContentLoaded', () => {
+            const sheet = document.getElementById('bottomSheet');
+            let startY;
+            let currentY;
+            
+            sheet.addEventListener('touchstart', (e) => {
+                // Only allow drag from the top part of the sheet to not interfere with scrolling
+                if (e.target.closest('.overflow-y-auto')) return;
+                startY = e.touches[0].clientY;
+                sheet.style.transition = 'none';
+            }, { passive: true });
+
+            sheet.addEventListener('touchmove', (e) => {
+                if (!startY) return;
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                if (diff > 0) {
+                    sheet.style.transform = `translateY(${diff}px)`;
+                }
+            }, { passive: true });
+
+            sheet.addEventListener('touchend', () => {
+                if (!startY || !currentY) return;
+                const diff = currentY - startY;
+                sheet.style.transition = 'transform 0.3s ease-out';
+                
+                if (diff > 100) {
+                    // Simulate dismiss
+                    sheet.style.transform = 'translateY(100%)';
+                    setTimeout(() => {
+                        // Reset for demo purposes
+                        sheet.style.transform = 'translateY(0)';
+                    }, 1000);
+                } else {
+                    // Snap back
+                    sheet.style.transform = 'translateY(0)';
+                }
+                startY = null;
+                currentY = null;
+            });
+        });
+    </script>
+</body></html>

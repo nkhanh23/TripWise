@@ -1,0 +1,282 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TripWise - My Trips</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#0070eb",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-fixed": "#001a41",
+                        "surface": "#fcf9f8",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "on-primary-fixed-variant": "#004493",
+                        "outline": "#717786",
+                        "inverse-primary": "#adc6ff",
+                        "primary": "#0058bc",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-tint": "#005bc1",
+                        "on-secondary-fixed-variant": "#3d4853",
+                        "outline-variant": "#c1c6d7",
+                        "tertiary-container": "#e2241f",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-surface": "#313030",
+                        "secondary-fixed-dim": "#bcc8d5",
+                        "surface-container-high": "#eae7e7",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1c1b1b",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-container": "#fffbff",
+                        "secondary-container": "#d8e4f2",
+                        "surface-dim": "#dcd9d9",
+                        "surface-bright": "#fcf9f8",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#fefcff",
+                        "secondary": "#54606b",
+                        "secondary-fixed": "#d8e4f2",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-container": "#5a6671",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#bc000a",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "on-tertiary-fixed": "#410001",
+                        "tertiary-fixed": "#ffdad5",
+                        "on-surface-variant": "#414755",
+                        "on-secondary-fixed": "#111d26",
+                        "background": "#fcf9f8",
+                        "surface-container": "#f0eded",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "12px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "xl": "20px",
+                        "lg": "16px",
+                        "2xl": "24px",
+                        "3xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "caption": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "title-sm": ["16px", { "lineHeight": "22px", "fontWeight": "600" }],
+                        "title-lg": ["22px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "caption": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .map-bg {
+            background-image: radial-gradient(#e5e2e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.04);
+        }
+        .fab-shadow {
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.12);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md map-bg pb-32">
+<!-- Top App Bar (Reconstructed from JSON for completeness if needed, but per prompt "My Trips" header) -->
+<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md fixed top-0 w-full z-50 shadow-sm dark:shadow-none flex justify-between items-center px-lg h-16 w-full">
+<div class="flex items-center gap-md">
+<button class="p-xs text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors rounded-full active:scale-95 duration-150 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-display text-display text-primary dark:text-primary-fixed-dim tracking-tight">TripWise</h1>
+</div>
+<button class="p-xs text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors rounded-full active:scale-95 duration-150 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+</header>
+<main class="pt-24 px-lg max-w-4xl mx-auto space-y-2xl pb-24">
+<div class="space-y-sm">
+<h2 class="font-title-lg text-title-lg text-on-surface">My Trips</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your upcoming journeys and review past adventures.</p>
+</div>
+<!-- Upcoming Trips Section -->
+<section class="space-y-lg">
+<div class="flex items-center justify-between border-b border-surface-variant pb-xs">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+                    Upcoming
+                </h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Trip Card 1 -->
+<div class="bg-surface rounded-lg p-lg card-shadow relative overflow-hidden group cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant/30">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<div>
+<span class="inline-block px-sm py-xs bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full mb-sm">In 12 Days</span>
+<h4 class="font-title-md text-title-md text-on-surface">Kyoto Autumn Retreat</h4>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex gap-md mb-lg relative z-10">
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                            Oct 14 - Oct 22
+                        </div>
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                            Kyoto, Japan
+                        </div>
+</div>
+<div class="flex items-center justify-between mt-auto relative z-10 pt-md border-t border-surface-variant/50">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-sm">JS</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-tertiary-container flex items-center justify-center text-on-tertiary-container font-label-sm">MK</div>
+</div>
+<button class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors flex items-center gap-xs">
+                            View Itinerary <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Trip Card 2 -->
+<div class="bg-surface rounded-lg p-lg card-shadow relative overflow-hidden group cursor-pointer hover:bg-surface-container-lowest transition-colors border border-transparent hover:border-outline-variant/30">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-md relative z-10">
+<div>
+<span class="inline-block px-sm py-xs bg-surface-variant text-on-surface-variant font-label-md text-label-md rounded-full mb-sm">Planning</span>
+<h4 class="font-title-md text-title-md text-on-surface">Nordic Lights Tour</h4>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex gap-md mb-lg relative z-10">
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                            Dec 05 - Dec 15
+                        </div>
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                            Tromsø, Norway
+                        </div>
+</div>
+<div class="flex items-center justify-between mt-auto relative z-10 pt-md border-t border-surface-variant/50">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-sm">JS</div>
+</div>
+<button class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors flex items-center gap-xs">
+                            Continue Planning <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Past Trips Section -->
+<section class="space-y-lg mt-2xl opacity-80">
+<div class="flex items-center justify-between border-b border-surface-variant pb-xs">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">history</span>
+                    Past Trips
+                </h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Past Trip Card 1 -->
+<div class="bg-surface-container-low rounded-lg p-md flex flex-col hover:bg-surface-container transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+<h4 class="font-title-sm text-title-sm text-on-surface mb-xs">Swiss Alps Hiking</h4>
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm mb-md">
+<span class="material-symbols-outlined text-sm">event_available</span>
+                        Aug 2023
+                    </div>
+<div class="mt-auto pt-sm border-t border-surface-variant/30 text-right">
+<span class="font-label-md text-label-md text-secondary">Review Photos</span>
+</div>
+</div>
+<!-- Past Trip Card 2 -->
+<div class="bg-surface-container-low rounded-lg p-md flex flex-col hover:bg-surface-container transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+<h4 class="font-title-sm text-title-sm text-on-surface mb-xs">Rome Weekend</h4>
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm mb-md">
+<span class="material-symbols-outlined text-sm">event_available</span>
+                        May 2023
+                    </div>
+<div class="mt-auto pt-sm border-t border-surface-variant/30 text-right">
+<span class="font-label-md text-label-md text-secondary">Review Photos</span>
+</div>
+</div>
+<!-- Past Trip Card 3 -->
+<div class="bg-surface-container-low rounded-lg p-md flex flex-col hover:bg-surface-container transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+<h4 class="font-title-sm text-title-sm text-on-surface mb-xs">NYC Business</h4>
+<div class="flex items-center gap-xs text-on-surface-variant font-body-sm text-body-sm mb-md">
+<span class="material-symbols-outlined text-sm">event_available</span>
+                        Jan 2023
+                    </div>
+<div class="mt-auto pt-sm border-t border-surface-variant/30 text-right">
+<span class="font-label-md text-label-md text-secondary">View Details</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-lg md:right-2xl md:bottom-12 bg-primary text-on-primary font-label-lg text-label-lg px-xl py-md rounded-full fab-shadow hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-95 flex items-center gap-sm z-40">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+        Create Trip
+    </button>
+<!-- Bottom Nav Bar -->
+<nav class="bg-surface dark:bg-surface-dim fixed bottom-0 w-full rounded-t-xl z-50 shadow-[0_-4px_8px_rgba(0,0,0,0.08)] dark:border-t dark:border-outline-variant md:hidden">
+<div class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-sm pb-safe px-md pb-4">
+<a class="flex flex-col items-center justify-center text-secondary hover:text-primary-container transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">explore</span>
+<span class="font-label-md text-label-md">Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/20 rounded-full px-4 py-1 hover:text-primary-container transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1 text-primary font-title-md" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-label-md text-label-md text-primary font-title-md">Trips</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:text-primary-container transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+<span class="font-label-md text-label-md">Saved</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary hover:text-primary-container transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

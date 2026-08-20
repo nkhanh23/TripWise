@@ -1,5 +1,7 @@
-import { PlaceholderScreen } from '../../components/PlaceholderScreen';
+import { MyTripsScreen } from './screens/MyTripsScreen';
 
 export function TripsScreen() {
-  return <PlaceholderScreen title="My Trips" />;
+  return <MyTripsScreen />;
 }
+
+export { MyTripsScreen };

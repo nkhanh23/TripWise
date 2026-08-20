@@ -2,10 +2,10 @@
 
 ## 1. Tổng quan dự án
 
-**TripWise** là ứng dụng di động cá nhân (**Personal AI Travel Mobile App**) hỗ trợ lập lịch và đồng hành du lịch thông minh, phát triển bằng **React Native + TypeScript + Expo** cho Android và iOS. Người dùng chỉ cần nhập nhu cầu bằng tiếng Việt tự nhiên (ví dụ: *"Tôi muốn đi Nha Trang 3 ngày 2 đêm, thích biển, hải sản, check-in và tiết kiệm chi phí"*), hệ thống AI sẽ tự động phân tích, gợi ý điểm tham quan, sắp xếp thứ tự di chuyển tối ưu và tạo lịch trình chi tiết theo từng ngày.
+**TripWise** là ứng dụng di động cá nhân (**Personal AI Travel Mobile App**) hỗ trợ lập lịch và đồng hành du lịch thông minh, phát triển bằng **React Native + TypeScript + Expo**. **Android là target implementation/runtime hiện tại**; kiến trúc vẫn giữ khả năng hỗ trợ iOS về sau. Người dùng chỉ cần nhập nhu cầu bằng tiếng Việt tự nhiên (ví dụ: *"Tôi muốn đi Nha Trang 3 ngày 2 đêm, thích biển, hải sản, check-in và tiết kiệm chi phí"*), hệ thống AI sẽ tự động phân tích, gợi ý điểm tham quan, sắp xếp thứ tự di chuyển tối ưu và tạo lịch trình chi tiết theo từng ngày.
 
 Kiến trúc mục tiêu chính thức của TripWise (theo [ADR-017](DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)):
-- **Client duy nhất:** Mobile App (**React Native + TypeScript + Expo**) cho cả Android và iOS.
+- **Client duy nhất:** Mobile App (**React Native + TypeScript + Expo**), hiện triển khai và runtime-test trên Android; iOS là future-compatible target.
 - **Backend & Database:** **Supabase** (Managed PostgreSQL + Row Level Security (RLS) + Supabase Auth).
 - **Serverless AI Gateway:** **Supabase Edge Functions** (TypeScript) để gọi **Gemini API** bảo mật.
 - **Bản đồ & Địa điểm:** **Google Maps SDK** kết hợp **Google Places API** để tra cứu dữ liệu địa điểm, hình ảnh và đánh giá tại runtime.
@@ -36,7 +36,7 @@ TripWise được thiết kế tối giản, tinh gọn và tối ưu cho nhu c�
 
 | Nhóm | Công nghệ | Vai trò / Ghi chú |
 |---|---|---|
-| **Mobile Client** | React Native, TypeScript, Expo | **Sản phẩm duy nhất** cho Android & iOS (`mobile/`) |
+| **Mobile Client** | React Native, TypeScript, Expo | **Sản phẩm duy nhất**; Android current target, iOS future-compatible (`mobile/`) |
 | **Backend & Auth** | Supabase Auth | Quản lý phiên đăng nhập cá nhân (Email/Password) |
 | **Database** | Supabase PostgreSQL | Lưu trữ `profiles`, `trips`, `itinerary_days`, `itinerary_items` kèm **RLS** |
 | **Serverless Logic** | Supabase Edge Functions | Proxy gọi Gemini API bảo mật |
@@ -56,7 +56,7 @@ TripWise được thiết kế tối giản, tinh gọn và tối ưu cho nhu c�
 ## 4. Kiến trúc Tổng quan
 
 ```text
-TripWise Personal Mobile App (React Native + TypeScript)
+TripWise Personal Mobile App (React Native + TypeScript + Expo; Android current target)
 │
 ├── Data & Auth Layer
 │    └── @supabase/supabase-js

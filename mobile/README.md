@@ -2,6 +2,8 @@
 
 React Native + TypeScript + Expo personal travel companion client for TripWise (theo [ADR-017](../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](../DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)).
 
+**Current implementation/runtime target: Android.** The architecture remains iOS-compatible, but iOS runtime is not currently verified on the Windows development environment. Active roadmap: [`../PHASES_FE.md`](../PHASES_FE.md).
+
 Kiến trúc mục tiêu tích hợp:
 - **Supabase** (Auth + PostgreSQL + Edge Functions proxy cho Gemini AI).
 - **Google Maps SDK** & **Google Places API** cho bản đồ và tra cứu địa điểm.
@@ -12,7 +14,7 @@ Kiến trúc mục tiêu tích hợp:
 
 - Node.js 24.x LTS and npm 11.x
 - Android Studio, Android SDK, and an Android emulator or device for Android development
-- macOS with Xcode for local iOS Simulator development
+- macOS with Xcode is required only for future local iOS build/runtime verification
 
 ## Install
 
@@ -66,9 +68,9 @@ Start an emulator or connect a device, then run:
 npm run android
 ```
 
-## Run iOS
+## Future iOS verification
 
-Local iOS Simulator builds require macOS and Xcode. On macOS:
+The Expo config keeps iOS compatibility, but iOS is not the current implementation target. Local Simulator builds require macOS and Xcode. When an iOS verification task is explicitly scheduled:
 
 ```bash
 npm run ios
@@ -95,4 +97,14 @@ src/
 tests/            # Foundation tests
 ```
 
-P1 deliberately disables client session persistence. P2 will add a SecureStore-backed session adapter before login and session UX are implemented. The schema and RLS policies are in [`../supabase/migrations`](../supabase/migrations); use [`../supabase/README.md`](../supabase/README.md) after a real project is available to link it, apply migrations, and generate database types.
+Current navigation uses React Navigation (not Expo Router) with Home, Explore, Plan, Trips and Profile tabs.
+
+Legacy Dart/Flutter artifacts (`pubspec.*`, `lib/`, `test/`, `.dart_tool/`) may still be present in the shared worktree. They are not used by the Expo entry point or npm scripts and must only be removed by a separately approved cleanup task.
+
+P2 persists Supabase sessions through Expo SecureStore. P3 adds a typed
+`generateTrip` service under `src/features/planner/data/`; it invokes the
+authenticated Supabase `generate-trip` function through the existing singleton
+client. P3 intentionally does not add planner UI or persist generated trips.
+
+The schema, Edge Function, and deployment instructions are documented in
+[`../supabase/README.md`](../supabase/README.md).

@@ -1,66 +1,50 @@
-# 09-ui-design (TripWise)
+# 09-ui-design: UI/UX Documentation Index (TripWise)
 
-Thư mục này chứa bộ tài liệu nền tảng UI/UX cho TripWise: design system, layout Web/Mobile, danh sách màn hình, đặc tả các màn hình chính, danh sách component, thư viện prompt và ghi chú triển khai.
+> **Visual Source of Truth:** The latest **Google Stitch** design system (`stitch_tripwise_design_system` & `.stitch/designs`) is the authoritative visual source of truth for the TripWise mobile application.
 
-Mục tiêu của `09-ui-design/`:
+This directory serves as the centralized UI documentation for the active **React Native + TypeScript + Expo** client. Google Stitch remains the visual reference; React Native source/config remains the implementation source of truth.
 
-- Chuẩn hóa ngôn ngữ thiết kế: màu sắc, typography, spacing, radius, shadow.
-- Chuẩn hóa bố cục split-screen cho web: trái là AI/itinerary, phải là map.
-- Chuẩn hóa các trạng thái UI như empty, loading, error để đội triển khai không phải tự nghĩ lại từ đầu.
-- Làm nguồn tham chiếu thống nhất để code UI thật bám sát cùng một visual direction.
+---
 
-> Lưu ý: Folder này không chứa code UI production.
+## 1. Quick Authority Index
 
-## Cách dùng nhanh
+| Area | Authoritative Document | Purpose & Scope |
+|---|---|---|
+| **Design Tokens & Theme** | [`design-system.md`](./design-system.md) | Colors, Typography (Inter), 8pt Spacing Grid, Radius, Ambient Shadows, Card & Sheet principles |
+| **Shared TW Components** | [`component-spec.md`](./component-spec.md) | Specification for planned/shared React Native `TW*` components and variants |
+| **Complete Screen Inventory** | [`screen-list.md`](./screen-list.md) | Complete inventory of all 32 mobile screens, wizard steps, dialogs, entry/exit paths, and states |
+| **Mobile Layout & Layering** | [`ui-layout-mobile.md`](./ui-layout-mobile.md) | Map-first layering, draggable bottom sheets, floating HUDs, SafeArea rules, responsive breakpoints |
+| **Mobile Navigation Graph** | [`mobile-navigation-flow.md`](./mobile-navigation-flow.md) | Screen-to-screen user journeys, verified 5-tab hierarchy and back-stack rules |
+| **Stitch → React Native Mapping** | [`stitch-to-react-native-mapping-report.md`](./stitch-to-react-native-mapping-report.md) | Active audited mapping for Stitch screens/components/tokens to current React Native source and verified React Navigation routes |
+| **Map Screen Specifications** | [`trip-detail-map-spec.md`](./trip-detail-map-spec.md) | Dedicated spec for interactive map rendering, markers, route polylines & HUD controls |
+| **Implementation Notes** | [`implementation-notes.md`](./implementation-notes.md) | Architectural guidelines and best practices for modular mobile implementation |
 
-1. Bắt đầu với `design-system.md` để nắm token và quy tắc style.
-2. Đọc `ui-layout-web.md` để hiểu bố cục split-screen và cấu trúc panel.
-3. Đọc `trip-detail-map-spec.md` để nắm màn hình quan trọng nhất của web UI.
-4. Đọc `screen-list.md` để biết phạm vi màn hình, dữ liệu hiển thị và hành động người dùng.
-5. Đọc lần lượt các spec còn lại như `landing-page-spec.md`, `dashboard-spec.md`, `ai-trip-planner-spec.md`.
-6. Đọc `component-spec.md` để biết component nào cần tạo và behavior mong đợi.
-7. Đọc `implementation-notes.md` để hiểu hướng triển khai frontend hiện tại bằng ReactJS + Vite.
+---
 
-## Quy ước hiện tại cho frontend web
+## 2. Historical / Legacy References
 
-- Codebase production web đã chốt dùng `ReactJS + Vite` trong thư mục `web/`.
-- React Router là hướng triển khai mặc định cho code mới.
-- `web-archive-vite-ui/` không còn chỉ là mock reference; đây là nguồn UI gốc đã được migrate vào `web/`.
-- `web-archive-vite-ui/` vẫn được giữ lại như archive/reference để so đối chiếu giao diện khi cần.
-- Giao diện production phải tiếp tục bám sát layout, mood, component hierarchy và trải nghiệm đã chốt từ archive UI.
+The following documents define web-specific requirements or serve as legacy references (per ADR-017 & ADR-018, the primary end-user client is the Mobile App):
+- [`ui-layout-web.md`](./ui-layout-web.md): Split-screen dashboard layout for desktop admin portal.
+- [`landing-page-spec.md`](./landing-page-spec.md): Web marketing landing page specification.
+- [`dashboard-spec.md`](./dashboard-spec.md): Web dashboard specifications.
+- [`ai-trip-planner-spec.md`](./ai-trip-planner-spec.md): Prompt parser and AI generator specifications.
+- [`prompt-library.md`](./prompt-library.md): Reusable UI prompt library for design generation.
+- [`stitch-react-native-mapping.md`](./stitch-react-native-mapping.md): Compatibility pointer to the active audited report; do not maintain duplicate mapping content.
+- [`stitch-flutter-mapping.md`](./stitch-flutter-mapping.md): **SUPERSEDED / HISTORICAL — Flutter implementation mapping**.
+- [`stitch-to-flutter-mapping-report.md`](./stitch-to-flutter-mapping-report.md): **SUPERSEDED / HISTORICAL — Flutter implementation mapping**.
 
-## Thứ tự đọc khuyến nghị
+---
 
-1. `design-system.md`
-2. `ui-layout-web.md`
-3. `trip-detail-map-spec.md`
-4. `component-spec.md`
-5. `screen-list.md`
-6. `ai-trip-planner-spec.md`
-7. `dashboard-spec.md`
-8. `landing-page-spec.md`
-9. `ui-layout-mobile.md`
-10. `implementation-notes.md`
-11. `prompt-library.md`
+## 3. Mandatory Rule for AI Coding Assistants
 
-## Danh sách tài liệu trong folder
-
-- `design-system.md`: token và quy tắc style cho web/mobile.
-- `ui-layout-web.md`: đặc tả layout split-screen cho web dashboard.
-- `ui-layout-mobile.md`: đặc tả layout mobile theo vertical layering.
-- `screen-list.md`: danh sách màn hình, mục đích, dữ liệu và hành động.
-- `landing-page-spec.md`: đặc tả landing page.
-- `dashboard-spec.md`: đặc tả user dashboard.
-- `ai-trip-planner-spec.md`: đặc tả màn AI trip planner.
-- `trip-detail-map-spec.md`: đặc tả Trip Detail + Map View.
-- `component-spec.md`: danh sách component UI và behavior mong đợi.
-- `prompt-library.md`: prompt mẫu phục vụ UI generation.
-- `implementation-notes.md`: ghi chú kiến trúc frontend và mapping từ mock UI sang app thật.
-
-## Nguyên tắc ưu tiên khi có mâu thuẫn
-
-1. `design-system.md`
-2. `ui-layout-*.md`
-3. `trip-detail-map-spec.md`
-4. `component-spec.md`
-5. Quy ước ReactJS + Vite + `web-archive-vite-ui/` trong file này và `implementation-notes.md`
+> ⚠️ **MANDATORY INSTRUCTION:**
+> Before creating or modifying any React Native / Mobile UI implementation task, agents MUST read and strictly adhere to:
+> 1. `docs/09-ui-design/README.md`
+> 2. `docs/09-ui-design/design-system.md`
+> 3. `docs/09-ui-design/component-spec.md`
+> 4. `docs/09-ui-design/screen-list.md`
+> 5. `docs/09-ui-design/ui-layout-mobile.md`
+> 6. `docs/09-ui-design/mobile-navigation-flow.md`
+> 7. `docs/09-ui-design/stitch-to-react-native-mapping-report.md`
+>
+> AI must NOT invent arbitrary design tokens or create duplicate one-off components per screen when an existing shared component can support the required variant.

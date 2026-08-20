@@ -1,6 +1,6 @@
-# React Native Coding Rules - TripWise Mobile
+# React Native + TypeScript + Expo Coding Rules - TripWise Mobile
 
-Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứng dụng di động **React Native + TypeScript** của dự án TripWise (theo [ADR-017](../../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client)).
+Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứng dụng di động **React Native + TypeScript + Expo** của dự án TripWise (theo [ADR-017](../../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client), ADR-018 và ADR-019). Android là target implementation/runtime hiện tại; code không được khóa cứng làm cản trở iOS về sau.
 
 ---
 
@@ -9,7 +9,7 @@ Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứ
 - **TypeScript Strict Mode**: Bật `strict: true` trong `tsconfig.json`. Mọi props, state, API contracts và hook return values đều phải có kiểu dữ liệu tường minh.
 - **Không dùng `any`**: Tuyệt đối không sử dụng kiểu `any`. Dùng `unknown`, generic type parameters hoặc type guards khi cần xử lý dữ liệu động.
 - **Explicit Return Types**: Khuyến khích định nghĩa kiểu trả về rõ ràng cho các helper functions, custom hooks và API client methods.
-- **DTOs & Contract Types**: Đồng bộ kiểu dữ liệu với Backend REST API `/api/v1/`. Tái sử dụng contract types chung khi có thể.
+- **DTOs & Contract Types**: Đồng bộ kiểu dữ liệu với Supabase PostgreSQL/Edge Function contracts. Validate dữ liệu ngoài tại boundary; không đưa raw transport object vào JSX.
 
 ---
 
@@ -30,12 +30,14 @@ Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứ
 
 ## 3. Ranh giới API, Bảo mật & Quản lý Secret
 
-- **Chỉ gọi Spring Boot Backend**: Mobile app kết nối duy nhất tới Backend qua `/api/v1/`. Tuyệt đối không gọi trực tiếp các API bên ngoài của Gemini, OSRM, hay Open-Meteo.
+- **Backend hiện hành là Supabase**: Dùng singleton `@supabase/supabase-js` client cho Auth, RLS-protected data và Edge Functions. Không mở rộng Spring Boot legacy.
+- **Secret-bearing providers**: Gemini và Google server-side secrets chỉ được gọi qua Supabase Edge Functions. Không gọi Gemini trực tiếp từ mobile.
+- **Public providers**: Open-Meteo/OSRM có thể gọi trực tiếp từ client khi đến đúng phase, với timeout, cancellation và fallback theo ADR-018.
 - **Không Hardcode Secret**:
   - Không hardcode API key, backend URL production, credentials hay token trong mã nguồn JavaScript/TypeScript.
-  - Sử dụng biến môi trường được inject tại build time (ví dụ: `react-native-config` / `expo-constants`).
+  - Dùng Expo public environment convention hiện hành (`EXPO_PUBLIC_*`) chỉ cho client-safe configuration. Không đặt server secret trong public env.
 - **Lưu trữ Token an toàn (Secure Storage)**:
-  - Access Token và Refresh Token phải được lưu trong Secure Storage mã hóa phần cứng của hệ điều hành: iOS Keychain và Android Keystore/EncryptedSharedPreferences (thông qua abstraction như `react-native-keychain` hoặc `expo-secure-store`).
+  - Supabase session phải đi qua storage adapter dùng `expo-secure-store`; không gọi SecureStore rải rác trong components.
   - Cấm lưu JWT tokens dạng plaintext trong `AsyncStorage`.
 - **Client Map Keys Restriction**:
   - Khi cấu hình Google Maps SDK key cho mobile, bắt buộc cấu hình restriction theo Android Package Name + SHA-1 fingerprint và iOS Bundle ID. Không bao giờ dùng Unrestricted API key trên mobile.
@@ -85,8 +87,8 @@ Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứ
 
 ## 7. Khả năng Tiếp cận (Accessibility), Đa nền tảng & Parity
 
-- **Android / iOS Parity**:
-  - Đảm bảo tính năng và luồng người dùng hoạt động đồng nhất trên cả Android và iOS.
+- **Android current target / iOS future compatibility**:
+  - Android là target build/runtime hiện tại. Giữ typed/platform boundary sạch để iOS có thể triển khai sau.
   - Tách mã nguồn platform-specific (`.android.ts` / `.ios.ts` hoặc `Platform.select`) chỉ khi thực sự cần thiết do khác biệt hành vi native (ví dụ: permission flow, keyboard handling, status bar).
 - **Accessibility (a11y)**:
   - Cung cấp `accessible={true}`, `accessibilityLabel`, `accessibilityRole` và `accessibilityHint` cho các nút bấm, icon và thành phần tương tác.
@@ -102,3 +104,43 @@ Bộ quy tắc lập trình bắt buộc áp dụng đối với mã nguồn ứ
   - Tránh cài đặt thư viện quá lớn chỉ để dùng 1-2 hàm tiện ích đơn giản.
 - **Kiểm thử (Testing)**:
   - Viết Unit Tests với Jest và React Native Testing Library cho custom hooks, utility functions và components cốt lõi.
+
+---
+
+## 9. Quy tắc Theme & Đa ngôn ngữ (Localization)
+
+Theo [ADR-020](../../DECISIONS.md#adr-020-theme-lightdarksystem--localization-envi-architecture) và [Theme & Localization Contract](../09-ui-design/theme-localization-contract.md):
+
+- **Tiêu thụ Theme Tokens ngữ nghĩa**:
+  - Mọi feature components và shared primitives bắt buộc tiêu thụ màu sắc từ semantic theme tokens / hook theme.
+  - Tuyệt đối cấm sử dụng raw presentation hex colors (như `'#FFFFFF'`, `'#000000'`, `'#0058BC'`) trong mã nguồn feature mới.
+  - Dark Mode là bản phái sinh ngữ nghĩa từ thiết kế Google Stitch, không làm thay đổi phân cấp layout, component geometry hay danh tính icon (`MaterialIcons`).
+- **Quản lý chuỗi văn bản qua Localization Layer**:
+  - Mọi chuỗi ký tự hiển thị cho người dùng (user-facing strings) phải được quản lý tập trung qua file tài nguyên ngôn ngữ (`en`, `vi`) và gọi qua translation hook/function.
+  - Cấm viết điều kiện chuỗi inline trong component JSX (như `lang === 'vi' ? 'Lưu' : 'Save'`).
+- **Layout Resilience cho Tiếng Việt & Đa ngôn ngữ**:
+  - Components (buttons, chips, tabs, cards, sheet CTAs) phải sử dụng flex layout và padding co giãn linh hoạt, không fix cứng chiều rộng chỉ vừa cho tiếng Anh.
+  - Cho phép xuống dòng hoặc mở rộng chiều cao hợp lý; cấm tự ý giảm `fontSize` của tiếng Việt để ép vừa khung.
+- **Ranh giới định dạng ngày / số / tiền tệ**:
+  - Tập trung định dạng qua helper formatting boundary; tách biệt độc lập giữa Ngôn ngữ hiển thị (`en`/`vi`) và Đơn vị tiền tệ (`USD`/`VND`/etc.).
+
+---
+
+## 10. Commands chuẩn từ repository
+
+```powershell
+cd mobile
+npm run lint
+npm run typecheck
+npm test
+npx expo-doctor
+```
+
+Android development build khi task yêu cầu:
+
+```powershell
+cd mobile
+npm run android
+```
+
+Không dùng Flutter/Dart commands để verify production mobile client. Không tự chuyển navigation sang Expo Router; source hiện tại dùng React Navigation.
