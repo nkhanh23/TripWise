@@ -10,6 +10,19 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 0, left: 0, right: 0 }),
 }));
 
+jest.mock('react-native-maps', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const MockComponent = (props: any) => React.createElement(View, props);
+  return {
+    __esModule: true,
+    default: MockComponent,
+    Marker: MockComponent,
+    Polyline: MockComponent,
+    Callout: MockComponent,
+  };
+});
+
 describe('RoutePreviewScreen', () => {
   const mockNavigation: any = {
     goBack: jest.fn(),
@@ -106,7 +119,7 @@ describe('RoutePreviewScreen', () => {
 
     await render(<RoutePreviewScreen navigation={mockNavigation} route={route} />);
 
-    await user.press(screen.getByLabelText('Quay lại'));
+    await user.press(screen.getByLabelText('Back'));
     expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
   });
 
@@ -166,7 +179,7 @@ describe('RoutePreviewScreen', () => {
       <RoutePreviewScreen initialStatus="loading" navigation={mockNavigation} route={route} />
     );
 
-    expect(screen.getByLabelText('Đang tìm tuyến đường')).toBeTruthy();
+    expect(screen.getByLabelText('Loading…')).toBeTruthy();
   });
 
   it('renders error state and recovers on retry', async () => {
@@ -182,7 +195,7 @@ describe('RoutePreviewScreen', () => {
     expect(screen.getByText('Unable to calculate route')).toBeTruthy();
     expect(screen.getByText('Retry')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Thử lại'));
+    await user.press(screen.getByText('Retry'));
 
     await waitFor(() => {
       expect(screen.queryByText('Unable to calculate route')).toBeNull();

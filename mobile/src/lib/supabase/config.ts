@@ -33,8 +33,11 @@ export function readSupabaseConfig(environment: Record<string, string | undefine
 }
 
 export function getSupabaseConfig(): SupabaseConfig {
+  const isTest = process.env.NODE_ENV === 'test' || typeof jest !== 'undefined';
   return readSupabaseConfig({
-    EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
-    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    EXPO_PUBLIC_SUPABASE_URL:
+      process.env.EXPO_PUBLIC_SUPABASE_URL || (isTest ? 'https://mock.supabase.co' : undefined),
+    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+      process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || (isTest ? 'mock-publishable-key' : undefined),
   });
 }

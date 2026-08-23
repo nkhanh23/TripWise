@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppText } from '../../../components/AppText';
@@ -9,7 +9,7 @@ import type { AuthStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import { useAuth } from '../AuthProvider';
-import { mapAuthError } from '../authErrors';
+import { authErrorTranslationKey } from '../authErrors';
 import { validateRegistration } from '../validation';
 import { AuthScreenLayout } from './AuthScreenLayout';
 
@@ -28,26 +28,30 @@ export function RegisterScreen({ navigation }: Props) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ text: string; isError: boolean } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const submitLockRef = useRef(false);
 
   const submit = async () => {
     const validationError = validateRegistration({ displayName, email, password, confirmPassword });
     if (validationError) {
-      setStatusMessage({ text: validationError, isError: true });
+      setStatusMessage({ text: t(validationError), isError: true });
       return;
     }
+    if (submitLockRef.current) return;
+    submitLockRef.current = true;
     setSubmitting(true);
     setStatusMessage(null);
     try {
       const result = await signUp(displayName, email, password);
       if (result.confirmationRequired) {
         setStatusMessage({
-          text: 'Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận trước khi đăng nhập.',
+          text: t('auth.register.confirmationRequired'),
           isError: false,
         });
       }
     } catch (error) {
-      setStatusMessage({ text: mapAuthError(error), isError: true });
+      setStatusMessage({ text: t(authErrorTranslationKey(error)), isError: true });
     } finally {
+      submitLockRef.current = false;
       setSubmitting(false);
     }
   };

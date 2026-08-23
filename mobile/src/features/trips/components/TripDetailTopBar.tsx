@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 
@@ -11,6 +12,7 @@ type Props = {
   onBack: () => void;
   onEdit?: () => void;
   onShare?: () => void;
+  onMap?: () => void;
 };
 
 export const TripDetailTopBar = memo(function TripDetailTopBar({
@@ -19,8 +21,10 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
   onBack,
   onEdit,
   onShare,
+  onMap,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View
@@ -38,8 +42,8 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
       <View style={styles.contentRow}>
         {/* Back Button */}
         <Pressable
-          accessibilityHint="Quay lại màn hình trước"
-          accessibilityLabel="Quay lại"
+          accessibilityHint={t('common.back')}
+          accessibilityLabel={t('common.back')}
           accessibilityRole="button"
           hitSlop={8}
           onPress={onBack}
@@ -67,6 +71,27 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
 
         {/* Trailing Action Buttons */}
         <View style={styles.actionsRow}>
+          {onMap ? (
+            <Pressable
+              accessibilityHint={t('tripDetail.viewMap')}
+              accessibilityLabel={t('tripDetail.viewMap')}
+              accessibilityRole="button"
+              hitSlop={8}
+              onPress={onMap}
+              style={({ pressed }) => [
+                styles.iconButton,
+                {
+                  backgroundColor:
+                    effectiveTheme === 'dark'
+                      ? 'rgba(30, 31, 36, 0.9)'
+                      : 'rgba(255, 255, 255, 0.9)',
+                },
+                pressed && styles.pressed,
+              ]}>
+              <MaterialIcons color={colors.brand.primary} name="map" size={20} />
+            </Pressable>
+          ) : null}
+
           {onShare ? (
             <Pressable
               accessibilityHint="Share"

@@ -1,294 +1,464 @@
-# TripWise Backend Handoff
+# TripWise Backend Final Completion Handoff
 
-**Owner / Agent: Codex — Backend development**
-**Status: ACTIVE — phát triển song song với React Native Mobile Frontend**
+**Owner:** Codex — Backend
 
-Roadmap dài hạn: [`PHASES_BE.md`](./PHASES_BE.md)
+**Closure date:** 2026-08-20
 
-## 1. Backend scope và kiến trúc hiện hành
+**Backend status:** COMPLETE (BE-P0 → BE-P11 DONE)
+**Post-BE Integration extensions:** IMPLEMENTED (`PHASES_INTEGRATION.md`)
+**Integration status:** ACTIVE (`PHASES_INTEGRATION.md`)
 
-Backend production hiện hành của TripWise là:
+Roadmaps:
+
+- Backend: [`PHASES_BE.md`](./PHASES_BE.md)
+- Integration boundary: [`PHASES_INTEGRATION.md`](./PHASES_INTEGRATION.md)
+
+## 1. Final backend status
 
 ```text
-Supabase Auth
-    ↓
-Supabase Edge Functions (Deno / TypeScript)
-    ↓
-Supabase PostgreSQL + Row Level Security
-    ↓
-External server-side services (Gemini; Google Places ở phase sau)
+Original backend implementation: COMPLETE
+BE-P0 -> BE-P11: DONE
+Post-BE extensions: IMPLEMENTED
+Local verification: PASS
+Remote Supabase verification: PASS
+Gemini live provider: PASS
+Google Places live provider: PASS
+Integration: ACTIVE (INT-P0 to INT-P5 COMPLETE; INT-P6 OPEN/PAUSED; INT-P7 ACTIVE)
 ```
 
-- `backend/` Java Spring Boot là **legacy migration source**, không thêm feature mới.
-- Mobile không được giữ private server key hay gọi Gemini trực tiếp.
-- Supabase Auth và RLS là security boundary cho dữ liệu người dùng.
-- Backend được phát triển song song với React Native Mobile Frontend; không còn trạng thái paused.
-- Không thay đổi React Native UI trong backend session.
-
-## 2. BE-P3 — Supabase Edge Function + Gemini AI
-
-**Status: DONE / PASS**
-
-| Hạng mục | Trạng thái | Chi tiết đã verify |
+| Phase | Status | Final capability |
 |---|---|---|
-| Edge Function | PASS | `generate-trip`, Deno / TypeScript |
-| Remote deployment | PASS | Function đã deploy và ở trạng thái `ACTIVE` |
-| Deployed version tại thời điểm verify | `4` | Không redeploy nếu không có bug thực tế |
-| JWT verification | PASS | `verify_jwt = true` trong `supabase/config.toml` và Supabase Gateway |
-| Gemini secret | PASS | `GEMINI_API_KEY` chỉ lưu trong Supabase Secrets |
-| Gemini model tại thời điểm verify | `gemini-3.5-flash-lite` | Structured output được hỗ trợ |
-| Authenticated live generation | PASS | Đã verify end-to-end bằng Supabase user session thật |
-| Structured output | PASS | JSON được parse, schema-validate và normalize |
-| Database writes | NONE | BE-P3 là generation-only, không mutate database |
+| BE-P0 | DONE | Supabase production architecture foundation |
+| BE-P1 | DONE | PostgreSQL schema, ownership and RLS |
+| BE-P2 | DONE | Supabase Auth and profile lifecycle |
+| BE-P3 | DONE | JWT-protected Gemini trip generation |
+| BE-P4 | DONE | Atomic, idempotent trip graph persistence |
+| BE-P5 | DONE | Trusted Google Places identity and enrichment boundary |
+| BE-P6 | DONE | Owner-scoped saved-trip queries and mutations |
+| BE-P7 | DONE | OSRM direct-client responsibility contract |
+| BE-P8 | DONE | Open-Meteo direct-client responsibility contract |
+| BE-P9 | DONE | Security, JWT, secret and RLS audit |
+| BE-P10 | DONE | Performance, cost and resilience audit |
+| BE-P11 | DONE | Final QA and production-readiness closure |
 
-Không rewrite BE-P3 đang hoạt động nếu không phát hiện bug thực sự, đặc biệt không thay đổi JWT flow, Gemini parser hoặc contract validation chỉ để refactor style.
+No backend phase is open. No new backend implementation task is authorized by
+this handoff.
 
-## 3. Live authenticated generation evidence
-
-Request live an toàn đã được chạy với:
-
-- Destination: `Bangkok`
-- Duration: `2 days`
-- Input gồm `destination`, `startDate`, `endDate`, `travelers`, `budget`, `currency`, `preferences`, `notes`
-
-Kết quả:
-
-- 2 itinerary days
-- Day 1: 4 items
-- Day 2: 3 items
-- Day numbering và item positions hợp lệ
-- Nội dung địa điểm là AI suggestions bằng tên/query, không giả lập Google Place ID hoặc tọa độ
-- Response là JSON hợp lệ theo output contract
-- Trusted request dates và destination được dùng trong normalization
-- Không tạo record mới trong `trips`, `itinerary_days`, `itinerary_items`
-
-## 4. Gemini REST parser — bắt buộc giữ nguyên
-
-Gemini REST endpoint `/v1beta/interactions` không bảo đảm trả text qua SDK convenience property `output_text`. Raw REST response đã verify đặt model output tại:
+## 2. Production architecture
 
 ```text
-steps[].content[].text
+React Native + TypeScript + Expo mobile
+    -> Supabase Auth / authenticated JWT
+    -> Supabase Edge Functions (Deno / TypeScript)
+    -> Supabase PostgreSQL + Row Level Security
+    -> server-side providers requiring secrets
+       - Gemini
+       - Google Places API (New)
 ```
 
-`supabase/functions/generate-trip/gemini.ts` dùng `readInteractionOutputText` để duyệt `steps`, chọn model output và ghép các text blocks trước khi JSON parse và schema validation.
+- `backend/` Spring Boot is legacy/reference source only. Do not add production
+  features there.
+- React Native + TypeScript + Expo in `mobile/` is the production client.
+- Supabase Auth, Edge Functions, PostgreSQL, and RLS are the production backend.
+- Integration has not started. Existing backend readiness does not authorize
+  mobile wiring or mock replacement.
+- OSRM and Open-Meteo do not require server secrets and remain future
+  Integration-owned direct-client calls under the contracts below.
 
-> Không revert parser về giả định chỉ có `output_text`. Compatibility fallback hiện có chỉ được thay đổi khi có evidence provider/API mới và test contract tương ứng.
+## 3. Authentication, ownership, and data model
 
-Structured output flow:
+Active owner-scoped tables:
+
+- `profiles`
+- `trips`
+- `itinerary_days`
+- `itinerary_items`
+
+Ownership is derived from `auth.uid()`. Clients must not supply or override the
+trusted owner identity. RLS is enabled on all active tables. Child ownership is
+derived through the trip graph.
+
+Canonical graph:
 
 ```text
-Validated request
-    ↓
-JWT-protected generate-trip Edge Function
-    ↓
-Gemini REST structured JSON request
-    ↓
-Extract steps[].content[].text
-    ↓
-JSON parse
-    ↓
-validateGeneratedTrip
-    ↓
-Normalize trusted metadata, days and item order
-    ↓
-Return GeneratedTrip
+trip
+  -> itinerary_days ordered by day_number
+     -> itinerary_items ordered by position
 ```
 
-## 5. Contract và validation boundaries
+Place provenance:
 
-Input validation hiện có giới hạn các trường cần thiết như destination, date range, travelers, budget và kích thước text/payload. Function có timeout hữu hạn và error categories ổn định; không trả raw provider internals về client.
+- `place_resolved_at IS NULL` means `UNRESOLVED` or legacy-untrusted, even when
+  provider-looking fields exist.
+- `place_resolved_at IS NOT NULL` is the trusted server-side provenance and
+  freshness marker.
+- Only the protected server resolver may create or refresh a verified snapshot.
 
-Output validation bảo đảm:
+## 4. Active Edge Functions
 
-- title, destination, date range và days có shape ổn định;
-- day numbering và item position được normalize;
-- malformed Gemini output bị reject;
-- BE-P3 không nhận Google Place ID, coordinates, photos, ratings hoặc opening hours như dữ liệu đã verify;
-- AI suggestion không phải source of truth cho production place metadata.
+### `generate-trip`
 
-## 6. Authentication và security boundaries
+| Property | Final state |
+|---|---|
+| Remote status | `ACTIVE` |
+| Remote version | `4` |
+| JWT gateway | `verify_jwt=true` |
+| Provider | Gemini |
+| Live provider evidence | PASS |
+| Database writes | 0 |
 
-- `generate-trip` yêu cầu authenticated Supabase JWT; anonymous request bị từ chối.
-- `GEMINI_API_KEY` không xuất hiện trong client bundle, source, log hoặc response.
-- Không dùng service-role credential trong mobile.
-- Không log access token, refresh token, Authorization header hoặc secret.
-- `.env` thật phải được gitignore; chỉ placeholder được phép trong `.env.example`.
-- RLS vẫn bật trên `profiles`, `trips`, `itinerary_days`, `itinerary_items`.
-- BE-P3 không disable/bypass RLS và không tạo public policy để test.
-- External Gemini call có timeout và không retry vô hạn.
-- Raw AI response không được tin cậy trước schema validation.
+Contract:
 
-## 7. Database write behavior
+- `POST /functions/v1/generate-trip`
+- Requires an authenticated Supabase JWT.
+- Validates bounded request fields and Gemini structured output.
+- Normalizes trusted destination/date/day/item ordering.
+- Remains generation-only and performs zero database writes.
+- The raw REST parser must continue reading `steps[].content[].text`; the
+  `output_text` compatibility shape is not the only supported response shape.
+- Stable safe errors include `INVALID_REQUEST`, `UNAUTHORIZED`,
+  `AI_UNAVAILABLE`, `AI_TIMEOUT`, `AI_INVALID_RESPONSE`, and `INTERNAL_ERROR`.
 
-| Table | BE-P3 writes | Future owner |
-|---|---:|---|
-| `trips` | 0 | BE-P4 persistence |
-| `itinerary_days` | 0 | BE-P4 persistence |
-| `itinerary_items` | 0 | BE-P4 persistence |
+### `resolve-place`
 
-BE-P3 là stateless generation boundary. Không thêm persistence vào `generate-trip` ngoài một task BE-P4 được user giao rõ ràng.
+| Property | Final state |
+|---|---|
+| Remote status | `ACTIVE` |
+| Remote version | `8` |
+| JWT gateway | `verify_jwt=true` |
+| Provider | Google Places API (New), Text Search |
+| Live provider evidence | PASS |
+| Trusted writer | `apply_verified_place_snapshot(...)` |
 
-## 8. Backend verification đã hoàn thành
+Contract:
 
-Evidence tại thời điểm đóng BE-P3:
+- `POST /functions/v1/resolve-place`
+- Request body accepts only `{ "itineraryItemId": "UUID" }`.
+- Owner identity is derived from the verified JWT.
+- Persisted suggestion/context is loaded server-side.
+- Google authentication remains a Supabase server secret. Its value is never
+  returned, logged, copied, persisted, or placed in mobile configuration.
+- The client cannot submit a Google response, Google Place ID, coordinates,
+  address, category, owner ID, or other provider metadata for certification.
+- Matching requires exactly one deterministic high-confidence provider
+  candidate; it never blindly certifies `results[0]`.
+- Stable safe errors include `PLACE_INPUT_INVALID`, `PLACE_NOT_FOUND`,
+  `PLACE_AMBIGUOUS`, `PLACE_PROVIDER_AUTH`,
+  `PLACE_PROVIDER_RATE_LIMITED`, `PLACE_PROVIDER_UNAVAILABLE`,
+  `PLACE_PERSISTENCE_FAILED`, `UNAUTHORIZED`, and `INTERNAL_ERROR`.
 
-- `deno check` — PASS
-- `deno lint` — PASS (11 files)
-- `deno test` — PASS (14 tests)
-- Remote Edge Function deployment — PASS
-- Authenticated live generation — PASS
-- Before/after database row-count verification — PASS, 0 writes
+## 5. Google Places final live closure
 
-Các test bao phủ input validation, output contract/normalization, auth rejection, timeout/error mapping và raw Gemini `steps[].content[].text` parsing. Không cần rerun live Gemini chỉ để bắt đầu một backend session khác, trừ khi task yêu cầu hoặc code BE-P3 bị thay đổi.
+The deployed `resolve-place` function made a real Google Places API (New) call
+for the disposable unresolved suggestion `Wat Arun, Bangkok, Thailand`.
 
-## 9. Backend files cần bảo toàn
+| Evidence | Result |
+|---|---|
+| Initial resolution | `VERIFIED` |
+| Provider canonical name | `Chùa Arun` |
+| Verified Google Place ID | `ChIJaSv_6gaZ4jARnbiUVn6Z_YY` |
+| Verified latitude | `13.7438652` |
+| Verified longitude | `100.488444` |
+| Address | Present |
+| Category | Optional; absent in this response |
+| `place_resolved_at` | Present |
+| Atomic trusted persistence | PASS |
+| Refresh | `VERIFIED_REFRESHED` |
+| Refresh failure | Last-known-good snapshot preserved |
+| Owner read | PASS |
+| Cross-user read/resolve/update | BLOCKED |
+| Client provider-field spoofing | BLOCKED |
+| Direct provider-column mutation | BLOCKED |
+| Provider-looking graph creation | BLOCKED with `TW001` |
+| Legacy null-provenance row | Remains `UNRESOLVED`/untrusted |
+| Provider errors | Sanitized |
+| Disposable user/data cleanup | PASS |
 
-- `supabase/config.toml`
-- `supabase/functions/generate-trip/index.ts`
-- `supabase/functions/generate-trip/handler.ts`
-- `supabase/functions/generate-trip/contract.ts`
-- `supabase/functions/generate-trip/contract_test.ts`
-- `supabase/functions/generate-trip/gemini.ts`
-- `supabase/functions/generate-trip/gemini_test.ts`
-- `supabase/functions/generate-trip/README.md`
-- `supabase/migrations/20260819000000_supabase_personal_app_foundation.sql`
-- `supabase/migrations/20260819010000_auth_profile_foundation.sql`
+The first live attempt exposed a deterministic matching defect for localized
+canonical names and compound destinations. The matcher was corrected to use
+provider canonical-name/address evidence plus the primary locality, without
+weakening the one-candidate rule. A localized-name regression test was added;
+the final resolver suite has 20 passing tests.
 
-Temporary live verification scripts đã được dọn; không recreate hoặc commit credential-based harness.
+No Google credential value is stored in this document or repository evidence.
 
-## 10. Backend phase status
+## 6. Trip persistence contract
 
-### BE-P4 — Trip Generation & Persistence
+Production graph creation uses:
 
-- Legacy mapping: old mixed-roadmap `P4-T003` → active **BE-P4 persistence scope**.
-- **BE-P4-T001 đã hoàn thành:** unresolved-place/coordinate persistence contract đã được chốt và verify.
-- **BE-P4-T002 đã hoàn thành:** atomic PostgreSQL RPC boundary đã được implement và verify rollback.
-- **BE-P4-T003 đã hoàn thành:** owner-safe, bounded input contract đã được implement và verify.
-- **BE-P4-T004 đã hoàn thành:** owner-scoped idempotency, deterministic retry/conflict behavior và concurrent duplicate prevention đã được implement và verify.
-- **BE-P4-T005 đã hoàn thành:** stable machine-readable persistence errors và safe generic database fallback đã được implement và verify rollback/no-leak.
-- **BE-P4-T006 đã hoàn thành:** reusable isolated PostgreSQL suite PASS; remote migrations `20260819020000`–`20260819060000` đã apply; actual remote schema và authenticated Supabase RPC/PostgREST persistence, RLS A/B, idempotency, concurrency, error/auth boundaries và cleanup đều PASS.
-- **BE-P4: DONE:** T001–T006 đã hoàn thành. Production graph creation bắt buộc dùng `create_trip_graph(text, jsonb)`.
-- Persistence phải atomic/idempotent, giữ RLS ownership và không tin `user_id` do client tùy ý cung cấp.
-- Các old mixed-roadmap UI/client items thuộc FE/INT roadmaps, không tự thực hiện trong backend-only session.
+```text
+public.create_trip_graph(text, jsonb) -> uuid
+```
 
-### Các backend capability phase sau
+- Authenticated only; owner comes from `auth.uid()`.
+- One atomic database operation creates trip, days, and items.
+- Idempotency key is owner-scoped.
+- Same key/same payload returns the same trip UUID.
+- Same key/different payload returns stable conflict `TW004`.
+- Invalid graph input is rejected without partial writes.
+- Creation cannot certify provider-owned place metadata.
+- Stable persistence errors remain `TW001`–`TW005`.
+- Applied migrations must never be rewritten; all database changes remain
+  forward-only.
 
-- **BE-P5-T001 đã hoàn thành:** unresolved/verified lifecycle, Google-specific MVP identity, trust-source matrix, client spoof risk và creation→enrichment boundary đã được chốt tại `docs/05-engineering/place-identity-contract.md`.
-- **BE-P5-T002 chưa bắt đầu:** server-side Google Places secret/config isolation là task backend tiếp theo.
-- BE-P6+: saved-trip query, route/weather và production backend capabilities — chưa bắt đầu; xem `PHASES_BE.md`.
-- D-Series cleanup — chưa bắt đầu; không xóa Java/web/legacy assets ngoài task D-Series riêng.
+## 7. Saved-trip query and mutation contracts
 
-## 11. BE-P4-T001 persistence contract
+### Owner-scoped list
 
-Migration `20260819020000_itinerary_item_resolution_contract.sql` giải quyết mismatch mà không sửa foundation migration đã apply:
+```text
+public.list_saved_trips(
+  p_limit integer default 20,
+  p_cursor_created_at timestamptz default null,
+  p_cursor_id uuid default null
+) -> jsonb
+```
 
-- `UNRESOLVED`: có `place_name`, optional `place_query` và scheduling fields; `latitude`/`longitude` cùng `NULL`; `google_place_id` chưa được coi là verified identity.
-- `RESOLVED`: `latitude`/`longitude` cùng có giá trị hợp lệ sau provider/backend verification; provider identity và snapshot verified được bổ sung ở BE-P5.
-- Coordinate pair CHECK không cho phép trạng thái half-resolved (`latitude` null nhưng `longitude` non-null, hoặc ngược lại).
-- `place_query` là resolution hint do AI sinh, không phải verified place metadata.
+- Owner is derived from `auth.uid()`.
+- Keyset order is deterministic: `created_at DESC, id DESC`.
+- Page size is bounded from 1 to 50.
+- Cursor requires both `createdAt` and `id`.
+- Compact DTO returns `{ items, nextCursor }` and omits owner/idempotency
+  internals.
+- Index `trips_user_created_id_idx (user_id, created_at DESC, id DESC)` is used
+  for the owner-list path.
 
-Không thêm resolution status vì nullable coordinate pair đã biểu đạt đủ hai trạng thái hiện tại. Migration không thay RLS, policies, grants hoặc ownership model.
+### Detail graph
 
-## 12. BE-P4-T002 atomic transaction boundary
+```text
+public.get_saved_trip_detail(p_trip_id uuid) -> jsonb
+```
 
-Migration `20260819030000_create_trip_graph_transaction.sql` tạo RPC `public.create_trip_graph(p_graph jsonb) returns uuid`:
+- Returns one compact trip -> days -> items graph.
+- Day and item ordering is deterministic.
+- Implemented as one SQL statement with aggregate child queries; no application
+  N+1 path.
+- Cross-owner/missing trip returns `null`.
+- Provider fields are emitted only when `place_resolved_at` proves trusted
+  provenance.
 
-- một RPC request thực hiện một PostgreSQL statement transaction;
-- insert trip, days và items bằng ba set-based INSERT trong cùng function call;
-- database tự sinh trip/day/item IDs; caller không truyền database IDs;
-- owner lấy từ `auth.uid()`, không nhận `user_id` trong payload;
-- function là `SECURITY INVOKER`, giữ nguyên RLS và cố định `search_path = pg_catalog, public`;
-- mọi cast/constraint/RLS error không được catch, vì vậy PostgreSQL rollback toàn bộ graph;
-- EXECUTE chỉ grant cho `authenticated`, không grant cho `anon`/`PUBLIC`.
+### Allowed mutations
 
-Atomicity verification trên PostgreSQL cô lập: success tạo `1 trip + 2 days + 5 items`; invalid item và duplicate day đều giữ nguyên row counts, không có partial write. T002 không thêm idempotency, full validation/error taxonomy hoặc generation-to-persistence wiring.
+```text
+public.update_itinerary_item_note(p_item_id uuid, p_note text) -> boolean
+public.delete_saved_trip(p_trip_id uuid) -> boolean
+```
 
-## 13. BE-P4-T003 ownership and input contract
+- Note mutation is owner-scoped and limited to the note field.
+- Provider-owned snapshot fields cannot be changed through the generic
+  mutation.
+- Delete is owner-scoped and idempotent: `true` once, then `false`.
+- Trip deletion cascades to days and items.
+- User A/User B isolation and anonymous rejection are remotely verified.
 
-Migration `20260819040000_harden_create_trip_graph_contract.sql` harden cùng signature `public.create_trip_graph(p_graph jsonb)`:
+## 8. Public provider ownership
 
-- persisted owner luôn derive từ `auth.uid()`; payload không có owner/user ID field;
-- reject unknown fields ở trip, day và item boundaries;
-- trip allow-list: `title`, `destination`, `startDate`, `endDate`, `estimatedBudget`, `currency`, `days`;
-- day allow-list: `dayNumber`, `date`, `summary`, `items`;
-- item allow-list: `position`, `googlePlaceId`, `placeName`, `placeQuery`, `latitude`, `longitude`, `placeAddress`, `placeCategory`, `startTime`, `endTime`, `note`;
-- tối đa 256 KiB JSONB, 14 days, 6 items/day và 84 items/trip;
-- trip duration 1–14 days; days/date và item positions phải contiguous, khớp array order;
-- required strings được trim/validate; optional strings có giới hạn; currency là ba ký tự uppercase;
-- coordinates phải cùng null hoặc cùng là number trong valid ranges;
-- empty days/items, wrong JSON types, unknown fields và malformed values đều bị reject trước insert.
+### OSRM
 
-Validation duyệt mỗi day/item đúng một lần (O(days + totalItems)); ba INSERT sau validation vẫn set-based và atomic. Matrix PostgreSQL cô lập đã verify valid unresolved/resolved/multi-day graphs, owner isolation và 44 invalid cases với unchanged row counts.
+- Future Integration responsibility: direct call from React Native.
+- Fixed route provider/contract; validated coordinates and driving profile.
+- Timeout, cancellation, bounded retry, and unavailable-route fallback are
+  required at the client data-source boundary.
+- Backend owns no OSRM proxy and no route cache in the current architecture.
 
-Authenticated table grants hiện hữu được giữ nguyên vì chưa có evidence đủ để revoke mà không phá profile/trip flows. Application atomic graph creation phải dùng RPC; direct-write grant hardening cần quyết định riêng dựa trên consumer inventory. T003 không thêm idempotency hoặc public error taxonomy.
+### Open-Meteo
 
-## 14. BE-P4-T004 idempotency and duplicate handling
+- Future Integration responsibility: direct call from React Native.
+- Fixed forecast provider/contract; validated coordinates and bounded forecast
+  days.
+- Timeout, cancellation, bounded retry, and optional-weather fallback are
+  required at the client data-source boundary.
+- Backend owns no Open-Meteo proxy, persistence, or cache.
 
-Migration `20260819050000_add_trip_creation_idempotency.sql` thêm idempotency tối thiểu trực tiếp trên `trips`:
+These are architecture contracts only. They do not start or implement mobile
+Integration.
 
-- `idempotency_key` và 32-byte `idempotency_request_hash` nullable để tương thích legacy rows;
-- key là opaque, case-sensitive, được trim, dài 8–128 ký tự và chỉ nhận ASCII letters/digits cùng `._:-`;
-- partial unique index `(user_id, idempotency_key)` là database source of truth chống race và vẫn cho hai owner dùng cùng key;
-- payload identity là SHA-256 của canonical PostgreSQL `jsonb::text`, nên thứ tự JSON object properties không làm thay đổi retry identity;
-- overload `create_trip_graph(p_idempotency_key text, p_graph jsonb)` giữ `SECURITY INVOKER`, `auth.uid()`, RLS và toàn bộ T001–T003 validation/atomicity;
-- same owner/key/hash trả lại cùng trip UUID; same owner/key với hash khác được T005 public wrapper map thành stable conflict SQLSTATE `TW004`;
-- idempotency metadata được insert cùng `trips` trong transaction tạo graph; failed validation/constraint không consume key;
-- trigger bất biến ngăn authenticated owner sửa key/hash của graph đã tạo; xóa trip tự dọn metadata cùng row;
-- old `create_trip_graph(jsonb)` được giữ trong migration history nhưng đã revoke EXECUTE khỏi `authenticated`, `anon` và `PUBLIC` để application không bypass key bắt buộc.
+## 9. Final security state
 
-PostgreSQL verification cô lập đã PASS: first request `1/2/5`, same-payload retry và payload conflict giữ `1/2/5`, different key/user hoạt động độc lập, failed-first retry thành công, forced concurrent duplicate trả cùng UUID với đúng một graph, concurrent different-payload tạo đúng một winner và một conflict. T004 không thêm HTTP error taxonomy hoặc tick T006.
+- RLS enabled and remotely verified for all active tables.
+- JWT enforcement enabled for both active Edge Functions.
+- Anonymous Edge Function requests are rejected.
+- User A/User B profile, graph, query, mutation, and resolution isolation: PASS.
+- Provider metadata spoofing: BLOCKED.
+- Direct authenticated provider-column mutation: BLOCKED.
+- Provider-looking graph creation: BLOCKED with `TW001`.
+- `apply_verified_place_snapshot(...)` is executable only by `service_role`.
+- `tripwise_private` is not exposed by PostgREST.
+- Secret scan: PASS.
+- No Gemini/Google/service-role server secret reference exists in `mobile/`.
+- No raw provider/database error or credential-bearing URL is returned.
+- Legacy rows with `place_resolved_at IS NULL` remain untrusted.
+- Service role is used in tests only for exact disposable Auth-user lifecycle or
+  deliberate legacy-fixture setup; normal behavior assertions use user JWTs.
 
-## 15. BE-P4-T005 stable persistence errors
+## 10. Performance, cost, and resilience
 
-Migration `20260819060000_add_stable_trip_persistence_errors.sql` giữ nguyên public signature `create_trip_graph(p_idempotency_key text, p_graph jsonb) returns uuid` và thêm error wrapper nhỏ:
+- Saved-trip list uses keyset pagination with page size 1–50.
+- Owner-list query-plan evidence uses `trips_user_created_id_idx`.
+- Detail graph is one SQL statement and has no application N+1 behavior.
+- Persistence regression covers the maximum 14-day/84-item graph.
+- Idempotent same-payload, conflicting-payload, different-owner, and atomic
+  snapshot concurrency are tested.
+- Gemini makes one provider call per generation, has a bounded timeout, and no
+  automatic retry amplification.
+- Google Places resolves one persisted item per request, requests at most five
+  candidates, and makes at most two attempts.
+- Google retries only transient transport/5xx/timeout failures. It does not
+  retry auth errors, 429, malformed input, no-match, or ambiguity.
+- Provider calls use cancellation-aware `AbortController` timeouts.
+- No Redis is used.
+- No unnecessary Gemini or Google response cache is used. Durable verified
+  place snapshots prevent read-time provider calls.
+- No batch resolver uses unbounded `Promise.all`; the backend has no unbounded
+  per-trip provider fan-out.
 
-- `TW001`: persistence validation, safe message `Trip persistence input is invalid.`;
-- `TW002`: missing authenticated identity, safe message `Authentication is required.`;
-- `TW003`: authenticated caller không được phép persist, safe message `Trip persistence is not permitted.`;
-- `TW004`: same owner/key nhưng payload khác, safe message về idempotency conflict;
-- `TW005`: constraint hoặc unexpected database failure, generic safe message `Unable to persist trip.`.
+## 11. Final API/RPC inventory for Integration
 
-Caller chỉ dùng custom SQLSTATE từ Supabase error `code`; không parse constraint name, PostgreSQL message, DETAIL/HINT hay function internals. Future HTTP mapping được để cho Integration: `TW001→400`, `TW002→401`, `TW003→403`, `TW004→409`, `TW005→500`.
+| Surface | Auth | Request | Success |
+|---|---|---|---|
+| `POST /functions/v1/generate-trip` | JWT | bounded generation DTO | `{ data: GeneratedTrip }` |
+| `POST /rest/v1/rpc/create_trip_graph` | JWT | idempotency key + graph | trip UUID |
+| `POST /rest/v1/rpc/list_saved_trips` | JWT | limit + optional keyset cursor | `{ items, nextCursor }` |
+| `POST /rest/v1/rpc/get_saved_trip_detail` | JWT | trip UUID | compact graph or `null` |
+| `POST /rest/v1/rpc/update_itinerary_item_note` | JWT | item UUID + bounded note | boolean |
+| `POST /rest/v1/rpc/delete_saved_trip` | JWT | trip UUID | boolean |
+| `POST /functions/v1/resolve-place` | JWT | itinerary item UUID only | `VERIFIED`/`VERIFIED_REFRESHED` |
 
-Verified T004 implementation được chuyển nguyên vẹn sang `tripwise_private.create_trip_graph(text, jsonb)`. Schema này không nằm trong `supabase/config.toml` exposed schemas; public wrapper và internal function đều `SECURITY INVOKER`. Wrapper catch rồi re-raise trong PL/pgSQL subtransaction, vì vậy validation, permission, conflict, constraint và unexpected failures đều rollback toàn graph trước khi trả stable error.
+Integration must introduce typed transport DTO validation and mapping rather
+than exposing raw PostgREST/function objects directly to UI components.
 
-PostgreSQL verification cô lập đã PASS cho validation matrix, missing auth, permission failure, conflict/retry, injected CHECK và unexpected DB failures, forced concurrency, failed-first retry và T001–T004 regressions. Error diagnostics xác nhận public errors không có DETAIL, HINT hoặc constraint name. T005 không thêm Edge Function/HTTP endpoint và không tick T006.
+## 12. Final test inventory
 
-## 16. BE-P4-T006 persistence tests and remote closure
+### `generate-trip`
 
-- Fresh migration chain và BE-P1 legacy upgrade path PASS trên PostgreSQL/PostGIS isolated.
-- Field-level graph verification PASS cho trip, days, resolved/unresolved items và idempotency metadata.
-- Local RLS, owner spoof, rollback matrix, TW001–TW005, payload/string/date/time/coordinate bounds và real concurrent sessions PASS.
-- Linked remote project `TripWise` nhận đủ migrations `20260819000000`–`20260819060000`; remote schema dump xác nhận nullable coordinate pair, constraints, index, trigger, `SECURITY INVOKER`, RLS và grants.
-- Hai disposable normal Auth users gọi RPC/PostgREST thực: happy graph `1 trip / 2 days / 4 items`, retry cùng UUID, TW004 conflict, TW001 invalid graphs, A/B isolation, anonymous/invalid JWT rejection, old RPC/private schema blocking và concurrent races đều PASS.
-- Service-role credential chỉ được dùng trong process memory để tạo/xóa exact disposable Auth users; không dùng cho persistence behavior. Test users và toàn bộ owned rows đã cleanup, cascade verification PASS.
-- Remote TW002 function-body case không thể đi qua PostgREST khi anon đã bị chặn trước EXECUTE; TW003/TW005 không bị force bằng production grant/trigger mutation. Cả ba đã PASS trong isolated integration suite và remote wrapper/schema tồn tại đúng contract.
-- Direct authenticated own-row writes vẫn possible và có thể bypass graph atomicity; Integration bắt buộc dùng `create_trip_graph(text, jsonb)`.
+```powershell
+npx --yes deno check supabase/functions/generate-trip/index.ts
+npx --yes deno lint supabase/functions/generate-trip
+npx --yes deno test supabase/functions/generate-trip/*_test.ts
+```
 
-## 17. BE-P5-T001 place identity contract
+- Check: PASS
+- Lint: PASS
+- Tests: 14 PASS, 0 failures
+- Live Gemini authenticated generation: PASS
+- Zero database writes: PASS
 
-- UNRESOLVED item chỉ có `place_name`, optional `place_query`, schedule/note; provider ID, coordinates, address và category đều null.
-- VERIFIED item yêu cầu protected server-side resolution với Google Place ID, provider canonical name và verified coordinate pair; address/category là optional verified snapshot.
-- Field presence và coordinate range validation không chứng minh provenance. Gemini/mobile values không bao giờ tự trở thành verified metadata.
-- Current BE-P4 RPC và direct authenticated grants có thể tạo resolved-looking but unverified rows; severity HIGH cho data correctness.
-- T003 phải harden graph creation để reject provider-owned fields, restrict direct provider-column writes và tạo protected enrichment boundary cùng minimal provenance/freshness marker.
-- Không thêm provider-neutral abstraction hoặc status enum; Google-specific MVP phù hợp roadmap hiện tại.
-- No-match/ambiguous match giữ item unresolved; không chọn result đầu tiên, không bịa identity/coordinates.
-- T001 không tạo migration vì marker đơn lẻ chưa có writer restriction không thể thiết lập trust. Forward-only migration thuộc T003.
+### `resolve-place`
 
-## 18. Current backend state và next backend task
+```powershell
+npx --yes deno check supabase/functions/resolve-place/index.ts
+npx --yes deno lint supabase/functions/resolve-place
+npx --yes deno test supabase/functions/resolve-place/*_test.ts
+```
 
-Backend đang **ACTIVE**, phát triển song song và độc lập với React Native Mobile Frontend.
+- Check: PASS
+- Lint: PASS
+- Tests: 20 PASS, 0 failures
+- Real Google Places API (New): PASS
+- Refresh and refresh-failure preservation: PASS
 
-**Next backend task:**
+### Public provider architecture contracts
 
-> **BE-P5-T002 — Server-side Google Places secret/config isolation.**
+```powershell
+npx --yes deno test supabase/tests/architecture/*_test.ts
+```
 
-Chỉ bắt đầu khi user giao task backend đó rõ ràng. Không tự nối Mobile FE ↔ Backend; integration có handoff riêng tại `HANDOFF_INTEGRATION.md`.
+- OSRM/Open-Meteo fixed-origin, validation, timeout/retry/error contracts: PASS
 
-## 19. Git safety
+### PostgreSQL persistence and query contracts
 
-- Worktree có thay đổi chưa commit từ nhiều session.
-- Luôn chạy `git status` trước khi sửa.
-- Không dùng `git reset --hard`, `git checkout .`, `git clean -fd` hoặc revert file của agent khác.
-- Không tự commit.
+```powershell
+powershell -ExecutionPolicy Bypass -File supabase/tests/persistence/run.ps1
+```
+
+- Fresh schema: PASS
+- Upgrade compatibility: PASS
+- Atomic/idempotent persistence: PASS
+- Saved trips list/detail/mutations: PASS
+- 14-day/84-item boundary: PASS
+- Persistence and place-snapshot concurrency: PASS
+- Provenance and spoof prevention: PASS
+- Query-plan/index checks: PASS
+
+### Remote Supabase smoke
+
+```powershell
+powershell -ExecutionPolicy Bypass -File supabase/tests/persistence/remote-smoke.ps1
+powershell -ExecutionPolicy Bypass -File supabase/tests/place-resolution/remote-live-smoke.ps1
+```
+
+Remote evidence:
+
+- disposable Auth users and profiles: PASS
+- authenticated Gemini live generation and zero writes: PASS
+- persistence, idempotency, list, detail, note mutation, cascade delete: PASS
+- RLS, anonymous/JWT rejection, and User A/User B isolation: PASS
+- real Google place resolution and refresh: PASS
+- refresh failure keeps last-known-good snapshot: PASS
+- provider spoof/direct-column protection: PASS
+- exact disposable user/data cleanup: PASS
+
+Do not rerun paid live-provider smokes without a focused verification need.
+Never print passwords, JWTs, service-role credentials, or provider secrets.
+
+## 13. Migration inventory and discipline
+
+Local and remote migration histories were verified aligned through
+`20260820010000`:
+
+1. `20260819000000_supabase_personal_app_foundation.sql`
+2. `20260819010000_auth_profile_foundation.sql`
+3. `20260819020000_itinerary_item_resolution_contract.sql`
+4. `20260819030000_create_trip_graph_transaction.sql`
+5. `20260819040000_harden_create_trip_graph_contract.sql`
+6. `20260819050000_add_trip_creation_idempotency.sql`
+7. `20260819060000_add_stable_trip_persistence_errors.sql`
+8. `20260820000000_harden_place_snapshot_provenance.sql`
+9. `20260820010000_saved_trip_query_mutation_contracts.sql`
+10. `20260822000000_saved_places_contract.sql` (Post-BE Integration extension)
+11. `20260822010000_add_saved_places_update_policy.sql` (Post-BE Integration extension)
+12. `20260822020000_profile_stats_and_deletion.sql` (Post-BE Integration extension)
+
+Rules:
+
+- Never rewrite an applied migration.
+- Use forward-only corrective migrations.
+- Inspect local/remote history before any future database change.
+- Run local persistence/upgrade tests before remote push.
+- Never reset production or repair history without concrete evidence and user
+  authorization.
+
+## 14. Integration handoff boundary
+
+```text
+Integration: ACTIVE (authorized on 2026-08-20; INT-P0 to INT-P5 COMPLETE; INT-P6 OPEN/PAUSED; INT-P7 ACTIVE)
+Active integration roadmap: PHASES_INTEGRATION.md
+Active integration handoff: HANDOFF_INTEGRATION.md
+```
+
+## 15. Next action
+
+The original standalone Backend implementation track is COMPLETE. All ongoing integration, wiring, and runtime verification tasks are managed exclusively under the Integration roadmap (`PHASES_INTEGRATION.md` & `HANDOFF_INTEGRATION.md`).
+
+## 16. Post-BE authorized Integration backend extensions
+
+The following backend extensions were authorized and implemented during active Integration phases:
+
+1. **`get-place-photo` Edge Function (ACTIVE v1, `verify_jwt=true`)**:
+   - Secure server-side proxy for Google Places API (New) photo URLs (`skipHttpRedirect=true`).
+   - Authenticated JWT required. Enforces place ownership via verified trip itinerary items or owned saved places. Zero Google API keys exposed to mobile client.
+
+2. **`public.saved_places` Contract (`20260822000000` & `20260822010000`)**:
+   - Table: `saved_places` (`id`, `user_id`, `google_place_id`, `place_name`, `latitude`, `longitude`, `place_address`, `place_category`, `created_at`).
+   - Key constraints: Unique `(user_id, google_place_id)` with index `(user_id, created_at desc, id desc)`.
+   - Security: Full RLS restricting CRUD exclusively to `auth.uid() = user_id`.
+   - RPCs: `list_saved_places`, `save_place`, `unsave_place`.
+
+3. **`get-place-metadata` Edge Function (ACTIVE v1, `verify_jwt=true`)**:
+   - Fetches real Google Places API (New) rating and review count metadata for owned places.
+   - Enforces ownership and caches responses server-side (24-hour TTL).
+
+4. **Profile Schema Extension & Account Deletion (`20260822020000_profile_stats_and_deletion.sql`)**:
+   - Schema: Added `home_country` (`varchar(2) not null default ''`) to `public.profiles`.
+   - RPC `public.get_user_trip_stats()`: Fast, index-backed owner trip counting (`select count(*) from public.trips where user_id = auth.uid()`).
+   - RPC `public.delete_user_account()` (`SECURITY DEFINER`, `set search_path = ''`): Cascades deletion across `public.trips`, `public.saved_places`, `public.profiles`, and deletes the `auth.users` record.
+

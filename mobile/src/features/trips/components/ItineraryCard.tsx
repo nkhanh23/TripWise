@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppText } from '../../../components/AppText';
+import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { ItineraryItem } from '../types';
@@ -13,6 +14,8 @@ type Props = {
   isLast?: boolean;
   onPressItem?: (item: ItineraryItem) => void;
   onGetDirections?: (item: ItineraryItem) => void;
+  onResolve?: (item: ItineraryItem) => void;
+  resolutionStatus?: 'UNRESOLVED_IDLE' | 'RESOLVING' | 'VERIFIED' | 'ERROR';
 };
 
 export const ItineraryCard = memo(function ItineraryCard({
@@ -21,8 +24,11 @@ export const ItineraryCard = memo(function ItineraryCard({
   isLast = false,
   onPressItem,
   onGetDirections,
+  onResolve,
+  resolutionStatus = item.resolution === 'VERIFIED' ? 'VERIFIED' : 'UNRESOLVED_IDLE',
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
+  const { t } = useTranslation();
 
   const getBadgeStyle = () => {
     switch (item.iconBgVariant) {
@@ -82,8 +88,8 @@ export const ItineraryCard = memo(function ItineraryCard({
         </View>
       </View>
 
-      {/* 2. Main Content Card Container */}
       <Pressable
+        testID={`itinerary-item-${item.id}`}
         accessibilityHint={`Xem chi tiết ${item.title}`}
         accessibilityLabel={`${item.time} ${item.timePeriod || ''}, ${item.title}, ${item.subtitle || ''}`}
         accessibilityRole="button"
@@ -124,13 +130,18 @@ export const ItineraryCard = memo(function ItineraryCard({
             </View>
 
             {/* Category Icon Badge */}
-            <View style={[styles.categoryBadge, { backgroundColor: badgeStyle.bg }]}>
+            <Pressable
+              accessibilityHint={`Xem lộ trình di chuyển tới ${item.title}`}
+              accessibilityLabel={`Lộ trình tới ${item.title}`}
+              accessibilityRole="button"
+              onPress={() => onGetDirections?.(item)}
+              style={[styles.categoryBadge, { backgroundColor: badgeStyle.bg }]}>
               <MaterialIcons
                 color={badgeStyle.iconColor}
                 name={item.iconName}
                 size={18}
               />
-            </View>
+            </Pressable>
           </View>
 
           {/* Optional Card Image */}
@@ -156,6 +167,19 @@ export const ItineraryCard = memo(function ItineraryCard({
               <MaterialIcons color={colors.brand.primary} name="directions" size={16} />
               <Text style={[styles.directionsText, { color: colors.brand.primary }]}>
                 {item.directionsLabel}
+              </Text>
+            </Pressable>
+          ) : null}
+          {item.resolution !== 'VERIFIED' && onResolve ? (
+            <Pressable
+              accessibilityLabel={resolutionStatus === 'RESOLVING' ? t('trips.resolvingPlace') : t('trips.resolvePlace')}
+              accessibilityRole="button"
+              disabled={resolutionStatus === 'RESOLVING'}
+              onPress={() => onResolve(item)}
+              style={styles.resolveRow}>
+              <MaterialIcons color={colors.brand.primary} name={resolutionStatus === 'RESOLVING' ? 'hourglass-top' : 'verified'} size={16} />
+              <Text style={[styles.directionsText, { color: colors.brand.primary }]}>
+                {resolutionStatus === 'RESOLVING' ? t('trips.resolvingPlace') : resolutionStatus === 'ERROR' ? t('trips.retryResolve') : t('trips.resolvePlace')}
               </Text>
             </Pressable>
           ) : null}
@@ -278,5 +302,11 @@ const styles = StyleSheet.create({
   directionsText: {
     fontSize: 12,
     fontWeight: typography.fontWeight.semibold,
+  },
+  resolveRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
   },
 });

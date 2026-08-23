@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     flexDirection: 'row',
     marginHorizontal: spacing.lg,
-    marginTop: -24,
+    marginTop: -12,
     padding: spacing.md,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },

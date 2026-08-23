@@ -32,8 +32,8 @@ export function ExploreErrorState({ onRetry }: Props) {
         {t('explore.errorSubtitle')}
       </AppText>
       <Pressable
-        accessibilityHint="Thử tải lại dữ liệu bản đồ"
-        accessibilityLabel="Thử lại"
+        accessibilityHint={t('common.retry')}
+        accessibilityLabel={t('common.retry')}
         accessibilityRole="button"
         onPress={onRetry}
         style={({ pressed }) => [

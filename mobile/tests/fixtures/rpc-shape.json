@@ -1,0 +1,42 @@
+﻿{
+  "id": "db5c6e22-ba18-465a-b803-f03702d4e73a",
+  "days": [
+    {
+      "id": "8c8ecc64-7d81-4124-99d1-4ab7ab891977",
+      "date": "2026-08-25",
+      "items": [
+        {
+          "id": "dc8858b9-3980-414e-b463-5663af8424f8",
+          "latitude": 13.7438652,
+          "position": 1,
+          "longitude": 100.488444,
+          "placeName": "Ch├╣a Arun",
+          "placeQuery": "Wat Arun Bangkok",
+          "resolution": "VERIFIED",
+          "placeAddress": "158 Thanon Wang Doem, Khwaeng Wat Arun, Khet Bangkok Yai, Krung Thep Maha Nakhon 10600, Th├íi Lan",
+          "googlePlaceId": "ChIJaSv_6gaZ4jARnbiUVn6Z_YY",
+          "placeResolvedAt": "2026-08-21T05:47:29.678734+00:00"
+        },
+        {
+          "id": "97473912-5e3c-4b33-9611-f5c6107e1399",
+          "latitude": 13.7498558,
+          "position": 2,
+          "longitude": 100.4915765,
+          "placeName": "The Grand Palace",
+          "placeQuery": "Grand Palace Bangkok",
+          "resolution": "VERIFIED",
+          "placeAddress": "Phra Borom Maha Ratchawang, Phra Nakhon, Bangkok 10200, Th├íi Lan",
+          "googlePlaceId": "ChIJPzZsMU6Z4jARQUzvk913bCo",
+          "placeResolvedAt": "2026-08-21T05:47:30.838333+00:00"
+        }
+      ],
+      "dayNumber": 1
+    }
+  ],
+  "title": "Bangkok Explorer (Operator Trip)",
+  "endDate": "2026-08-25",
+  "createdAt": "2026-08-21T05:47:28.352498+00:00",
+  "startDate": "2026-08-25",
+  "updatedAt": "2026-08-21T05:47:28.352498+00:00",
+  "destination": "Bangkok"
+}

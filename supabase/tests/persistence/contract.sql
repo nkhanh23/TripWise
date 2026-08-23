@@ -61,7 +61,8 @@ begin
 end
 $$;
 
--- Happy path: unresolved and resolved items, complete field mapping and relationships.
+-- Happy path: graph creation persists suggestions only. Provider metadata is
+-- deliberately unavailable at this public boundary.
 insert into test_state (name, value_uuid)
 select 'happy_trip', public.create_trip_graph(
   'fresh-happy-001',
@@ -75,7 +76,7 @@ select 'happy_trip', public.create_trip_graph(
     "days":[
       {"dayNumber":1,"date":"2026-10-01","summary":"Arrival","items":[
         {"position":1,"placeName":"Po Nagar","placeQuery":"Po Nagar Nha Trang","startTime":"09:00","endTime":"10:30","note":"Unresolved suggestion"},
-        {"position":2,"googlePlaceId":"verified-1","placeName":"Dam Market","latitude":12.2549,"longitude":109.1915,"placeAddress":"Ben Cho","placeCategory":"market","startTime":"11:00","endTime":"12:00","note":"Verified snapshot"}
+        {"position":2,"placeName":"Dam Market","placeQuery":"Dam Market Nha Trang","startTime":"11:00","endTime":"12:00","note":"Unresolved suggestion"}
       ]},
       {"dayNumber":2,"date":"2026-10-02","summary":"Island day","items":[
         {"position":1,"placeName":"Hon Mun","placeQuery":"Hon Mun marine park"},
@@ -99,7 +100,7 @@ begin
   perform pg_temp.assert_true((select array_agg(day_number order by day_number) from public.itinerary_days where trip_id = v_trip) = array[1,2,3], 'Day ordering mismatch.');
   perform pg_temp.assert_true((select count(*) from public.itinerary_items i join public.itinerary_days d on d.id=i.itinerary_day_id where d.trip_id=v_trip) = 5, 'Item count mismatch.');
   perform pg_temp.assert_true(exists(select 1 from public.itinerary_items i join public.itinerary_days d on d.id=i.itinerary_day_id where d.trip_id=v_trip and i.place_name='Po Nagar' and i.place_query='Po Nagar Nha Trang' and i.latitude is null and i.longitude is null and i.start_time='09:00' and i.end_time='10:30' and i.note='Unresolved suggestion'), 'Unresolved item fields mismatch.');
-  perform pg_temp.assert_true(exists(select 1 from public.itinerary_items i join public.itinerary_days d on d.id=i.itinerary_day_id where d.trip_id=v_trip and i.google_place_id='verified-1' and i.latitude=12.2549 and i.longitude=109.1915 and i.place_address='Ben Cho' and i.place_category='market'), 'Resolved item fields mismatch.');
+  perform pg_temp.assert_true(exists(select 1 from public.itinerary_items i join public.itinerary_days d on d.id=i.itinerary_day_id where d.trip_id=v_trip and i.place_name='Dam Market' and i.google_place_id is null and i.latitude is null and i.longitude is null and i.place_resolved_at is null), 'Graph creation created provider-looking metadata.');
 end
 $$;
 
@@ -182,9 +183,8 @@ begin
     'days',jsonb_build_array(jsonb_build_object(
       'dayNumber',1,'date','2026-12-01','summary',repeat('s',500),
       'items',jsonb_build_array(jsonb_build_object(
-        'position',1,'googlePlaceId',repeat('g',255),'placeName',repeat('p',160),
-        'placeQuery',repeat('q',200),'latitude',90,'longitude',180,
-        'placeAddress',repeat('a',500),'placeCategory',repeat('c',100),'note',repeat('n',500)
+        'position',1,'placeName',repeat('p',160),
+        'placeQuery',repeat('q',200),'note',repeat('n',500)
       ))
     ))
   ));
@@ -226,8 +226,8 @@ $$;
 do $$
 declare v_id uuid;
 begin
-  v_id := public.create_trip_graph('edge-valid-0001', '{"title":"Hành trình Việt Nam","destination":"Đà Nẵng","startDate":"2028-02-29","endDate":"2028-02-29","days":[{"dayNumber":1,"date":"2028-02-29","summary":"Ngày nhuận","items":[{"position":1,"placeName":"Điểm cực trị","latitude":-90,"longitude":-180,"startTime":"00:00","endTime":"23:59"}]}]}'::jsonb);
-  perform pg_temp.assert_true(v_id is not null, 'Valid leap-day/UTF-8/coordinate edge graph failed.');
+  v_id := public.create_trip_graph('edge-valid-0001', '{"title":"Hành trình Việt Nam","destination":"Đà Nẵng","startDate":"2028-02-29","endDate":"2028-02-29","days":[{"dayNumber":1,"date":"2028-02-29","summary":"Ngày nhuận","items":[{"position":1,"placeName":"Điểm cực trị","startTime":"00:00","endTime":"23:59"}]}]}'::jsonb);
+  perform pg_temp.assert_true(v_id is not null, 'Valid leap-day/UTF-8 graph failed.');
 end
 $$;
 select pg_temp.expect_rpc_error('err-date-invalid', '{"title":"A","destination":"B","startDate":"2027-02-29","endDate":"2027-02-29","days":[{"dayNumber":1,"date":"2027-02-29","items":[{"position":1,"placeName":"X"}]}]}'::jsonb, 'TW001', 'Trip persistence input is invalid.');
@@ -306,7 +306,7 @@ select set_config('request.jwt.claim.sub','',false);
 select pg_temp.expect_rpc_error('missing-auth-01', '{"title":"A","destination":"B","startDate":"2026-01-01","endDate":"2026-01-01","days":[{"dayNumber":1,"date":"2026-01-01","items":[{"position":1,"placeName":"X"}]}]}'::jsonb, 'TW002', 'Authentication is required.');
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 
--- Direct table writes remain owner-scoped but can bypass graph atomicity: documented risk.
+-- Direct table writes remain owner-scoped, but cannot self-certify provider metadata.
 do $$
 declare
   v_trip uuid;
@@ -321,6 +321,60 @@ begin
   values(v_day,1,'Direct unresolved',null,null);
 end
 $$;
+
+-- Client-supplied provider fields are rejected and cannot create VERIFIED.
+select pg_temp.expect_rpc_error('provider-spoof-01', '{"title":"A","destination":"B","startDate":"2027-05-02","endDate":"2027-05-02","days":[{"dayNumber":1,"date":"2027-05-02","items":[{"position":1,"placeName":"Fake","googlePlaceId":"fake-id","latitude":13.7,"longitude":100.4,"placeAddress":"Fake address","placeCategory":"landmark"}]}]}'::jsonb, 'TW001', 'Trip persistence input is invalid.');
+
+do $$
+declare
+  v_item uuid := (
+    select i.id from public.itinerary_items i join public.itinerary_days d on d.id=i.itinerary_day_id
+    where d.trip_id=(select value_uuid from test_state where name='happy_trip') and i.place_name='Dam Market'
+  );
+begin
+  begin
+    update public.itinerary_items set google_place_id='client-fake', latitude=13.7, longitude=100.4, place_resolved_at=clock_timestamp() where id=v_item;
+    raise exception 'Expected direct provider spoof rejection.';
+  exception when data_exception then null;
+  end;
+  perform pg_temp.assert_true((select place_resolved_at is null and google_place_id is null from public.itinerary_items where id=v_item), 'Direct write created a trusted snapshot.');
+end
+$$;
+
+-- The service-only writer updates every trusted snapshot field atomically and
+-- rejects a mismatched owner. This models the Edge Function after JWT ownership
+-- verification; ordinary authenticated callers have no EXECUTE grant.
+reset role;
+do $$
+declare
+  v_item uuid := (
+    select i.id from public.itinerary_items i join public.itinerary_days d on d.id=i.itinerary_day_id
+    where d.trip_id=(select value_uuid from test_state where name='happy_trip') and i.place_name='Dam Market'
+  );
+  v_resolved timestamptz;
+begin
+  v_resolved := public.apply_verified_place_snapshot('11111111-1111-4111-8111-111111111111', v_item, 'google-dam-market', 'Dam Market', 12.2549, 109.1915, 'Ben Cho', 'market');
+  perform pg_temp.assert_true(v_resolved is not null and exists(select 1 from public.itinerary_items where id=v_item and google_place_id='google-dam-market' and latitude=12.2549 and longitude=109.1915 and place_resolved_at=v_resolved), 'Protected snapshot writer was not atomic.');
+  begin
+    perform public.apply_verified_place_snapshot('22222222-2222-4222-8222-222222222222', v_item, 'wrong-owner', 'Wrong', 1, 1);
+    raise exception 'Expected owner mismatch rejection.';
+  exception when no_data_found then null;
+  end;
+end
+$$;
+reset role;
+
+do $$
+begin
+  if has_function_privilege('authenticated', 'public.apply_verified_place_snapshot(uuid,uuid,text,text,double precision,double precision,text,text)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.apply_verified_place_snapshot(uuid,uuid,text,text,double precision,double precision,text,text)', 'EXECUTE') then
+    raise exception 'Protected snapshot writer is exposed to a client role.';
+  end if;
+end
+$$;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 
 -- User B cannot spoof A ownership or attach children to A's graph through direct writes.
 do $$

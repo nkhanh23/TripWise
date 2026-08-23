@@ -1,6 +1,11 @@
 import { supabase } from '../../../lib/supabase/client';
 import type { Database } from '../../../lib/supabase/database.types';
 
+/**
+ * @deprecated INT-P4 production paths use SupabaseSavedTripsRepository and
+ * keyset RPCs. Retained only for legacy fixtures/tests until INT-P8 cleanup.
+ */
+
 export type TripSummary = Pick<
   Database['public']['Tables']['trips']['Row'],
   'id' | 'title' | 'destination' | 'start_date' | 'end_date' | 'estimated_budget' | 'currency' | 'created_at' | 'updated_at'

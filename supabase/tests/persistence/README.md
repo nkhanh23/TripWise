@@ -15,8 +15,8 @@ The runner verifies both a fresh migration chain and an upgrade from the BE-P1 s
 - Production graph creation must call `create_trip_graph(text, jsonb)`. Authenticated direct table writes remain owner-scoped by RLS, but can bypass graph atomicity.
 - `GeneratedTrip.title`, destination, dates, day numbers/dates/summaries, item position, place name/query, time, and note can map directly to the persistence graph.
 - Generated trip-level `summary` and item `estimatedCost` have no persistence columns and are intentionally omitted. Persistence `estimatedBudget`/`currency` must come from trusted request metadata because they are not GeneratedTrip output fields.
-- `googlePlaceId`, address, category, and coordinates are accepted snapshot fields, not proof that a provider verified them. Provenance belongs to BE-P5.
-- Unresolved items persist with both coordinates null. Resolved snapshots require both coordinates; partial pairs and out-of-range values fail.
+- Graph creation accepts only suggestion/scheduling fields; client-supplied Google ID, address, category, or coordinates are rejected as `TW001`.
+- `place_resolved_at` is the protected provenance marker. Only the service-role-only snapshot RPC may create or refresh a verified snapshot atomically; legacy provider-looking rows with a null marker remain untrusted.
 
 Remote smoke verification is deliberately separate because it requires an authenticated linked Supabase project and disposable test users. Never put tokens or service-role keys in this suite.
 

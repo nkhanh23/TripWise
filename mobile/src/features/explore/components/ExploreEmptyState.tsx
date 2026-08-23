@@ -31,8 +31,8 @@ export function ExploreEmptyState({ onReset }: Props) {
         {t('explore.emptySubtitle')}
       </AppText>
       <Pressable
-        accessibilityHint="Đặt lại bộ lọc tìm kiếm và danh mục"
-        accessibilityLabel="Đặt lại bộ lọc"
+        accessibilityHint={t('explore.clearFilters')}
+        accessibilityLabel={t('explore.clearFilters')}
         accessibilityRole="button"
         onPress={onReset}
         style={({ pressed }) => [

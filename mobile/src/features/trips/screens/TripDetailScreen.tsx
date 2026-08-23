@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -12,8 +12,10 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '../../../components/AppText';
+import { useTranslation } from '../../../i18n';
 import type { RootStackParamList } from '../../../navigation/types';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { useTheme } from '../../../theme';
+import { radius, spacing, typography } from '../../../theme/tokens';
 import { ItineraryCard } from '../components/ItineraryCard';
 import { TripDaySelector } from '../components/TripDaySelector';
 import { TripDetailHero } from '../components/TripDetailHero';
@@ -22,6 +24,18 @@ import { TripEmptyDayState } from '../components/TripEmptyDayState';
 import { TripFAB } from '../components/TripFAB';
 import { TripSummaryBentoCard } from '../components/TripSummaryBentoCard';
 import { getMockTripDetail } from '../data/mockTripDetail';
+import type { PlacePhotoRepository, PlaceResolutionRepository, SavedTripsRepository, WeatherRepository } from '../../../integration/repositories';
+import { mapSavedTripDetailToTripDetailData } from '../integrationMappers';
+import { asTripId, isUuid } from '../../../integration/validation';
+import type { TripId } from '../../../integration/contracts';
+import { usePlaceResolution } from '../placeResolution';
+import { useTripPlacePhotos } from '../placePhotos';
+import { useTripWeather } from '../weather';
+import { OpenMeteoWeatherRepository } from '../../../integration/remote/publicProviderRepositories';
+import { SupabasePlacePhotoRepository } from '../../../integration/remote/supabasePlacePhotoRepository';
+import { SupabasePlaceResolutionRepository } from '../../../integration/remote/supabasePlaceResolutionRepository';
+import { SupabaseSavedTripsRepository } from '../../../integration/remote/supabaseTripRepositories';
+import { supabase } from '../../../lib/supabase/client';
 import type {
   ItineraryItem,
   TripDetailData,
@@ -34,6 +48,11 @@ type Props = NativeStackScreenProps<RootStackParamList, 'TripDetail'> & {
   onPressAddPlace?: () => void;
   onPressEdit?: () => void;
   onPressShare?: () => void;
+  repository?: SavedTripsRepository;
+  placeResolutionRepository?: PlaceResolutionRepository;
+  placePhotoRepository?: PlacePhotoRepository;
+  weatherRepository?: WeatherRepository;
+  fixtureMode?: boolean;
 };
 
 export function TripDetailScreen({
@@ -44,20 +63,136 @@ export function TripDetailScreen({
   onPressAddPlace,
   onPressEdit,
   onPressShare,
+  repository,
+  placeResolutionRepository,
+  placePhotoRepository,
+  weatherRepository,
+  fixtureMode,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const tripId = route?.params?.tripId ?? 'trip_bangkok';
+  const { colors } = useTheme();
+  const { t } = useTranslation();
 
-  const [status, setStatus] = useState<TripDetailUIStatus>(initialStatus);
-  const [selectedDayId, setSelectedDayId] = useState<string>('day_1');
+  const tripId = route?.params?.tripId;
+  const isRemoteTrip = Boolean(tripId && isUuid(tripId));
+  const isFixture = Boolean(
+    fixtureMode || customTripDetail || (!isRemoteTrip && tripId?.startsWith('trip_'))
+  );
+
+  const effectiveRepository = useMemo(() => {
+    if (customTripDetail || fixtureMode) return repository;
+    return repository ?? (isRemoteTrip ? new SupabaseSavedTripsRepository(supabase) : undefined);
+  }, [customTripDetail, fixtureMode, isRemoteTrip, repository]);
+
+  const effectivePlaceResolutionRepository = useMemo(() => {
+    if (customTripDetail || fixtureMode) return placeResolutionRepository;
+    return (
+      placeResolutionRepository ??
+      (effectiveRepository ? new SupabasePlaceResolutionRepository(supabase) : undefined)
+    );
+  }, [customTripDetail, effectiveRepository, fixtureMode, placeResolutionRepository]);
+
+  const effectivePlacePhotoRepository = useMemo(() => {
+    if (customTripDetail || fixtureMode) return placePhotoRepository;
+    return (
+      placePhotoRepository ??
+      (effectiveRepository ? new SupabasePlacePhotoRepository(supabase) : undefined)
+    );
+  }, [customTripDetail, effectiveRepository, fixtureMode, placePhotoRepository]);
+
+  const effectiveWeatherRepository = useMemo(() => {
+    if (customTripDetail || fixtureMode) return weatherRepository;
+    return weatherRepository ?? new OpenMeteoWeatherRepository();
+  }, [customTripDetail, fixtureMode, weatherRepository]);
+
+  const [status, setStatus] = useState<TripDetailUIStatus>(
+    isFixture ? initialStatus : (isRemoteTrip ? 'loading' : 'not_found')
+  );
+  const [selectedDayIdState, setSelectedDayId] = useState<string>('');
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [remoteTripData, setRemoteTripData] = useState<TripDetailData | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener?.('focus', () => {
+      setRefreshKey((prev) => prev + 1);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadRemoteDetail = useCallback(async (): Promise<boolean> => {
+    if (!effectiveRepository || !tripId || !isRemoteTrip) return false;
+    let typedTripId: TripId;
+    try {
+      typedTripId = asTripId(tripId);
+    } catch {
+      setRemoteTripData(null);
+      setStatus('not_found');
+      return false;
+    }
+    setStatus('loading');
+    try {
+      const detail = await effectiveRepository.getDetail(typedTripId);
+      if (!detail) {
+        setRemoteTripData(null);
+        setStatus('not_found');
+        return false;
+      }
+      setRemoteTripData(mapSavedTripDetailToTripDetailData(detail));
+      setStatus('ready');
+      return true;
+    } catch {
+      setRemoteTripData(null);
+      setStatus('error');
+      return false;
+    }
+  }, [effectiveRepository, tripId, isRemoteTrip]);
+
+  useEffect(() => {
+    if (!effectiveRepository || !isRemoteTrip) return;
+    const handle = setTimeout(() => {
+      void loadRemoteDetail();
+    }, 0);
+    return () => clearTimeout(handle);
+  }, [loadRemoteDetail, refreshKey, effectiveRepository, isRemoteTrip]);
+
+  const { statuses: resolutionStatuses, resolve: resolvePlace } = usePlaceResolution(
+    effectivePlaceResolutionRepository,
+    loadRemoteDetail,
+  );
+
+  const handleResolveItem = useCallback(
+    (item: ItineraryItem) => {
+      void resolvePlace(item.id);
+    },
+    [resolvePlace]
+  );
 
   // Fetch / Select trip detail data
   const tripData: TripDetailData | null = useMemo(() => {
     if (customTripDetail) {
       return customTripDetail;
     }
-    return getMockTripDetail(tripId);
-  }, [customTripDetail, tripId]);
+    if (fixtureMode || (!isRemoteTrip && tripId?.startsWith('trip_'))) {
+      void refreshKey;
+      return getMockTripDetail(tripId ?? 'trip_bangkok');
+    }
+    if (isRemoteTrip) return remoteTripData;
+    return null;
+  }, [customTripDetail, fixtureMode, isRemoteTrip, remoteTripData, tripId, refreshKey]);
+
+  const { heroPhotoUrl, itemPhotos } = useTripPlacePhotos(
+    tripData,
+    effectivePlacePhotoRepository,
+  );
+
+  // Derived active day ID
+  const effectiveSelectedDayId = useMemo(() => {
+    if (!tripData?.days || tripData.days.length === 0) return selectedDayIdState || 'day_1';
+    if (selectedDayIdState && tripData.days.some((d) => d.id === selectedDayIdState)) {
+      return selectedDayIdState;
+    }
+    return tripData.days[0].id;
+  }, [tripData, selectedDayIdState]);
 
   // Derived selected day
   const activeDay = useMemo(() => {
@@ -65,10 +200,16 @@ export function TripDetailScreen({
       return null;
     }
     return (
-      tripData.days.find((d) => d.id === selectedDayId) ??
+      tripData.days.find((d) => d.id === effectiveSelectedDayId) ??
       tripData.days[0]
     );
-  }, [tripData, selectedDayId]);
+  }, [tripData, effectiveSelectedDayId]);
+
+  const { activeDayWeather } = useTripWeather(
+    tripData,
+    activeDay,
+    effectiveWeatherRepository,
+  );
 
   const handleBack = useCallback(() => {
     if (navigation.canGoBack()) {
@@ -93,27 +234,54 @@ export function TripDetailScreen({
 
   const handleGetDirections = useCallback(
     (item: ItineraryItem) => {
+      const verifiedCoordinates = tripData?.days
+        .flatMap((day) => day.items)
+        .filter(
+          (candidate) =>
+            candidate.resolution === 'VERIFIED' &&
+            candidate.latitude !== undefined &&
+            candidate.longitude !== undefined
+        )
+        .map((candidate) => ({
+          latitude: candidate.latitude!,
+          longitude: candidate.longitude!,
+        })) ?? [];
+
       navigation.navigate('RoutePreview', {
-        destinationId: item.placeId || 'place_wat_arun',
+        destinationId: item.googlePlaceId ?? item.placeId ?? item.id,
         destinationName: item.title,
+        coordinates: verifiedCoordinates.length >= 2 ? verifiedCoordinates : undefined,
       });
     },
-    [navigation]
+    [navigation, tripData]
   );
 
   const handleViewMap = useCallback(() => {
-    navigation.navigate('MainTabs');
-  }, [navigation]);
+    if (!tripId) return;
+    navigation.navigate('TripMap', {
+      tripId,
+      initialDayId: activeDay?.id ?? effectiveSelectedDayId,
+    });
+  }, [navigation, tripId, activeDay, effectiveSelectedDayId]);
 
   const handleRetry = useCallback(() => {
-    setStatus('ready');
-  }, []);
+    if (isRemoteTrip) {
+      void loadRemoteDetail();
+    } else {
+      setStatus('ready');
+    }
+  }, [isRemoteTrip, loadRemoteDetail]);
 
   const handleFABPress = useCallback(() => {
     if (onPressAddPlace) {
       onPressAddPlace();
+    } else if (tripId) {
+      navigation.navigate('AddPlace', {
+        tripId,
+        initialDayId: activeDay?.id ?? effectiveSelectedDayId,
+      });
     }
-  }, [onPressAddPlace]);
+  }, [onPressAddPlace, navigation, tripId, activeDay, effectiveSelectedDayId]);
 
   // Header Component for Virtualized Itinerary FlatList
   const listHeader = useMemo(() => {
@@ -127,7 +295,8 @@ export function TripDetailScreen({
         <TripDetailHero
           dateLabel={tripData.dateLabel}
           destination={tripData.destination}
-          heroImageUrl={tripData.heroImageUrl}
+          heroImageUrl={heroPhotoUrl || tripData.heroImageUrl}
+          topInset={insets.top}
         />
 
         {/* 2. Summary Bento Card */}
@@ -144,19 +313,20 @@ export function TripDetailScreen({
         <TripDaySelector
           days={tripData.days}
           onSelectDay={handleSelectDay}
-          selectedDayId={activeDay?.id ?? selectedDayId}
+          selectedDayId={activeDay?.id ?? effectiveSelectedDayId}
+          weather={activeDayWeather}
         />
       </View>
     );
-  }, [tripData, handleViewMap, handleSelectDay, activeDay, selectedDayId]);
+  }, [tripData, heroPhotoUrl, insets.top, handleViewMap, handleSelectDay, activeDay, effectiveSelectedDayId, activeDayWeather]);
 
   // Render State 1: Loading
   if (status === 'loading') {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>
         <TripDetailTopBar onBack={handleBack} topInset={insets.top} />
         <View
-          accessibilityLabel="Đang tải chi tiết chuyến đi"
+          accessibilityLabel={t('common.loading')}
           accessibilityRole="progressbar"
           style={styles.centerContainer}>
           <ActivityIndicator color={colors.brand.primary} size="large" />
@@ -168,21 +338,25 @@ export function TripDetailScreen({
   // Render State 2: Error
   if (status === 'error') {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>
         <TripDetailTopBar onBack={handleBack} topInset={insets.top} />
         <View accessibilityRole="alert" style={styles.centerContainer}>
-          <MaterialIcons color={colors.brand.red} name="error-outline" size={44} />
-          <Text style={styles.errorTitle}>Unable to load trip details</Text>
+          <MaterialIcons color={colors.state.error} name="error-outline" size={44} />
+          <Text style={[styles.errorTitle, { color: colors.state.error }]}>
+            {t('tripDetail.errorTitle')}
+          </Text>
           <AppText style={styles.errorSubtitle}>
-            We encountered an issue loading this itinerary.
+            {t('tripDetail.errorSubtitle')}
           </AppText>
           <Pressable
-            accessibilityHint="Thử tải lại thông tin chuyến đi"
-            accessibilityLabel="Thử lại"
+            accessibilityHint={t('common.retry')}
+            accessibilityLabel={t('common.retry')}
             accessibilityRole="button"
             onPress={handleRetry}
-            style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Retry</Text>
+            style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
+            <Text style={[styles.retryButtonText, { color: colors.text.inverse }]}>
+              {t('common.retry')}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -192,21 +366,25 @@ export function TripDetailScreen({
   // Render State 3: Not Found
   if (!tripData || status === 'not_found') {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>
         <TripDetailTopBar onBack={handleBack} topInset={insets.top} />
         <View accessibilityRole="alert" style={styles.centerContainer}>
           <MaterialIcons color={colors.text.muted} name="search-off" size={44} />
-          <Text style={styles.errorTitle}>Trip not found</Text>
+          <Text style={[styles.errorTitle, { color: colors.text.primary }]}>
+            {t('tripDetail.notFoundTitle')}
+          </Text>
           <AppText style={styles.errorSubtitle}>
-            The requested trip could not be found in your account.
+            {t('tripDetail.notFoundSubtitle')}
           </AppText>
           <Pressable
-            accessibilityHint="Quay lại danh sách chuyến đi"
-            accessibilityLabel="Quay lại danh sách chuyến đi"
+            accessibilityHint={t('tripDetail.backToTrips')}
+            accessibilityLabel={t('tripDetail.backToTrips')}
             accessibilityRole="button"
             onPress={handleBack}
-            style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Back to Trips</Text>
+            style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
+            <Text style={[styles.retryButtonText, { color: colors.text.inverse }]}>
+              {t('tripDetail.backToTrips')}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -216,11 +394,12 @@ export function TripDetailScreen({
   const itemsData = activeDay?.items ?? [];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>
       {/* 1. Floating Top Navigation Bar */}
       <TripDetailTopBar
         onBack={handleBack}
         onEdit={onPressEdit}
+        onMap={handleViewMap}
         onShare={onPressShare}
         title={tripData.title || 'TripWise'}
         topInset={insets.top}
@@ -238,17 +417,24 @@ export function TripDetailScreen({
           />
         }
         ListHeaderComponent={listHeader}
-        renderItem={({ item, index }) => (
-          <View style={styles.itemWrapper}>
-            <ItineraryCard
-              isFirst={index === 0}
-              isLast={index === itemsData.length - 1}
-              item={item}
-              onGetDirections={handleGetDirections}
-              onPressItem={handlePressItem}
-            />
-          </View>
-        )}
+        renderItem={({ item, index }) => {
+          const photoUrl = item.googlePlaceId ? itemPhotos[item.googlePlaceId] : undefined;
+          const displayItem = photoUrl ? { ...item, imageUrl: photoUrl } : item;
+
+          return (
+            <View style={styles.itemWrapper}>
+              <ItineraryCard
+                isFirst={index === 0}
+                isLast={index === itemsData.length - 1}
+                item={displayItem}
+                onGetDirections={handleGetDirections}
+                onPressItem={handlePressItem}
+                onResolve={handleResolveItem}
+                resolutionStatus={resolutionStatuses[item.id]}
+              />
+            </View>
+          );
+        }}
         showsVerticalScrollIndicator={false}
       />
 
@@ -260,7 +446,6 @@ export function TripDetailScreen({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.background.surface,
     flex: 1,
   },
   headerContainer: {
@@ -280,18 +465,15 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   errorTitle: {
-    color: colors.text.primary,
     fontSize: typography.titleSmall,
     fontWeight: typography.fontWeight.bold,
   },
   errorSubtitle: {
-    color: colors.text.secondary,
     fontSize: typography.bodySmall,
     textAlign: 'center',
   },
   retryButton: {
     alignItems: 'center',
-    backgroundColor: colors.brand.primary,
     borderRadius: radius.pill,
     height: 40,
     justifyContent: 'center',
@@ -299,7 +481,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   retryButtonText: {
-    color: colors.text.inverse,
     fontSize: typography.bodySmall,
     fontWeight: typography.fontWeight.semibold,
   },

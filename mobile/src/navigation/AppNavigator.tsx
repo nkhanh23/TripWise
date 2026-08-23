@@ -11,11 +11,23 @@ import { RegisterScreen } from '../features/auth/screens/RegisterScreen';
 import { WelcomeScreen } from '../features/auth/screens/WelcomeScreen';
 import { PlaceDetailScreen } from '../features/place/screens/PlaceDetailScreen';
 import { CreateTripWizardScreen } from '../features/planner/screens/CreateTripWizardScreen';
+import { EditProfileScreen } from '../features/profile';
 import { RoutePreviewScreen } from '../features/route/screens/RoutePreviewScreen';
+import { SavedPlacesScreen } from '../features/saved';
+import {
+  AppearanceSettingsScreen,
+  CurrencySettingsScreen,
+  HelpSupportScreen,
+  LanguageSettingsScreen,
+  SettingsScreen,
+} from '../features/settings';
+import { AddPlaceScreen } from '../features/trips/screens/AddPlaceScreen';
 import { TripDetailScreen } from '../features/trips/screens/TripDetailScreen';
+import { TripMapScreen } from '../features/trips/screens/TripMapScreen';
 import { TranslationProvider, useTranslation } from '../i18n';
 import { getNavigationTheme, ThemeProvider, useTheme } from '../theme';
 import { spacing } from '../theme/tokens';
+import { getAuthNavigationTarget } from './authNavigation';
 import { MainTabs } from './MainTabs';
 import type { AuthStackParamList, RootStackParamList } from './types';
 
@@ -44,16 +56,26 @@ function AuthenticatedNavigator() {
       <AppStack.Screen component={RoutePreviewScreen} name="RoutePreview" />
       <AppStack.Screen component={CreateTripWizardScreen} name="CreateTripWizard" />
       <AppStack.Screen component={TripDetailScreen} name="TripDetail" />
+      <AppStack.Screen component={AddPlaceScreen} name="AddPlace" />
+      <AppStack.Screen component={TripMapScreen} name="TripMap" />
+      <AppStack.Screen component={SavedPlacesScreen} name="SavedPlaces" />
+      <AppStack.Screen component={EditProfileScreen} name="EditProfile" />
+      <AppStack.Screen component={SettingsScreen} name="Settings" />
+      <AppStack.Screen component={LanguageSettingsScreen} name="LanguageSettings" />
+      <AppStack.Screen component={CurrencySettingsScreen} name="CurrencySettings" />
+      <AppStack.Screen component={AppearanceSettingsScreen} name="AppearanceSettings" />
+      <AppStack.Screen component={HelpSupportScreen} name="HelpSupport" />
     </AppStack.Navigator>
   );
 }
 
 function RootContent() {
   const { status } = useAuth();
-  if (status === 'loading') {
+  const target = getAuthNavigationTarget(status);
+  if (target === 'bootstrap') {
     return <AuthBootstrapScreen />;
   }
-  if (status === 'authenticated') {
+  if (target === 'app') {
     return <AuthenticatedNavigator />;
   }
   return (

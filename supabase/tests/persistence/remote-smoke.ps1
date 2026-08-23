@@ -193,6 +193,26 @@ try {
   $rpcHeadersA = New-Headers -ApiKey $anonKey -Token $userA.access_token -Extra @{ Prefer='return=representation' }
   $rpcHeadersB = New-Headers -ApiKey $anonKey -Token $userB.access_token -Extra @{ Prefer='return=representation' }
 
+  $profileA = Get-Rows -Table 'profiles' -Query "select=id&id=eq.$($userA.user.id)" -Headers $headersA
+  $profileAFromB = Get-Rows -Table 'profiles' -Query "select=id&id=eq.$($userA.user.id)" -Headers $headersB
+  Assert-True ($profileA.Count -eq 1 -and $profileAFromB.Count -eq 0) 'Remote profile RLS isolation failed.'
+  $profileUpdateA = Invoke-Api -Method 'PATCH' -Path "/rest/v1/profiles?id=eq.$($userA.user.id)" -Headers (New-Headers -ApiKey $anonKey -Token $userA.access_token -Extra @{Prefer='return=representation'}) -Body @{display_name='Remote QA owner'}
+  Assert-Success $profileUpdateA 'owner profile update'
+  Assert-True (@($profileUpdateA.Body).Count -eq 1) 'Owner profile update did not affect exactly one row.'
+  $profileUpdateB = Invoke-Api -Method 'PATCH' -Path "/rest/v1/profiles?id=eq.$($userA.user.id)" -Headers (New-Headers -ApiKey $anonKey -Token $userB.access_token -Extra @{Prefer='return=representation'}) -Body @{display_name='Cross-user profile'}
+  Assert-Success $profileUpdateB 'cross-user profile update request'
+  Assert-True (@($profileUpdateB.Body).Count -eq 0) 'User B updated user A profile.'
+
+  # One safe live Gemini call verifies authenticated provider behavior and the
+  # generation-only invariant. This does not persist the generated response.
+  $generateTripCountBefore = (Get-Rows -Table 'trips' -Query 'select=id' -Headers $headersA).Count
+  $generated = Invoke-Api -Method 'POST' -Path '/functions/v1/generate-trip' -Headers $headersA -Body @{
+    destination='Bangkok'; startDate='2027-01-15'; endDate='2027-01-15'; travelers=1; preferences=@('culture')
+  }
+  Assert-Success $generated 'authenticated live Gemini generation'
+  Assert-True ($null -ne $generated.Body.data -and @($generated.Body.data.days).Count -eq 1 -and @($generated.Body.data.days[0].items).Count -ge 1) 'Gemini response did not satisfy the one-day structured contract.'
+  Assert-True ((Get-Rows -Table 'trips' -Query 'select=id' -Headers $headersA).Count -eq $generateTripCountBefore) 'generate-trip wrote to the database.'
+
   $graph = @{
     title='T006 remote trip'; destination='Bangkok'
     startDate='2027-09-01'; endDate='2027-09-02'
@@ -200,7 +220,7 @@ try {
     days=@(
       @{ dayNumber=1; date='2027-09-01'; summary='Arrival'; items=@(
         @{ position=1; placeName='Wat Arun'; placeQuery='Wat Arun Bangkok'; startTime='09:00'; endTime='10:00'; note='Unresolved' },
-        @{ position=2; googlePlaceId='t006-verified-snapshot'; placeName='Grand Palace'; latitude=13.7500; longitude=100.4913; placeAddress='Phra Nakhon'; placeCategory='landmark' }
+        @{ position=2; placeName='Grand Palace'; placeQuery='Grand Palace Bangkok' }
       ) },
       @{ dayNumber=2; date='2027-09-02'; summary='Markets'; items=@(
         @{ position=1; placeName='Chatuchak Market'; placeQuery='Chatuchak Bangkok' },
@@ -228,9 +248,37 @@ try {
   $itemRows = Get-Rows -Table 'itinerary_items' -Query "select=*&itinerary_day_id=in.($dayFilter)&order=position.asc" -Headers $headersA
   Assert-True ($itemRows.Count -eq 4) 'Persisted item count mismatch.'
   $unresolved = $itemRows | Where-Object place_name -eq 'Wat Arun'
-  $resolved = $itemRows | Where-Object place_name -eq 'Grand Palace'
+  $unresolvedGrandPalace = $itemRows | Where-Object place_name -eq 'Grand Palace'
   Assert-True ($null -eq $unresolved.latitude -and $null -eq $unresolved.longitude -and $unresolved.place_query -eq 'Wat Arun Bangkok') 'Unresolved remote item mismatch.'
-  Assert-True ($resolved.latitude -eq 13.75 -and $resolved.longitude -eq 100.4913 -and $resolved.google_place_id -eq 't006-verified-snapshot') 'Resolved remote item mismatch.'
+  Assert-True ($null -eq $unresolvedGrandPalace.latitude -and $null -eq $unresolvedGrandPalace.longitude -and $null -eq $unresolvedGrandPalace.google_place_id -and $null -eq $unresolvedGrandPalace.place_resolved_at) 'Graph creation produced a trusted-looking snapshot.'
+
+  $listPage = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/list_saved_trips' -Headers $rpcHeadersA -Body @{ p_limit=1; p_cursor_created_at=$null; p_cursor_id=$null }
+  Assert-Success $listPage 'remote saved-trip list'
+  Assert-True (@($listPage.Body.items).Count -eq 1 -and $listPage.Body.items[0].id -eq $tripId) 'Remote compact list did not return owner trip.'
+  Assert-True ($null -eq $listPage.Body.items[0].PSObject.Properties['idempotencyKey'] -and $null -eq $listPage.Body.items[0].PSObject.Properties['userId']) 'Remote list leaked internal metadata.'
+  $detailA = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/get_saved_trip_detail' -Headers $rpcHeadersA -Body @{ p_trip_id=$tripId }
+  Assert-Success $detailA 'remote saved-trip detail'
+  Assert-True ($detailA.Body.id -eq $tripId -and @($detailA.Body.days).Count -eq 2 -and @($detailA.Body.days[0].items).Count -eq 2) 'Remote detail graph shape mismatch.'
+  Assert-True ($detailA.Body.days[0].items[0].resolution -eq 'UNRESOLVED' -and $null -eq $detailA.Body.days[0].items[0].PSObject.Properties['googlePlaceId']) 'Remote detail misrepresented unresolved provenance.'
+  $detailB = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/get_saved_trip_detail' -Headers $rpcHeadersB -Body @{ p_trip_id=$tripId }
+  Assert-Success $detailB 'cross-user saved-trip detail'
+  Assert-True ($null -eq $detailB.Body) 'User B read user A detail RPC.'
+  $noteA = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/update_itinerary_item_note' -Headers $rpcHeadersA -Body @{ p_item_id=$unresolved.id; p_note='Remote updated note' }
+  Assert-Success $noteA 'remote note update'
+  Assert-True ($noteA.Body -eq $true) 'Owner note RPC did not update.'
+  $noteB = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/update_itinerary_item_note' -Headers $rpcHeadersB -Body @{ p_item_id=$unresolved.id; p_note='Cross-user note' }
+  Assert-Success $noteB 'cross-user note update'
+  Assert-True ($noteB.Body -eq $false) 'User B updated user A note RPC.'
+
+  $crossUserResolve = Invoke-Api -Method 'POST' -Path '/functions/v1/resolve-place' -Headers $headersB -Body @{ itineraryItemId=$unresolved.id }
+  $crossUserResolveCode = if ($null -ne $crossUserResolve.Body -and $null -ne $crossUserResolve.Body.PSObject.Properties['error']) { [string]$crossUserResolve.Body.error.code } else { '<none>' }
+  Assert-True ($crossUserResolve.Status -eq 404 -and $crossUserResolveCode -eq 'PLACE_NOT_FOUND') "User B resolved user A item: HTTP $($crossUserResolve.Status): $($crossUserResolve.Raw)"
+
+  # Owner live-provider behavior is covered by the focused reusable smoke at
+  # supabase/tests/place-resolution/remote-live-smoke.ps1. This broad suite
+  # intentionally avoids another billable provider call.
+  $providerSpoof = Invoke-Api -Method 'PATCH' -Path "/rest/v1/itinerary_items?id=eq.$($unresolved.id)" -Headers (New-Headers -ApiKey $anonKey -Token $userA.access_token -Extra @{Prefer='return=representation'}) -Body @{ google_place_id='client-fake'; latitude=13.7; longitude=100.4; place_resolved_at='2026-08-20T00:00:00Z' }
+  Assert-True ($providerSpoof.Status -ge 400) 'Authenticated client wrote provider metadata directly.'
 
   $retry = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/create_trip_graph' -Headers $rpcHeadersA -Body $rpcBody
   Assert-Success $retry 'remote idempotency retry'
@@ -269,6 +317,14 @@ try {
   Assert-True ($bDayInsert.Status -ge 400) 'User B inserted a day into user A graph.'
   $bItemInsert = Invoke-Api -Method 'POST' -Path '/rest/v1/itinerary_items' -Headers $mutateHeadersB -Body @{ itinerary_day_id=$dayIds[0]; position=99; place_name='Cross-user item' }
   Assert-True ($bItemInsert.Status -ge 400) 'User B inserted an item into user A graph.'
+  $bDayUpdate = Invoke-Api -Method 'PATCH' -Path "/rest/v1/itinerary_days?id=eq.$($dayIds[0])" -Headers $mutateHeadersB -Body @{summary='Cross-user day'}
+  $bItemUpdate = Invoke-Api -Method 'PATCH' -Path "/rest/v1/itinerary_items?id=eq.$($unresolved.id)" -Headers $mutateHeadersB -Body @{note='Cross-user direct item'}
+  $bDayDelete = Invoke-Api -Method 'DELETE' -Path "/rest/v1/itinerary_days?id=eq.$($dayIds[0])" -Headers $mutateHeadersB
+  $bItemDelete = Invoke-Api -Method 'DELETE' -Path "/rest/v1/itinerary_items?id=eq.$($unresolved.id)" -Headers $mutateHeadersB
+  foreach ($crossMutation in @($bDayUpdate,$bItemUpdate,$bDayDelete,$bItemDelete)) {
+    Assert-Success $crossMutation 'cross-user child mutation request'
+    Assert-True (@($crossMutation.Body).Count -eq 0) 'Cross-user child update/delete affected user A data.'
+  }
 
   $userBCreate = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/create_trip_graph' -Headers $rpcHeadersB -Body $rpcBody
   Assert-Success $userBCreate 'same key under different owner'
@@ -279,6 +335,24 @@ try {
   $invalidTokenHeaders = New-Headers -ApiKey $anonKey -Token 'not-a-valid-jwt'
   $invalidToken = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/create_trip_graph' -Headers $invalidTokenHeaders -Body @{ p_idempotency_key="t006-$runId-invalid-jwt"; p_graph=$graph }
   Assert-True ($invalidToken.Status -ge 400) 'Malformed JWT persisted a graph.'
+  $anonymousGenerate = Invoke-Api -Method 'POST' -Path '/functions/v1/generate-trip' -Headers $anonHeaders -Body @{destination='Bangkok';startDate='2027-01-15';endDate='2027-01-15'}
+  $invalidGenerate = Invoke-Api -Method 'POST' -Path '/functions/v1/generate-trip' -Headers $invalidTokenHeaders -Body @{destination='Bangkok';startDate='2027-01-15';endDate='2027-01-15'}
+  $anonymousResolve = Invoke-Api -Method 'POST' -Path '/functions/v1/resolve-place' -Headers $anonHeaders -Body @{itineraryItemId=$unresolved.id}
+  $invalidResolve = Invoke-Api -Method 'POST' -Path '/functions/v1/resolve-place' -Headers $invalidTokenHeaders -Body @{itineraryItemId=$unresolved.id}
+  Assert-True ($anonymousGenerate.Status -eq 401 -and $invalidGenerate.Status -eq 401 -and $anonymousResolve.Status -eq 401 -and $invalidResolve.Status -eq 401) 'Edge Function JWT gateway accepted anonymous or malformed tokens.'
+  foreach ($table in @('profiles','trips','itinerary_days','itinerary_items')) {
+    $anonymousRead = Invoke-Api -Method 'GET' -Path "/rest/v1/$table`?select=*" -Headers $anonHeaders
+    Assert-True ($anonymousRead.Status -ge 400) "Anonymous SELECT unexpectedly reached $table."
+  }
+  foreach ($anonymousMutation in @(
+    (Invoke-Api -Method 'POST' -Path '/rest/v1/trips' -Headers $anonHeaders -Body @{user_id=$userA.user.id;title='Anonymous';destination='X';start_date='2027-01-01';end_date='2027-01-01'}),
+    (Invoke-Api -Method 'PATCH' -Path "/rest/v1/profiles?id=eq.$($userA.user.id)" -Headers $anonHeaders -Body @{display_name='Anonymous'}),
+    (Invoke-Api -Method 'DELETE' -Path "/rest/v1/trips?id=eq.$tripId" -Headers $anonHeaders),
+    (Invoke-Api -Method 'PATCH' -Path "/rest/v1/itinerary_days?id=eq.$($dayIds[0])" -Headers $anonHeaders -Body @{summary='Anonymous'}),
+    (Invoke-Api -Method 'DELETE' -Path "/rest/v1/itinerary_items?id=eq.$($unresolved.id)" -Headers $anonHeaders)
+  )) {
+    Assert-True ($anonymousMutation.Status -ge 400) 'Anonymous table mutation unexpectedly succeeded.'
+  }
   $oldRpc = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/create_trip_graph' -Headers $rpcHeadersA -Body @{ p_graph=$graph }
   Assert-True ($oldRpc.Status -ge 400) 'Old non-idempotent RPC signature remains callable.'
   $privateSchema = Invoke-Api -Method 'GET' -Path '/rest/v1/' -Headers (New-Headers -ApiKey $anonKey -Token $userA.access_token -Extra @{ 'Accept-Profile'='tripwise_private' })
@@ -320,6 +394,12 @@ try {
   Assert-Success $directDay 'direct own day insert audit'
   $directItem = Invoke-Api -Method 'POST' -Path '/rest/v1/itinerary_items' -Headers (New-Headers -ApiKey $anonKey -Token $userA.access_token -Extra @{Prefer='return=representation'}) -Body @{itinerary_day_id=$directDay.Body[0].id;position=1;place_name='Direct unresolved'}
   Assert-Success $directItem 'direct own item insert audit'
+  $deleteA = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/delete_saved_trip' -Headers $rpcHeadersA -Body @{p_trip_id=$directTrip.Body[0].id}
+  Assert-Success $deleteA 'remote saved-trip delete'
+  $deleteAgain = Invoke-Api -Method 'POST' -Path '/rest/v1/rpc/delete_saved_trip' -Headers $rpcHeadersA -Body @{p_trip_id=$directTrip.Body[0].id}
+  Assert-Success $deleteAgain 'remote repeated saved-trip delete'
+  Assert-True ($deleteA.Body -eq $true -and $deleteAgain.Body -eq $false) 'Remote delete idempotency contract failed.'
+  Assert-True ((Get-Rows -Table 'itinerary_days' -Query "select=id&trip_id=eq.$($directTrip.Body[0].id)" -Headers $headersA).Count -eq 0) 'Remote delete did not cascade.'
 
   Write-Output ([ordered]@{
     project_ref=$projectRef
@@ -328,7 +408,8 @@ try {
     persisted_counts='1 trip / 2 days / 4 items'
     owner_auth_uid='PASS'
     unresolved_null_pair='PASS'
-    resolved_pair='PASS'
+    provider_snapshot_spoofing='BLOCKED'
+    resolver_live_smoke='SEPARATE_FOCUSED_SUITE'
     retry_same_uuid='PASS'
     conflict_tw004='PASS'
     conflict_transport="HTTP $($conflict.Status) / $(Get-BodyCode $conflict)"
@@ -346,7 +427,15 @@ try {
     private_schema_transport="HTTP $($privateSchema.Status) / $(Get-BodyCode $privateSchema)"
     concurrency_same='PASS'
     concurrency_conflict='PASS'
-    direct_write_risk='CONFIRMED'
+    direct_write_provider_spoofing='BLOCKED'
+    cross_user_resolver='BLOCKED'
+    live_gemini_generation='PASS'
+    generation_zero_db_writes='PASS'
+    edge_function_jwt_matrix='PASS'
+    saved_trip_list_detail='PASS'
+    saved_trip_mutations='PASS'
+    profile_rls='PASS'
+    table_rls_operation_matrix='PASS'
   } | ConvertTo-Json -Compress)
 }
 finally {

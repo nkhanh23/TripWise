@@ -101,7 +101,7 @@ describe('PlaceDetailScreen', () => {
 
     await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
 
-    await user.press(screen.getByLabelText('Quay lại'));
+    await user.press(screen.getByLabelText('Back'));
 
     expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
   });
@@ -117,7 +117,7 @@ describe('PlaceDetailScreen', () => {
     expect(screen.getByText('Place not found')).toBeTruthy();
     expect(screen.getByText('The requested place does not exist in our directory.')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Quay lại'));
+    await user.press(screen.getByLabelText('Back'));
     expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
   });
 
@@ -130,7 +130,7 @@ describe('PlaceDetailScreen', () => {
       <PlaceDetailScreen initialStatus="loading" navigation={mockNavigation} route={route} />
     );
 
-    expect(screen.getByLabelText('Đang tải thông tin địa điểm')).toBeTruthy();
+    expect(screen.getByLabelText('Loading…')).toBeTruthy();
   });
 
   it('renders error state and recovers on retry', async () => {
@@ -146,7 +146,7 @@ describe('PlaceDetailScreen', () => {
     expect(screen.getByText('Unable to load place details')).toBeTruthy();
     expect(screen.getByText('Retry')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Thử lại'));
+    await user.press(screen.getByText('Retry'));
 
     await waitFor(() => {
       expect(screen.queryByText('Unable to load place details')).toBeNull();

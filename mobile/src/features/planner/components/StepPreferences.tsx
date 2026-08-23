@@ -72,7 +72,7 @@ export const StepPreferences = memo(function StepPreferences({
                     isSelected && styles.styleIconCircleSelected,
                   ]}>
                   <MaterialIcons
-                    color={isSelected ? '#FFFFFF' : colors.brand.primary}
+                    color={isSelected ? colors.text.inverse : colors.brand.primary}
                     name={style.iconName}
                     size={20}
                   />

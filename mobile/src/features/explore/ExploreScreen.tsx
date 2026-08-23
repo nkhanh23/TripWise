@@ -73,8 +73,8 @@ export function ExploreScreen({
   // Find currently selected place object
   const selectedPlace = useMemo(() => {
     if (!selectedPlaceId) return null;
-    return initialPlaces.find((p) => p.id === selectedPlaceId) ?? null;
-  }, [initialPlaces, selectedPlaceId]);
+    return filteredPlaces.find((p) => p.id === selectedPlaceId) ?? null;
+  }, [filteredPlaces, selectedPlaceId]);
 
   const handleSelectPlace = useCallback((place: ExplorePlace) => {
     setSelectedPlaceId(place.id);

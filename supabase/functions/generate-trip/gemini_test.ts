@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 
-import { readInteractionOutputText } from './gemini.ts';
+import { buildGeminiHeaders, readInteractionOutputText } from './gemini.ts';
+
+Deno.test('uses the Gemini x-goog-api-key header without bearer auth', () => {
+  const headers = buildGeminiHeaders('test-key');
+  assert.equal(headers['x-goog-api-key'], 'test-key');
+  assert.equal('authorization' in headers, false);
+});
 
 Deno.test('reads structured text from the raw REST steps response', () => {
   const result = readInteractionOutputText({

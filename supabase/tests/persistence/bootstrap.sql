@@ -6,7 +6,8 @@ begin
     create role anon nologin;
   end if;
   if not exists (select 1 from pg_roles where rolname = 'authenticated') then
-    create role authenticated nologin;
+create role authenticated nologin;
+create role service_role nologin bypassrls;
   end if;
 end
 $$;

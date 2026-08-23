@@ -15,18 +15,18 @@ import { useTranslation } from '../../../i18n';
 import type { AuthStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
-import { mapAuthError } from '../authErrors';
+import { useAuth } from '../AuthProvider';
+import { authErrorTranslationKey } from '../authErrors';
 import { AuthScreenLayout } from './AuthScreenLayout';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'> & {
-  onResetPassword?: (email: string) => Promise<void>;
-};
+type Props = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function ForgotPasswordScreen({ navigation, onResetPassword }: Props) {
+export function ForgotPasswordScreen({ navigation }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
+  const { resetPassword } = useAuth();
 
   const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -41,16 +41,14 @@ export function ForgotPasswordScreen({ navigation, onResetPassword }: Props) {
     setSubmitting(true);
     setErrorMessage(null);
     try {
-      if (onResetPassword) {
-        await onResetPassword(email);
-      }
+      await resetPassword(email);
       setIsSuccess(true);
     } catch (error) {
-      setErrorMessage(mapAuthError(error));
+      setErrorMessage(t(authErrorTranslationKey(error)));
     } finally {
       setSubmitting(false);
     }
-  }, [email, onResetPassword, t]);
+  }, [email, resetPassword, t]);
 
   const handleReset = useCallback(() => {
     setIsSuccess(false);

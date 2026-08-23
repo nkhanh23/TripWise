@@ -25,10 +25,11 @@ Server-side integrations requiring secrets
 
 ## 2. Current status
 
-- **Completed through:** BE-P4 — Trip Generation Persistence (T001–T006); BE-P5-T001 — Place identity contract
-- **Current/next phase:** BE-P5 — Place Identity & Enrichment Boundary
-- **Immediate backend task:** BE-P5-T002 — Server-side Places secret/config isolation
-- **Integration status:** NOT STARTED
+- **Original Backend Roadmap (BE-P0 → BE-P11):** COMPLETE
+- **Post-BE authorized backend extensions:** Implemented under active Integration roadmap (`PHASES_INTEGRATION.md`)
+- **Next backend implementation task:** NONE (all current requirements supported)
+- **Integration status:** ACTIVE (`PHASES_INTEGRATION.md`)
+
 
 ---
 
@@ -184,7 +185,7 @@ Persist generated trip atomically và safely vào `trips`, `itinerary_days`, `it
 
 ---
 
-## [ ] BE-P5 — Place Identity & Enrichment Boundary
+## [x] BE-P5 — Place Identity & Enrichment Boundary
 
 ### Goal
 
@@ -193,11 +194,30 @@ Persist generated trip atomically và safely vào `trips`, `itinerary_days`, `it
 ### Subtasks
 
 - [x] **BE-P5-T001:** Contract cho unresolved AI suggestion → verified place identity.
-- [ ] **BE-P5-T002:** Server-side Places secret/config isolation nếu architecture yêu cầu proxy.
-- [ ] **BE-P5-T003:** Normalize Google Place ID, name, coordinates, address và category snapshot.
-- [ ] **BE-P5-T004:** Timeout, quota/error mapping và bounded retry.
-- [ ] **BE-P5-T005:** Cache policy chỉ khi query/cost evidence yêu cầu; có TTL/invalidation rõ.
-- [ ] **BE-P5-T006:** Contract/security/provider tests.
+- [x] **BE-P5-T002:** Server-side Places secret/config isolation nếu architecture yêu cầu proxy.
+- [x] **BE-P5-T003:** Normalize Google Place ID, name, coordinates, address và category snapshot.
+- [x] **BE-P5-T004:** Timeout, quota/error mapping và bounded retry.
+- [x] **BE-P5-T005:** Cache policy chỉ khi query/cost evidence yêu cầu; có TTL/invalidation rõ.
+- [x] **BE-P5-T006:** Contract/security/provider tests.
+
+### Live provider closure
+
+- **LIVE PROVIDER PASS (2026-08-20):** deployed `resolve-place` called Google
+  Places API (New) for `Wat Arun, Bangkok, Thailand`, persisted a complete
+  trusted snapshot, refreshed it as `VERIFIED_REFRESHED`, preserved the
+  last-known-good snapshot after a controlled no-match refresh, passed
+  owner/cross-user/spoof/legacy-provenance checks, and cleaned all disposable
+  users/data.
+- Remote `resolve-place` version 8 is `ACTIVE` with `verify_jwt=true`; anonymous
+  invocation is rejected.
+- Google returned the localized canonical name `Chùa Arun`. The deterministic
+  matcher was corrected to accept provider-backed localized-name/address plus
+  primary-locality evidence without trusting `results[0]`; the regression is
+  covered by the final 20-test resolver suite.
+- The verified Google Place ID, valid coordinates, address, and
+  `place_resolved_at` were written atomically. Category remains optional.
+- Client provider-field certification, direct provider-column mutation, and
+  provider-looking graph creation remain blocked; the latter returns `TW001`.
 
 ### Guardrails
 
@@ -207,7 +227,7 @@ Persist generated trip atomically và safely vào `trips`, `itinerary_days`, `it
 
 ---
 
-## [ ] BE-P6 — Saved Trips Query & Mutation Contracts
+## [x] BE-P6 — Saved Trips Query & Mutation Contracts
 
 ### Goal
 
@@ -215,15 +235,15 @@ Cung cấp backend/repository contract nhỏ cho list/detail/delete/update trip 
 
 ### Subtasks
 
-- [ ] **BE-P6-T001:** Paginated/cursor list contract scoped theo authenticated owner.
-- [ ] **BE-P6-T002:** Trip detail graph query không N+1 và có deterministic ordering.
-- [ ] **BE-P6-T003:** Delete/update-note semantics với RLS.
-- [ ] **BE-P6-T004:** Compact DTO/payload review.
-- [ ] **BE-P6-T005:** Ownership, pagination và query-plan tests.
+- [x] **BE-P6-T001:** Paginated/cursor list contract scoped theo authenticated owner.
+- [x] **BE-P6-T002:** Trip detail graph query không N+1 và có deterministic ordering.
+- [x] **BE-P6-T003:** Delete/update-note semantics với RLS.
+- [x] **BE-P6-T004:** Compact DTO/payload review.
+- [x] **BE-P6-T005:** Ownership, pagination và query-plan tests.
 
 ---
 
-## [ ] BE-P7 — Route / OSRM Responsibility
+## [x] BE-P7 — Route / OSRM Responsibility
 
 ### Goal
 
@@ -231,15 +251,15 @@ Chốt route responsibility theo kiến trúc hiện hành trước khi implemen
 
 ### Subtasks
 
-- [ ] **BE-P7-T001:** Architecture decision: direct client vs Edge Function boundary.
-- [ ] **BE-P7-T002:** Validate coordinate/profile inputs và whitelist provider URL.
-- [ ] **BE-P7-T003:** Timeout, fallback và bounded retry contract.
-- [ ] **BE-P7-T004:** Cache/TTL decision dựa trên traffic/provider limits.
-- [ ] **BE-P7-T005:** Route contract/provider failure tests.
+- [x] **BE-P7-T001:** Architecture decision: direct client vs Edge Function boundary.
+- [x] **BE-P7-T002:** Validate coordinate/profile inputs và whitelist provider URL.
+- [x] **BE-P7-T003:** Timeout, fallback và bounded retry contract.
+- [x] **BE-P7-T004:** Cache/TTL decision dựa trên traffic/provider limits.
+- [x] **BE-P7-T005:** Route contract/provider failure tests.
 
 ---
 
-## [ ] BE-P8 — Weather Responsibility
+## [x] BE-P8 — Weather Responsibility
 
 ### Goal
 
@@ -247,14 +267,14 @@ Giữ Open-Meteo trong product scope với boundary đơn giản. Theo architect
 
 ### Subtasks
 
-- [ ] **BE-P8-T001:** Confirm direct-client vs serverless responsibility.
-- [ ] **BE-P8-T002:** Forecast DTO/error/timeout contract nếu backend-owned.
-- [ ] **BE-P8-T003:** Cache/TTL policy nếu backend-owned và có cost/traffic need.
-- [ ] **BE-P8-T004:** Provider fallback and contract tests.
+- [x] **BE-P8-T001:** Confirm direct-client vs serverless responsibility.
+- [x] **BE-P8-T002:** Forecast DTO/error/timeout contract nếu backend-owned.
+- [x] **BE-P8-T003:** Cache/TTL policy nếu backend-owned và có cost/traffic need.
+- [x] **BE-P8-T004:** Provider fallback and contract tests.
 
 ---
 
-## [ ] BE-P9 — Security & RLS Audit
+## [x] BE-P9 — Security & RLS Audit
 
 ### Goal
 
@@ -262,15 +282,15 @@ Audit toàn bộ backend capability sau persistence/place/query implementation.
 
 ### Subtasks
 
-- [ ] **BE-P9-T001:** RLS matrix cho mọi table/operation.
-- [ ] **BE-P9-T002:** Auth/JWT enforcement cho mọi Edge Function.
-- [ ] **BE-P9-T003:** Secret, log và environment audit.
-- [ ] **BE-P9-T004:** Abuse/rate-limit review cho cost-bearing functions.
-- [ ] **BE-P9-T005:** Cross-user isolation tests.
+- [x] **BE-P9-T001:** RLS matrix cho mọi table/operation.
+- [x] **BE-P9-T002:** Auth/JWT enforcement cho mọi Edge Function.
+- [x] **BE-P9-T003:** Secret, log và environment audit.
+- [x] **BE-P9-T004:** Abuse/rate-limit review cho cost-bearing functions.
+- [x] **BE-P9-T005:** Cross-user isolation tests.
 
 ---
 
-## [ ] BE-P10 — Performance, Cost & Resilience
+## [x] BE-P10 — Performance, Cost & Resilience
 
 ### Goal
 
@@ -278,15 +298,15 @@ Review query cost, provider cost và bottleneck bằng evidence, không thêm en
 
 ### Subtasks
 
-- [ ] **BE-P10-T001:** Query plans/index review cho owner list/detail/persistence.
-- [ ] **BE-P10-T002:** Gemini/Places rate limits và cost controls.
-- [ ] **BE-P10-T003:** Timeout/retry/cancellation consistency.
-- [ ] **BE-P10-T004:** Cache candidates, TTL và invalidation decision.
-- [ ] **BE-P10-T005:** Payload size/concurrency/load smoke tests.
+- [x] **BE-P10-T001:** Query plans/index review cho owner list/detail/persistence.
+- [x] **BE-P10-T002:** Gemini/Places rate limits và cost controls.
+- [x] **BE-P10-T003:** Timeout/retry/cancellation consistency.
+- [x] **BE-P10-T004:** Cache candidates, TTL và invalidation decision.
+- [x] **BE-P10-T005:** Payload size/concurrency/load smoke tests.
 
 ---
 
-## [ ] BE-P11 — Backend Final QA & Production Readiness
+## [x] BE-P11 — Backend Final QA & Production Readiness
 
 ### Goal
 
@@ -294,15 +314,50 @@ Review query cost, provider cost và bottleneck bằng evidence, không thêm en
 
 ### Subtasks
 
-- [ ] **BE-P11-T001:** Migrations and remote schema audit.
-- [ ] **BE-P11-T002:** Edge Function deployment/version inventory.
-- [ ] **BE-P11-T003:** Automated backend suite PASS.
-- [ ] **BE-P11-T004:** Safe live smoke tests cho critical functions.
-- [ ] **BE-P11-T005:** Monitoring/logging/runbook và rollback notes.
-- [ ] **BE-P11-T006:** Final secret/RLS/provider-cost review.
+- [x] **BE-P11-T001:** Migrations and remote schema audit.
+- [x] **BE-P11-T002:** Edge Function deployment/version inventory.
+- [x] **BE-P11-T003:** Automated backend suite PASS.
+- [x] **BE-P11-T004:** Safe live smoke tests cho critical functions.
+- [x] **BE-P11-T005:** Monitoring/logging/runbook và rollback notes.
+- [x] **BE-P11-T006:** Final secret/RLS/provider-cost review.
 
-## 3. Backend next task
+## 3. Backend implementation closure
 
-> **BE-P5-T002 — Server-side Google Places secret/config isolation.**
+> **STOP BACKEND WORK. WAIT FOR FRONTEND COMPLETION AND EXPLICIT USER AUTHORIZATION BEFORE STARTING FE ↔ BE INTEGRATION.**
 
-Không tự bắt đầu task này ngoài một backend session được user giao rõ ràng.
+Google Places live-provider closure is complete. The server-only secret name
+was verified without reading or printing its value, and the real provider flow
+completed with exact disposable-data cleanup.
+
+Do not start additional backend implementation unless a new backend requirement
+or regression is explicitly authorized. When Frontend is complete and the user
+authorizes Integration, begin with `INT-P0 — Integration Readiness & Contract
+Freeze`; this backend roadmap does not start INT-P0.
+
+---
+
+## 4. Post-BE authorized Integration backend extensions
+
+The following backend contracts were explicitly authorized and implemented during subsequent FE ↔ BE Integration phases (`PHASES_INTEGRATION.md`):
+
+1. **`get-place-photo` Edge Function (ACTIVE v1, `verify_jwt=true`)**:
+   - Secure proxy for Google Places API (New) photo lookup.
+   - Requires valid JWT + ownership check (verified itinerary item or owned saved place).
+   - Generates short-lived safe photo URI with zero Google API key exposure to mobile.
+
+2. **`public.saved_places` Contract (`20260822000000_saved_places_contract.sql` + `20260822010000_add_saved_places_update_policy.sql`)**:
+   - Schema: `id`, `user_id`, `google_place_id`, `place_name`, `latitude`, `longitude`, `place_address`, `place_category`, `created_at`.
+   - Constraints: Unique `(user_id, google_place_id)` with keyset pagination index `(user_id, created_at desc, id desc)`.
+   - Security: Full Row Level Security restricting CRUD strictly to `auth.uid() = user_id`.
+   - RPCs: `list_saved_places(p_limit, p_cursor_created_at, p_cursor_id, p_category)`, `save_place(p_google_place_id, p_place_name, p_latitude, p_longitude, p_place_address, p_place_category)`, `unsave_place(p_google_place_id)`.
+
+3. **`get-place-metadata` Edge Function (ACTIVE v1, `verify_jwt=true`)**:
+   - Fetches real Google Places API (New) `rating` and `userRatingCount` for owned places.
+   - Enforces authenticated ownership validation (owned saved place or owned verified trip item).
+   - Caches responses server-side (24-hour TTL).
+
+4. **Profile Extensions & Account Deletion (`20260822020000_profile_stats_and_deletion.sql`)**:
+   - Added `home_country` column (`varchar(2) not null default ''`) to `public.profiles`.
+   - Added `public.get_user_trip_stats()` RPC (`security invoker`, `set search_path = ''`): Returns real trip count aggregated on PostgreSQL (`select count(*) from public.trips where user_id = auth.uid()`).
+   - Added `public.delete_user_account()` RPC (`security definer`, `set search_path = ''`): Atomic cascaded account deletion (`delete from auth.users where id = auth.uid()`) cascading across `public.profiles`, `public.trips`, `public.itinerary_days`, `public.itinerary_items`, and `public.saved_places`.
+

@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -19,6 +19,8 @@ import { PastTripCard } from '../components/PastTripCard';
 import { TripsEmptyState } from '../components/TripsEmptyState';
 import { TWTripCard } from '../components/TWTripCard';
 import { getMockTripSections } from '../data/mockTrips';
+import type { SavedTripsRepository } from '../../../integration/repositories';
+import { mapSavedTripPageToSections } from '../integrationMappers';
 import type { TripSectionData, TripSummary, TripsUIStatus } from '../types';
 
 type Props = {
@@ -26,6 +28,8 @@ type Props = {
   customSections?: TripSectionData[];
   onSelectTrip?: (tripId: string) => void;
   onCreateTrip?: () => void;
+  repository?: SavedTripsRepository;
+  fixtureMode?: boolean;
 };
 
 export function MyTripsScreen({
@@ -33,20 +37,58 @@ export function MyTripsScreen({
   customSections,
   onSelectTrip,
   onCreateTrip,
+  repository,
+  fixtureMode,
 }: Props) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const [status, setStatus] = useState<TripsUIStatus>(initialStatus);
+
+  const [status, setStatus] = useState<TripsUIStatus>(
+    repository ? 'loading' : initialStatus
+  );
+  const [remoteSections, setRemoteSections] = useState<TripSectionData[] | null>(null);
+
+  const loadRemote = useCallback(async () => {
+    if (!repository) return;
+    setStatus('loading');
+    try {
+      const page = await repository.list({ limit: 50 });
+      const mapped = mapSavedTripPageToSections(page.items);
+      setRemoteSections(mapped);
+      setStatus(page.items.length === 0 ? 'empty' : 'ready');
+    } catch {
+      setRemoteSections([]);
+      setStatus('error');
+    }
+  }, [repository]);
+
+  useEffect(() => {
+    if (repository) {
+      const handle = setTimeout(() => { void loadRemote(); }, 0);
+      return () => clearTimeout(handle);
+    }
+  }, [repository, loadRemote]);
+
+  useEffect(() => {
+    const unsubscribe = navigation?.addListener?.('focus', () => {
+      if (repository) {
+        void loadRemote();
+      }
+    });
+    return unsubscribe;
+  }, [navigation, repository, loadRemote]);
 
   const sections = useMemo(() => {
     if (customSections) return customSections;
-    return getMockTripSections();
-  }, [customSections]);
+    if (repository) return remoteSections ?? [];
+    if (fixtureMode || !repository) return getMockTripSections();
+    return [];
+  }, [customSections, fixtureMode, repository, remoteSections]);
 
   const isEmpty = useMemo(() => {
-    return sections.every((sec) => sec.data.length === 0);
+    return sections.length === 0 || sections.every((sec) => sec.data.length === 0);
   }, [sections]);
 
   const handleTripPress = useCallback(
@@ -69,8 +111,9 @@ export function MyTripsScreen({
   }, [onCreateTrip, navigation]);
 
   const handleRetry = useCallback(() => {
-    setStatus('ready');
-  }, []);
+    if (repository) void loadRemote();
+    else setStatus('ready');
+  }, [repository, loadRemote]);
 
   const keyExtractor = useCallback((item: TripSummary) => item.id, []);
 
@@ -195,7 +238,7 @@ export function MyTripsScreen({
         </View>
       ) : null}
 
-      {status === 'ready' && isEmpty ? (
+      {(status === 'empty' || (status === 'ready' && isEmpty)) ? (
         <View style={styles.emptyContainer}>
           {listHeader}
           <TripsEmptyState onCreateTrip={handleCreateTrip} />

@@ -52,6 +52,11 @@ export type ItineraryItem = {
   durationLabel?: string;
   location?: string;
   directionsLabel?: string;
+  resolution?: 'UNRESOLVED' | 'VERIFIED';
+  googlePlaceId?: string;
+  latitude?: number;
+  longitude?: number;
+  placeResolvedAt?: string;
 };
 
 export type TransportSegment = {
@@ -88,3 +93,29 @@ export type TripDetailData = {
 };
 
 export type TripDetailUIStatus = 'loading' | 'ready' | 'error' | 'not_found' | 'empty';
+
+export type AddPlaceDraft = {
+  placeId: string;
+  dayId: string;
+  time: string;
+  durationMinutes: number;
+  note?: string;
+};
+
+export type MockMapCoordinate = {
+  topPercent: number;
+  leftPercent: number;
+};
+
+export type VerifiedMapCoordinate = {
+  latitude: number;
+  longitude: number;
+};
+
+export type TripMapMarkerItem = {
+  item: ItineraryItem;
+  dayNumber: number;
+  orderNumber: number;
+  coordinate: MockMapCoordinate;
+  verifiedCoordinate?: VerifiedMapCoordinate;
+};

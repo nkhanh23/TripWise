@@ -1,5 +1,8 @@
 import { cleanup, render, screen, userEvent } from '@testing-library/react-native';
+import { IntegrationError } from '../src/integration/errors';
 import { CreateTripWizardScreen } from '../src/features/planner/screens/CreateTripWizardScreen';
+
+jest.mock('../src/lib/supabase/client', () => ({ supabase: {} }));
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 0, left: 0, right: 0 }),
@@ -59,9 +62,9 @@ describe('CreateTripWizardScreen', () => {
     await user.press(clearBtn);
 
     // Attempt continue
-    await user.press(screen.getByLabelText('Tiếp tục'));
+    await user.press(screen.getByText('Continue'));
 
-    expect(screen.getByText('Vui lòng chọn hoặc nhập điểm đến của chuyến đi.')).toBeTruthy();
+    expect(screen.getByText('Please select or enter a destination for your trip.')).toBeTruthy();
   });
 
   it('navigates from Step 1 to Step 2 (Dates) and maintains state on back', async () => {
@@ -75,7 +78,7 @@ describe('CreateTripWizardScreen', () => {
     await user.press(screen.getByLabelText('Tokyo, Japan'));
 
     // Press Continue
-    await user.press(screen.getByLabelText('Tiếp tục'));
+    await user.press(screen.getByText('Continue'));
 
     // Step 2 rendered
     expect(screen.getByText('Step 2 of 5')).toBeTruthy();
@@ -139,15 +142,23 @@ describe('CreateTripWizardScreen', () => {
     await user.press(screen.getByLabelText('Friends, 3+ travelers'));
   });
 
-  it('renders Step 5 (Summary) with editable trip name and generates trip with simulated success', async () => {
+  it('maps the summary to the repository and renders the validated generated preview', async () => {
     const user = userEvent.setup();
     const onCompleteMock = jest.fn();
+    const generate = jest.fn().mockResolvedValue({
+      title: 'Bangkok discovery', destination: 'Bangkok', startDate: '2026-10-15', endDate: '2026-10-20',
+      days: Array.from({ length: 6 }, (_, index) => ({
+        dayNumber: index + 1,
+        date: `2026-10-${String(15 + index).padStart(2, '0')}`,
+        items: [{ position: 1, placeName: `Bangkok suggestion ${index + 1}` }],
+      })),
+    });
 
     await render(
       <CreateTripWizardScreen
         initialStep={5}
         onComplete={onCompleteMock}
-        simulationDelayMs={0}
+        generationRepository={{ generate }}
       />
     );
 
@@ -162,17 +173,49 @@ describe('CreateTripWizardScreen', () => {
     await user.type(titleInput, 'My Dream Bangkok Trip');
 
     // Click Generate Itinerary
-    await user.press(screen.getByLabelText('Tạo lịch trình chuyến đi'));
+    await user.press(screen.getByText('Generate Itinerary'));
 
-    // Success Screen rendered matching Stitch
-    expect(screen.getByText('Your Bangkok trip is ready')).toBeTruthy();
+    expect(await screen.findByText('Your Bangkok trip is ready')).toBeTruthy();
     expect(screen.getByText('Start adding places or explore recommendations.')).toBeTruthy();
     expect(screen.getByText('Plan my trip')).toBeTruthy();
     expect(screen.getByText('Explore places')).toBeTruthy();
     expect(onCompleteMock).toHaveBeenCalledTimes(1);
+    expect(generate).toHaveBeenCalledWith({
+      destination: 'Bangkok',
+      startDate: '2026-10-15',
+      endDate: '2026-10-20',
+      preferences: ['Culture & History', 'Food & Dining'],
+      notes: 'Travel pace: moderate; budget tier: moderate; group type: couple.',
+    }, expect.any(AbortSignal));
 
     // Click Plan my trip CTA
-    await user.press(screen.getByLabelText('Lập kế hoạch chuyến đi'));
+    await user.press(screen.getByText('Plan my trip'));
     expect(mockNavigate).toHaveBeenCalledWith('MainTabs');
+  });
+
+  it('preserves input, exposes a safe retry, and prevents concurrent generation requests', async () => {
+    const user = userEvent.setup();
+    const generate = jest.fn()
+      .mockRejectedValueOnce(new IntegrationError('timeout'))
+      .mockResolvedValueOnce({
+        title: 'Bangkok discovery', destination: 'Bangkok', startDate: '2026-10-15', endDate: '2026-10-20',
+        days: Array.from({ length: 6 }, (_, index) => ({
+          dayNumber: index + 1,
+          date: `2026-10-${String(15 + index).padStart(2, '0')}`,
+          items: [{ position: 1, placeName: `Bangkok suggestion ${index + 1}` }],
+        })),
+      });
+    await render(<CreateTripWizardScreen initialStep={5} generationRepository={{ generate }} />);
+
+    const titleInput = screen.getByDisplayValue('Bangkok Exploration 2026');
+    await user.clear(titleInput);
+    await user.type(titleInput, 'Keep this title');
+    await user.press(screen.getByText('Generate Itinerary'));
+    expect(await screen.findByText('Generation timed out. You can retry once you are ready.')).toBeTruthy();
+    expect(screen.getByDisplayValue('Keep this title')).toBeTruthy();
+
+    await user.press(screen.getByText('Retry'));
+    expect(await screen.findByText('Your Bangkok trip is ready')).toBeTruthy();
+    expect(generate).toHaveBeenCalledTimes(2);
   });
 });

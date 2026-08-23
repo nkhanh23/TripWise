@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing } from '../../../theme/tokens';
 
@@ -21,13 +22,14 @@ export const PlaceHeader = memo(function PlaceHeader({
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors, effectiveTheme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View style={[styles.headerContainer, { top: Math.max(insets.top, spacing.sm) }]}>
       {/* Back button */}
       <Pressable
-        accessibilityHint="Quay lại màn hình trước"
-        accessibilityLabel="Quay lại"
+        accessibilityHint={t('common.back')}
+        accessibilityLabel={t('common.back')}
         accessibilityRole="button"
         hitSlop={8}
         onPress={onBack}

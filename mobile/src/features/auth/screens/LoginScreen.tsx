@@ -9,7 +9,7 @@ import type { AuthStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import { useAuth } from '../AuthProvider';
-import { mapAuthError } from '../authErrors';
+import { authErrorTranslationKey } from '../authErrors';
 import { validateLogin } from '../validation';
 import { AuthScreenLayout } from './AuthScreenLayout';
 
@@ -29,7 +29,7 @@ export function LoginScreen({ navigation }: Props) {
   const submit = async () => {
     const validationError = validateLogin({ email, password });
     if (validationError) {
-      setErrorMessage(validationError);
+      setErrorMessage(t(validationError));
       return;
     }
     setSubmitting(true);
@@ -37,7 +37,7 @@ export function LoginScreen({ navigation }: Props) {
     try {
       await signIn(email, password);
     } catch (error) {
-      setErrorMessage(mapAuthError(error));
+      setErrorMessage(t(authErrorTranslationKey(error)));
     } finally {
       setSubmitting(false);
     }
@@ -76,15 +76,15 @@ export function LoginScreen({ navigation }: Props) {
 
       {/* Form Section */}
       <View style={styles.formContainer}>
-        {/* Quick Demo Test Account Banner */}
+        {/* Demo Account Quick Fill Banner */}
         <Pressable
-          accessibilityHint="Điền nhanh thông tin tài khoản demo"
-          accessibilityLabel="Điền nhanh tài khoản thử nghiệm"
+          accessibilityHint={t('auth.login.demoSubtitle')}
+          accessibilityLabel={t('auth.login.demoTitle')}
           accessibilityRole="button"
           onPress={() => {
-            setEmail('demo@tripwise.io');
-            setPassword('TripWise2026!');
-            setErrorMessage(null);
+            setEmail('sarah.j@example.com');
+            setPassword('password123');
+            if (errorMessage) setErrorMessage(null);
           }}
           style={({ pressed }) => [
             styles.demoBanner,
@@ -94,15 +94,16 @@ export function LoginScreen({ navigation }: Props) {
             },
             pressed && styles.demoBannerPressed,
           ]}>
-          <MaterialIcons color={colors.brand.primary} name="auto-awesome" size={20} />
+          <MaterialIcons color={colors.brand.primary} name="flash-on" size={20} />
           <View style={styles.demoBannerContent}>
-            <Text style={[styles.demoBannerTitle, { color: colors.brand.primary }]}>
-              Mock Test Account (1-Tap Fill)
+            <Text style={[styles.demoBannerTitle, { color: colors.text.primary }]}>
+              {t('auth.login.demoTitle')}
             </Text>
-            <Text style={[styles.demoBannerEmail, { color: colors.text.secondary }]}>
-              demo@tripwise.io • TripWise2026!
+            <Text style={[styles.demoBannerEmail, { color: colors.text.muted }]}>
+              sarah.j@example.com • password123
             </Text>
           </View>
+          <MaterialIcons color={colors.brand.primary} name="touch-app" size={18} />
         </Pressable>
 
         {/* Email Field */}

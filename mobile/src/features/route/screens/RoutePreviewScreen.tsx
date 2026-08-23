@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -16,17 +16,21 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import { RouteMapCanvas } from '../components/RouteMapCanvas';
+import { VerifiedRoutePreviewMap } from '../components/VerifiedRoutePreviewMap';
 import { RouteStepList } from '../components/RouteStepList';
 import { RouteSummaryCard } from '../components/RouteSummaryCard';
 import { RouteUnavailableState } from '../components/RouteUnavailableState';
 import { TWTransportSelector } from '../components/TWTransportSelector';
 import { getMockRoute } from '../data/mockRoutes';
 import type { MockRouteData, RouteUIStatus, TransportMode } from '../types';
+import type { Route } from '../../../integration/contracts';
+import { OsrmRouteRepository } from '../../../integration/remote/publicProviderRepositories';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RoutePreview'> & {
   initialStatus?: RouteUIStatus;
   initialMode?: TransportMode;
   customRoute?: MockRouteData;
+  fixtureMode?: boolean;
 };
 
 export function RoutePreviewScreen({
@@ -35,37 +39,104 @@ export function RoutePreviewScreen({
   initialStatus = 'ready',
   initialMode = 'transit',
   customRoute,
+  fixtureMode,
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
 
-  const destinationId = route?.params?.destinationId ?? 'place_wat_arun';
-  const destinationName = route?.params?.destinationName ?? 'Destination';
-  const originName = route?.params?.originName ?? 'Current Location';
+  const destinationId = route?.params?.destinationId ?? '';
+  const destinationName = route?.params?.destinationName ?? t('route.destination');
+  const originName = route?.params?.originName ?? t('route.currentLocation');
+  const realCoordinates = useMemo(() => route?.params?.coordinates ?? [], [route?.params?.coordinates]);
+  const hasRealRouteRequest = realCoordinates.length >= 2;
+  const isFixture = Boolean(fixtureMode || customRoute || (!hasRealRouteRequest && destinationId.startsWith('place_')));
 
-  const [selectedMode, setSelectedMode] = useState<TransportMode>(initialMode);
-  const [status, setStatus] = useState<RouteUIStatus>(initialStatus);
+  const effectiveInitialMode = hasRealRouteRequest ? 'driving' : initialMode;
+  const [selectedMode, setSelectedMode] = useState<TransportMode>(effectiveInitialMode);
+  const [status, setStatus] = useState<RouteUIStatus>(
+    hasRealRouteRequest ? 'loading' : (isFixture ? initialStatus : 'unavailable')
+  );
+  const [realRoute, setRealRoute] = useState<Route | null>(null);
   const [calculatedRoute, setCalculatedRoute] = useState<MockRouteData | null>(() =>
-    customRoute ?? (initialStatus === 'ready' ? getMockRoute(destinationId, initialMode) : null)
+    customRoute ?? (isFixture && initialStatus === 'ready' ? getMockRoute(destinationId, effectiveInitialMode) : null)
   );
 
   const currentRoute = customRoute ?? calculatedRoute;
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const fetchRealRoute = useCallback((mode: TransportMode) => {
+    if (!hasRealRouteRequest) return;
+    
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    if (mode !== 'driving') {
+      abortControllerRef.current = null;
+      setRealRoute(null);
+      setStatus('unavailable');
+      return;
+    }
+    
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    
+    setStatus('loading');
+    void new OsrmRouteRepository().getRoute({ profile: 'driving', coordinates: realCoordinates }, controller.signal)
+      .then((result) => {
+        if (controller.signal.aborted) return;
+        setRealRoute(result);
+        setStatus('ready');
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        setRealRoute(null);
+        if (error instanceof Error && error.message === 'noRoute') {
+          setStatus('unavailable');
+        } else {
+          setStatus('error');
+        }
+      });
+  }, [hasRealRouteRequest, realCoordinates]);
+
+  useEffect(() => {
+    if (!hasRealRouteRequest) return undefined;
+    const timer = setTimeout(() => {
+      fetchRealRoute(effectiveInitialMode);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [fetchRealRoute, hasRealRouteRequest, effectiveInitialMode]);
+
   const fetchRoute = useCallback(
     (mode: TransportMode) => {
-      setStatus('loading');
-      // Simulate quick deterministic calculation response
-      const result = getMockRoute(destinationId, mode);
-      if (result) {
-        setCalculatedRoute(result);
-        setStatus('ready');
-      } else {
-        setCalculatedRoute(null);
-        setStatus('unavailable');
+      if (hasRealRouteRequest) {
+        fetchRealRoute(mode);
+        return;
       }
+      if (isFixture) {
+        setStatus('loading');
+        const result = getMockRoute(destinationId, mode);
+        if (result) {
+          setCalculatedRoute(result);
+          setStatus('ready');
+        } else {
+          setCalculatedRoute(null);
+          setStatus('unavailable');
+        }
+        return;
+      }
+      setCalculatedRoute(null);
+      setRealRoute(null);
+      setStatus('unavailable');
     },
-    [destinationId]
+    [destinationId, fetchRealRoute, hasRealRouteRequest, isFixture]
   );
 
   const handleSelectMode = useCallback(
@@ -161,12 +232,20 @@ export function RoutePreviewScreen({
         <TWTransportSelector onSelectMode={handleSelectMode} selectedMode={selectedMode} />
 
         {/* Route Summary Card */}
-        {currentRoute && status === 'ready' ? (
+        {currentRoute && status === 'ready' && !hasRealRouteRequest ? (
           <RouteSummaryCard route={currentRoute} />
+        ) : null}
+        {realRoute && status === 'ready' ? (
+          <View style={styles.realSummary}>
+            <Text style={[styles.stepsHeading, { color: colors.text.primary }]}>Driving</Text>
+            <Text style={{ color: colors.text.secondary }}>
+              {(realRoute.distanceMeters / 1000).toFixed(1)} km • {Math.ceil(realRoute.durationSeconds / 60)} min
+            </Text>
+          </View>
         ) : null}
 
         {/* Steps Section Heading */}
-        {currentRoute && status === 'ready' ? (
+        {currentRoute && status === 'ready' && !hasRealRouteRequest ? (
           <View style={styles.stepsHeadingRow}>
             <Text style={[styles.stepsHeading, { color: colors.text.primary }]}>
               {t('route.steps')} ({currentRoute.steps.length} {t('route.stepsCount')})
@@ -185,6 +264,8 @@ export function RoutePreviewScreen({
     colors,
     effectiveTheme,
     t,
+    hasRealRouteRequest,
+    realRoute,
   ]);
 
   return (
@@ -192,8 +273,8 @@ export function RoutePreviewScreen({
       {/* 1. Floating Top Navigation Bar */}
       <View style={[styles.topBar, { top: Math.max(insets.top, spacing.sm) }]}>
         <Pressable
-          accessibilityHint="Quay lại màn hình trước"
-          accessibilityLabel="Quay lại"
+          accessibilityHint={t('common.back')}
+          accessibilityLabel={t('common.back')}
           accessibilityRole="button"
           onPress={handleBack}
           style={({ pressed }) => [
@@ -228,7 +309,11 @@ export function RoutePreviewScreen({
       </View>
 
       {/* 2. Top Map Canvas */}
-      {currentRoute ? <RouteMapCanvas route={currentRoute} /> : null}
+      {realRoute ? (
+        <VerifiedRoutePreviewMap route={realRoute} stops={realCoordinates} />
+      ) : isFixture && currentRoute && !hasRealRouteRequest ? (
+        <RouteMapCanvas route={currentRoute} />
+      ) : null}
 
       {/* 3. Bottom Sheet Content with Virtualized Directions */}
       <View
@@ -239,18 +324,10 @@ export function RoutePreviewScreen({
             borderTopColor: colors.border.default,
           },
         ]}>
-        {/* Grabber Handle */}
-        <View
-          style={[
-            styles.grabber,
-            { backgroundColor: colors.border.default },
-          ]}
-        />
-
         {/* Loading State */}
         {status === 'loading' ? (
           <View
-            accessibilityLabel="Đang tìm tuyến đường"
+            accessibilityLabel={t('common.loading')}
             accessibilityRole="progressbar"
             style={styles.centerContainer}>
             <ActivityIndicator color={colors.brand.primary} size="large" />
@@ -262,14 +339,14 @@ export function RoutePreviewScreen({
           <View accessibilityRole="alert" style={styles.centerContainer}>
             <MaterialIcons color={colors.state.error} name="error-outline" size={40} />
             <Text style={[styles.errorTitle, { color: colors.text.primary }]}>
-              Unable to calculate route
+              {t('route.errorTitle')}
             </Text>
             <AppText style={styles.errorSubtitle}>
-              Something went wrong while calculating the directions.
+              {t('route.errorSubtitle')}
             </AppText>
             <Pressable
-              accessibilityHint="Thử tải lại tuyến đường"
-              accessibilityLabel="Thử lại"
+              accessibilityHint={t('common.retry')}
+              accessibilityLabel={t('common.retry')}
               accessibilityRole="button"
               onPress={handleRetry}
               style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
@@ -281,18 +358,21 @@ export function RoutePreviewScreen({
         ) : null}
 
         {/* Route Unavailable State */}
-        {status === 'unavailable' || !currentRoute ? (
+        {status === 'unavailable' ? (
           <RouteUnavailableState onBack={handleBack} onSwitchTransport={handleSelectMode} />
         ) : null}
 
         {/* Ready Route Content */}
-        {status === 'ready' && currentRoute ? (
+        {status === 'ready' && hasRealRouteRequest ? (
+          listHeader
+        ) : null}
+        {status === 'ready' && currentRoute && !hasRealRouteRequest ? (
           <RouteStepList headerComponent={listHeader} steps={currentRoute.steps} />
         ) : null}
       </View>
 
       {/* 4. Fixed Bottom CTA */}
-      {status === 'ready' && currentRoute ? (
+      {status === 'ready' && (currentRoute || realRoute) ? (
         <View
           style={[
             styles.bottomBar,
@@ -371,21 +451,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     elevation: 8,
-    flex: 1,
-    marginTop: -24,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    maxHeight: '85%',
     paddingBottom: 72,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     zIndex: 20,
-  },
-  grabber: {
-    alignSelf: 'center',
-    borderRadius: radius.pill,
-    height: 4,
-    marginVertical: spacing.sm,
-    width: 40,
   },
   sheetBody: {
     paddingHorizontal: spacing.lg,
@@ -477,10 +552,14 @@ const styles = StyleSheet.create({
   },
   centerContainer: {
     alignItems: 'center',
-    flex: 1,
+    minHeight: 200,
     gap: spacing.sm,
     justifyContent: 'center',
     padding: spacing.xl,
+  },
+  realSummary: {
+    gap: spacing.xs,
+    marginTop: spacing.md,
   },
   errorTitle: {
     fontSize: typography.titleSmall,

@@ -1,16 +1,15 @@
-import type { Session, User } from '@supabase/supabase-js';
+import type { AuthenticatedUser, Profile } from '../../integration/contracts';
+import type { IntegrationErrorCode } from '../../integration/errors';
 
-import type { Profile } from '../profile/data/profileRepository';
-
-export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
+export type AuthStatus = 'bootstrapping' | 'signedOut' | 'signedIn';
+export type ProfileStatus = 'idle' | 'loading' | 'ready' | 'absent' | 'error';
 
 export type AuthState = {
   status: AuthStatus;
-  session: Session | null;
-  user: User | null;
+  user: AuthenticatedUser | null;
   profile: Profile | null;
+  profileStatus: ProfileStatus;
+  profileError: IntegrationErrorCode | null;
 };
 
-export type SignUpResult = {
-  confirmationRequired: boolean;
-};
+export type SignUpResult = { confirmationRequired: boolean };

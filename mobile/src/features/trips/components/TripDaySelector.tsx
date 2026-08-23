@@ -1,26 +1,53 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { TripDayItinerary } from '../types';
+import type { WeatherBadgeData } from '../weather';
 
 type Props = {
   days: TripDayItinerary[];
   selectedDayId: string;
   onSelectDay: (dayId: string) => void;
+  weather?: WeatherBadgeData | null;
 };
 
 export const TripDaySelector = memo(function TripDaySelector({
   days,
   selectedDayId,
   onSelectDay,
+  weather,
 }: Props) {
   const { colors } = useTheme();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background.surface }]}>
-      <Text style={[styles.heading, { color: colors.text.primary }]}>Itinerary</Text>
+      <View style={styles.headerRow}>
+        <Text style={[styles.heading, { color: colors.text.primary }]}>Itinerary</Text>
+
+        {weather ? (
+          <View
+            accessibilityLabel={`${weather.conditionDescription}, ${weather.temperatureLabel}`}
+            accessibilityRole="summary"
+            style={[styles.weatherBadge, { backgroundColor: colors.background.surfaceVariant }]}>
+            <MaterialIcons
+              color={colors.text.secondary}
+              name={weather.iconName}
+              size={14}
+            />
+            <Text style={[styles.weatherText, { color: colors.text.primary }]}>
+              {weather.temperatureLabel}
+            </Text>
+            {weather.precipitationLabel ? (
+              <Text style={[styles.precipitationText, { color: colors.brand.primary }]}>
+                {weather.precipitationLabel}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
+      </View>
 
       {/* Horizontal Day Chips List */}
       <FlatList
@@ -75,8 +102,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
+  headerRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   heading: {
     fontSize: typography.titleSmall,
+    fontWeight: typography.fontWeight.bold,
+  },
+  weatherBadge: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    flexDirection: 'row',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  weatherText: {
+    fontSize: 11,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  precipitationText: {
+    fontSize: 10,
     fontWeight: typography.fontWeight.bold,
   },
   chipsContent: {

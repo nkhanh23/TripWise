@@ -1,9 +1,28 @@
-import { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+/* eslint-disable @typescript-eslint/no-require-imports */
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useTranslation } from '../../../i18n';
+import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { mapFixturePlaceToCoordinate } from '../utils/exploreMapUtils';
 import type { ClusterMarkerModel, ExploreMarkerItem, ExplorePlace } from '../types';
 import { ExploreClusterMarker } from './ExploreClusterMarker';
 import { ExploreMarker } from './ExploreMarker';
+
+let MapView: any = null;
+let Marker: any = null;
+let PROVIDER_GOOGLE: any = undefined;
+try {
+  if (Platform.OS !== 'web' && !process.env.JEST_WORKER_ID) {
+    const Maps = require('react-native-maps');
+    MapView = Maps.default || Maps;
+    Marker = Maps.Marker;
+    PROVIDER_GOOGLE = Maps.PROVIDER_GOOGLE;
+  }
+} catch {
+  MapView = null;
+}
 
 type Props = {
   markerItems: ExploreMarkerItem[];
@@ -13,6 +32,64 @@ type Props = {
   onDismissSelection: () => void;
 };
 
+const INITIAL_REGION = {
+  latitude: 13.76,
+  longitude: 100.52,
+  latitudeDelta: 0.14,
+  longitudeDelta: 0.22,
+};
+
+function isValidCoordinate(coordinate: { latitude: number; longitude: number }) {
+  return (
+    Number.isFinite(coordinate.latitude) &&
+    Number.isFinite(coordinate.longitude) &&
+    coordinate.latitude >= -90 &&
+    coordinate.latitude <= 90 &&
+    coordinate.longitude >= -180 &&
+    coordinate.longitude <= 180
+  );
+}
+
+function MarkerPin({
+  onPress,
+  place,
+  selected,
+}: {
+  onPress: () => void;
+  place: ExplorePlace;
+  selected: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityLabel={place.name}
+      accessibilityRole="button"
+      onPress={onPress}
+      style={styles.nativeMarkerWrap}>
+      {selected ? (
+        <View style={styles.nameBadge}>
+          <Text numberOfLines={1} style={styles.nameBadgeText}>
+            {place.name}
+          </Text>
+        </View>
+      ) : null}
+      <View style={[styles.pinOuter, selected ? styles.pinOuterSelected : styles.pinOuterDefault]}>
+        <View style={[styles.pinInner, selected ? styles.pinInnerSelected : styles.pinInnerDefault]}>
+          <MaterialIcons color="#FFFFFF" name={place.iconName} size={14} />
+        </View>
+      </View>
+      <View style={[styles.pinPoint, selected ? styles.pinPointSelected : styles.pinPointDefault]} />
+    </Pressable>
+  );
+}
+
+function ClusterPin({ cluster }: { cluster: ClusterMarkerModel }) {
+  return (
+    <View style={styles.clusterCircle}>
+      <Text style={styles.countText}>{cluster.count}</Text>
+    </View>
+  );
+}
+
 export const ExploreMapCanvas = memo(function ExploreMapCanvas({
   markerItems,
   selectedPlaceId,
@@ -20,51 +97,148 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
   onSelectCluster,
   onDismissSelection,
 }: Props) {
-  return (
-    <View style={styles.canvasContainer}>
-      {/* Background vector styling simulating map canvas tiles */}
-      <Pressable
-        accessibilityHint="Bấm vào khoảng trống để bỏ chọn địa điểm"
-        accessibilityLabel="Bản đồ tương tác"
-        accessibilityRole="image"
-        onPress={onDismissSelection}
-        style={styles.mapSurface}>
-        {/* Simulated River/Water body */}
-        <View style={styles.riverCurve} />
-        {/* Simulated Road Arteries */}
-        <View style={styles.roadHorizontal1} />
-        <View style={styles.roadHorizontal2} />
-        <View style={styles.roadVertical1} />
-        <View style={styles.roadVertical2} />
-        <View style={styles.roadDiagonal} />
-        {/* Simulated Green park patches */}
-        <View style={styles.parkPatch1} />
-        <View style={styles.parkPatch2} />
-      </Pressable>
+  const { t } = useTranslation();
+  const mapRef = useRef<any>(null);
+  const [readyMapKey, setReadyMapKey] = useState<string | null>(null);
+  const [layoutMapKey, setLayoutMapKey] = useState<string | null>(null);
+  const markerCoordinates = useMemo(
+    () =>
+      markerItems.map((item) => ({
+        item,
+        coordinate: mapFixturePlaceToCoordinate(item.type === 'place' ? item.place : item.places[0]),
+      })),
+    [markerItems]
+  );
+  const validMarkerCoordinates = useMemo(
+    () => markerCoordinates.filter(({ coordinate }) => isValidCoordinate(coordinate)),
+    [markerCoordinates]
+  );
+  const mapInstanceKey = useMemo(
+    () =>
+      validMarkerCoordinates
+        .map(({ item }) => (item.type === 'place' ? item.place.id : item.id))
+        .join('|') || 'empty',
+    [validMarkerCoordinates]
+  );
 
-      {/* Markers Layer */}
-      {markerItems.map((item) => {
-        if (item.type === 'place') {
-          return (
+  useEffect(() => {
+    if (__DEV__) {
+      console.info('[ExploreMapCanvas] marker diagnostics', {
+        renderedMarkers: validMarkerCoordinates.length,
+        validCoordinates: validMarkerCoordinates.length,
+        visiblePlaces: markerItems.length,
+      });
+    }
+  }, [markerItems.length, validMarkerCoordinates.length]);
+
+  useEffect(() => {
+    if (
+      !MapView ||
+      validMarkerCoordinates.length === 0 ||
+      readyMapKey !== mapInstanceKey ||
+      layoutMapKey !== mapInstanceKey
+    ) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const coordinates = validMarkerCoordinates.map(({ coordinate }) => coordinate);
+      if (coordinates.length === 1) {
+        mapRef.current?.animateToRegion(
+          {
+            ...coordinates[0],
+            latitudeDelta: 0.04,
+            longitudeDelta: 0.06,
+          },
+          250
+        );
+      } else {
+        mapRef.current?.fitToCoordinates(coordinates, {
+          edgePadding: { top: 330, right: 32, bottom: 220, left: 32 },
+          animated: true,
+        });
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [layoutMapKey, mapInstanceKey, readyMapKey, validMarkerCoordinates]);
+
+  if (!MapView || !Marker) {
+    return (
+      <View style={styles.canvasContainer}>
+        <Pressable
+          accessibilityHint={t('explore.mapA11yHint')}
+          accessibilityLabel={t('explore.mapA11yLabel')}
+          accessibilityRole="image"
+          onPress={onDismissSelection}
+          style={styles.fallbackSurface}
+        />
+        {markerItems.map((item) =>
+          item.type === 'place' ? (
             <ExploreMarker
               isSelected={item.place.id === selectedPlaceId}
               key={item.place.id}
               onPress={onSelectPlace}
               place={item.place}
             />
-          );
-        }
+          ) : (
+            <ExploreClusterMarker
+              cluster={item}
+              key={item.id}
+              onPress={(cluster) =>
+                onSelectCluster ? onSelectCluster(cluster) : onSelectPlace(cluster.places[0])
+              }
+            />
+          )
+        )}
+      </View>
+    );
+  }
 
-        return (
-          <ExploreClusterMarker
-            cluster={item}
-            key={item.id}
-            onPress={(cluster) =>
-              onSelectCluster ? onSelectCluster(cluster) : onSelectPlace(cluster.places[0])
-            }
-          />
-        );
-      })}
+  return (
+    <View style={styles.canvasContainer}>
+      <MapView
+        accessibilityHint={t('explore.mapA11yHint')}
+        accessibilityLabel={t('explore.mapA11yLabel')}
+        initialRegion={INITIAL_REGION}
+        key={mapInstanceKey}
+        onLayout={() => setLayoutMapKey(mapInstanceKey)}
+        onMapReady={() => setReadyMapKey(mapInstanceKey)}
+        provider={PROVIDER_GOOGLE}
+        ref={mapRef}
+        pitchEnabled={false}
+        rotateEnabled={false}
+        scrollEnabled
+        style={StyleSheet.absoluteFill}
+        zoomControlEnabled
+        zoomEnabled>
+        {validMarkerCoordinates.map(({ item, coordinate }) =>
+          item.type === 'place' ? (
+            <Marker
+              calloutEnabled={false}
+              coordinate={coordinate}
+              key={item.place.id}
+              onPress={() => onSelectPlace(item.place)}
+              tracksViewChanges={item.place.id === selectedPlaceId}>
+              <MarkerPin
+                onPress={() => onSelectPlace(item.place)}
+                place={item.place}
+                selected={item.place.id === selectedPlaceId}
+              />
+            </Marker>
+          ) : (
+            <Marker
+              calloutEnabled={false}
+              coordinate={coordinate}
+              key={item.id}
+              onPress={() =>
+                onSelectCluster ? onSelectCluster(item) : onSelectPlace(item.places[0])
+              }
+              tracksViewChanges={false}>
+              <ClusterPin cluster={item} />
+            </Marker>
+          )
+        )}
+      </MapView>
     </View>
   );
 });
@@ -76,91 +250,66 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  fallbackSurface: {
     backgroundColor: '#F3F2EE',
-    overflow: 'hidden',
-  },
-  mapSurface: {
     bottom: 0,
     left: 0,
     position: 'absolute',
     right: 0,
     top: 0,
   },
-  riverCurve: {
-    backgroundColor: '#D6E8FA',
-    borderRadius: 80,
-    height: '140%',
-    left: '28%',
-    opacity: 0.85,
-    position: 'absolute',
-    top: '-20%',
-    transform: [{ rotate: '-25deg' }],
-    width: 60,
+  nativeMarkerWrap: { alignItems: 'center' },
+  nameBadge: {
+    backgroundColor: colors.brand.primary,
+    borderRadius: radius.input,
+    elevation: 4,
+    marginBottom: 4,
+    maxWidth: 180,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
   },
-  roadHorizontal1: {
+  nameBadgeText: {
+    color: colors.text.inverse,
+    fontSize: 12,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  pinOuter: {
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    height: 10,
-    left: 0,
-    opacity: 0.9,
-    position: 'absolute',
-    right: 0,
-    top: '32%',
+    borderRadius: radius.pill,
+    elevation: 3,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
   },
-  roadHorizontal2: {
-    backgroundColor: '#FFFFFF',
-    height: 14,
-    left: 0,
-    opacity: 0.9,
-    position: 'absolute',
-    right: 0,
-    top: '65%',
+  pinOuterDefault: { borderColor: '#FFFFFF', borderWidth: 2 },
+  pinOuterSelected: { borderColor: colors.brand.red, borderWidth: 2.5, transform: [{ scale: 1.15 }] },
+  pinInner: { alignItems: 'center', borderRadius: radius.pill, height: 24, justifyContent: 'center', width: 24 },
+  pinInnerDefault: { backgroundColor: colors.brand.primary },
+  pinInnerSelected: { backgroundColor: colors.brand.red },
+  pinPoint: {
+    borderLeftColor: 'transparent',
+    borderLeftWidth: 5,
+    borderRightColor: 'transparent',
+    borderRightWidth: 5,
+    borderTopWidth: 6,
+    height: 0,
+    marginTop: -2,
+    width: 0,
   },
-  roadVertical1: {
-    backgroundColor: '#FFFFFF',
-    bottom: 0,
-    left: '52%',
-    opacity: 0.9,
-    position: 'absolute',
-    top: 0,
-    width: 12,
+  pinPointDefault: { borderTopColor: '#FFFFFF' },
+  pinPointSelected: { borderTopColor: colors.brand.red },
+  clusterCircle: {
+    alignItems: 'center',
+    backgroundColor: colors.brand.primary,
+    borderColor: '#FFFFFF',
+    borderRadius: radius.pill,
+    borderWidth: 2.5,
+    elevation: 4,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
   },
-  roadVertical2: {
-    backgroundColor: '#FFFFFF',
-    bottom: 0,
-    left: '78%',
-    opacity: 0.7,
-    position: 'absolute',
-    top: 0,
-    width: 8,
-  },
-  roadDiagonal: {
-    backgroundColor: '#FFFFFF',
-    height: 12,
-    left: '-20%',
-    opacity: 0.8,
-    position: 'absolute',
-    top: '48%',
-    transform: [{ rotate: '40deg' }],
-    width: '140%',
-  },
-  parkPatch1: {
-    backgroundColor: '#E2F0D9',
-    borderRadius: 24,
-    height: 110,
-    left: '58%',
-    opacity: 0.75,
-    position: 'absolute',
-    top: '16%',
-    width: 130,
-  },
-  parkPatch2: {
-    backgroundColor: '#E2F0D9',
-    borderRadius: 30,
-    height: 90,
-    left: '12%',
-    opacity: 0.75,
-    position: 'absolute',
-    top: '72%',
-    width: 110,
-  },
+  countText: { color: colors.text.inverse, fontSize: typography.bodySmall, fontWeight: typography.fontWeight.bold },
 });

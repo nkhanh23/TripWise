@@ -68,7 +68,7 @@ export function PlaceDetailScreen({ route, navigation, initialStatus = 'ready' }
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background.surface }]}>
         <ActivityIndicator
-          accessibilityLabel="Đang tải thông tin địa điểm"
+          accessibilityLabel={t('common.loading')}
           color={colors.brand.primary}
           size="large"
         />
@@ -84,14 +84,14 @@ export function PlaceDetailScreen({ route, navigation, initialStatus = 'ready' }
         style={[styles.centerContainer, { backgroundColor: colors.background.surface }]}>
         <MaterialIcons color={colors.state.error} name="error-outline" size={40} />
         <Text style={[styles.errorTitle, { color: colors.state.error }]}>
-          Unable to load place details
+          {t('place.errorTitle')}
         </Text>
         <AppText style={styles.errorSubtitle}>
-          We could not load information for this place. Please try again.
+          {t('place.errorSubtitle')}
         </AppText>
         <Pressable
-          accessibilityHint="Thử tải lại thông tin địa điểm"
-          accessibilityLabel="Thử lại"
+          accessibilityHint={t('common.retry')}
+          accessibilityLabel={t('common.retry')}
           accessibilityRole="button"
           onPress={handleRetry}
           style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
@@ -112,11 +112,11 @@ export function PlaceDetailScreen({ route, navigation, initialStatus = 'ready' }
           {t('place.notFound')}
         </Text>
         <AppText style={styles.errorSubtitle}>
-          The requested place does not exist in our directory.
+          {t('place.notFoundSubtitle')}
         </AppText>
         <Pressable
-          accessibilityHint="Quay lại màn hình trước"
-          accessibilityLabel="Quay lại"
+          accessibilityHint={t('common.back')}
+          accessibilityLabel={t('common.back')}
           accessibilityRole="button"
           onPress={handleBack}
           style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>

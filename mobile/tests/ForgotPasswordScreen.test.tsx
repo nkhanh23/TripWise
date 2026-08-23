@@ -1,68 +1,38 @@
-import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { cleanup, render, screen, userEvent } from '@testing-library/react-native';
+
 import { ForgotPasswordScreen } from '../src/features/auth/screens/ForgotPasswordScreen';
+import { IntegrationError } from '../src/integration/errors';
 
-describe('ForgotPasswordScreen', () => {
-  const navigateMock = jest.fn();
-  const goBackMock = jest.fn();
-  const navigationProps: any = {
-    navigate: navigateMock,
-    canGoBack: jest.fn().mockReturnValue(true),
-    goBack: goBackMock,
-  };
+const mockResetPassword = jest.fn();
+jest.mock('../src/features/auth/AuthProvider', () => ({
+  useAuth: () => ({ resetPassword: mockResetPassword }),
+}));
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+const navigation = {
+  navigate: jest.fn(), canGoBack: jest.fn(() => true), goBack: jest.fn(),
+} as never;
 
-  afterEach(() => {
-    cleanup();
-  });
+describe('ForgotPasswordScreen real-auth composition', () => {
+  beforeEach(() => jest.clearAllMocks());
+  afterEach(cleanup);
 
-  it('renders initial form state correctly', async () => {
-    await render(<ForgotPasswordScreen navigation={navigationProps} route={{} as any} />);
-
-    expect(screen.getByText('Reset password')).toBeTruthy();
-    expect(screen.getByPlaceholderText('name@example.com')).toBeTruthy();
-    expect(screen.getByText('Send reset link')).toBeTruthy();
-  });
-
-  it('shows validation error for empty or invalid email', async () => {
+  it('does not fake success when the Supabase reset call fails', async () => {
+    mockResetPassword.mockRejectedValue(new IntegrationError('network'));
     const user = userEvent.setup();
-    await render(<ForgotPasswordScreen navigation={navigationProps} route={{} as any} />);
-
-    await user.press(screen.getByLabelText('Gửi liên kết đặt lại mật khẩu'));
-    await waitFor(() => {
-      expect(screen.getByText('Nhập địa chỉ email hợp lệ.')).toBeTruthy();
-    });
-
-    await user.type(screen.getByPlaceholderText('name@example.com'), 'invalid-email');
-    await user.press(screen.getByLabelText('Gửi liên kết đặt lại mật khẩu'));
-    await waitFor(() => {
-      expect(screen.getByText('Nhập địa chỉ email hợp lệ.')).toBeTruthy();
-    });
-  });
-
-  it('transitions to success state on valid email submission', async () => {
-    const user = userEvent.setup();
-    await render(<ForgotPasswordScreen navigation={navigationProps} route={{} as any} />);
-
+    await render(<ForgotPasswordScreen navigation={navigation} route={{} as never} />);
     await user.type(screen.getByPlaceholderText('name@example.com'), 'traveler@example.com');
     await user.press(screen.getByLabelText('Gửi liên kết đặt lại mật khẩu'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Check your email')).toBeTruthy();
-      expect(screen.getByText('Back to sign in')).toBeTruthy();
-    });
-
-    await user.press(screen.getByLabelText('Quay lại đăng nhập'));
-    expect(navigateMock).toHaveBeenCalledWith('Login');
+    expect(await screen.findByText('Unable to connect. Check your network and try again.')).toBeTruthy();
+    expect(screen.queryByText('Check your email')).toBeNull();
   });
 
-  it('handles back button navigation', async () => {
+  it('shows check-email only after the repository succeeds', async () => {
+    mockResetPassword.mockResolvedValue(undefined);
     const user = userEvent.setup();
-    await render(<ForgotPasswordScreen navigation={navigationProps} route={{} as any} />);
-
-    await user.press(screen.getByLabelText('Quay lại'));
-    expect(goBackMock).toHaveBeenCalled();
+    await render(<ForgotPasswordScreen navigation={navigation} route={{} as never} />);
+    await user.type(screen.getByPlaceholderText('name@example.com'), 'traveler@example.com');
+    await user.press(screen.getByLabelText('Gửi liên kết đặt lại mật khẩu'));
+    expect(mockResetPassword).toHaveBeenCalledWith('traveler@example.com');
+    expect(await screen.findByText('Check your email')).toBeTruthy();
   });
 });

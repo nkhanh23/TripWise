@@ -12,6 +12,16 @@ type GeminiInteractionResponse = {
   steps?: unknown;
 };
 
+type ProviderFailureCategory = 'auth' | 'rate_limit' | 'provider_5xx' | 'provider_4xx' | 'provider_other';
+
+function classifyProviderStatus(status: number): ProviderFailureCategory {
+  if (status === 401 || status === 403) return 'auth';
+  if (status === 429) return 'rate_limit';
+  if (status >= 500) return 'provider_5xx';
+  if (status >= 400) return 'provider_4xx';
+  return 'provider_other';
+}
+
 export function readInteractionOutputText(interaction: GeminiInteractionResponse): string | null {
   if (typeof interaction.output_text === 'string') {
     return interaction.output_text;
@@ -40,6 +50,10 @@ export function readInteractionOutputText(interaction: GeminiInteractionResponse
   return null;
 }
 
+export function buildGeminiHeaders(apiKey: string): Record<string, string> {
+  return { 'content-type': 'application/json', 'x-goog-api-key': apiKey };
+}
+
 function getTimeoutMilliseconds(): number {
   const configured = Number(Deno.env.get('GEMINI_TIMEOUT_MS'));
   return Number.isFinite(configured) && configured >= 5_000 && configured <= 45_000
@@ -48,7 +62,7 @@ function getTimeoutMilliseconds(): number {
 }
 
 export async function generateTripWithGemini(request: GenerateTripRequest): Promise<GeneratedTrip> {
-  const apiKey = Deno.env.get('GEMINI_API_KEY');
+  const apiKey = Deno.env.get('GEMINI_API_KEY')?.trim();
   if (!apiKey) {
     throw new GenerateTripError('AI_UNAVAILABLE', 'AI service is not configured.', 503);
   }
@@ -60,7 +74,7 @@ export async function generateTripWithGemini(request: GenerateTripRequest): Prom
   try {
     const response = await fetch(geminiEndpoint, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+      headers: buildGeminiHeaders(apiKey),
       signal: controller.signal,
       body: JSON.stringify({
         model,
@@ -72,6 +86,10 @@ export async function generateTripWithGemini(request: GenerateTripRequest): Prom
     });
 
     if (!response.ok) {
+      console.warn('[generate-trip] Gemini provider request failed', {
+        status: response.status,
+        category: classifyProviderStatus(response.status),
+      });
       throw new GenerateTripError('AI_UNAVAILABLE', 'AI service is temporarily unavailable.', 503);
     }
 
@@ -100,6 +118,7 @@ export async function generateTripWithGemini(request: GenerateTripRequest): Prom
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw new GenerateTripError('AI_TIMEOUT', 'AI generation timed out.', 504);
     }
+    console.warn('[generate-trip] Gemini provider transport failed', { category: 'network' });
     throw new GenerateTripError('AI_UNAVAILABLE', 'AI service is temporarily unavailable.', 503);
   } finally {
     clearTimeout(timeout);

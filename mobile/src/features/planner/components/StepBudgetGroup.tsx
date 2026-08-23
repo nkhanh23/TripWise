@@ -54,7 +54,7 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
                     isSelected && styles.budgetIconCircleSelected,
                   ]}>
                   <MaterialIcons
-                    color={isSelected ? '#FFFFFF' : colors.brand.primary}
+                    color={isSelected ? colors.text.inverse : colors.brand.primary}
                     name={opt.iconName}
                     size={22}
                   />
@@ -107,7 +107,7 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
                     isSelected && styles.groupIconCircleSelected,
                   ]}>
                   <MaterialIcons
-                    color={isSelected ? '#FFFFFF' : colors.brand.primary}
+                    color={isSelected ? colors.text.inverse : colors.brand.primary}
                     name={grp.iconName}
                     size={22}
                   />

@@ -223,3 +223,34 @@ VERIFIED consumers may render markers, route using verified coordinates and disp
 - Enrichment updates should support set/batch processing and optimistic/conditional updates to avoid concurrent stale overwrites.
 - A future lookup index on `google_place_id` is justified only when actual lookup/dedup queries are implemented; do not add it speculatively in T001.
 - Cache, quota, timeout and retry policies belong to T004/T005 and require provider/cost evidence.
+
+## 15. BE-P5 implementation record
+
+BE-P5 implements this contract with the JWT-protected `resolve-place` Edge
+Function. It calls only Google Places API (New) Text Search at the fixed HTTPS
+origin `https://places.googleapis.com/v1/places:searchText`, with a fixed,
+minimal field mask for the durable snapshot. `GOOGLE_PLACES_API_KEY` is read
+only from the Supabase Edge Function secret environment; it is never a mobile
+configuration value or response field.
+
+`place_resolved_at` is the trusted provenance/freshness marker. The
+forward-only migration adds an invariant that a non-null marker requires a
+non-blank Google ID, canonical name and valid coordinate pair. It does not
+bless old provider-looking rows with a null marker. A trigger rejects ordinary
+`authenticated`/`anon` attempts to create or change provider-owned columns.
+The service-role-only `apply_verified_place_snapshot(...)` RPC checks the
+owner supplied by the verified Edge Function JWT and writes the entire snapshot
+and marker in one statement.
+
+The resolver uses the persisted `place_name`, optional `place_query`, and trip
+destination; clients cannot submit a provider response. A candidate must be a
+complete snapshot and the only high-confidence match based on normalized name
+plus destination/address or query evidence. No candidate or more than one
+candidate leaves the row unchanged.
+
+Google calls have a default 8-second timeout (bounded configuration range
+1–15 seconds), one retry only for transport/5xx failure, and stable sanitized
+errors. Auth, quota, malformed result, no match and ambiguity are not retried.
+No extra Google response cache is used for MVP: the durable snapshot prevents
+read-time calls and current personal-app traffic/cost evidence does not justify
+another cache layer.

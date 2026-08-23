@@ -41,6 +41,7 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       <AppText style={styles.subtitle}>
         Review your trip parameters and customize your plan title.

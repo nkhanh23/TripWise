@@ -7,6 +7,7 @@ import { ExploreScreen } from '../features/explore/ExploreScreen';
 import { HomeScreen } from '../features/home/HomeScreen';
 import { PlanScreen } from '../features/planner/PlanScreen';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
+import { SavedPlacesScreen } from '../features/saved';
 import { TripsScreen } from '../features/trips/TripsScreen';
 import { useTranslation } from '../i18n';
 import { useTheme } from '../theme';
@@ -33,6 +34,13 @@ export function MainTabs() {
         headerShown: false,
         tabBarActiveTintColor: colors.brand.primary,
         tabBarInactiveTintColor: colors.text.muted,
+        tabBarItemStyle: {
+          paddingVertical: 2,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '500',
+        },
         tabBarStyle: {
           backgroundColor: colors.background.surface,
           borderTopColor: colors.border.default,
@@ -75,6 +83,16 @@ export function MainTabs() {
           title: t('navigation.tabs.trips'),
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons color={color} name="map" size={size ?? 24} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        component={SavedPlacesScreen}
+        name="Saved"
+        options={{
+          title: t('navigation.tabs.saved'),
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons color={color} name="bookmark" size={size ?? 24} />
           ),
         }}
       />

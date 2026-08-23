@@ -3,6 +3,7 @@ export type MainTabParamList = {
   Explore: undefined;
   Plan: undefined;
   Trips: undefined;
+  Saved: undefined;
   Profile: undefined;
 };
 
@@ -20,6 +21,7 @@ export type RootStackParamList = {
     destinationId: string;
     destinationName?: string;
     originName?: string;
+    coordinates?: import('../integration/contracts').Coordinate[];
   };
   CreateTripWizard?: {
     initialStep?: 1 | 2 | 3 | 4 | 5;
@@ -27,4 +29,19 @@ export type RootStackParamList = {
   TripDetail: {
     tripId: string;
   };
+  AddPlace: {
+    tripId: string;
+    initialDayId?: string;
+  };
+  TripMap: {
+    tripId: string;
+    initialDayId?: string;
+  };
+  SavedPlaces?: undefined;
+  EditProfile?: undefined;
+  Settings?: undefined;
+  LanguageSettings?: undefined;
+  CurrencySettings?: undefined;
+  AppearanceSettings?: undefined;
+  HelpSupport?: undefined;
 };

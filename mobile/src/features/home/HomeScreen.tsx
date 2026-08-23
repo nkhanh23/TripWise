@@ -1,5 +1,251 @@
-import { PlaceholderScreen } from '../../components/PlaceholderScreen';
+import { useNavigation } from '@react-navigation/native';
+import { memo, useCallback, useMemo, useState } from 'react';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-export function HomeScreen() {
-  return <PlaceholderScreen title="Home" />;
-}
+import { AppText } from '../../components/AppText';
+import { useTranslation } from '../../i18n';
+import { useTheme } from '../../theme';
+import { spacing, typography } from '../../theme/tokens';
+import { HomeContinuePlanningCard } from './components/HomeContinuePlanningCard';
+import { HomeEmptyHero } from './components/HomeEmptyHero';
+import { HomeExplorePreview } from './components/HomeExplorePreview';
+import { HomeLoadingSkeleton } from './components/HomeLoadingSkeleton';
+import { HomeQuickActions } from './components/HomeQuickActions';
+import { HomeSavedSection } from './components/HomeSavedSection';
+import { HomeTopBar } from './components/HomeTopBar';
+import { HomeUpcomingCard } from './components/HomeUpcomingCard';
+import { mockHomeEmptyData, mockHomePopulatedData } from './data/mockHome';
+import type { HomeData, HomeUIStatus } from './types';
+
+type Props = {
+  initialStatus?: HomeUIStatus;
+  customData?: HomeData;
+  onNavigatePlan?: () => void;
+  onNavigateExplore?: () => void;
+  onNavigateTrips?: () => void;
+  onNavigateSaved?: () => void;
+  onNavigateProfile?: () => void;
+  onNavigateTripDetail?: (tripId: string) => void;
+  onNavigateCreateTrip?: () => void;
+  onNavigatePlaceDetail?: (placeId: string) => void;
+};
+
+export const HomeScreen = memo(function HomeScreen({
+  initialStatus = 'ready',
+  customData,
+  onNavigatePlan,
+  onNavigateExplore,
+  onNavigateTrips,
+  onNavigateSaved,
+  onNavigateProfile,
+  onNavigateTripDetail,
+  onNavigateCreateTrip,
+  onNavigatePlaceDetail,
+}: Props) {
+  const navigation = useNavigation<any>();
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const [status] = useState<HomeUIStatus>(initialStatus);
+
+  const data: HomeData = useMemo(() => {
+    if (customData) return customData;
+    if (initialStatus === 'empty') return mockHomeEmptyData;
+    return mockHomePopulatedData;
+  }, [customData, initialStatus]);
+
+  // Navigation handlers
+  const handlePlan = useCallback(() => {
+    if (onNavigatePlan) onNavigatePlan();
+    else navigation.navigate('Plan');
+  }, [onNavigatePlan, navigation]);
+
+  const handleExplore = useCallback(() => {
+    if (onNavigateExplore) onNavigateExplore();
+    else navigation.navigate('Explore');
+  }, [onNavigateExplore, navigation]);
+
+  const handleTrips = useCallback(() => {
+    if (onNavigateTrips) onNavigateTrips();
+    else navigation.navigate('Trips');
+  }, [onNavigateTrips, navigation]);
+
+  const handleSaved = useCallback(() => {
+    if (onNavigateSaved) onNavigateSaved();
+    else navigation.navigate('Saved');
+  }, [onNavigateSaved, navigation]);
+
+  const handleProfile = useCallback(() => {
+    if (onNavigateProfile) onNavigateProfile();
+    else navigation.navigate('Profile');
+  }, [onNavigateProfile, navigation]);
+
+  const handleTripDetail = useCallback(
+    (tripId: string) => {
+      if (onNavigateTripDetail) onNavigateTripDetail(tripId);
+      else navigation.navigate('TripDetail', { tripId });
+    },
+    [onNavigateTripDetail, navigation]
+  );
+
+  const handleCreateTrip = useCallback(() => {
+    if (onNavigateCreateTrip) onNavigateCreateTrip();
+    else navigation.navigate('CreateTripWizard');
+  }, [onNavigateCreateTrip, navigation]);
+
+  const handlePlaceDetail = useCallback(
+    (placeId: string) => {
+      if (onNavigatePlaceDetail) onNavigatePlaceDetail(placeId);
+      else navigation.navigate('PlaceDetail', { placeId });
+    },
+    [onNavigatePlaceDetail, navigation]
+  );
+
+  const hasUpcomingTrip = Boolean(data.upcomingTrip);
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background.surface }]}>
+      {/* 1. Top App Bar */}
+      <HomeTopBar
+        onPressMenu={handleProfile}
+        onPressProfile={handleProfile}
+      />
+
+      {/* 2. Loading State */}
+      {status === 'loading' ? (
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}>
+          <HomeLoadingSkeleton />
+        </ScrollView>
+      ) : (
+        /* 3. Main Content (Populated or Empty) */
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}>
+          {/* Greeting Section */}
+          <View style={styles.greetingWrap}>
+            <Text style={[styles.greetingTitle, { color: colors.text.primary }]}>
+              {hasUpcomingTrip ? t('home.greeting') : t('home.greetingMorning')}
+            </Text>
+            <AppText style={styles.greetingSubtitle}>
+              {hasUpcomingTrip ? t('home.subtitle') : t('home.subtitleMorning')}
+            </AppText>
+          </View>
+
+          {/* Hero Section */}
+          {hasUpcomingTrip && data.upcomingTrip ? (
+            <HomeUpcomingCard
+              onPressViewItinerary={handleTripDetail}
+              trip={data.upcomingTrip}
+            />
+          ) : (
+            <HomeEmptyHero onCreateTrip={handleCreateTrip} />
+          )}
+
+          {/* Quick Actions Grid */}
+          <HomeQuickActions
+            onNavigateExplore={handleExplore}
+            onNavigatePlan={handlePlan}
+            onNavigateSaved={handleSaved}
+            onNavigateTrips={handleTrips}
+          />
+
+          {/* Continue Planning & Explore Preview (Populated Mode) */}
+          {hasUpcomingTrip ? (
+            <View style={styles.asymmetricRow}>
+              {data.draftTrip ? (
+                <HomeContinuePlanningCard
+                  draft={data.draftTrip}
+                  onPressContinue={handleCreateTrip}
+                />
+              ) : null}
+              <HomeExplorePreview
+                inspiration={data.inspiration}
+                onPressExplore={handleExplore}
+              />
+            </View>
+          ) : (
+            /* Inspiration Preview (Empty Mode) */
+            <View style={styles.inspirationWrap}>
+              <View style={styles.inspirationHeaderRow}>
+                <Text style={[styles.inspirationTitle, { color: colors.text.primary }]}>
+                  {t('home.inspiration')}
+                </Text>
+                <Pressable
+                  accessibilityHint={t('home.seeAll')}
+                  accessibilityLabel={t('home.seeAll')}
+                  accessibilityRole="button"
+                  onPress={handleExplore}>
+                  <Text style={[styles.seeAllText, { color: colors.brand.primary }]}>
+                    {t('home.seeAll')}
+                  </Text>
+                </Pressable>
+              </View>
+              <HomeExplorePreview
+                inspiration={data.inspiration}
+                onPressExplore={handleExplore}
+              />
+            </View>
+          )}
+
+          {/* Saved for Later Section */}
+          {hasUpcomingTrip && data.savedPlaces.length > 0 ? (
+            <HomeSavedSection
+              onPressPlace={handlePlaceDetail}
+              onPressViewAll={handleSaved}
+              savedPlaces={data.savedPlaces}
+            />
+          ) : null}
+        </ScrollView>
+      )}
+    </View>
+  );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    gap: spacing.xl,
+    paddingBottom: 110, // Avoid overlapping Bottom Tabs
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+  },
+  greetingWrap: {
+    gap: 4,
+  },
+  greetingTitle: {
+    fontSize: 22,
+    fontWeight: typography.fontWeight.bold,
+  },
+  greetingSubtitle: {
+    fontSize: typography.bodySmall,
+  },
+  asymmetricRow: {
+    flexDirection: 'column',
+    gap: spacing.md,
+  },
+  inspirationWrap: {
+    gap: spacing.sm,
+  },
+  inspirationHeaderRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  inspirationTitle: {
+    fontSize: typography.titleSmall,
+    fontWeight: typography.fontWeight.bold,
+  },
+  seeAllText: {
+    fontSize: typography.bodySmall,
+    fontWeight: typography.fontWeight.semibold,
+  },
+});

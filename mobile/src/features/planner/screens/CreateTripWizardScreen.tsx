@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -23,6 +23,8 @@ import { StepDestination } from '../components/StepDestination';
 import { StepPreferences } from '../components/StepPreferences';
 import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
+import { useTripGeneration } from '../generation';
+import { useTripPersistence } from '../persistence';
 import {
   initialWizardState,
   mockPopularDestinations,
@@ -33,16 +35,16 @@ import type {
   DestinationOption,
   GroupType,
   TravelPace,
-  WizardStatus,
   WizardStepNumber,
 } from '../types';
+import type { TripGenerationRepository } from '../../../integration/repositories';
 
 type Props = {
   initialStep?: WizardStepNumber;
   initialState?: Partial<CreateTripWizardState>;
   onComplete?: (state: CreateTripWizardState) => void;
   onCancel?: () => void;
-  simulationDelayMs?: number;
+  generationRepository?: TripGenerationRepository;
 };
 
 export function CreateTripWizardScreen({
@@ -50,7 +52,7 @@ export function CreateTripWizardScreen({
   initialState,
   onComplete,
   onCancel,
-  simulationDelayMs = 800,
+  generationRepository,
 }: Props) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -58,13 +60,22 @@ export function CreateTripWizardScreen({
   const { t } = useTranslation();
 
   const [currentStep, setCurrentStep] = useState<WizardStepNumber>(initialStep);
-  const [status, setStatus] = useState<WizardStatus>('editing');
   const [stepError, setStepError] = useState<string | null>(null);
+  const { state: generation, generate, retry } = useTripGeneration(generationRepository);
+  const { state: persistence, save } = useTripPersistence();
+  const completedPreviewRef = useRef(false);
 
   const [wizardState, setWizardState] = useState<CreateTripWizardState>(() => ({
     ...initialWizardState,
     ...initialState,
   }));
+
+  useEffect(() => {
+    if (generation.status === 'success' && !completedPreviewRef.current) {
+      completedPreviewRef.current = true;
+      onComplete?.(wizardState);
+    }
+  }, [generation.status, onComplete, wizardState]);
 
   // Step 1 handlers: Destination
   const handleSelectDestination = useCallback((dest: DestinationOption) => {
@@ -107,7 +118,7 @@ export function CreateTripWizardScreen({
     const start = new Date();
     start.setDate(start.getDate() + 14); // 2 weeks ahead default
     const end = new Date(start);
-    end.setDate(end.getDate() + days);
+    end.setDate(end.getDate() + days - 1);
 
     const startStr = start.toISOString().split('T')[0];
     const endStr = end.toISOString().split('T')[0];
@@ -167,21 +178,21 @@ export function CreateTripWizardScreen({
     // Validation rules per step
     if (currentStep === 1) {
       if (!wizardState.destination && !wizardState.customDestinationName.trim()) {
-        setStepError('Vui lòng chọn hoặc nhập điểm đến của chuyến đi.');
+        setStepError(t('planner.validation.destinationRequired'));
         return;
       }
     } else if (currentStep === 2) {
       if (!wizardState.startDate || !wizardState.endDate) {
-        setStepError('Vui lòng chọn ngày khởi hành và ngày kết thúc.');
+        setStepError(t('planner.validation.datesRequired'));
         return;
       }
       if (wizardState.durationDays < 1) {
-        setStepError('Thời gian chuyến đi phải tối thiểu từ 1 ngày trở lên.');
+        setStepError(t('planner.validation.durationMin'));
         return;
       }
     } else if (currentStep === 3) {
       if (wizardState.selectedStyles.length === 0) {
-        setStepError('Vui lòng chọn ít nhất một sở thích du lịch.');
+        setStepError(t('planner.validation.preferencesRequired'));
         return;
       }
     }
@@ -191,19 +202,10 @@ export function CreateTripWizardScreen({
     if (currentStep < 5) {
       setCurrentStep((prev) => (prev + 1) as WizardStepNumber);
     } else {
-      // Step 5 Submit: Trigger simulated generation state
-      if (simulationDelayMs <= 0) {
-        setStatus('success');
-        onComplete?.(wizardState);
-      } else {
-        setStatus('generating');
-        setTimeout(() => {
-          setStatus('success');
-          onComplete?.(wizardState);
-        }, simulationDelayMs);
-      }
+      completedPreviewRef.current = false;
+      void generate(wizardState);
     }
-  }, [currentStep, onComplete, simulationDelayMs, wizardState]);
+  }, [currentStep, generate, wizardState, t]);
 
   const handleViewItinerary = useCallback(() => {
     navigation.navigate('MainTabs');
@@ -212,6 +214,13 @@ export function CreateTripWizardScreen({
   const handleExplorePlaces = useCallback(() => {
     navigation.navigate('MainTabs');
   }, [navigation]);
+
+  const handleSaveTrip = useCallback(() => {
+    if (generation.status !== 'success') return;
+    void save(generation.preview, wizardState.tripTitle).then((tripId) => {
+      if (tripId) navigation.navigate('TripDetail', { tripId });
+    });
+  }, [generation, navigation, save, wizardState.tripTitle]);
 
   // Render Step Content
   const stepContent = useMemo(() => {
@@ -283,12 +292,15 @@ export function CreateTripWizardScreen({
   ]);
 
   // Success celebration screen
-  if (status === 'success') {
+  if (generation.status === 'success') {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background.surface, paddingTop: insets.top }]}>
         <CreateTripSuccessView
           onExplorePlaces={handleExplorePlaces}
+          onSave={handleSaveTrip}
+          saveStatus={persistence.status}
           onViewItinerary={handleViewItinerary}
+          preview={generation.preview}
           state={wizardState}
         />
       </View>
@@ -296,7 +308,7 @@ export function CreateTripWizardScreen({
   }
 
   // Simulated AI Generation Loading State
-  if (status === 'generating') {
+  if (generation.status === 'generating') {
     return (
       <View
         accessibilityLabel={t('planner.generating')}
@@ -342,6 +354,14 @@ export function CreateTripWizardScreen({
       {/* Main Step Body */}
       <View style={styles.body}>{stepContent}</View>
 
+      {generation.status === 'error' ? (
+        <View accessibilityRole="alert" style={[styles.errorBanner, { backgroundColor: colors.background.surfaceVariant }]}>
+          <Text style={[styles.errorText, { color: colors.state.error }]}>
+            {t(`planner.generationError.${generation.error.code}`)}
+          </Text>
+        </View>
+      ) : null}
+
       {/* Fixed Bottom CTA Bar */}
       <View
         style={[
@@ -354,21 +374,25 @@ export function CreateTripWizardScreen({
         <Pressable
           accessibilityHint={
             currentStep === 5
-              ? 'Tạo lịch trình chuyến đi'
-              : 'Tiếp tục sang bước tiếp theo'
+              ? generation.status === 'error' ? t('common.retry') : t('planner.generateItinerary')
+              : t('common.continue')
           }
           accessibilityLabel={
-            currentStep === 5 ? 'Tạo lịch trình chuyến đi' : 'Tiếp tục'
+            currentStep === 5
+              ? generation.status === 'error' ? t('common.retry') : t('planner.generateItinerary')
+              : t('common.continue')
           }
           accessibilityRole="button"
-          onPress={handleNext}
+          onPress={generation.status === 'error' ? () => void retry() : handleNext}
           style={({ pressed }) => [
             styles.continueButton,
             { backgroundColor: colors.brand.primary },
             pressed && styles.pressed,
           ]}>
           <Text style={[styles.continueButtonText, { color: colors.text.inverse }]}>
-            {currentStep === 5 ? t('planner.generateItinerary') : t('common.continue')}
+            {currentStep === 5
+              ? generation.status === 'error' ? t('common.retry') : t('planner.generateItinerary')
+              : t('common.continue')}
           </Text>
           <MaterialIcons
             color={colors.text.inverse}
@@ -392,6 +416,15 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+  },
+  errorBanner: {
+    borderRadius: radius.input,
+    marginHorizontal: spacing.lg,
+    padding: spacing.sm,
+  },
+  errorText: {
+    fontSize: typography.bodySmall,
+    textAlign: 'center',
   },
   continueButton: {
     alignItems: 'center',

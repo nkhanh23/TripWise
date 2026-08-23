@@ -31,7 +31,7 @@ export const lightPalette: ThemePalette = {
   state: {
     success: '#2E7D32',
     warning: '#ED6C02',
-    error: '#E6392E',
+    error: '#BA1A1A',
   },
   overlay: {
     scrim: 'rgba(0, 0, 0, 0.45)',

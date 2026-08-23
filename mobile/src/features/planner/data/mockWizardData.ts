@@ -216,7 +216,7 @@ export const initialWizardState: CreateTripWizardState = {
   customDestinationName: 'Bangkok',
   startDate: '2026-10-15',
   endDate: '2026-10-20',
-  durationDays: 5,
+  durationDays: 6,
   selectedStyles: ['culture', 'food'],
   pace: 'moderate',
   budget: 'moderate',

@@ -95,6 +95,7 @@ try {
     Invoke-SqlFile -Database $freshDb -Path $migration.FullName
   }
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'contract.sql')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $repoRoot 'supabase\tests\saved-trips\contract.sql')
 
   # Concurrent same-key/same-payload: both calls return one identical trip ID.
   $sameGraph = '{"title":"Concurrent same","destination":"Hue","startDate":"2027-06-01","endDate":"2027-06-01","days":[{"dayNumber":1,"date":"2027-06-01","items":[{"position":1,"placeName":"Citadel"}]}]}'
@@ -163,6 +164,33 @@ select public.create_trip_graph('concurrent-owner-01', '{"title":"Owner %LABEL%"
     throw 'Concurrent different-owner calls did not both return UUIDs.'
   }
 
+  # Concurrent verified-place refreshes may race, but every committed row must
+  # contain one complete snapshot. No field may be mixed across provider results.
+  Invoke-SqlText -Database $freshDb -Sql @"
+insert into public.trips(id,user_id,title,destination,start_date,end_date)
+values('99999999-9999-4999-8999-999999999901','11111111-1111-4111-8111-111111111111','Snapshot race','Bangkok','2027-09-01','2027-09-01');
+insert into public.itinerary_days(id,trip_id,day_number,date)
+values('99999999-9999-4999-8999-999999999902','99999999-9999-4999-8999-999999999901',1,'2027-09-01');
+insert into public.itinerary_items(id,itinerary_day_id,position,place_name)
+values('99999999-9999-4999-8999-999999999903','99999999-9999-4999-8999-999999999902',1,'Unresolved race');
+"@
+  $snapshotTemplate = @"
+set role service_role;
+select public.apply_verified_place_snapshot(
+  '11111111-1111-4111-8111-111111111111',
+  '99999999-9999-4999-8999-999999999903',
+  '%PLACE_ID%', '%NAME%', %LAT%, %LNG%, '%ADDRESS%', '%CATEGORY%'
+);
+"@
+  $snapshotA = Start-ConcurrentSql -Sql ($snapshotTemplate.Replace('%PLACE_ID%','google-race-a').Replace('%NAME%','Race A').Replace('%LAT%','13.7001').Replace('%LNG%','100.4001').Replace('%ADDRESS%','Address A').Replace('%CATEGORY%','museum'))
+  $snapshotB = Start-ConcurrentSql -Sql ($snapshotTemplate.Replace('%PLACE_ID%','google-race-b').Replace('%NAME%','Race B').Replace('%LAT%','13.7002').Replace('%LNG%','100.4002').Replace('%ADDRESS%','Address B').Replace('%CATEGORY%','park'))
+  Wait-Job -Job $snapshotA, $snapshotB | Out-Null
+  $snapshotOutput = ((Receive-Job -Job $snapshotA) + (Receive-Job -Job $snapshotB)) -join "`n"
+  Remove-Job -Job $snapshotA, $snapshotB
+  if (([regex]::Matches($snapshotOutput, '202[0-9]-[0-9]{2}-[0-9]{2}')).Count -lt 2) {
+    throw "Concurrent snapshot writers did not both complete.`n$snapshotOutput"
+  }
+
   Invoke-SqlText -Database $freshDb -Sql @"
 do `$`$
 begin
@@ -175,6 +203,18 @@ begin
   if (select count(*) from public.trips where idempotency_key='concurrent-owner-01') <> 2
      or (select count(distinct user_id) from public.trips where idempotency_key='concurrent-owner-01') <> 2 then
     raise exception 'Concurrent different-owner isolation mismatch.';
+  end if;
+  if not exists (
+    select 1 from public.itinerary_items
+    where id='99999999-9999-4999-8999-999999999903'
+      and place_resolved_at is not null
+      and (
+        (google_place_id='google-race-a' and place_name='Race A' and latitude=13.7001 and longitude=100.4001 and place_address='Address A' and place_category='museum')
+        or
+        (google_place_id='google-race-b' and place_name='Race B' and latitude=13.7002 and longitude=100.4002 and place_address='Address B' and place_category='park')
+      )
+  ) then
+    raise exception 'Concurrent place resolution produced a partial or mixed snapshot.';
   end if;
 end
 `$`$;

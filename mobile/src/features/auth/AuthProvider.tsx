@@ -1,121 +1,165 @@
 import type { PropsWithChildren } from 'react';
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import type { Session } from '@supabase/supabase-js';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { supabase } from '../../lib/supabase/client';
-import { getMyProfile, upsertMyProfile } from '../profile/data/profileRepository';
-import { signInWithEmail, signOut as signOutFromService, signUpWithEmail } from './services/authService';
+import type { AuthenticatedSession, AuthenticatedUser, ProfileUpdate } from '../../integration/contracts';
+import type { IntegrationErrorCode } from '../../integration/errors';
+import type { AuthRepository, ProfileRepository } from '../../integration/repositories';
+import { SupabaseAuthRepository } from '../../integration/remote/supabaseAuthRepository';
+import { SupabaseProfileRepository } from '../../integration/remote/supabaseProfileRepository';
 import type { AuthState, SignUpResult } from './types';
+
+const authRepo = new SupabaseAuthRepository(supabase);
+const profileRepo = new SupabaseProfileRepository(supabase);
 
 type AuthContextValue = AuthState & {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (displayName: string, email: string, password: string) => Promise<SignUpResult>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  refreshProfile: () => Promise<void>;
+  updateProfile: (update: ProfileUpdate) => Promise<void>;
 };
 
-const initialState: AuthState = { status: 'loading', session: null, user: null, profile: null };
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-async function loadProfile(session: Session) {
-  const existingProfile = await getMyProfile(session.user.id);
-  if (existingProfile) {
-    return existingProfile;
-  }
+const initialState: AuthState = {
+  status: 'bootstrapping',
+  user: null,
+  profile: null,
+  profileStatus: 'idle',
+  profileError: null,
+};
 
-  const displayName = typeof session.user.user_metadata.display_name === 'string'
-    ? session.user.user_metadata.display_name
-    : null;
-  return upsertMyProfile(session.user.id, displayName);
-}
+type AuthProviderProps = PropsWithChildren<{
+  authRepository?: SupabaseAuthRepository | AuthRepository;
+  profileRepository?: SupabaseProfileRepository | ProfileRepository;
+}>;
 
-export function AuthProvider({ children }: PropsWithChildren) {
+export function AuthProvider({
+  children,
+  authRepository = authRepo,
+  profileRepository = profileRepo,
+}: AuthProviderProps) {
   const [state, setState] = useState<AuthState>(initialState);
-  const requestVersion = useRef(0);
-
-  const resolveSession = useCallback(async (session: Session | null) => {
-    const version = ++requestVersion.current;
-    if (!session) {
-      setState({ status: 'unauthenticated', session: null, user: null, profile: null });
-      return;
-    }
-
-    setState({ status: 'loading', session, user: session.user, profile: null });
-    let profile = null;
-    try {
-      profile = await loadProfile(session);
-    } catch {
-      // Authentication remains valid even if a transient profile request fails.
-    }
-
-    if (requestVersion.current === version) {
-      setState({ status: 'authenticated', session, user: session.user, profile });
-    }
-  }, []);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => resolveSession(data.session))
-      .catch(() => resolveSession(null));
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      void resolveSession(session);
-    });
-    return () => listener.subscription.unsubscribe();
-  }, [resolveSession]);
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    // Mock demo account bypass for quick UI testing
-    if (normalizedEmail === 'demo@tripwise.io' || normalizedEmail === 'test@tripwise.io') {
-      const mockSession = {
-        access_token: 'mock_jwt_token',
-        refresh_token: 'mock_refresh_token',
-        expires_in: 86400,
-        token_type: 'bearer',
-        user: {
-          id: 'mock_user_123',
-          app_metadata: {},
-          user_metadata: { display_name: 'Alex Morgan' },
-          aud: 'authenticated',
-          created_at: new Date().toISOString(),
-          email: normalizedEmail,
-        },
-      } as unknown as Session;
-
-      setState({
-        status: 'authenticated',
-        session: mockSession,
-        user: mockSession.user,
-        profile: {
-          id: 'mock_user_123',
-          userId: 'mock_user_123',
-          displayName: 'Alex Morgan',
-          homeAirport: 'BKK',
-          travelStyle: 'culture',
-        } as any,
-      });
+  const applyUser = useCallback(async (user: AuthenticatedUser | null) => {
+    if (!user) {
+      if (mountedRef.current) {
+        setState({ status: 'signedOut', user: null, profile: null, profileStatus: 'idle', profileError: null });
+      }
       return;
     }
 
-    const { session } = await signInWithEmail(email, password);
-    await resolveSession(session);
-  }, [resolveSession]);
+    if (mountedRef.current) {
+      setState({ status: 'signedIn', user, profile: null, profileStatus: 'loading', profileError: null });
+    }
+
+    try {
+      const profile = await profileRepository.getOwnProfile(user.id);
+      if (mountedRef.current) {
+        setState((prev) => ({
+          ...prev,
+          profile: profile ?? null,
+          profileStatus: profile ? 'ready' : 'absent',
+          profileError: null,
+        }));
+      }
+    } catch (err: unknown) {
+      const code = (err as { code?: IntegrationErrorCode })?.code;
+      if (mountedRef.current) {
+        setState((prev) => ({ ...prev, profileStatus: 'error', profileError: code ?? 'unknown' }));
+      }
+    }
+  }, [profileRepository]);
+
+  useEffect(() => {
+    // Bootstrap: restore existing session
+    authRepository.restoreSession().then((session: AuthenticatedSession | null) => {
+      void applyUser(session?.user ?? null);
+    }).catch(() => {
+      void applyUser(null);
+    });
+
+    const unsubscribe = authRepository.subscribe((session: AuthenticatedSession | null) => {
+      void applyUser(session?.user ?? null);
+    });
+    return unsubscribe;
+  }, [applyUser, authRepository]);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    const session = await authRepository.signIn(email, password);
+    await applyUser(session.user);
+  }, [applyUser, authRepository]);
 
   const signUp = useCallback(async (displayName: string, email: string, password: string): Promise<SignUpResult> => {
-    const { session } = await signUpWithEmail(displayName, email, password);
-    if (session) {
-      await resolveSession(session);
+    const result = await authRepository.signUp(displayName, email, password);
+    if (result.session) {
+      await applyUser(result.session.user);
     }
-    return { confirmationRequired: session === null };
-  }, [resolveSession]);
+    return { confirmationRequired: result.confirmationRequired };
+  }, [applyUser, authRepository]);
 
   const signOut = useCallback(async () => {
-    await signOutFromService();
-    await resolveSession(null);
-  }, [resolveSession]);
+    await authRepository.signOut();
+    await applyUser(null);
+  }, [applyUser, authRepository]);
 
-  return <AuthContext.Provider value={{ ...state, signIn, signUp, signOut }}>{children}</AuthContext.Provider>;
+  const deleteAccount = useCallback(async () => {
+    await authRepository.deleteAccount();
+    await applyUser(null);
+  }, [applyUser, authRepository]);
+
+  const resetPassword = useCallback(async (email: string) => {
+    await authRepository.resetPassword(email);
+  }, [authRepository]);
+
+  const refreshProfile = useCallback(async () => {
+    const current = state;
+    if (current.status !== 'signedIn' || !current.user) return;
+    if (mountedRef.current) {
+      setState((prev) => ({ ...prev, profileStatus: 'loading' }));
+    }
+    try {
+      const profile = await profileRepository.getOwnProfile(current.user.id);
+      if (mountedRef.current) {
+        setState((prev) => ({
+          ...prev,
+          profile: profile ?? null,
+          profileStatus: profile ? 'ready' : 'absent',
+          profileError: null,
+        }));
+      }
+    } catch (err: unknown) {
+      const code = (err as { code?: IntegrationErrorCode })?.code;
+      if (mountedRef.current) {
+        setState((prev) => ({ ...prev, profileStatus: 'error', profileError: code ?? 'unknown' }));
+      }
+    }
+  }, [profileRepository, state]);
+
+  const updateProfile = useCallback(async (update: ProfileUpdate) => {
+    const current = state;
+    if (current.status !== 'signedIn' || !current.user) throw new Error('Not signed in');
+    const profile = await profileRepository.updateOwnProfile(current.user.id, update);
+    if (mountedRef.current) {
+      setState((prev) => ({ ...prev, profile, profileStatus: 'ready', profileError: null }));
+    }
+  }, [profileRepository, state]);
+
+  const value = useMemo<AuthContextValue>(
+    () => ({ ...state, signIn, signUp, signOut, deleteAccount, resetPassword, refreshProfile, updateProfile }),
+    [state, signIn, signUp, signOut, deleteAccount, resetPassword, refreshProfile, updateProfile],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {

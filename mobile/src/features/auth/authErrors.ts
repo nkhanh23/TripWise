@@ -1,23 +1,21 @@
-export function mapAuthError(error: unknown): string {
-  const message = error instanceof Error ? error.message.toLowerCase() : '';
+import { IntegrationError } from '../../integration/errors';
 
-  if (message.includes('invalid login credentials')) {
-    return 'Email hoặc mật khẩu không đúng.';
+const authErrorKeys = {
+  invalidCredentials: 'auth.errors.invalidCredentials',
+  userAlreadyRegistered: 'auth.errors.userAlreadyRegistered',
+  invalidEmail: 'auth.errors.invalidEmail',
+  weakPassword: 'auth.errors.weakPassword',
+  emailNotConfirmed: 'auth.errors.emailNotConfirmed',
+  rateLimited: 'auth.errors.rateLimited',
+  network: 'auth.errors.network',
+  timeout: 'auth.errors.timeout',
+  unauthorized: 'auth.errors.sessionExpired',
+  sessionExpired: 'auth.errors.sessionExpired',
+} as const;
+
+export function authErrorTranslationKey(error: unknown): string {
+  if (error instanceof IntegrationError && error.code in authErrorKeys) {
+    return authErrorKeys[error.code as keyof typeof authErrorKeys];
   }
-  if (message.includes('email not confirmed')) {
-    return 'Hãy xác nhận email trước khi đăng nhập.';
-  }
-  if (message.includes('user already registered') || message.includes('already registered')) {
-    return 'Email này đã được đăng ký. Hãy đăng nhập.';
-  }
-  if (message.includes('invalid email')) {
-    return 'Địa chỉ email không hợp lệ.';
-  }
-  if (message.includes('password') && (message.includes('weak') || message.includes('least'))) {
-    return 'Mật khẩu chưa đáp ứng yêu cầu bảo mật.';
-  }
-  if (message.includes('network') || message.includes('fetch')) {
-    return 'Không thể kết nối. Hãy kiểm tra mạng rồi thử lại.';
-  }
-  return 'Không thể hoàn tất yêu cầu. Vui lòng thử lại.';
+  return 'auth.errors.unknown';
 }

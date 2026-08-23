@@ -1,4 +1,4 @@
-import type { TripDayItinerary, TripDetailData } from '../types';
+import type { ItineraryItem, TripDayItinerary, TripDetailData } from '../types';
 
 export const mockBangkokTripDetail: TripDetailData = {
   id: 'trip_bangkok',
@@ -293,19 +293,65 @@ export const mockTripDetailDictionary: Record<string, TripDetailData> = {
   trip_kyoto: mockKyotoTripDetail,
 };
 
+let dynamicTripDetails: Record<string, TripDetailData> = {};
+
 export function getMockTripDetail(tripId: string): TripDetailData | null {
+  if (dynamicTripDetails[tripId]) {
+    return dynamicTripDetails[tripId];
+  }
   if (mockTripDetailDictionary[tripId]) {
-    return mockTripDetailDictionary[tripId];
+    const cloned = JSON.parse(JSON.stringify(mockTripDetailDictionary[tripId])) as TripDetailData;
+    dynamicTripDetails[tripId] = cloned;
+    return cloned;
   }
   if (tripId.startsWith('trip_')) {
     // Return Bangkok as standard fallback with adjusted ID and title
-    return {
-      ...mockBangkokTripDetail,
+    const fallback: TripDetailData = {
+      ...JSON.parse(JSON.stringify(mockBangkokTripDetail)),
       id: tripId,
       title: tripId.replace('trip_', '').replace('_', ' ').toUpperCase(),
     };
+    dynamicTripDetails[tripId] = fallback;
+    return fallback;
   }
   return null;
+}
+
+export function addPlaceToTripItinerary(
+  tripId: string,
+  dayId: string,
+  item: ItineraryItem
+): TripDetailData | null {
+  const current = getMockTripDetail(tripId);
+  if (!current) {
+    return null;
+  }
+
+  const updatedDays = current.days.map((day) => {
+    if (day.id === dayId) {
+      return {
+        ...day,
+        items: [...day.items, item],
+      };
+    }
+    return day;
+  });
+
+  const updatedTrip: TripDetailData = {
+    ...current,
+    days: updatedDays,
+  };
+
+  dynamicTripDetails[tripId] = updatedTrip;
+  return updatedTrip;
+}
+
+export function resetMockTripDetail(tripId?: string): void {
+  if (tripId) {
+    delete dynamicTripDetails[tripId];
+  } else {
+    dynamicTripDetails = {};
+  }
 }
 
 export function generateLargeMockTripDetail(

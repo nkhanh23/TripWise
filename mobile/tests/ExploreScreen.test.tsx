@@ -30,7 +30,7 @@ describe('ExploreScreen', () => {
     expect(screen.getByText('Shopping')).toBeTruthy();
 
     // Map canvas
-    expect(screen.getByLabelText('Bản đồ tương tác')).toBeTruthy();
+    expect(screen.getByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeTruthy();
 
     // Markers
     expect(screen.getByLabelText('Wat Arun')).toBeTruthy();
@@ -81,7 +81,7 @@ describe('ExploreScreen', () => {
     expect(screen.getByText('No places found')).toBeTruthy();
     expect(screen.getByText('Clear filters')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Đặt lại bộ lọc'));
+    await user.press(screen.getByText('Clear filters'));
 
     expect(screen.queryByText('No places found')).toBeNull();
     expect(screen.getByLabelText('Wat Arun')).toBeTruthy();
@@ -135,21 +135,21 @@ describe('ExploreScreen', () => {
     await render(<ExploreScreen />);
 
     // Initial is Map view
-    expect(screen.getByLabelText('Bản đồ tương tác')).toBeTruthy();
+    expect(screen.getByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeTruthy();
     expect(screen.getByText('List')).toBeTruthy();
 
     // Switch to List view
     await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
 
     // Map canvas disappears, FlatList rows appear
-    expect(screen.queryByLabelText('Bản đồ tương tác')).toBeNull();
+    expect(screen.queryByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeNull();
     expect(screen.getByText('Wat Arun')).toBeTruthy();
     expect(screen.getByText('The Grand Palace')).toBeTruthy();
     expect(screen.getByText('Map')).toBeTruthy();
 
     // Switch back to Map view
     await user.press(screen.getByLabelText('Chuyển sang chế độ bản đồ'));
-    expect(screen.getByLabelText('Bản đồ tương tác')).toBeTruthy();
+    expect(screen.getByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeTruthy();
   });
 
   it('synchronizes selection between List and Map modes', async () => {
@@ -213,7 +213,7 @@ describe('ExploreScreen', () => {
     await render(<ExploreScreen initialPlaces={largeMockExplorePlaces} />);
 
     // Canvas is rendered
-    expect(screen.getByLabelText('Bản đồ tương tác')).toBeTruthy();
+    expect(screen.getByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeTruthy();
 
     // Find any cluster marker with count label
     const clusterMarkers = screen.queryAllByLabelText(/địa điểm trong khu vực này/);
@@ -240,7 +240,7 @@ describe('ExploreScreen', () => {
     expect(screen.getByText('Unable to load map')).toBeTruthy();
     expect(screen.getByText('Retry')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Thử lại'));
+    await user.press(screen.getByText('Retry'));
 
     await waitFor(() => {
       expect(screen.queryByText('Unable to load map')).toBeNull();

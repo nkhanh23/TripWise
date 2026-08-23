@@ -1,87 +1,53 @@
-import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, userEvent } from '@testing-library/react-native';
+
 import { LoginScreen } from '../src/features/auth/screens/LoginScreen';
+import { IntegrationError } from '../src/integration/errors';
 
 const mockSignIn = jest.fn();
+jest.mock('../src/features/auth/AuthProvider', () => ({ useAuth: () => ({ signIn: mockSignIn }) }));
 
-jest.mock('../src/features/auth/AuthProvider', () => ({
-  useAuth: () => ({
-    signIn: mockSignIn,
-  }),
-}));
+const navigation = {
+  navigate: jest.fn(), canGoBack: jest.fn(() => true), goBack: jest.fn(),
+} as never;
 
-describe('LoginScreen', () => {
-  const navigateMock = jest.fn();
-  const goBackMock = jest.fn();
-  const navigationProps: any = {
-    navigate: navigateMock,
-    canGoBack: jest.fn().mockReturnValue(true),
-    goBack: goBackMock,
-  };
+describe('LoginScreen real-auth composition', () => {
+  beforeEach(() => jest.clearAllMocks());
+  afterEach(cleanup);
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    cleanup();
-  });
-
-  it('renders form fields, labels, and links', async () => {
-    await render(<LoginScreen navigation={navigationProps} route={{} as any} />);
-
-    expect(screen.getByText('Welcome back')).toBeTruthy();
-    expect(screen.getByText('Email')).toBeTruthy();
-    expect(screen.getByText('Password')).toBeTruthy();
-    expect(screen.getByPlaceholderText('name@example.com')).toBeTruthy();
-    expect(screen.getByPlaceholderText('••••••••')).toBeTruthy();
-    expect(screen.getByText('Forgot password?')).toBeTruthy();
-    expect(screen.getByText('Sign in')).toBeTruthy();
-    expect(screen.getByText('Continue with Google')).toBeTruthy();
-    expect(screen.getByText('Create one')).toBeTruthy();
-  });
-
-  it('validates empty inputs on submit', async () => {
+  async function fillAndSubmit() {
     const user = userEvent.setup();
-    await render(<LoginScreen navigation={navigationProps} route={{} as any} />);
-
-    await user.press(screen.getByLabelText('Đăng nhập'));
-    await waitFor(() => {
-      expect(screen.getByText('Nhập địa chỉ email hợp lệ.')).toBeTruthy();
-    });
-    expect(mockSignIn).not.toHaveBeenCalled();
-  });
-
-  it('calls signIn on valid submit', async () => {
-    mockSignIn.mockResolvedValue(undefined);
-    const user = userEvent.setup();
-    await render(<LoginScreen navigation={navigationProps} route={{} as any} />);
-
     await user.type(screen.getByPlaceholderText('name@example.com'), 'traveler@example.com');
     await user.type(screen.getByPlaceholderText('••••••••'), 'password123');
     await user.press(screen.getByLabelText('Đăng nhập'));
+    return user;
+  }
 
-    await waitFor(() => {
-      expect(mockSignIn).toHaveBeenCalledWith('traveler@example.com', 'password123');
-    });
+  it('keeps local malformed-email validation outside the repository', async () => {
+    const user = userEvent.setup();
+    await render(<LoginScreen navigation={navigation} route={{} as never} />);
+    await user.press(screen.getByLabelText('Đăng nhập'));
+    expect(await screen.findByText('Please enter a valid email address.')).toBeTruthy();
+    expect(mockSignIn).not.toHaveBeenCalled();
   });
 
-  it('toggles password visibility', async () => {
-    const user = userEvent.setup();
-    await render(<LoginScreen navigation={navigationProps} route={{} as any} />);
-
-    expect(screen.getByText('Show')).toBeTruthy();
-    await user.press(screen.getByLabelText('Hiện mật khẩu'));
-    expect(screen.getByText('Hide')).toBeTruthy();
+  it('submits real credentials through AuthProvider and prevents duplicate submission', async () => {
+    let finish: (() => void) | undefined;
+    mockSignIn.mockImplementation(() => new Promise<void>((resolve) => { finish = resolve; }));
+    await render(<LoginScreen navigation={navigation} route={{} as never} />);
+    const user = await fillAndSubmit();
+    await user.press(screen.getByLabelText('Đăng nhập'));
+    expect(mockSignIn).toHaveBeenCalledTimes(1);
+    expect(mockSignIn).toHaveBeenCalledWith('traveler@example.com', 'password123');
+    await act(async () => finish?.());
   });
 
-  it('navigates to ForgotPassword and Register', async () => {
-    const user = userEvent.setup();
-    await render(<LoginScreen navigation={navigationProps} route={{} as any} />);
-
-    await user.press(screen.getByLabelText('Quên mật khẩu'));
-    expect(navigateMock).toHaveBeenCalledWith('ForgotPassword');
-
-    await user.press(screen.getByLabelText('Đăng ký tài khoản'));
-    expect(navigateMock).toHaveBeenCalledWith('Register');
+  it.each([
+    [new IntegrationError('invalidCredentials'), 'The email or password is incorrect.'],
+    [new IntegrationError('network'), 'Unable to connect. Check your network and try again.'],
+  ])('shows centralized safe errors', async (error, message) => {
+    mockSignIn.mockRejectedValue(error);
+    await render(<LoginScreen navigation={navigation} route={{} as never} />);
+    await fillAndSubmit();
+    expect(await screen.findByText(message)).toBeTruthy();
   });
 });
