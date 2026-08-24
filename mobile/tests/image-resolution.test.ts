@@ -52,6 +52,25 @@ describe('semantic image resolution', () => {
     expect(wiki.getImage).not.toHaveBeenCalled();
   });
 
+  it('maps Google author attribution into the provider-neutral model', async () => {
+    const googleRepo: PlacePhotoRepository = {
+      getPhoto: jest.fn(async ({ googlePlaceId }) => ({
+        googlePlaceId,
+        photoUri: 'https://google/photo',
+        authorAttribution: {
+          displayName: 'Google contributor',
+          uri: 'https://maps.google.com/contributor',
+        },
+      })),
+    };
+    const result = await new CompositePlaceImageRepository(googleRepo, wikimedia([]))
+      .getPlaceImage({ googlePlaceId: 'google_place_123' });
+    expect(result.attribution).toEqual({
+      displayName: 'Google contributor',
+      sourceUrl: 'https://maps.google.com/contributor',
+    });
+  });
+
   it('falls back to exact Wikimedia and preserves attribution', async () => {
     const result = await new CompositePlaceImageRepository(google([null]), wikimedia([wikiImage]))
       .getPlaceImage({ googlePlaceId: 'google_place_123' });

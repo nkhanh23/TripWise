@@ -1,6 +1,7 @@
-import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import { generateLargeMockTripDetail } from '../src/features/trips/data/mockTripDetail';
 import { TripDetailScreen } from '../src/features/trips/screens/TripDetailScreen';
+import type { ResolvedImage } from '../src/integration/contracts';
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 0, left: 0, right: 0 }),
@@ -330,6 +331,85 @@ describe('TripDetailScreen', () => {
         expect.anything()
       );
     });
+  });
+
+  it('resolves an exact place image without waiting for the slower hero fallback chain', async () => {
+    let finishHero: ((value: ResolvedImage) => void) | undefined;
+    const heroPromise = new Promise<ResolvedImage>((resolve) => {
+      finishHero = resolve;
+    });
+    const tripCoverRepository = { getTripCover: jest.fn(() => heroPromise) };
+    const placeImageRepository = {
+      getPlaceImage: jest.fn(async () => ({
+        uri: 'https://upload.wikimedia.org/grand-palace.jpg',
+        source: 'WIKIMEDIA_PLACE' as const,
+        attribution: {
+          displayName: 'Commons author',
+          license: 'CC BY-SA 4.0',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Grand_Palace.jpg',
+        },
+      })),
+    };
+    const trip: any = {
+      id: 'trip-test',
+      title: 'Bangkok Explorer',
+      destination: 'Bangkok, Thailand',
+      dateLabel: 'Oct 12 - Oct 12',
+      startDate: '2026-10-12',
+      endDate: '2026-10-12',
+      durationDays: 1,
+      heroImageUrl: '',
+      budgetSpent: '',
+      budgetTotal: '',
+      budgetPercent: 0,
+      savedPlacesCount: 1,
+      travelers: [],
+      days: [{
+        id: 'day_1',
+        dayNumber: 1,
+        date: '2026-10-12',
+        dateLabel: 'Day 1 • Oct 12',
+        items: [{
+          id: 'item_1',
+          title: 'The Grand Palace',
+          time: '11:00',
+          resolution: 'VERIFIED',
+          googlePlaceId: 'place_grand_palace_123',
+          iconName: 'account-balance',
+        }],
+      }],
+    };
+
+    await render(
+      <TripDetailScreen
+        customTripDetail={trip}
+        navigation={mockNavigation}
+        placeImageRepository={placeImageRepository}
+        route={{ params: { tripId: 'trip-test' } } as any}
+        tripCoverRepository={tripCoverRepository}
+      />
+    );
+
+    expect(await screen.findByText('Commons author · CC BY-SA 4.0')).toBeTruthy();
+    expect(placeImageRepository.getPlaceImage).toHaveBeenCalledWith(
+      { googlePlaceId: 'place_grand_palace_123', maxWidth: 600 },
+      expect.any(AbortSignal),
+    );
+    expect(tripCoverRepository.getTripCover).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      finishHero?.({
+        uri: 'https://upload.wikimedia.org/bangkok-cover.jpg',
+        source: 'DESTINATION_COVER',
+        attribution: {
+          displayName: 'Destination author',
+          license: 'CC BY 4.0',
+          sourceUrl: 'https://commons.wikimedia.org/wiki/File:Bangkok_cover.jpg',
+        },
+      });
+      await heroPromise;
+    });
+    expect(await screen.findByText('Destination author · CC BY 4.0')).toBeTruthy();
   });
 
   it('tolerates photo provider failure without breaking Trip Detail UI', async () => {

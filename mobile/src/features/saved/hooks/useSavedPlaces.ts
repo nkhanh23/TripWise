@@ -96,7 +96,6 @@ export function useSavedPlaces({
     return 'loading';
   });
 
-  const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({});
   const [resolvedImages, setResolvedImages] = useState<Record<string, ResolvedImage>>({});
   const resolvedImageKeys = useRef(new Set<string>());
   const [ratings, setRatings] = useState<Record<string, number>>({});
@@ -162,9 +161,7 @@ export function useSavedPlaces({
       const page = await effectiveRepository.listSavedPlaces(undefined, controller.signal);
       if (controller.signal.aborted) return;
 
-      const uiItems = page.items.map((item: SavedPlace) =>
-        mapSavedPlaceToUIItem(item, photoUrls[item.googlePlaceId])
-      );
+      const uiItems = page.items.map((item: SavedPlace) => mapSavedPlaceToUIItem(item));
       setRemotePlaces(uiItems);
       setStatus(uiItems.length === 0 ? 'empty' : 'ready');
 
@@ -191,7 +188,7 @@ export function useSavedPlaces({
         setStatus('error');
       }
     }
-  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, photoUrls, ratings, loadImagesBounded]);
+  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, ratings, loadImagesBounded]);
 
   useEffect(() => {
     if (normalizedCustomPlaces || isFixture) {
@@ -249,11 +246,11 @@ export function useSavedPlaces({
   const itemsWithRichData: SavedPlaceUIItem[] = useMemo(() => {
     return activePlaces.map((item) => ({
       ...item,
-      imageUrl: resolvedImages[item.googlePlaceId]?.uri ?? photoUrls[item.googlePlaceId] ?? item.imageUrl,
+      imageUrl: resolvedImages[item.googlePlaceId]?.uri ?? item.imageUrl,
       resolvedImage: resolvedImages[item.googlePlaceId] ?? item.resolvedImage,
       rating: ratings[item.googlePlaceId] ?? item.rating,
     }));
-  }, [activePlaces, photoUrls, ratings, resolvedImages]);
+  }, [activePlaces, ratings, resolvedImages]);
 
   const handleUnsave = useCallback(
     async (idOrGooglePlaceId: string) => {

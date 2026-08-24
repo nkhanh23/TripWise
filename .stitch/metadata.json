@@ -26,6 +26,14 @@
       "width": 780,
       "height": 2590,
       "canvasPosition": { "x": 5110, "y": null }
+    },
+    {
+      "id": "6e2008eca51c455989f7045316a293cf",
+      "label": "Home — Populated",
+      "fileStem": "home-populated",
+      "sourceScreen": "projects/10069552738311964263/screens/6e2008eca51c455989f7045316a293cf",
+      "width": 780,
+      "height": 2380
     }
   ]
 }

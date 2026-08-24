@@ -6,6 +6,7 @@ import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { ResolvedImage } from '../../../integration/contracts';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
 
 type Props = {
   destination: string;
@@ -23,10 +24,12 @@ export const TripDetailHero = memo(function TripDetailHero({
   resolvedImage,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
-  const hasValidPhoto = Boolean(
+  const validHeroImageUrl =
     heroImageUrl &&
-      (heroImageUrl.startsWith('http://') || heroImageUrl.startsWith('https://'))
-  );
+    (heroImageUrl.startsWith('http://') || heroImageUrl.startsWith('https://'))
+      ? heroImageUrl
+      : undefined;
+  const hasValidPhoto = Boolean(validHeroImageUrl);
 
   const heroHeight = Math.max(270, 210 + topInset);
 
@@ -43,11 +46,11 @@ export const TripDetailHero = memo(function TripDetailHero({
             : colors.brand.primary,
         },
       ]}>
-      {hasValidPhoto ? (
+      {validHeroImageUrl ? (
         <Image
           accessibilityLabel={destination}
           accessibilityRole="image"
-          source={{ uri: heroImageUrl }}
+          source={getResolvedImageSource(validHeroImageUrl, resolvedImage)}
           style={styles.heroImage}
         />
       ) : (

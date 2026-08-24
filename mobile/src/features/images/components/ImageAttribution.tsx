@@ -2,10 +2,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Linking, Pressable, StyleSheet, Text } from 'react-native';
 
 import { useTranslation } from '../../../i18n';
-import type { ImageAttribution } from '../../../integration/contracts';
+import type { ImageAttribution as ImageAttributionData } from '../../../integration/contracts';
 import { radius, spacing, typography } from '../../../theme/tokens';
 
-type Props = { attribution?: ImageAttribution };
+type Props = { attribution?: ImageAttributionData };
 
 export function ImageAttribution({ attribution }: Props) {
   const { t } = useTranslation();
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     position: 'absolute',
     right: spacing.xs,
+    zIndex: 4,
   },
   text: {
     color: '#FFFFFF',

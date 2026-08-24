@@ -5,6 +5,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
 import type { TripSummary } from '../types';
 
 type Props = {
@@ -34,7 +35,7 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
           <Image
             accessibilityLabel={`${trip.title} cover photo`}
             resizeMode="cover"
-            source={{ uri: trip.coverImageUrl }}
+            source={getResolvedImageSource(trip.coverImageUrl, trip.coverImage)}
             style={styles.coverImage}
           />
           <ImageAttribution attribution={trip.coverImage?.attribution} />

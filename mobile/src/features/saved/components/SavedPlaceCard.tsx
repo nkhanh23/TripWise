@@ -7,6 +7,7 @@ import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { ResolvedImage } from '../../../integration/contracts';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
 
 type CardPlaceItem = {
   id: string;
@@ -57,7 +58,7 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
           <Image
             accessibilityLabel={place.name}
             accessibilityRole="image"
-            source={{ uri: place.imageUrl }}
+            source={getResolvedImageSource(place.imageUrl, place.resolvedImage)}
             style={[
               styles.image,
               { backgroundColor: colors.background.surfaceVariant },

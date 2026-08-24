@@ -1,12 +1,18 @@
-import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import {
   generateLargeMockTrips,
   mockPastTrips,
   mockUpcomingTrips,
 } from '../src/features/trips/data/mockTrips';
 import { MyTripsScreen } from '../src/features/trips/screens/MyTripsScreen';
-import type { SavedTripSummary } from '../src/integration/contracts';
-import type { PlacePhotoRepository, SavedTripsRepository } from '../src/integration/repositories';
+import { SequentialTripCoverImageRepository } from '../src/integration/imageResolution';
+import type { ResolvedImage, SavedTripSummary } from '../src/integration/contracts';
+import type {
+  DestinationCoverRepository,
+  PlacePhotoRepository,
+  SavedTripsRepository,
+  WikimediaImageRepository,
+} from '../src/integration/repositories';
 import { asGooglePlaceId, asTripId } from '../src/integration/validation';
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -14,6 +20,7 @@ jest.mock('react-native-safe-area-context', () => ({
 }));
 
 const mockNavigate = jest.fn();
+let mockFocusListener: (() => void) | undefined;
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
   return {
@@ -21,6 +28,10 @@ jest.mock('@react-navigation/native', () => {
     useNavigation: () => ({
       navigate: mockNavigate,
       goBack: jest.fn(),
+      addListener: (_event: string, listener: () => void) => {
+        mockFocusListener = listener;
+        return jest.fn();
+      },
     }),
   };
 });
@@ -71,6 +82,7 @@ function createPhotoRepository(
 describe('MyTripsScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFocusListener = undefined;
   });
 
   afterEach(() => {
@@ -254,6 +266,63 @@ describe('MyTripsScreen', () => {
       { googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', maxWidth: 600 },
       expect.any(AbortSignal),
     );
+  });
+
+  it('preserves the second-candidate Wikimedia image and attribution through hook state and card rerender', async () => {
+    const { repository } = createSavedTripsRepository();
+    const google: PlacePhotoRepository = {
+      getPhoto: jest.fn(async ({ googlePlaceId }) => ({ googlePlaceId, photoUri: null })),
+    };
+    const wikipediaImage: ResolvedImage = {
+      uri: 'https://upload.wikimedia.org/grand-palace.jpg',
+      source: 'WIKIMEDIA_PLACE',
+      attribution: {
+        displayName: 'Commons author',
+        license: 'CC BY-SA 4.0',
+        sourceUrl: 'https://commons.wikimedia.org/wiki/File:Grand_Palace.jpg',
+      },
+    };
+    const wikipedia: WikimediaImageRepository = {
+      getImage: jest.fn()
+        .mockResolvedValueOnce({ uri: null, source: 'PLACEHOLDER' })
+        .mockResolvedValueOnce(wikipediaImage),
+    };
+    const destination: DestinationCoverRepository = {
+      getDestinationCover: jest.fn(async () => ({ uri: null, source: 'PLACEHOLDER' as const })),
+    };
+
+    await render(
+      <MyTripsScreen
+        repository={repository}
+        tripCoverRepository={new SequentialTripCoverImageRepository(google, wikipedia, destination)}
+      />
+    );
+
+    expect(await screen.findByLabelText('Bangkok Explorer cover photo')).toBeTruthy();
+    expect(screen.getByText('Commons author · CC BY-SA 4.0')).toBeTruthy();
+    expect(google.getPhoto).toHaveBeenCalledTimes(2);
+    expect(wikipedia.getImage).toHaveBeenCalledTimes(2);
+    expect(destination.getDestinationCover).not.toHaveBeenCalled();
+  });
+
+  it('does not cancel and restart the same cover work when focus reload returns identical identities', async () => {
+    const { repository, list } = createSavedTripsRepository();
+    const getTripCover = jest.fn(async () => ({
+      uri: 'https://upload.wikimedia.org/grand-palace.jpg',
+      source: 'WIKIMEDIA_PLACE' as const,
+    }));
+
+    await render(
+      <MyTripsScreen repository={repository} tripCoverRepository={{ getTripCover }} />
+    );
+    expect(await screen.findByLabelText('Bangkok Explorer cover photo')).toBeTruthy();
+    expect(getTripCover).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      mockFocusListener?.();
+    });
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(2));
+    expect(getTripCover).toHaveBeenCalledTimes(1);
   });
 
   it('keeps the trip visible and uses no fake cover when both trusted candidates have no photo', async () => {

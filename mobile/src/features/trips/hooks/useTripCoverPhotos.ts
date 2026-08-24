@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import type { ResolvedImage } from '../../../integration/contracts';
+import { maximumConcurrentImageRequests } from '../../../integration/imageResolution';
 import type { TripCoverImageRepository } from '../../../integration/repositories';
 import type { TripSectionData } from '../types';
 
 export const tripCoverMaximumCandidates = 2;
-export const tripCoverMaximumConcurrency = 3;
+export const tripCoverMaximumConcurrency = maximumConcurrentImageRequests;
 export const tripCoverThumbnailWidth = 600;
 
 type TripCoverTask = {
@@ -19,19 +20,23 @@ export function useTripCoverPhotos(
   coverRepository?: TripCoverImageRepository,
 ): TripSectionData[] {
   const [coverImages, setCoverImages] = useState<Record<string, ResolvedImage>>({});
+  const nextTasks = useMemo<TripCoverTask[]>(() => sections.flatMap((section) =>
+    section.data.map((trip) => ({
+      tripId: trip.id,
+      destination: trip.destination,
+      googlePlaceIds: (trip.coverGooglePlaceIds ?? []).slice(0, tripCoverMaximumCandidates),
+    })),
+  ), [sections]);
+  const taskIdentity = useMemo(
+    () => JSON.stringify(nextTasks),
+    [nextTasks],
+  );
 
   useEffect(() => {
     if (!coverRepository) return;
 
     const controller = new AbortController();
-    const tasks: TripCoverTask[] = sections.flatMap((section) =>
-      section.data
-        .map((trip) => ({
-          tripId: trip.id,
-          destination: trip.destination,
-          googlePlaceIds: (trip.coverGooglePlaceIds ?? []).slice(0, tripCoverMaximumCandidates),
-        })),
-    );
+    const tasks = JSON.parse(taskIdentity) as TripCoverTask[];
     let nextTaskIndex = 0;
 
     const runWorker = async (): Promise<void> => {
@@ -56,7 +61,7 @@ export function useTripCoverPhotos(
     void Promise.all(Array.from({ length: workerCount }, () => runWorker()));
 
     return () => controller.abort();
-  }, [coverRepository, sections]);
+  }, [coverRepository, taskIdentity]);
 
   return useMemo(
     () => sections.map((section) => ({

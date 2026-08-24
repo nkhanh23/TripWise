@@ -8,6 +8,7 @@ import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { ItineraryItem } from '../types';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
 
 type Props = {
   item: ItineraryItem;
@@ -150,7 +151,7 @@ export const ItineraryCard = memo(function ItineraryCard({
             <View style={styles.imageWrap}>
               <Image
                 accessible={false}
-                source={{ uri: item.imageUrl }}
+                source={getResolvedImageSource(item.imageUrl, item.resolvedImage)}
                 style={styles.cardImage}
               />
               <ImageAttribution attribution={item.resolvedImage?.attribution} />

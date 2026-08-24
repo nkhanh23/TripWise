@@ -108,8 +108,40 @@ export function TripDetailScreen({
     );
   }, [customTripDetail, effectiveRepository, fixtureMode, placePhotoRepository]);
   const effectiveImageRepositories = useMemo(() => {
-    if (customTripDetail || fixtureMode || !effectivePlacePhotoRepository) {
+    if (!effectivePlacePhotoRepository) {
       return { place: placeImageRepository, cover: tripCoverRepository };
+    }
+    if (customTripDetail || fixtureMode) {
+      return {
+        place: placeImageRepository ?? {
+          getPlaceImage: async (request, signal) => {
+            try {
+              const photo = await effectivePlacePhotoRepository.getPhoto(request, signal);
+              return photo.photoUri
+                ? { uri: photo.photoUri, source: 'GOOGLE_PLACE' as const }
+                : { uri: null, source: 'PLACEHOLDER' as const };
+            } catch {
+              return { uri: null, source: 'PLACEHOLDER' as const };
+            }
+          },
+        },
+        cover: tripCoverRepository ?? {
+          getTripCover: async (request, signal) => {
+            for (const googlePlaceId of request.googlePlaceIds.slice(0, 2)) {
+              try {
+                const photo = await effectivePlacePhotoRepository.getPhoto({
+                  googlePlaceId,
+                  ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
+                }, signal);
+                if (photo.photoUri) return { uri: photo.photoUri, source: 'GOOGLE_PLACE' as const };
+              } catch {
+                // Optional fixture enrichment continues to the next candidate.
+              }
+            }
+            return { uri: null, source: 'PLACEHOLDER' as const };
+          },
+        },
+      };
     }
     const wikimedia = new SupabaseWikimediaImageRepository(supabase);
     return {

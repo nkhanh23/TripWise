@@ -4,6 +4,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../theme';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { TripSummary } from '../types';
 
@@ -91,7 +92,7 @@ export const TWTripCard = memo(function TWTripCard({ trip, onPress }: Props) {
           <Image
             accessibilityLabel={`${trip.title} cover photo`}
             resizeMode="cover"
-            source={{ uri: trip.coverImageUrl }}
+            source={getResolvedImageSource(trip.coverImageUrl, trip.coverImage)}
             style={styles.coverImage}
           />
           <ImageAttribution attribution={trip.coverImage?.attribution} />

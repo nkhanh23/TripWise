@@ -7,6 +7,7 @@ import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { UpcomingTripData } from '../types';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
 
 type Props = {
   trip: UpcomingTripData;
@@ -36,7 +37,7 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
             accessibilityLabel={trip.title}
             accessibilityRole="image"
             resizeMode="cover"
-            source={{ uri: trip.imageUrl }}
+            source={getResolvedImageSource(trip.imageUrl, trip.resolvedImage)}
             style={styles.image}
           />
         ) : (
