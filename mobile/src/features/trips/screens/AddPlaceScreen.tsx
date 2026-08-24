@@ -23,15 +23,18 @@ import { AddPlaceResultCard } from '../components/AddPlaceResultCard';
 import { addPlaceToTripItinerary, getMockTripDetail } from '../data/mockTripDetail';
 import type { ItineraryItem, TripDetailData } from '../types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'AddPlace'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'AddPlace'> & {
+  fixtureMode?: boolean;
+};
 
-export function AddPlaceScreen({ route, navigation }: Props) {
+export function AddPlaceScreen({ route, navigation, fixtureMode = false }: Props) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const tripId = route.params?.tripId ?? 'trip_bangkok';
+  const tripId = route.params?.tripId ?? '';
   const initialDayId = route.params?.initialDayId;
+  const isFixture = fixtureMode || tripId.startsWith('trip_');
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<ExploreCategory>('all');
@@ -40,8 +43,8 @@ export function AddPlaceScreen({ route, navigation }: Props) {
 
   // Load trip data for day selection
   const tripData: TripDetailData | null = useMemo(() => {
-    return getMockTripDetail(tripId);
-  }, [tripId]);
+    return isFixture ? getMockTripDetail(tripId) : null;
+  }, [isFixture, tripId]);
 
   const days = useMemo(() => {
     return tripData?.days ?? [];
@@ -51,6 +54,7 @@ export function AddPlaceScreen({ route, navigation }: Props) {
   const filteredPlaces = useMemo(() => {
     const trimmed = searchQuery.trim().toLowerCase();
 
+    if (!isFixture) return [];
     return mockExplorePlaces.filter((place) => {
       // Category filter
       if (selectedCategory !== 'all' && place.category !== selectedCategory) {
@@ -66,7 +70,7 @@ export function AddPlaceScreen({ route, navigation }: Props) {
       }
       return true;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [isFixture, searchQuery, selectedCategory]);
 
   const handleBack = useCallback(() => {
     navigation.goBack();
@@ -121,11 +125,12 @@ export function AddPlaceScreen({ route, navigation }: Props) {
         directionsLabel: 'Get Directions',
       };
 
+      if (!isFixture) return;
       addPlaceToTripItinerary(tripId, data.dayId, newItem);
       setIsConfirmationOpen(false);
       navigation.goBack();
     },
-    [tripId, navigation]
+    [isFixture, tripId, navigation]
   );
 
   return (
@@ -265,10 +270,10 @@ export function AddPlaceScreen({ route, navigation }: Props) {
           <View style={styles.emptyContainer}>
             <MaterialIcons color={colors.icon.muted} name="search-off" size={48} />
             <AppText style={[styles.emptyTitle, { color: colors.text.primary }]}>
-              {t('addPlace.noResultsTitle')}
+              {isFixture ? t('addPlace.noResultsTitle') : t('addPlace.unavailableTitle')}
             </AppText>
             <AppText style={[styles.emptySubtitle, { color: colors.text.secondary }]}>
-              {t('addPlace.noResultsSubtitle')}
+              {isFixture ? t('addPlace.noResultsSubtitle') : t('addPlace.unavailableSubtitle')}
             </AppText>
             {searchQuery.length > 0 || selectedCategory !== 'all' ? (
               <Pressable

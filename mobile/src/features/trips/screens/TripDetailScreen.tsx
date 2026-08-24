@@ -24,7 +24,8 @@ import { TripEmptyDayState } from '../components/TripEmptyDayState';
 import { TripFAB } from '../components/TripFAB';
 import { TripSummaryBentoCard } from '../components/TripSummaryBentoCard';
 import { getMockTripDetail } from '../data/mockTripDetail';
-import type { PlacePhotoRepository, PlaceResolutionRepository, SavedTripsRepository, WeatherRepository } from '../../../integration/repositories';
+import type { PlaceImageRepository, PlacePhotoRepository, PlaceResolutionRepository, SavedTripsRepository, TripCoverImageRepository, WeatherRepository } from '../../../integration/repositories';
+import { CompositePlaceImageRepository, SequentialTripCoverImageRepository } from '../../../integration/imageResolution';
 import { mapSavedTripDetailToTripDetailData } from '../integrationMappers';
 import { asTripId, isUuid } from '../../../integration/validation';
 import type { TripId } from '../../../integration/contracts';
@@ -33,6 +34,7 @@ import { useTripPlacePhotos } from '../placePhotos';
 import { useTripWeather } from '../weather';
 import { OpenMeteoWeatherRepository } from '../../../integration/remote/publicProviderRepositories';
 import { SupabasePlacePhotoRepository } from '../../../integration/remote/supabasePlacePhotoRepository';
+import { SupabaseWikimediaImageRepository } from '../../../integration/remote/supabaseWikimediaImageRepository';
 import { SupabasePlaceResolutionRepository } from '../../../integration/remote/supabasePlaceResolutionRepository';
 import { SupabaseSavedTripsRepository } from '../../../integration/remote/supabaseTripRepositories';
 import { supabase } from '../../../lib/supabase/client';
@@ -51,6 +53,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'TripDetail'> & {
   repository?: SavedTripsRepository;
   placeResolutionRepository?: PlaceResolutionRepository;
   placePhotoRepository?: PlacePhotoRepository;
+  placeImageRepository?: PlaceImageRepository;
+  tripCoverRepository?: TripCoverImageRepository;
   weatherRepository?: WeatherRepository;
   weatherNow?: () => Date;
   fixtureMode?: boolean;
@@ -67,6 +71,8 @@ export function TripDetailScreen({
   repository,
   placeResolutionRepository,
   placePhotoRepository,
+  placeImageRepository,
+  tripCoverRepository,
   weatherRepository,
   weatherNow,
   fixtureMode,
@@ -101,6 +107,20 @@ export function TripDetailScreen({
       (effectiveRepository ? new SupabasePlacePhotoRepository(supabase) : undefined)
     );
   }, [customTripDetail, effectiveRepository, fixtureMode, placePhotoRepository]);
+  const effectiveImageRepositories = useMemo(() => {
+    if (customTripDetail || fixtureMode || !effectivePlacePhotoRepository) {
+      return { place: placeImageRepository, cover: tripCoverRepository };
+    }
+    const wikimedia = new SupabaseWikimediaImageRepository(supabase);
+    return {
+      place: placeImageRepository ?? new CompositePlaceImageRepository(effectivePlacePhotoRepository, wikimedia),
+      cover: tripCoverRepository ?? new SequentialTripCoverImageRepository(
+        effectivePlacePhotoRepository,
+        wikimedia,
+        wikimedia,
+      ),
+    };
+  }, [customTripDetail, effectivePlacePhotoRepository, fixtureMode, placeImageRepository, tripCoverRepository]);
 
   const effectiveWeatherRepository = useMemo(() => {
     if (customTripDetail || fixtureMode) return weatherRepository;
@@ -182,9 +202,10 @@ export function TripDetailScreen({
     return null;
   }, [customTripDetail, fixtureMode, isRemoteTrip, remoteTripData, tripId, refreshKey]);
 
-  const { heroPhotoUrl, itemPhotos } = useTripPlacePhotos(
+  const { heroImage, heroPhotoUrl, itemImages } = useTripPlacePhotos(
     tripData,
-    effectivePlacePhotoRepository,
+    effectiveImageRepositories.place,
+    effectiveImageRepositories.cover,
   );
 
   // Derived active day ID
@@ -299,6 +320,7 @@ export function TripDetailScreen({
           dateLabel={tripData.dateLabel}
           destination={tripData.destination}
           heroImageUrl={heroPhotoUrl || tripData.heroImageUrl}
+          resolvedImage={heroImage ?? undefined}
           topInset={insets.top}
         />
 
@@ -321,7 +343,7 @@ export function TripDetailScreen({
         />
       </View>
     );
-  }, [tripData, heroPhotoUrl, insets.top, handleViewMap, handleSelectDay, activeDay, effectiveSelectedDayId, activeDayWeather]);
+  }, [tripData, heroImage, heroPhotoUrl, insets.top, handleViewMap, handleSelectDay, activeDay, effectiveSelectedDayId, activeDayWeather]);
 
   // Render State 1: Loading
   if (status === 'loading') {
@@ -421,8 +443,8 @@ export function TripDetailScreen({
         }
         ListHeaderComponent={listHeader}
         renderItem={({ item, index }) => {
-          const photoUrl = item.googlePlaceId ? itemPhotos[item.googlePlaceId] : undefined;
-          const displayItem = photoUrl ? { ...item, imageUrl: photoUrl } : item;
+          const image = item.googlePlaceId ? itemImages[item.googlePlaceId] : undefined;
+          const displayItem = image?.uri ? { ...item, imageUrl: image.uri, resolvedImage: image } : item;
 
           return (
             <View style={styles.itemWrapper}>

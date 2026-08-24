@@ -1,3 +1,5 @@
+import type { ResolvedImage } from '../../integration/contracts';
+
 export type HomeUIStatus = 'ready' | 'loading' | 'empty' | 'error';
 
 export type UpcomingTripData = {
@@ -7,6 +9,7 @@ export type UpcomingTripData = {
   badgeText: string;
   destination: string;
   imageUrl?: string;
+  resolvedImage?: ResolvedImage;
 };
 
 export type DraftTripData = {
@@ -37,5 +40,5 @@ export type HomeData = {
   upcomingTrip: UpcomingTripData | null;
   draftTrip: DraftTripData | null;
   savedPlaces: SavedPlaceItem[];
-  inspiration: InspirationItem;
+  inspiration?: InspirationItem;
 };

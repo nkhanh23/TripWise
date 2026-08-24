@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 
-import { buildGeminiHeaders, readInteractionOutputText } from './gemini.ts';
+import {
+  buildGeminiHeaders,
+  defaultGeminiTimeoutMilliseconds,
+  readInteractionOutputText,
+  resolveGeminiTimeoutMilliseconds,
+} from './gemini.ts';
 
 Deno.test('uses the Gemini x-goog-api-key header without bearer auth', () => {
   const headers = buildGeminiHeaders('test-key');
@@ -31,4 +36,11 @@ Deno.test('keeps compatibility with the SDK convenience response shape', () => {
 
 Deno.test('rejects responses without model text content', () => {
   assert.equal(readInteractionOutputText({ steps: [{ type: 'thought' }] }), null);
+});
+
+Deno.test('keeps the provider timeout bounded with enough margin for observed generation latency', () => {
+  assert.equal(defaultGeminiTimeoutMilliseconds, 40_000);
+  assert.equal(resolveGeminiTimeoutMilliseconds(undefined), 40_000);
+  assert.equal(resolveGeminiTimeoutMilliseconds('45000'), 45_000);
+  assert.equal(resolveGeminiTimeoutMilliseconds('45001'), 40_000);
 });

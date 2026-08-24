@@ -5,7 +5,7 @@ import type { GenerateTripRequest, GeneratedTrip } from './types.ts';
 
 const geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 const defaultModel = 'gemini-3.5-flash-lite';
-const defaultTimeoutMilliseconds = 25_000;
+export const defaultGeminiTimeoutMilliseconds = 40_000;
 
 type GeminiInteractionResponse = {
   output_text?: unknown;
@@ -54,11 +54,11 @@ export function buildGeminiHeaders(apiKey: string): Record<string, string> {
   return { 'content-type': 'application/json', 'x-goog-api-key': apiKey };
 }
 
-function getTimeoutMilliseconds(): number {
-  const configured = Number(Deno.env.get('GEMINI_TIMEOUT_MS'));
+export function resolveGeminiTimeoutMilliseconds(configuredValue: string | undefined): number {
+  const configured = Number(configuredValue);
   return Number.isFinite(configured) && configured >= 5_000 && configured <= 45_000
     ? configured
-    : defaultTimeoutMilliseconds;
+    : defaultGeminiTimeoutMilliseconds;
 }
 
 export async function generateTripWithGemini(request: GenerateTripRequest): Promise<GeneratedTrip> {
@@ -69,7 +69,10 @@ export async function generateTripWithGemini(request: GenerateTripRequest): Prom
 
   const model = Deno.env.get('GEMINI_MODEL')?.trim() || defaultModel;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), getTimeoutMilliseconds());
+  const timeout = setTimeout(
+    () => controller.abort(),
+    resolveGeminiTimeoutMilliseconds(Deno.env.get('GEMINI_TIMEOUT_MS')),
+  );
 
   try {
     const response = await fetch(geminiEndpoint, {

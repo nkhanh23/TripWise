@@ -1,6 +1,6 @@
 import { IntegrationError } from '../src/integration/errors';
 import { IdempotencyKeyFactory } from '../src/integration/idempotency';
-import { executeWithReliability } from '../src/integration/reliability';
+import { executeWithReliability, tripGenerationPolicy } from '../src/integration/reliability';
 
 describe('integration idempotency and reliability', () => {
   it('preserves a key for one intent and creates a new key for another intent', () => {
@@ -40,5 +40,9 @@ describe('integration idempotency and reliability', () => {
     const pending = executeWithReliability(never, { timeoutMs: 100, maximumAttempts: 1 }, controller.signal);
     controller.abort();
     await expect(pending).rejects.toMatchObject({ code: 'cancelled' });
+  });
+
+  it('keeps one bounded client attempt with margin above the Edge provider timeout', () => {
+    expect(tripGenerationPolicy).toEqual({ timeoutMs: 50_000, maximumAttempts: 1 });
   });
 });

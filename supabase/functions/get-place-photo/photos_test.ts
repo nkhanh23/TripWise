@@ -1,10 +1,29 @@
-import { assertEquals, assertRejects } from 'jsr:@std/assert@1';
+import assert from 'node:assert/strict';
 import { PlacePhotoError } from './errors.ts';
 import { fetchPlacePhotoFromGoogle } from './photos.ts';
+
+const assertEquals = (actual: unknown, expected: unknown): void => assert.deepEqual(actual, expected);
+const assertRejects = (
+  operation: () => Promise<unknown>,
+  errorClass: typeof PlacePhotoError,
+  message: string,
+): Promise<unknown> => assert.rejects(
+  operation,
+  (error: unknown) => error instanceof errorClass && error.message === message,
+);
 
 Deno.test('fetchPlacePhotoFromGoogle returns photoUri when Google Places returns photos', async () => {
   const fetcher: typeof fetch = async (input, init) => {
     const url = String(input);
+    if (url.includes('places/ChIJaSv_6gaZ4jARnbiUVn6Z_YY/photos/AUc7tXTest/media')) {
+      return new Response(
+        JSON.stringify({
+          name: 'places/ChIJaSv_6gaZ4jARnbiUVn6Z_YY/photos/AUc7tXTest/media',
+          photoUri: 'https://lh3.googleusercontent.com/places/AUc7tXRealPhoto.jpg',
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } }
+      );
+    }
     if (url.includes('/places/ChIJaSv_6gaZ4jARnbiUVn6Z_YY')) {
       return new Response(
         JSON.stringify({
@@ -20,15 +39,6 @@ Deno.test('fetchPlacePhotoFromGoogle returns photoUri when Google Places returns
         { status: 200, headers: { 'content-type': 'application/json' } }
       );
     }
-    if (url.includes('places/ChIJaSv_6gaZ4jARnbiUVn6Z_YY/photos/AUc7tXTest/media')) {
-      return new Response(
-        JSON.stringify({
-          name: 'places/ChIJaSv_6gaZ4jARnbiUVn6Z_YY/photos/AUc7tXTest/media',
-          photoUri: 'https://lh3.googleusercontent.com/places/AUc7tXRealPhoto.jpg',
-        }),
-        { status: 200, headers: { 'content-type': 'application/json' } }
-      );
-    }
     return new Response('Not Found', { status: 404 });
   };
 
@@ -40,6 +50,13 @@ Deno.test('fetchPlacePhotoFromGoogle returns photoUri when Google Places returns
   assertEquals(result.googlePlaceId, 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY');
   assertEquals(result.photoUri, 'https://lh3.googleusercontent.com/places/AUc7tXRealPhoto.jpg');
   assertEquals(result.authorAttribution?.displayName, 'Alice');
+  assertEquals(result.diagnostic, {
+    providerStatus: 200,
+    hasPhotosProperty: true,
+    photosIsArray: true,
+    photosCount: 1,
+    firstPhotoHasName: true,
+  });
 });
 
 Deno.test('fetchPlacePhotoFromGoogle returns null photoUri when place has no photos', async () => {
@@ -57,6 +74,13 @@ Deno.test('fetchPlacePhotoFromGoogle returns null photoUri when place has no pho
 
   assertEquals(result.googlePlaceId, 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY');
   assertEquals(result.photoUri, null);
+  assertEquals(result.diagnostic, {
+    providerStatus: 200,
+    hasPhotosProperty: true,
+    photosIsArray: true,
+    photosCount: 0,
+    firstPhotoHasName: false,
+  });
 });
 
 Deno.test('fetchPlacePhotoFromGoogle handles 429 rate limit correctly', async () => {

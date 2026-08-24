@@ -1,11 +1,20 @@
-import { assertEquals } from 'jsr:@std/assert@1';
+import assert from 'node:assert/strict';
 import { handleGetPlacePhoto } from './handler.ts';
+
+const assertEquals = (actual: unknown, expected: unknown): void => assert.deepEqual(actual, expected);
+const diagnostic = {
+  providerStatus: 200,
+  hasPhotosProperty: true,
+  photosIsArray: true,
+  photosCount: 1,
+  firstPhotoHasName: true,
+};
 
 Deno.test('handleGetPlacePhoto rejects non-POST requests', async () => {
   const response = await handleGetPlacePhoto(new Request('http://localhost', { method: 'GET' }), {
     authenticate: async () => 'user-1',
     verifyOwnership: async () => true,
-    fetchPhoto: async () => ({ googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', photoUri: 'https://example.com/photo.jpg' }),
+    fetchPhoto: async () => ({ googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', photoUri: 'https://example.com/photo.jpg', diagnostic }),
   });
   assertEquals(response.status, 405);
   const body = await response.json();
@@ -21,7 +30,7 @@ Deno.test('handleGetPlacePhoto rejects unauthenticated requests', async () => {
     {
       authenticate: async () => null,
       verifyOwnership: async () => true,
-      fetchPhoto: async () => ({ googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', photoUri: 'https://example.com/photo.jpg' }),
+      fetchPhoto: async () => ({ googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', photoUri: 'https://example.com/photo.jpg', diagnostic }),
     }
   );
   assertEquals(response.status, 401);
@@ -38,7 +47,7 @@ Deno.test('handleGetPlacePhoto rejects invalid place ID format', async () => {
     {
       authenticate: async () => 'user-1',
       verifyOwnership: async () => true,
-      fetchPhoto: async () => ({ googlePlaceId: 'invalid', photoUri: null }),
+      fetchPhoto: async () => ({ googlePlaceId: 'invalid', photoUri: null, diagnostic }),
     }
   );
   assertEquals(response.status, 400);
@@ -55,7 +64,7 @@ Deno.test('handleGetPlacePhoto rejects cross-user / unowned place IDs', async ()
     {
       authenticate: async () => 'user-1',
       verifyOwnership: async () => false,
-      fetchPhoto: async () => ({ googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', photoUri: 'https://example.com/photo.jpg' }),
+      fetchPhoto: async () => ({ googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', photoUri: 'https://example.com/photo.jpg', diagnostic }),
     }
   );
   assertEquals(response.status, 403);
@@ -78,6 +87,7 @@ Deno.test('handleGetPlacePhoto succeeds for authenticated owner', async () => {
         return {
           googlePlaceId: pid,
           photoUri: 'https://lh3.googleusercontent.com/places/test.jpg',
+          diagnostic,
           authorAttribution: { displayName: 'Photographer' },
         };
       },

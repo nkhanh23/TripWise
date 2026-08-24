@@ -1,92 +1,51 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import type { PlacePhotoRepository } from '../../integration/repositories';
+import type { ResolvedImage } from '../../integration/contracts';
+import type { PlaceImageRepository, TripCoverImageRepository } from '../../integration/repositories';
 import type { TripDetailData } from './types';
-
-const maximumHeroCandidates = 3;
 
 export function useTripPlacePhotos(
   tripData: TripDetailData | null,
-  photoRepository?: PlacePhotoRepository
+  placeRepository?: PlaceImageRepository,
+  coverRepository?: TripCoverImageRepository,
 ) {
-  const [fetchedHeroUrl, setFetchedHeroUrl] = useState<string | null>(null);
-  const [itemPhotos, setItemPhotos] = useState<Record<string, string | null>>({});
-  const activeControllers = useRef(new Map<string, AbortController>());
-
-  const heroPhotoUrl = tripData?.heroImageUrl || fetchedHeroUrl;
+  const [heroImage, setHeroImage] = useState<ResolvedImage | null>(null);
+  const [itemImages, setItemImages] = useState<Record<string, ResolvedImage>>({});
 
   useEffect(() => {
-    if (!photoRepository || !tripData || !tripData.days || tripData.days.length === 0) {
-      return;
-    }
-
-    const controllersMap = activeControllers.current;
+    if (!tripData?.days?.length) return;
+    const activeTrip = tripData;
     const controller = new AbortController();
-    controllersMap.set('trip_photos', controller);
+    const verifiedIds = [...new Set(activeTrip.days.flatMap((day) => day.items)
+      .filter((item) => item.resolution === 'VERIFIED' && item.googlePlaceId)
+      .map((item) => item.googlePlaceId as string))];
 
-    // Collect verified items with valid googlePlaceId across the trip
-    const verifiedItems = tripData.days
-      .flatMap((day) => day.items)
-      .filter((item) => item.resolution === 'VERIFIED' && Boolean(item.googlePlaceId));
-
-    const uniquePlaceIds = Array.from(new Set(verifiedItems.map((item) => item.googlePlaceId!)));
-
-    if (uniquePlaceIds.length === 0) {
-      return () => {
-        controller.abort();
-        controllersMap.delete('trip_photos');
-      };
-    }
-
-    async function loadPhotos() {
-      // 1. Determine Hero Photo if not already set by custom/mock data
-      if (!tripData?.heroImageUrl) {
-        const heroCandidates = uniquePlaceIds.slice(0, maximumHeroCandidates);
-        for (const placeId of heroCandidates) {
-          if (controller.signal.aborted) return;
-          try {
-            const result = await photoRepository!.getPhoto(
-              { googlePlaceId: placeId, maxWidth: 1200 },
-              controller.signal
-            );
-            if (result.photoUri) {
-              setFetchedHeroUrl(result.photoUri);
-              setItemPhotos((prev) => ({ ...prev, [placeId]: result.photoUri }));
-              break;
-            }
-          } catch {
-            // Fall through to next candidate
-          }
-        }
+    async function load(): Promise<void> {
+      if (!activeTrip.heroImageUrl && coverRepository) {
+        const image = await coverRepository.getTripCover({
+          googlePlaceIds: verifiedIds,
+          destination: activeTrip.destination,
+          maxWidth: 1200,
+        }, controller.signal).catch(() => null);
+        if (image?.uri && !controller.signal.aborted) setHeroImage(image);
       }
-
-      // 2. Fetch item photos for verified places in the trip (bounded sequence)
-      for (const placeId of uniquePlaceIds) {
+      if (!placeRepository) return;
+      for (const googlePlaceId of verifiedIds) {
         if (controller.signal.aborted) return;
-        try {
-          const result = await photoRepository!.getPhoto(
-            { googlePlaceId: placeId, maxWidth: 600 },
-            controller.signal
-          );
-          if (result.photoUri) {
-            setItemPhotos((prev) => ({ ...prev, [placeId]: result.photoUri }));
-          }
-        } catch {
-          // Ignore individual photo fetch failure
+        const image = await placeRepository.getPlaceImage({ googlePlaceId, maxWidth: 600 }, controller.signal)
+          .catch(() => null);
+        if (image?.uri && !controller.signal.aborted) {
+          setItemImages((current) => ({ ...current, [googlePlaceId]: image }));
         }
       }
     }
-
-    void loadPhotos();
-
-    return () => {
-      controller.abort();
-      controllersMap.delete('trip_photos');
-    };
-  }, [tripData, photoRepository]);
+    void load();
+    return () => controller.abort();
+  }, [coverRepository, placeRepository, tripData]);
 
   return {
-    heroPhotoUrl,
-    itemPhotos,
+    heroImage,
+    heroPhotoUrl: tripData?.heroImageUrl || heroImage?.uri || null,
+    itemImages,
   };
 }

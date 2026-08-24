@@ -7,6 +7,10 @@ import type {
   TravelStyleOption,
 } from '../types';
 
+// Intentional local planner configuration. These are curated choice labels and
+// destination suggestions for the wizard, not live provider search results.
+// The historical `mock*` export names remain for compatibility with existing UI.
+
 export const mockPopularDestinations: DestinationOption[] = [
   {
     id: 'dest_bangkok',

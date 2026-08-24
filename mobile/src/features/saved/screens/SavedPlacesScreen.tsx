@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTranslation } from '../../../i18n';
-import type { PlacePhotoRepository, SavedPlacesRepository } from '../../../integration/repositories';
+import type { PlaceImageRepository, PlacePhotoRepository, SavedPlacesRepository } from '../../../integration/repositories';
 import type { MainTabParamList, RootStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
@@ -24,15 +24,17 @@ import { SavedEmptyState } from '../components/SavedEmptyState';
 import { SavedPlaceCard } from '../components/SavedPlaceCard';
 import { SavedUndoBar } from '../components/SavedUndoBar';
 import { useSavedPlaces } from '../hooks/useSavedPlaces';
+import type { SavedPlaceFixtureInput } from '../hooks/useSavedPlaces';
 import type { SavedPlaceUIItem } from '../types';
 
 type CombinedNavProp = NativeStackNavigationProp<RootStackParamList> &
   BottomTabNavigationProp<MainTabParamList>;
 
 type Props = {
-  customPlaces?: (SavedPlaceUIItem | any)[];
+  customPlaces?: SavedPlaceFixtureInput[];
   repository?: SavedPlacesRepository;
   photoRepository?: PlacePhotoRepository;
+  placeImageRepository?: PlaceImageRepository;
   fixtureMode?: boolean;
 };
 
@@ -40,6 +42,7 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
   customPlaces,
   repository,
   photoRepository,
+  placeImageRepository,
   fixtureMode,
 }: Props) {
   const navigation = useNavigation<CombinedNavProp>();
@@ -60,6 +63,7 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
   } = useSavedPlaces({
     repository,
     photoRepository,
+    placeImageRepository,
     customPlaces,
     fixtureMode: isFixture,
   });

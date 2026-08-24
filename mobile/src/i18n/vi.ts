@@ -234,6 +234,8 @@ export const viTranslations: Record<string, string> = {
   'addPlace.searchResults': 'Kết quả tìm kiếm',
   'addPlace.noResultsTitle': 'Không tìm thấy địa điểm',
   'addPlace.noResultsSubtitle': 'Thử tìm kiếm với tên hoặc danh mục khác.',
+  'addPlace.unavailableTitle': 'Chưa thể thêm địa điểm',
+  'addPlace.unavailableSubtitle': 'Chuyến đi này chưa hỗ trợ thêm địa điểm vào lịch trình.',
   'addPlace.clearSearch': 'Xóa tìm kiếm',
   'addPlace.dayLabel': 'Ngày',
   'addPlace.timeLabel': 'Thời gian',
@@ -399,6 +401,7 @@ export const viTranslations: Record<string, string> = {
   'home.greeting': 'Xin chào, lữ khách',
   'home.greetingMorning': 'Chào buổi sáng, Lữ khách',
   'home.subtitle': 'Điểm đến tiếp theo của bạn là đâu?',
+  'home.upcoming': 'Sắp tới',
   'home.subtitleMorning': 'Sẵn sàng cho hành trình tiếp theo?',
   'home.viewItinerary': 'Xem lịch trình',
   'home.quickActions': 'Hành động nhanh',
@@ -420,4 +423,6 @@ export const viTranslations: Record<string, string> = {
   'home.emptyHeroSubtitle': 'Tạo một chuyến đi để bắt đầu sắp xếp lịch trình, vé máy bay và nơi lưu trú.',
   'home.createTrip': 'Tạo chuyến đi',
   'home.loadingA11y': 'Đang tải màn hình chính',
+  'images.attribution': 'Nguồn ảnh',
+  'images.attributionHint': 'Mở nguồn ảnh và thông tin giấy phép',
 };

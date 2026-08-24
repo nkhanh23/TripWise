@@ -107,6 +107,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <PlaceDetailScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="loading"
           route={{ key: 'PlaceDetail', name: 'PlaceDetail', params: { placeId: 'place_wat_arun' } }}
         />,
@@ -120,6 +121,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <PlaceDetailScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="loading"
           route={{ key: 'PlaceDetail', name: 'PlaceDetail', params: { placeId: 'place_wat_arun' } }}
         />,
@@ -133,6 +135,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <RoutePreviewScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="loading"
           route={{ key: 'RoutePreview', name: 'RoutePreview', params: { destinationId: 'place_wat_arun' } }}
         />,
@@ -162,6 +165,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <PlaceDetailScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="error"
           route={{ key: 'PlaceDetail', name: 'PlaceDetail', params: { placeId: 'place_wat_arun' } }}
         />,
@@ -179,6 +183,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <PlaceDetailScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="error"
           route={{ key: 'PlaceDetail', name: 'PlaceDetail', params: { placeId: 'place_wat_arun' } }}
         />,
@@ -193,6 +198,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <RoutePreviewScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="error"
           route={{ key: 'RoutePreview', name: 'RoutePreview', params: { destinationId: 'place_wat_arun' } }}
         />,
@@ -207,6 +213,7 @@ describe('Shared Component Polish & State Completeness (FE-P16-T001)', () => {
       await renderWithProviders(
         <RoutePreviewScreen
           {...mockNavProps}
+          fixtureMode
           initialStatus="error"
           route={{ key: 'RoutePreview', name: 'RoutePreview', params: { destinationId: 'place_wat_arun' } }}
         />,

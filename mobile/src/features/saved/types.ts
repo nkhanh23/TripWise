@@ -1,4 +1,5 @@
 import type { ExploreCategory } from '../explore/types';
+import type { ResolvedImage } from '../../integration/contracts';
 
 export type SavedPlaceUIItem = {
   id: string;
@@ -10,6 +11,7 @@ export type SavedPlaceUIItem = {
   category: ExploreCategory;
   categoryLabel: string;
   imageUrl?: string;
+  resolvedImage?: ResolvedImage;
   rating?: number;
   userRatingCount?: number;
   createdAt: string;

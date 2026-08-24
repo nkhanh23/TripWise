@@ -1,4 +1,5 @@
 import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type { ResolvedImage } from '../../integration/contracts';
 
 export type TripStatus = 'upcoming' | 'past';
 
@@ -22,6 +23,9 @@ export type TripSummary = {
   statusBadgeVariant?: 'primary' | 'surface';
   travelers?: TravelerAvatar[];
   actionLabel?: string;
+  coverGooglePlaceIds?: string[];
+  coverImageUrl?: string;
+  coverImage?: ResolvedImage;
 };
 
 export type TripSectionData = {
@@ -45,6 +49,7 @@ export type ItineraryItem = {
   subtitle?: string;
   description?: string;
   imageUrl?: string;
+  resolvedImage?: ResolvedImage;
   iconName: keyof typeof MaterialIcons.glyphMap;
   iconBgVariant?: 'primary' | 'secondary' | 'tertiary';
   placeId?: string;

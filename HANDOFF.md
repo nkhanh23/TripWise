@@ -10,10 +10,10 @@ Tài liệu handoff được tách theo ownership để Backend và React Native
 
 - **Backend:** Original roadmap COMPLETE + Post-BE authorized Integration extensions ([`HANDOFF_BE.md`](./HANDOFF_BE.md))
 - **Frontend:** COMPLETE ([`HANDOFF_FE.md`](./HANDOFF_FE.md))
-- **Integration:** ACTIVE ([`HANDOFF_INTEGRATION.md`](./HANDOFF_INTEGRATION.md))
-  - INT-P0 through INT-P5: COMPLETE
-  - INT-P6: OPEN / PAUSED (substantial runtime evidence PASS; closure intentionally deferred)
-  - INT-P7: ACTIVE (Weather, Saved Places persistence, Photos, Ratings implemented; Profile/Settings remote/live PASS with Android partial; current Stitch audit pending)
+- **Integration:** COMPLETE ([`HANDOFF_INTEGRATION.md`](./HANDOFF_INTEGRATION.md))
+  - INT-P0 through INT-P9: COMPLETE
+  - Current target runtime: Android PASS
+  - iOS runtime: deferred by Windows environment under ADR-019
 - **Next Operator:** Codex
 
 Roadmap index → [`PHASES.md`](./PHASES.md)

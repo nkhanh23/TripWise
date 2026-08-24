@@ -1,6 +1,6 @@
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import { TWPlaceCard } from '../src/features/place/components/TWPlaceCard';
-import { getMockPlaceDetail } from '../src/features/place/data/mockPlaceDetail';
+import * as placeDetailFixtures from '../src/features/place/data/mockPlaceDetail';
 import { PlaceDetailScreen } from '../src/features/place/screens/PlaceDetailScreen';
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -27,7 +27,7 @@ describe('PlaceDetailScreen', () => {
       params: { placeId: 'place_wat_arun' },
     };
 
-    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+    await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     // Header title
     expect(screen.getByText('Wat Arun')).toBeTruthy();
@@ -77,7 +77,7 @@ describe('PlaceDetailScreen', () => {
       params: { placeId: 'place_wat_arun' },
     };
 
-    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+    await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     const saveButton = screen.getByLabelText('Lưu địa điểm');
     expect(saveButton).toBeTruthy();
@@ -99,7 +99,7 @@ describe('PlaceDetailScreen', () => {
       params: { placeId: 'place_wat_arun' },
     };
 
-    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+    await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     await user.press(screen.getByLabelText('Back'));
 
@@ -140,7 +140,7 @@ describe('PlaceDetailScreen', () => {
     };
 
     await render(
-      <PlaceDetailScreen initialStatus="error" navigation={mockNavigation} route={route} />
+      <PlaceDetailScreen fixtureMode initialStatus="error" navigation={mockNavigation} route={route} />
     );
 
     expect(screen.getByText('Unable to load place details')).toBeTruthy();
@@ -160,7 +160,7 @@ describe('PlaceDetailScreen', () => {
       params: { placeId: 'place_wat_arun' },
     };
 
-    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+    await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     expect(screen.getByText('Read more')).toBeTruthy();
 
@@ -173,7 +173,7 @@ describe('PlaceDetailScreen', () => {
 
   it('renders TWPlaceCard component and handles press callback', async () => {
     const user = userEvent.setup();
-    const place = getMockPlaceDetail('place_grand_palace')!;
+    const place = placeDetailFixtures.getMockPlaceDetail('place_grand_palace')!;
     const onPressMock = jest.fn();
 
     await render(<TWPlaceCard onPress={onPressMock} place={place} />);
@@ -193,7 +193,7 @@ describe('PlaceDetailScreen', () => {
       params: { placeId: 'place_wat_arun' },
     };
 
-    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+    await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     await user.press(screen.getByText('Get Directions'));
 
@@ -201,5 +201,17 @@ describe('PlaceDetailScreen', () => {
       destinationId: 'place_wat_arun',
       destinationName: 'Wat Arun',
     });
+  });
+
+  it('does not resolve fixture details for a production place identity', async () => {
+    const route: any = { params: { placeId: '1e9a8320-2222-4fcc-9999-999999999999' } };
+    const getMockPlaceDetailSpy = jest.spyOn(placeDetailFixtures, 'getMockPlaceDetail');
+
+    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+
+    expect(getMockPlaceDetailSpy).not.toHaveBeenCalled();
+    expect(screen.getByText('Place not found')).toBeTruthy();
+    expect(screen.queryByText('Sarah Jenkins')).toBeNull();
+    expect(screen.queryByText('100 THB per foreigner')).toBeNull();
   });
 });

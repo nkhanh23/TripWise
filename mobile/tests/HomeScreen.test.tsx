@@ -1,5 +1,6 @@
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import { HomeScreen } from '../src/features/home/HomeScreen';
+import type { SavedTripsRepository } from '../src/integration/repositories';
 import { mockHomeEmptyData, mockHomePopulatedData } from '../src/features/home/data/mockHome';
 import { ThemeProvider } from '../src/theme';
 
@@ -29,7 +30,7 @@ describe('HomeScreen', () => {
   });
 
   it('renders HomeScreen populated state with upcoming trip, quick actions, drafting, and saved section', async () => {
-    await render(<HomeScreen initialStatus="ready" />);
+    await render(<HomeScreen customData={mockHomePopulatedData} initialStatus="ready" />);
 
     // Top Bar
     expect(screen.getByText('TripWise')).toBeTruthy();
@@ -77,6 +78,7 @@ describe('HomeScreen', () => {
 
     await render(
       <HomeScreen
+        customData={mockHomeEmptyData}
         initialStatus="empty"
         onNavigateCreateTrip={mockCreateTrip}
       />
@@ -124,6 +126,7 @@ describe('HomeScreen', () => {
 
     await render(
       <HomeScreen
+        customData={mockHomePopulatedData}
         onNavigateCreateTrip={onNavigateCreateTripMock}
         onNavigateExplore={onNavigateExploreMock}
         onNavigatePlaceDetail={onNavigatePlaceDetailMock}
@@ -166,11 +169,25 @@ describe('HomeScreen', () => {
   it('renders correctly in Dark theme mode', async () => {
     await render(
       <ThemeProvider initialPreference="dark">
-        <HomeScreen />
+        <HomeScreen customData={mockHomePopulatedData} />
       </ThemeProvider>
     );
 
     expect(screen.getByText('Hello, traveler')).toBeTruthy();
     expect(screen.getByText('Kyoto Autumn Retreat')).toBeTruthy();
+  });
+
+  it('uses the injected production repository instead of fixture content by default', async () => {
+    const repository: Pick<SavedTripsRepository, 'list'> = {
+      list: jest.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    };
+
+    await render(<HomeScreen repository={repository as SavedTripsRepository} />);
+
+    await waitFor(() => expect(repository.list).toHaveBeenCalledTimes(1));
+    expect(screen.getByText('Plan your next adventure')).toBeTruthy();
+    expect(screen.queryByText('Kyoto Autumn Retreat')).toBeNull();
+    expect(screen.queryByText('Bangkok Adventure')).toBeNull();
+    expect(screen.queryByText('Cafe Anthracite')).toBeNull();
   });
 });

@@ -5,6 +5,9 @@ import {
   mockUpcomingTrips,
 } from '../src/features/trips/data/mockTrips';
 import { MyTripsScreen } from '../src/features/trips/screens/MyTripsScreen';
+import type { SavedTripSummary } from '../src/integration/contracts';
+import type { PlacePhotoRepository, SavedTripsRepository } from '../src/integration/repositories';
+import { asGooglePlaceId, asTripId } from '../src/integration/validation';
 
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 0, left: 0, right: 0 }),
@@ -22,6 +25,49 @@ jest.mock('@react-navigation/native', () => {
   };
 });
 
+const remoteTrip: SavedTripSummary = {
+  id: asTripId('11111111-1111-4111-8111-111111111111'),
+  title: 'Bangkok Explorer',
+  destination: 'Bangkok, Thailand',
+  startDate: '2027-01-10',
+  endDate: '2027-01-11',
+  estimatedBudget: null,
+  currency: null,
+  createdAt: '2026-08-24T00:00:00.000Z',
+  dayCount: 2,
+  itemCount: 4,
+  coverGooglePlaceIds: [
+    asGooglePlaceId('ChIJaSv_6gaZ4jARnbiUVn6Z_YY'),
+    asGooglePlaceId('ChIJPzZsMU6Z4jARQUzvk913bCo'),
+  ],
+};
+
+function createSavedTripsRepository(items: SavedTripSummary[] = [remoteTrip]): {
+  repository: SavedTripsRepository;
+  getDetail: jest.Mock;
+  list: jest.Mock;
+} {
+  const list = jest.fn(async () => ({ items, nextCursor: null }));
+  const getDetail = jest.fn(async () => null);
+  return {
+    list,
+    getDetail,
+    repository: {
+      list,
+      getDetail,
+      updateItemNote: async () => false,
+      deleteTrip: async () => false,
+      getStats: async () => ({ tripsCount: items.length, savedPlacesCount: 0 }),
+    },
+  };
+}
+
+function createPhotoRepository(
+  getPhoto: PlacePhotoRepository['getPhoto'],
+): PlacePhotoRepository {
+  return { getPhoto };
+}
+
 describe('MyTripsScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -32,7 +78,7 @@ describe('MyTripsScreen', () => {
   });
 
   it('renders MyTripsScreen with top bar, headings, upcoming/past sections, and FAB', async () => {
-    await render(<MyTripsScreen />);
+    await render(<MyTripsScreen fixtureMode />);
 
     // Top Bar
     expect(screen.getByText('TripWise')).toBeTruthy();
@@ -77,7 +123,7 @@ describe('MyTripsScreen', () => {
     const user = userEvent.setup();
     const onSelectTripMock = jest.fn();
 
-    await render(<MyTripsScreen onSelectTrip={onSelectTripMock} />);
+    await render(<MyTripsScreen fixtureMode onSelectTrip={onSelectTripMock} />);
 
     await user.press(
       screen.getByLabelText('Kyoto Autumn Retreat, Kyoto, Japan, Oct 14 - Oct 22')
@@ -90,7 +136,7 @@ describe('MyTripsScreen', () => {
     const user = userEvent.setup();
     const onSelectTripMock = jest.fn();
 
-    await render(<MyTripsScreen onSelectTrip={onSelectTripMock} />);
+    await render(<MyTripsScreen fixtureMode onSelectTrip={onSelectTripMock} />);
 
     await user.press(screen.getByLabelText('Swiss Alps Hiking, Aug 2023'));
 
@@ -101,7 +147,7 @@ describe('MyTripsScreen', () => {
     const user = userEvent.setup();
     const onCreateTripMock = jest.fn();
 
-    await render(<MyTripsScreen onCreateTrip={onCreateTripMock} />);
+    await render(<MyTripsScreen fixtureMode onCreateTrip={onCreateTripMock} />);
 
     await user.press(screen.getByLabelText('Tạo chuyến đi'));
 
@@ -166,7 +212,7 @@ describe('MyTripsScreen', () => {
   it('renders error alert and recovers on retry', async () => {
     const user = userEvent.setup();
 
-    await render(<MyTripsScreen initialStatus="error" />);
+    await render(<MyTripsScreen fixtureMode initialStatus="error" />);
 
     expect(screen.getByText('Unable to load trips')).toBeTruthy();
     expect(screen.getByText('Retry')).toBeTruthy();
@@ -177,5 +223,92 @@ describe('MyTripsScreen', () => {
       expect(screen.queryByText('Unable to load trips')).toBeNull();
     });
     expect(screen.getByText('Kyoto Autumn Retreat')).toBeTruthy();
+  });
+
+  it('uses an empty safe state without a repository or explicit fixture', async () => {
+    await render(<MyTripsScreen />);
+
+    expect(screen.getByText('No trips yet')).toBeTruthy();
+    expect(screen.queryByText('Kyoto Autumn Retreat')).toBeNull();
+  });
+
+  it('enriches a remote trip card from the trusted compact cover identity without detail N+1', async () => {
+    const { repository, getDetail, list } = createSavedTripsRepository();
+    const getPhoto = jest.fn(async ({ googlePlaceId }: { googlePlaceId: string }) => ({
+      googlePlaceId,
+      photoUri: 'https://lh3.googleusercontent.com/places/bangkok-cover.jpg',
+    }));
+
+    await render(
+      <MyTripsScreen
+        photoRepository={createPhotoRepository(getPhoto)}
+        repository={repository}
+      />
+    );
+
+    expect(await screen.findByLabelText('Bangkok Explorer cover photo')).toBeTruthy();
+    expect(list).toHaveBeenCalledWith({ limit: 20 });
+    expect(getDetail).not.toHaveBeenCalled();
+    expect(getPhoto).toHaveBeenCalledTimes(1);
+    expect(getPhoto).toHaveBeenCalledWith(
+      { googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY', maxWidth: 600 },
+      expect.any(AbortSignal),
+    );
+  });
+
+  it('keeps the trip visible and uses no fake cover when both trusted candidates have no photo', async () => {
+    const { repository } = createSavedTripsRepository();
+    const getPhoto = jest.fn(async ({ googlePlaceId }: { googlePlaceId: string }) => ({
+      googlePlaceId,
+      photoUri: null,
+    }));
+
+    await render(
+      <MyTripsScreen
+        photoRepository={createPhotoRepository(getPhoto)}
+        repository={repository}
+      />
+    );
+
+    expect(await screen.findByText('Bangkok Explorer')).toBeTruthy();
+    await waitFor(() => expect(getPhoto).toHaveBeenCalledTimes(2));
+    expect(screen.queryByLabelText('Bangkok Explorer cover photo')).toBeNull();
+    expect(screen.queryByText('Unable to load trips')).toBeNull();
+  });
+
+  it('isolates provider failures from the trip-list state', async () => {
+    const { repository } = createSavedTripsRepository();
+    const getPhoto = jest.fn(async () => {
+      throw new Error('provider unavailable');
+    });
+
+    await render(
+      <MyTripsScreen
+        photoRepository={createPhotoRepository(getPhoto)}
+        repository={repository}
+      />
+    );
+
+    expect(await screen.findByText('Bangkok Explorer')).toBeTruthy();
+    await waitFor(() => expect(getPhoto).toHaveBeenCalledTimes(2));
+    expect(screen.queryByText('Unable to load trips')).toBeNull();
+    expect(screen.queryByLabelText('Bangkok Explorer cover photo')).toBeNull();
+  });
+
+  it('keeps explicit fixtures deterministic without invoking the live photo repository', async () => {
+    const getPhoto = jest.fn(async ({ googlePlaceId }: { googlePlaceId: string }) => ({
+      googlePlaceId,
+      photoUri: 'https://example.invalid/fixture-must-not-load.jpg',
+    }));
+
+    await render(
+      <MyTripsScreen
+        fixtureMode
+        photoRepository={createPhotoRepository(getPhoto)}
+      />
+    );
+
+    expect(screen.getByText('Kyoto Autumn Retreat')).toBeTruthy();
+    expect(getPhoto).not.toHaveBeenCalled();
   });
 });

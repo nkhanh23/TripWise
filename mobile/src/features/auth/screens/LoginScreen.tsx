@@ -76,36 +76,6 @@ export function LoginScreen({ navigation }: Props) {
 
       {/* Form Section */}
       <View style={styles.formContainer}>
-        {/* Demo Account Quick Fill Banner */}
-        <Pressable
-          accessibilityHint={t('auth.login.demoSubtitle')}
-          accessibilityLabel={t('auth.login.demoTitle')}
-          accessibilityRole="button"
-          onPress={() => {
-            setEmail('sarah.j@example.com');
-            setPassword('password123');
-            if (errorMessage) setErrorMessage(null);
-          }}
-          style={({ pressed }) => [
-            styles.demoBanner,
-            {
-              backgroundColor: colors.background.surfaceVariant,
-              borderColor: colors.border.default,
-            },
-            pressed && styles.demoBannerPressed,
-          ]}>
-          <MaterialIcons color={colors.brand.primary} name="flash-on" size={20} />
-          <View style={styles.demoBannerContent}>
-            <Text style={[styles.demoBannerTitle, { color: colors.text.primary }]}>
-              {t('auth.login.demoTitle')}
-            </Text>
-            <Text style={[styles.demoBannerEmail, { color: colors.text.muted }]}>
-              sarah.j@example.com • password123
-            </Text>
-          </View>
-          <MaterialIcons color={colors.brand.primary} name="touch-app" size={18} />
-        </Pressable>
-
         {/* Email Field */}
         <View style={styles.formGroup}>
           <Text style={[styles.label, { color: colors.text.primary }]}>
@@ -303,29 +273,6 @@ const styles = StyleSheet.create({
   formContainer: {
     gap: spacing.md,
     width: '100%',
-  },
-  demoBanner: {
-    alignItems: 'center',
-    borderRadius: radius.card,
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: spacing.sm,
-    padding: spacing.md,
-  },
-  demoBannerPressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.98 }],
-  },
-  demoBannerContent: {
-    flex: 1,
-  },
-  demoBannerTitle: {
-    fontSize: 13,
-    fontWeight: typography.fontWeight.bold,
-  },
-  demoBannerEmail: {
-    fontSize: 12,
-    marginTop: 2,
   },
   formGroup: {
     gap: spacing.xs,

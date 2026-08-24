@@ -74,6 +74,12 @@ begin
   perform pg_temp.assert_saved_trip(jsonb_array_length(v_page2->'items')=2, 'Second page size mismatch.');
   perform pg_temp.assert_saved_trip(not (v_ids1 && v_ids2), 'Cursor pagination duplicated a trip.');
   perform pg_temp.assert_saved_trip((v_page1#>>'{items,0,title}')='Delete me' and (v_page1#>>'{items,1,title}')='List 3', 'List ordering is not deterministic.');
+  perform pg_temp.assert_saved_trip(
+    (select listed->'coverGooglePlaceIds'
+     from jsonb_array_elements(public.list_saved_trips(50, null, null)->'items') as listed
+     where listed->>'title' = 'Bangkok detail') = '["google-verified-b"]'::jsonb,
+    'List cover candidates must contain only ordered provenance-verified Google Place IDs.'
+  );
 end
 $$;
 

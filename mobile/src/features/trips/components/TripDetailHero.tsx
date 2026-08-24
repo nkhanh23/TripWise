@@ -4,12 +4,15 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
+import type { ResolvedImage } from '../../../integration/contracts';
+import { ImageAttribution } from '../../images/components/ImageAttribution';
 
 type Props = {
   destination: string;
   dateLabel: string;
   heroImageUrl?: string;
   topInset?: number;
+  resolvedImage?: ResolvedImage;
 };
 
 export const TripDetailHero = memo(function TripDetailHero({
@@ -17,6 +20,7 @@ export const TripDetailHero = memo(function TripDetailHero({
   dateLabel,
   heroImageUrl,
   topInset = 0,
+  resolvedImage,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const hasValidPhoto = Boolean(
@@ -56,6 +60,8 @@ export const TripDetailHero = memo(function TripDetailHero({
           />
         </View>
       )}
+
+      <ImageAttribution attribution={resolvedImage?.attribution} />
 
       {/* Gradient / Content overlay with clearance for TopBar and Bento Card */}
       <View

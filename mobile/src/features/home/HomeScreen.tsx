@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -10,6 +10,12 @@ import {
 
 import { AppText } from '../../components/AppText';
 import { useTranslation } from '../../i18n';
+import { SequentialTripCoverImageRepository } from '../../integration/imageResolution';
+import type { SavedTripsRepository, TripCoverImageRepository } from '../../integration/repositories';
+import { SupabasePlacePhotoRepository } from '../../integration/remote/supabasePlacePhotoRepository';
+import { SupabaseSavedTripsRepository } from '../../integration/remote/supabaseTripRepositories';
+import { SupabaseWikimediaImageRepository } from '../../integration/remote/supabaseWikimediaImageRepository';
+import { supabase } from '../../lib/supabase/client';
 import { useTheme } from '../../theme';
 import { spacing, typography } from '../../theme/tokens';
 import { HomeContinuePlanningCard } from './components/HomeContinuePlanningCard';
@@ -26,6 +32,9 @@ import type { HomeData, HomeUIStatus } from './types';
 type Props = {
   initialStatus?: HomeUIStatus;
   customData?: HomeData;
+  fixtureMode?: boolean;
+  repository?: SavedTripsRepository;
+  tripCoverRepository?: TripCoverImageRepository;
   onNavigatePlan?: () => void;
   onNavigateExplore?: () => void;
   onNavigateTrips?: () => void;
@@ -39,6 +48,9 @@ type Props = {
 export const HomeScreen = memo(function HomeScreen({
   initialStatus = 'ready',
   customData,
+  fixtureMode = false,
+  repository,
+  tripCoverRepository,
   onNavigatePlan,
   onNavigateExplore,
   onNavigateTrips,
@@ -50,14 +62,64 @@ export const HomeScreen = memo(function HomeScreen({
 }: Props) {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
-  const { t } = useTranslation();
-  const [status] = useState<HomeUIStatus>(initialStatus);
+  const { formatDateRange, t } = useTranslation();
+  const [status, setStatus] = useState<HomeUIStatus>(initialStatus);
+  const [remoteTrip, setRemoteTrip] = useState<HomeData['upcomingTrip']>(null);
+
+  const effectiveRepository = useMemo(
+    () => repository ?? new SupabaseSavedTripsRepository(supabase),
+    [repository],
+  );
+  const effectiveTripCoverRepository = useMemo(() => {
+    if (tripCoverRepository) return tripCoverRepository;
+    const google = new SupabasePlacePhotoRepository(supabase);
+    const wikimedia = new SupabaseWikimediaImageRepository(supabase);
+    return new SequentialTripCoverImageRepository(google, wikimedia, wikimedia);
+  }, [tripCoverRepository]);
+
+  useEffect(() => {
+    if (customData || fixtureMode || initialStatus !== 'ready') return undefined;
+    const controller = new AbortController();
+    setStatus('loading');
+    void effectiveRepository.list({ limit: 20 }, controller.signal)
+      .then((page) => {
+        if (controller.signal.aborted) return;
+        const today = new Date().toISOString().slice(0, 10);
+        const upcoming = page.items
+          .filter((trip) => trip.endDate >= today)
+          .sort((a, b) => a.startDate.localeCompare(b.startDate))[0];
+        const mappedTrip: HomeData['upcomingTrip'] = upcoming ? {
+          id: upcoming.id,
+          title: upcoming.title,
+          dateLabel: formatDateRange(upcoming.startDate, upcoming.endDate),
+          badgeText: t('home.upcoming'),
+          destination: upcoming.destination,
+        } : null;
+        setRemoteTrip(mappedTrip);
+        setStatus(upcoming ? 'ready' : 'empty');
+        if (upcoming && mappedTrip) {
+          void effectiveTripCoverRepository.getTripCover({
+            googlePlaceIds: upcoming.coverGooglePlaceIds,
+            destination: upcoming.destination,
+            maxWidth: 900,
+          }, controller.signal).then((image) => {
+            if (image.uri && !controller.signal.aborted) {
+              setRemoteTrip({ ...mappedTrip, imageUrl: image.uri, resolvedImage: image });
+            }
+          }).catch(() => undefined);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setStatus('empty');
+      });
+    return () => controller.abort();
+  }, [customData, effectiveRepository, effectiveTripCoverRepository, fixtureMode, formatDateRange, initialStatus, t]);
 
   const data: HomeData = useMemo(() => {
     if (customData) return customData;
-    if (initialStatus === 'empty') return mockHomeEmptyData;
-    return mockHomePopulatedData;
-  }, [customData, initialStatus]);
+    if (fixtureMode) return initialStatus === 'empty' ? mockHomeEmptyData : mockHomePopulatedData;
+    return { greeting: '', subtitle: '', upcomingTrip: remoteTrip, draftTrip: null, savedPlaces: [] };
+  }, [customData, fixtureMode, initialStatus, remoteTrip]);
 
   // Navigation handlers
   const handlePlan = useCallback(() => {
@@ -165,10 +227,7 @@ export const HomeScreen = memo(function HomeScreen({
                   onPressContinue={handleCreateTrip}
                 />
               ) : null}
-              <HomeExplorePreview
-                inspiration={data.inspiration}
-                onPressExplore={handleExplore}
-              />
+              {data.inspiration ? <HomeExplorePreview inspiration={data.inspiration} onPressExplore={handleExplore} /> : null}
             </View>
           ) : (
             /* Inspiration Preview (Empty Mode) */
@@ -187,10 +246,7 @@ export const HomeScreen = memo(function HomeScreen({
                   </Text>
                 </Pressable>
               </View>
-              <HomeExplorePreview
-                inspiration={data.inspiration}
-                onPressExplore={handleExplore}
-              />
+              {data.inspiration ? <HomeExplorePreview inspiration={data.inspiration} onPressExplore={handleExplore} /> : null}
             </View>
           )}
 

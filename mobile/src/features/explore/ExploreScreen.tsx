@@ -12,7 +12,6 @@ import { ExplorePlaceList } from './components/ExplorePlaceList';
 import { ExplorePlacePreview } from './components/ExplorePlacePreview';
 import { ExploreSearchBar } from './components/ExploreSearchBar';
 import { ExploreViewToggle } from './components/ExploreViewToggle';
-import { mockExplorePlaces } from './data/mockPlaces';
 import { clusterPlaces } from './helpers/clustering';
 import type {
   ClusterMarkerModel,
@@ -31,7 +30,7 @@ type Props = {
 
 export function ExploreScreen({
   initialStatus = 'ready',
-  initialPlaces = mockExplorePlaces,
+  initialPlaces = [],
   initialViewMode = 'map',
   onNavigatePlaceDetail,
 }: Props) {

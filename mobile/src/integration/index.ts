@@ -1,6 +1,7 @@
 export * from './contracts';
 export * from './errors';
 export * from './idempotency';
+export * from './imageResolution';
 export * from './mappers';
 export * from './reliability';
 export * from './repositories';
@@ -11,3 +12,4 @@ export * from './remote/supabaseAuthRepository';
 export * from './remote/supabasePlaceResolutionRepository';
 export * from './remote/supabaseProfileRepository';
 export * from './remote/supabaseTripRepositories';
+export * from './remote/supabaseWikimediaImageRepository';

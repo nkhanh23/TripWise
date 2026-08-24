@@ -5,6 +5,8 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
+import type { ResolvedImage } from '../../../integration/contracts';
+import { ImageAttribution } from '../../images/components/ImageAttribution';
 
 type CardPlaceItem = {
   id: string;
@@ -13,6 +15,7 @@ type CardPlaceItem = {
   address?: string;
   imageUrl?: string;
   rating?: number;
+  resolvedImage?: ResolvedImage;
 };
 
 type Props = {
@@ -124,6 +127,8 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
             {locationTag}
           </Text>
         </View>
+
+        <ImageAttribution attribution={place.resolvedImage?.attribution} />
       </View>
 
       {/* 2. Info Area */}

@@ -24,6 +24,24 @@ type GooglePhotoMediaResponse = {
   photoUri?: unknown;
 };
 
+function photoDiagnostic(providerStatus: number, body: GooglePlaceDetailResponse | null) {
+  const hasPhotosProperty = body !== null
+    && Object.prototype.hasOwnProperty.call(body, 'photos');
+  const photos = Array.isArray(body?.photos) ? body.photos : [];
+  const photosIsArray = Array.isArray(body?.photos);
+  const photosCount = photos.length;
+  const first = photos[0] ?? null;
+  return {
+    providerStatus,
+    hasPhotosProperty,
+    photosIsArray,
+    photosCount,
+    firstPhotoHasName: typeof first === 'object'
+      && first !== null
+      && typeof (first as GooglePhotoMetadata).name === 'string',
+  };
+}
+
 function timeoutMilliseconds(): number {
   const configured = Number(Deno.env.get('GOOGLE_PLACES_TIMEOUT_MS'));
   return Number.isFinite(configured) && configured >= 1_000 && configured <= 15_000
@@ -62,6 +80,7 @@ export async function fetchPlacePhotoFromGoogle(
   // 1. Fetch Place Details with photos fieldmask
   const placeUrl = `https://places.googleapis.com/v1/places/${encodeURIComponent(googlePlaceId)}`;
   let photoMetadata: GooglePhotoMetadata | null = null;
+  let diagnostic = photoDiagnostic(0, null);
 
   for (let attempt = 1; attempt <= maximumAttempts; attempt += 1) {
     const controller = new AbortController();
@@ -78,7 +97,7 @@ export async function fetchPlacePhotoFromGoogle(
 
       if (!response.ok) {
         if (response.status === 404) {
-          return { googlePlaceId, photoUri: null };
+          return { googlePlaceId, photoUri: null, diagnostic: photoDiagnostic(404, null) };
         }
         const mapped = providerError(response.status);
         if (attempt < maximumAttempts && response.status >= 500) continue;
@@ -86,6 +105,7 @@ export async function fetchPlacePhotoFromGoogle(
       }
 
       const body = (await response.json()) as GooglePlaceDetailResponse;
+      diagnostic = photoDiagnostic(response.status, body);
       if (Array.isArray(body.photos) && body.photos.length > 0) {
         const first = body.photos[0];
         if (typeof first === 'object' && first !== null && typeof (first as GooglePhotoMetadata).name === 'string') {
@@ -107,7 +127,7 @@ export async function fetchPlacePhotoFromGoogle(
   }
 
   if (!photoMetadata || typeof photoMetadata.name !== 'string') {
-    return { googlePlaceId, photoUri: null };
+    return { googlePlaceId, photoUri: null, diagnostic };
   }
 
   // 2. Fetch Photo Media URI with skipHttpRedirect=true
@@ -148,6 +168,7 @@ export async function fetchPlacePhotoFromGoogle(
       return {
         googlePlaceId,
         photoUri,
+        diagnostic,
         authorAttribution,
       };
     } catch (error) {
@@ -163,5 +184,5 @@ export async function fetchPlacePhotoFromGoogle(
     }
   }
 
-  return { googlePlaceId, photoUri: null };
+  return { googlePlaceId, photoUri: null, diagnostic };
 }

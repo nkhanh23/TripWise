@@ -209,23 +209,7 @@ export const SettingsScreen = memo(function SettingsScreen({
           />
         </SettingsSection>
 
-        {/* 4. SUPPORT Section */}
-        <SettingsSection title={t('settings.sections.support')}>
-          <SettingsRow
-            iconName="help"
-            onPress={() => navigation.navigate('HelpSupport')}
-            title={t('settings.support.helpSupport')}
-          />
-          <SettingsRow
-            iconName="info"
-            showChevron={false}
-            showDivider={false}
-            title={t('settings.support.about')}
-            value={t('settings.support.version')}
-          />
-        </SettingsSection>
-
-        {/* 5. ACCOUNT Section */}
+        {/* 4. ACCOUNT Section */}
         <SettingsSection title={t('settings.sections.account')}>
           <SettingsRow
             iconName="lock-reset"

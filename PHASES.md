@@ -10,10 +10,9 @@ TripWise dùng ba roadmap độc lập theo ownership:
 
 - **Backend:** Codex — Original roadmap COMPLETE + Post-BE authorized Integration extensions
 - **Frontend:** Antigravity — COMPLETE
-- **Integration:** Codex — ACTIVE (INT-P0 to INT-P5 COMPLETE; INT-P6 OPEN / PAUSED; INT-P7 ACTIVE)
+- **Integration:** Codex — COMPLETE (INT-P0 through INT-P9 COMPLETE)
 - **Next Operator:** Codex
 
 ## Rule
 
 Không dùng `PHASES.md` để track implementation chi tiết. Đọc roadmap và handoff đúng ownership trước mỗi task; integration chỉ bắt đầu khi user yêu cầu rõ ràng.
-

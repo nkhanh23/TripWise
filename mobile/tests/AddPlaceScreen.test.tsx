@@ -5,6 +5,7 @@ import {
   getMockTripDetail,
   resetMockTripDetail,
 } from '../src/features/trips/data/mockTripDetail';
+import * as tripFixtures from '../src/features/trips/data/mockTripDetail';
 import { AddPlaceScreen } from '../src/features/trips/screens/AddPlaceScreen';
 import { TranslationProvider } from '../src/i18n';
 import { ThemeProvider } from '../src/theme';
@@ -191,6 +192,20 @@ describe('AddPlaceScreen (FE-P11-T001)', () => {
     await user.press(backButton);
 
     expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a production UUID trip unavailable without fixture lookup or local mutation', async () => {
+    const route: any = { params: { tripId: '1e9a8320-2222-4fcc-9999-999999999999' } };
+    const getMockTripDetailSpy = jest.spyOn(tripFixtures, 'getMockTripDetail');
+    const addPlaceSpy = jest.spyOn(tripFixtures, 'addPlaceToTripItinerary');
+
+    await renderWithProviders(<AddPlaceScreen navigation={mockNavigation} route={route} />);
+
+    expect(getMockTripDetailSpy).not.toHaveBeenCalled();
+    expect(addPlaceSpy).not.toHaveBeenCalled();
+    expect(screen.getByText('Adding places is unavailable')).toBeTruthy();
+    expect(screen.queryByText('Wat Arun')).toBeNull();
+    expect(screen.queryByText('Recommended for your trip')).toBeNull();
   });
 
   describe('Theme & Localization Matrix', () => {

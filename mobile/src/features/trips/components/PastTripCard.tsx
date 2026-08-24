@@ -1,9 +1,10 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
+import { ImageAttribution } from '../../images/components/ImageAttribution';
 import type { TripSummary } from '../types';
 
 type Props = {
@@ -28,6 +29,18 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
         },
         pressed && styles.pressed,
       ]}>
+      {trip.coverImageUrl ? (
+        <View style={styles.coverContainer}>
+          <Image
+            accessibilityLabel={`${trip.title} cover photo`}
+            resizeMode="cover"
+            source={{ uri: trip.coverImageUrl }}
+            style={styles.coverImage}
+          />
+          <ImageAttribution attribution={trip.coverImage?.attribution} />
+        </View>
+      ) : null}
+
       {/* Title */}
       <Text
         numberOfLines={1}
@@ -58,12 +71,21 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
 });
 
 const styles = StyleSheet.create({
+  coverContainer: {
+    position: 'relative',
+  },
   card: {
     borderRadius: radius.input, // 8px matching Stitch rounded-lg
     borderWidth: 1,
     gap: spacing.xs,
     marginBottom: spacing.sm,
     padding: spacing.md,
+  },
+  coverImage: {
+    borderRadius: radius.input,
+    height: 80,
+    marginBottom: spacing.xs,
+    width: '100%',
   },
   titleText: {
     fontSize: typography.body,

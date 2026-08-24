@@ -29,6 +29,8 @@ import type {
   SavePlaceCommand,
   SavedPlaceId,
   SavedPlaceTransport,
+  ResolvedImage,
+  WikimediaImageRequest,
 } from './contracts';
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -416,7 +418,7 @@ export function parseSavedTripsPage(value: unknown): SavedTripsPage {
   }
   const items = value.items.map((item) => {
     if (!isRecord(item)
-      || !hasOnlyKeys(item, ['id', 'title', 'destination', 'startDate', 'endDate', 'estimatedBudget', 'currency', 'createdAt', 'dayCount', 'itemCount'])
+      || !hasOnlyKeys(item, ['id', 'title', 'destination', 'startDate', 'endDate', 'estimatedBudget', 'currency', 'createdAt', 'dayCount', 'itemCount', 'coverGooglePlaceIds'])
       || !isUuid(item.id) || !isIsoDate(item.startDate) || !isIsoDate(item.endDate)
       || !isIsoTimestamp(item.createdAt)) {
       throw new ContractValidationError('saved trip summary');
@@ -427,11 +429,17 @@ export function parseSavedTripsPage(value: unknown): SavedTripsPage {
     const currency = nullableString(item.currency, 3);
     const dayCount = nonNegativeInteger(item.dayCount);
     const itemCount = nonNegativeInteger(item.itemCount);
+    const coverGooglePlaceIds = item.coverGooglePlaceIds === undefined ? [] : item.coverGooglePlaceIds;
+    const validCoverGooglePlaceIds = Array.isArray(coverGooglePlaceIds)
+      && coverGooglePlaceIds.length <= 2
+      && coverGooglePlaceIds.every((placeId) =>
+        typeof placeId === 'string' && /^[A-Za-z0-9_-]{10,200}$/.test(placeId));
     if (!title || !destination
       || (estimatedBudget === null && item.estimatedBudget !== null)
       || currency === undefined
       || (currency === null && item.currency !== null)
-      || (currency !== null && !currencyPattern.test(currency)) || dayCount === null || itemCount === null) {
+      || (currency !== null && !currencyPattern.test(currency)) || dayCount === null || itemCount === null
+      || !validCoverGooglePlaceIds) {
       throw new ContractValidationError('saved trip summary');
     }
     return {
@@ -445,6 +453,7 @@ export function parseSavedTripsPage(value: unknown): SavedTripsPage {
       createdAt: item.createdAt,
       dayCount,
       itemCount,
+      coverGooglePlaceIds: (coverGooglePlaceIds as string[]).map((placeId) => placeId as GooglePlaceId),
     };
   });
   return { items, nextCursor: parseCursor(value.nextCursor) };
@@ -698,6 +707,27 @@ export function parseGetPlacePhotoSuccess(value: unknown): { data: PlacePhoto } 
     throw new ContractValidationError('get-place-photo response');
   }
   let authorAttribution: PlacePhoto['authorAttribution'] = undefined;
+  let diagnostic: PlacePhoto['diagnostic'] = undefined;
+  if (value.data.diagnostic !== undefined && value.data.diagnostic !== null) {
+    if (!isRecord(value.data.diagnostic)
+      || typeof value.data.diagnostic.providerStatus !== 'number'
+      || !Number.isInteger(value.data.diagnostic.providerStatus)
+      || typeof value.data.diagnostic.hasPhotosProperty !== 'boolean'
+      || typeof value.data.diagnostic.photosIsArray !== 'boolean'
+      || typeof value.data.diagnostic.photosCount !== 'number'
+      || !Number.isInteger(value.data.diagnostic.photosCount)
+      || value.data.diagnostic.photosCount < 0
+      || typeof value.data.diagnostic.firstPhotoHasName !== 'boolean') {
+      throw new ContractValidationError('get-place-photo response');
+    }
+    diagnostic = {
+      providerStatus: value.data.diagnostic.providerStatus,
+      hasPhotosProperty: value.data.diagnostic.hasPhotosProperty,
+      photosIsArray: value.data.diagnostic.photosIsArray,
+      photosCount: value.data.diagnostic.photosCount,
+      firstPhotoHasName: value.data.diagnostic.firstPhotoHasName,
+    };
+  }
   if (value.data.authorAttribution !== undefined && value.data.authorAttribution !== null) {
     if (!isRecord(value.data.authorAttribution)) {
       throw new ContractValidationError('get-place-photo response');
@@ -712,7 +742,70 @@ export function parseGetPlacePhotoSuccess(value: unknown): { data: PlacePhoto } 
     data: {
       googlePlaceId: value.data.googlePlaceId,
       photoUri: value.data.photoUri,
+      ...(diagnostic ? { diagnostic } : {}),
       ...(authorAttribution ? { authorAttribution } : {}),
+    },
+  };
+}
+
+export function validateWikimediaImageRequest(value: unknown): WikimediaImageRequest {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['kind', 'googlePlaceId', 'destination', 'maxWidth'])) {
+    throw new ContractValidationError('get-wikimedia-image request');
+  }
+  const maxWidth = value.maxWidth === undefined ? undefined : finiteNumber(value.maxWidth, 100, 1600);
+  if (value.maxWidth !== undefined && maxWidth === null) {
+    throw new ContractValidationError('get-wikimedia-image request');
+  }
+  if (value.kind === 'PLACE' && typeof value.googlePlaceId === 'string'
+    && /^[A-Za-z0-9_-]{10,200}$/.test(value.googlePlaceId)
+    && value.destination === undefined) {
+    return { kind: 'PLACE', googlePlaceId: value.googlePlaceId, ...(maxWidth ? { maxWidth } : {}) };
+  }
+  const destination = requiredString(value.destination, 120);
+  if (value.kind === 'DESTINATION' && destination && value.googlePlaceId === undefined) {
+    return { kind: 'DESTINATION', destination, ...(maxWidth ? { maxWidth } : {}) };
+  }
+  throw new ContractValidationError('get-wikimedia-image request');
+}
+
+export function parseWikimediaImageSuccess(value: unknown): { data: ResolvedImage } {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['data']) || !isRecord(value.data)
+    || !hasOnlyKeys(value.data, ['uri', 'source', 'attribution', 'matchedEntity', 'confidence'])
+    || (value.data.uri !== null && typeof value.data.uri !== 'string')
+    || (value.data.source !== 'WIKIMEDIA_PLACE' && value.data.source !== 'DESTINATION_COVER')) {
+    throw new ContractValidationError('get-wikimedia-image response');
+  }
+  let attribution: ResolvedImage['attribution'];
+  if (value.data.attribution !== undefined) {
+    if (!isRecord(value.data.attribution)
+      || !hasOnlyKeys(value.data.attribution, ['displayName', 'sourceUrl', 'license', 'licenseUrl'])
+      || !requiredString(value.data.attribution.displayName, 500)
+      || !requiredString(value.data.attribution.sourceUrl, 2_048)
+      || (value.data.attribution.license !== undefined && !requiredString(value.data.attribution.license, 160))
+      || (value.data.attribution.licenseUrl !== undefined && !requiredString(value.data.attribution.licenseUrl, 2_048))) {
+      throw new ContractValidationError('get-wikimedia-image response');
+    }
+    attribution = {
+      displayName: value.data.attribution.displayName as string,
+      sourceUrl: value.data.attribution.sourceUrl as string,
+      ...(value.data.attribution.license === undefined ? {} : { license: value.data.attribution.license as string }),
+      ...(value.data.attribution.licenseUrl === undefined ? {} : { licenseUrl: value.data.attribution.licenseUrl as string }),
+    };
+  }
+  if (value.data.matchedEntity !== undefined && !requiredString(value.data.matchedEntity, 500)) {
+    throw new ContractValidationError('get-wikimedia-image response');
+  }
+  const confidence = value.data.confidence === undefined ? undefined : finiteNumber(value.data.confidence, 0, 1);
+  if (value.data.confidence !== undefined && confidence === null) {
+    throw new ContractValidationError('get-wikimedia-image response');
+  }
+  return {
+    data: {
+      uri: value.data.uri,
+      source: value.data.source,
+      ...(attribution ? { attribution } : {}),
+      ...(value.data.matchedEntity === undefined ? {} : { matchedEntity: value.data.matchedEntity as string }),
+      ...(typeof confidence === 'number' ? { confidence } : {}),
     },
   };
 }
@@ -799,4 +892,3 @@ export function parseSavedPlacesPage(value: unknown): {
     nextCursor,
   };
 }
-

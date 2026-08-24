@@ -227,6 +227,8 @@ export const enTranslations: Record<string, string> = {
   'addPlace.searchResults': 'Search Results',
   'addPlace.noResultsTitle': 'No places found',
   'addPlace.noResultsSubtitle': 'Try searching for a different place or category.',
+  'addPlace.unavailableTitle': 'Adding places is unavailable',
+  'addPlace.unavailableSubtitle': 'This trip cannot add places until itinerary editing is available.',
   'addPlace.clearSearch': 'Clear search',
   'addPlace.dayLabel': 'Day',
   'addPlace.timeLabel': 'Time',
@@ -392,6 +394,7 @@ export const enTranslations: Record<string, string> = {
   'home.greeting': 'Hello, traveler',
   'home.greetingMorning': 'Good morning, Traveler',
   'home.subtitle': 'Where are we heading next?',
+  'home.upcoming': 'Upcoming',
   'home.subtitleMorning': 'Ready for your next journey?',
   'home.viewItinerary': 'View Itinerary',
   'home.quickActions': 'Quick Actions',
@@ -413,4 +416,6 @@ export const enTranslations: Record<string, string> = {
   'home.emptyHeroSubtitle': 'Create a trip to start organizing your travel plans, flights, and accommodations.',
   'home.createTrip': 'Create Trip',
   'home.loadingA11y': 'Loading home screen',
+  'images.attribution': 'Photo credit',
+  'images.attributionHint': 'Open the photo source and license details',
 };

@@ -155,6 +155,7 @@ export type SavedTripSummary = {
   createdAt: string;
   dayCount: number;
   itemCount: number;
+  coverGooglePlaceIds: GooglePlaceId[];
 };
 
 export type SavedTripsPage = {
@@ -290,6 +291,13 @@ export type GetPlacePhotoRequest = {
 export type PlacePhoto = {
   googlePlaceId: string;
   photoUri: string | null;
+  diagnostic?: {
+    providerStatus: number;
+    hasPhotosProperty: boolean;
+    photosIsArray: boolean;
+    photosCount: number;
+    firstPhotoHasName: boolean;
+  };
   authorAttribution?: {
     displayName?: string;
     uri?: string;
@@ -305,6 +313,39 @@ export type PlacePhotoErrorCode =
   | 'PHOTO_PROVIDER_AUTH'
   | 'PHOTO_PROVIDER_RATE_LIMITED'
   | 'PHOTO_PROVIDER_UNAVAILABLE';
+
+export type ImageSource =
+  | 'GOOGLE_PLACE'
+  | 'WIKIMEDIA_PLACE'
+  | 'DESTINATION_COVER'
+  | 'PLACEHOLDER';
+
+export type ImageAttribution = {
+  displayName: string;
+  sourceUrl: string;
+  license?: string;
+  licenseUrl?: string;
+};
+
+export type ResolvedImage = {
+  uri: string | null;
+  source: ImageSource;
+  attribution?: ImageAttribution;
+  matchedEntity?: string;
+  confidence?: number;
+};
+
+export type WikimediaImageRequest =
+  | { kind: 'PLACE'; googlePlaceId: string; maxWidth?: number }
+  | { kind: 'DESTINATION'; destination: string; maxWidth?: number };
+
+export type PlaceImageRequest = GetPlacePhotoRequest;
+
+export type TripCoverImageRequest = {
+  googlePlaceIds: string[];
+  destination: string;
+  maxWidth?: number;
+};
 
 export type SavedPlaceTransport = {
   id: string;

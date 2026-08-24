@@ -19,24 +19,33 @@ import { PlaceGallery } from '../components/PlaceGallery';
 import { PlaceHeader } from '../components/PlaceHeader';
 import { PlaceQuickActions } from '../components/PlaceQuickActions';
 import { getMockPlaceDetail } from '../data/mockPlaceDetail';
-import type { PlaceDetailStatus } from '../types';
+import type { PlaceDetailData, PlaceDetailStatus } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PlaceDetail'> & {
   initialStatus?: PlaceDetailStatus;
+  customData?: PlaceDetailData;
+  fixtureMode?: boolean;
 };
 
-export function PlaceDetailScreen({ route, navigation, initialStatus = 'ready' }: Props) {
+export function PlaceDetailScreen({
+  route,
+  navigation,
+  initialStatus = 'ready',
+  customData,
+  fixtureMode = false,
+}: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
-  const placeId = route?.params?.placeId ?? 'place_wat_arun';
+  const placeId = route?.params?.placeId ?? '';
 
   const [status, setStatus] = useState<PlaceDetailStatus>(initialStatus);
   const [isSaved, setIsSaved] = useState(false);
   const [showFullAbout, setShowFullAbout] = useState(false);
 
   const placeData = useMemo(() => {
-    return getMockPlaceDetail(placeId);
-  }, [placeId]);
+    if (customData) return customData;
+    return fixtureMode ? getMockPlaceDetail(placeId) : null;
+  }, [customData, fixtureMode, placeId]);
 
   const handleToggleSave = useCallback(() => {
     setIsSaved((prev) => !prev);

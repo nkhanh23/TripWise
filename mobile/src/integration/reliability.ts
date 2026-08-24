@@ -50,7 +50,7 @@ export const idempotentPersistencePolicy: ReliabilityPolicy = {
 };
 
 export const tripGenerationPolicy: ReliabilityPolicy = {
-  timeoutMs: 35_000,
+  timeoutMs: 50_000,
   maximumAttempts: 1,
 };
 

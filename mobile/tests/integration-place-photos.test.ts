@@ -48,6 +48,13 @@ describe('Place Photos Integration & Validation', () => {
         data: {
           googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY',
           photoUri: 'https://lh3.googleusercontent.com/places/test.jpg',
+          diagnostic: {
+            providerStatus: 200,
+            hasPhotosProperty: true,
+            photosIsArray: true,
+            photosCount: 1,
+            firstPhotoHasName: true,
+          },
           authorAttribution: {
             displayName: 'Alice',
             uri: 'https://maps.google.com/contrib/alice',
@@ -59,6 +66,7 @@ describe('Place Photos Integration & Validation', () => {
       expect(parsed.data.googlePlaceId).toBe('ChIJaSv_6gaZ4jARnbiUVn6Z_YY');
       expect(parsed.data.photoUri).toBe('https://lh3.googleusercontent.com/places/test.jpg');
       expect(parsed.data.authorAttribution?.displayName).toBe('Alice');
+      expect(parsed.data.diagnostic?.photosCount).toBe(1);
     });
 
     it('parses null photoUri when place has no photo', () => {

@@ -78,7 +78,20 @@ describe('integration DTO validation', () => {
     expect(parseSavedTripsPage({ items: [{
       id: tripId, title: 'Trip', destination: 'Huế', startDate: '2026-09-01', endDate: '2026-09-01',
       estimatedBudget: null, currency: null, createdAt, dayCount: 1, itemCount: 1,
-    }], nextCursor: cursor }).nextCursor).toEqual(cursor);
+      coverGooglePlaceIds: ['ChIJaSv_6gaZ4jARnbiUVn6Z_YY'],
+    }], nextCursor: cursor })).toMatchObject({
+      nextCursor: cursor,
+      items: [{ coverGooglePlaceIds: ['ChIJaSv_6gaZ4jARnbiUVn6Z_YY'] }],
+    });
+    expect(parseSavedTripsPage({ items: [{
+      id: tripId, title: 'Trip', destination: 'Huế', startDate: '2026-09-01', endDate: '2026-09-01',
+      estimatedBudget: null, currency: null, createdAt, dayCount: 1, itemCount: 1,
+    }], nextCursor: null }).items[0].coverGooglePlaceIds).toEqual([]);
+    expect(() => parseSavedTripsPage({ items: [{
+      id: tripId, title: 'Trip', destination: 'Huế', startDate: '2026-09-01', endDate: '2026-09-01',
+      estimatedBudget: null, currency: null, createdAt, dayCount: 1, itemCount: 1,
+      coverGooglePlaceIds: ['short'],
+    }], nextCursor: null })).toThrow();
     expect(() => parseSavedTripsPage({ items: [{
       id: tripId, title: 'Trip', destination: 'Huế', startDate: '2026-09-01', endDate: '2026-09-01',
       estimatedBudget: -1, currency: null, createdAt, dayCount: 1, itemCount: 1,

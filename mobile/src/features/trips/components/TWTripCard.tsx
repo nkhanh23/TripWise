@@ -1,8 +1,9 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../../theme';
+import { ImageAttribution } from '../../images/components/ImageAttribution';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { TripSummary } from '../types';
 
@@ -84,6 +85,18 @@ export const TWTripCard = memo(function TWTripCard({ trip, onPress }: Props) {
           <MaterialIcons color={colors.text.secondary} name="more-vert" size={20} />
         </Pressable>
       </View>
+
+      {trip.coverImageUrl ? (
+        <View style={styles.coverContainer}>
+          <Image
+            accessibilityLabel={`${trip.title} cover photo`}
+            resizeMode="cover"
+            source={{ uri: trip.coverImageUrl }}
+            style={styles.coverImage}
+          />
+          <ImageAttribution attribution={trip.coverImage?.attribution} />
+        </View>
+      ) : null}
 
       {/* Metadata Row: Date & Location */}
       <View style={styles.metadataRow}>
@@ -167,6 +180,9 @@ export const TWTripCard = memo(function TWTripCard({ trip, onPress }: Props) {
 });
 
 const styles = StyleSheet.create({
+  coverContainer: {
+    position: 'relative',
+  },
   card: {
     borderRadius: radius.input, // 8px matching Stitch rounded-lg
     borderWidth: 1,
@@ -187,6 +203,12 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     width: 64,
+  },
+  coverImage: {
+    borderRadius: radius.input,
+    height: 96,
+    marginBottom: spacing.md,
+    width: '100%',
   },
   headerRow: {
     alignItems: 'flex-start',

@@ -1,0 +1,19 @@
+{
+  "project": {
+    "id": "projects/10069552738311964263",
+    "title": "TripWise Design System",
+    "deviceType": "MOBILE"
+  },
+  "syncedAt": "2026-08-24T15:16:38.3799057+07:00",
+  "screens": [
+    {
+      "id": "96cf6272c84148dba361616f3e5df228",
+      "label": "My Trips",
+      "fileStem": "my-trips",
+      "sourceScreen": "projects/10069552738311964263/screens/96cf6272c84148dba361616f3e5df228",
+      "width": 780,
+      "height": 2590,
+      "canvasPosition": { "x": 5110, "y": null }
+    }
+  ]
+}

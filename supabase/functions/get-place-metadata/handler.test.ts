@@ -1,5 +1,7 @@
-import { assertEquals } from 'https://deno.land/std@0.222.1/assert/mod.ts';
+import assert from 'node:assert/strict';
 import { handleGetPlaceMetadata } from './handler.ts';
+
+const assertEquals = (actual: unknown, expected: unknown): void => assert.deepEqual(actual, expected);
 
 Deno.test('handleGetPlaceMetadata - OPTIONS returns CORS headers', async () => {
   const request = new Request('http://localhost', { method: 'OPTIONS' });

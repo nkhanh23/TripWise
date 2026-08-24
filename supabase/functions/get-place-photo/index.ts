@@ -12,7 +12,7 @@ function adminHeaders(): HeadersInit {
   }
   return {
     apikey: serviceRoleKey,
-    authorization: \Bearer \\,
+    authorization: `Bearer ${serviceRoleKey}`,
     'content-type': 'application/json',
   };
 }
@@ -26,12 +26,12 @@ Deno.serve((request) =>
     },
     verifyOwnership: async (ownerId, googlePlaceId) => {
       const itemQuery = new URLSearchParams({
-        select: 'id',
-        google_place_id: \eq.\\,
-        'itinerary_days.trips.user_id': \eq.\\,
+        select: 'id,itinerary_days!inner(trips!inner(user_id))',
+        google_place_id: `eq.${googlePlaceId}`,
+        'itinerary_days.trips.user_id': `eq.${ownerId}`,
         place_resolved_at: 'not.is.null',
       });
-      const itemResponse = await fetch(\\/rest/v1/itinerary_items?\\, {
+      const itemResponse = await fetch(`${supabaseUrl}/rest/v1/itinerary_items?${itemQuery}`, {
         headers: adminHeaders(),
       });
       if (itemResponse.ok) {
@@ -41,10 +41,10 @@ Deno.serve((request) =>
 
       const savedQuery = new URLSearchParams({
         select: 'id',
-        google_place_id: \eq.\\,
-        user_id: \eq.\\,
+        google_place_id: `eq.${googlePlaceId}`,
+        user_id: `eq.${ownerId}`,
       });
-      const savedResponse = await fetch(\\/rest/v1/saved_places?\\, {
+      const savedResponse = await fetch(`${supabaseUrl}/rest/v1/saved_places?${savedQuery}`, {
         headers: adminHeaders(),
       });
       if (savedResponse.ok) {

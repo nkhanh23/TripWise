@@ -83,7 +83,7 @@ describe('Settings Feature (FE-P15-T001)', () => {
   }
 
   describe('SettingsScreen Rendering & Navigation', () => {
-    it('renders main settings screen with all Stitch sections and rows', async () => {
+    it('renders only the current Stitch Settings sections and rows', async () => {
       await renderWithProviders(<SettingsScreen {...mockNavProps} />);
 
       // Title & Top Bar
@@ -93,7 +93,6 @@ describe('Settings Feature (FE-P15-T001)', () => {
       expect(screen.getByText('GENERAL')).toBeTruthy();
       expect(screen.getByText('APPEARANCE')).toBeTruthy();
       expect(screen.getByText('NOTIFICATIONS')).toBeTruthy();
-      expect(screen.getByText('SUPPORT')).toBeTruthy();
       expect(screen.getByText('ACCOUNT')).toBeTruthy();
 
       // General Rows
@@ -111,10 +110,11 @@ describe('Settings Feature (FE-P15-T001)', () => {
       expect(screen.getByText('Trip reminders')).toBeTruthy();
       expect(screen.getByText('Itinerary reminders')).toBeTruthy();
 
-      // Support Rows
-      expect(screen.getByText('Help & Support')).toBeTruthy();
-      expect(screen.getByText('About TripWise')).toBeTruthy();
-      expect(screen.getByText('Version 1.0.0')).toBeTruthy();
+      // Current Stitch Settings has no Support section. Help remains reachable from Profile.
+      expect(screen.queryByText('SUPPORT')).toBeNull();
+      expect(screen.queryByText('Help & Support')).toBeNull();
+      expect(screen.queryByText('About TripWise')).toBeNull();
+      expect(screen.queryByText('Version 1.0.0')).toBeNull();
 
       // Account Rows
       expect(screen.getByText('Change password')).toBeTruthy();
@@ -140,11 +140,6 @@ describe('Settings Feature (FE-P15-T001)', () => {
       const themeRow = screen.getByLabelText('Theme');
       await user.press(themeRow);
       expect(mockNavigate).toHaveBeenCalledWith('AppearanceSettings');
-
-      // Tap Help & Support
-      const helpRow = screen.getByLabelText('Help & Support');
-      await user.press(helpRow);
-      expect(mockNavigate).toHaveBeenCalledWith('HelpSupport');
 
       // Tap Back button
       const backBtn = screen.getByLabelText('Back');
@@ -366,7 +361,7 @@ describe('Settings Feature (FE-P15-T001)', () => {
       expect(screen.getByText('CHUNG')).toBeTruthy();
       expect(screen.getByText('GIAO DIỆN')).toBeTruthy();
       expect(screen.getByText('THÔNG BÁO')).toBeTruthy();
-      expect(screen.getByText('HỖ TRỢ')).toBeTruthy();
+      expect(screen.queryByText('HỖ TRỢ')).toBeNull();
       expect(screen.getByText('TÀI KHOẢN')).toBeTruthy();
     });
 

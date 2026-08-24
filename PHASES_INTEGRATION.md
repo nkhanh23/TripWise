@@ -1,9 +1,7 @@
 # TripWise React Native FE ↔ BE Integration Roadmap
 
 **Owner / Agent: Codex — FE ↔ BE Integration (historical/general owner)**
-**Status: ACTIVE**
-
-**INT-P6 continuation execution:** delegated by user to **Antigravity**.
+**Status: INT-P0 through INT-P9 COMPLETE — Integration Track COMPLETE**
 
 Roadmap này là active source of truth cho integration planning, nhưng không cấp quyền bắt đầu implementation.
 
@@ -20,9 +18,8 @@ Integration chỉ bắt đầu khi user yêu cầu rõ ràng.
 ## 2. Status overview
 
 - **Authorization date:** 2026-08-20 (INT-P7 temporarily authorized on 2026-08-22)
-- **Current:** INT-P7 — Remaining Real Data Integration (ACTIVE)
-- **Completed phases:** INT-P0, INT-P1, INT-P2, INT-P3, INT-P4, INT-P5
-- **Open / Paused:** INT-P6 — Map & Route Integration (substantial runtime evidence PASS; final closure intentionally deferred)
+- **Current:** Integration Track COMPLETE
+- **Completed phases:** INT-P0, INT-P1, INT-P2, INT-P3, INT-P4, INT-P5, INT-P6, INT-P7, INT-P8, INT-P9
 
 
 Repository đã có pre-roadmap React Native Supabase Auth/session/profile và typed `generateTrip()` client từ P2/P3. INT-P0 đã audit các foundation này nhưng chưa nối production UI/data flows; mọi wiring vẫn phải theo đúng phase Integration.
@@ -106,7 +103,7 @@ Repository đã có pre-roadmap React Native Supabase Auth/session/profile và t
 
 ---
 
-## [ ] INT-P6 — Map & Route Integration (OPEN / PAUSED)
+## [x] INT-P6 — Map & Route Integration (COMPLETE)
 
 - [x] Render real verified coordinates.
 - [x] Wire OSRM/route source theo BE-P7 decision.
@@ -114,45 +111,45 @@ Repository đã có pre-roadmap React Native Supabase Auth/session/profile và t
 - [x] Timeout/error/fallback behavior.
 - [x] Map rebuild/performance regression test.
 
-INT-P6 has substantial PASS runtime evidence on Android (Trip Map, Route Preview, Place Photos, OSRM metrics); it remains OPEN / PAUSED by explicit boundary and is not closed by this sync.
+Final closure audit (2026-08-24) confirms the production Map/Route path uses only persisted `VERIFIED` coordinates, orders markers by day/item position, maps OSRM's lon/lat GeoJSON boundary safely, and omits unresolved stops rather than fabricating route data. `TripMapScreen` loads UUID saved-trip detail through `SupabaseSavedTripsRepository`, while its fixture canvas remains explicit fixture-only behavior. `RoutePreviewScreen` now permits mock metrics/geometry only through explicit `fixtureMode` or `customRoute`; a production navigation without at least two verified coordinates presents the unavailable state rather than a mock route. `OsrmRouteRepository` remains driving-only with 2–25 validated coordinates, timeout/cancellation/bounded retry and safe error mapping. Fresh Android verification on the operator's real Bangkok trip rendered Google Map markers `1. Chùa Arun`, `2. The Grand Palace`, then a real OSRM Route Preview (`Driving`, `3.9 km • 8 min`) with map markers and no redbox. Fresh source-change gates PASS: lint, typecheck, full Jest (44/45 suites and 333/334 tests PASS; one intentional skip), Expo Doctor (21/21), and `git diff --check`. **INT-P6 COMPLETE.**
 
 ---
 
-## [ ] INT-P7 — Remaining Real Data Integration (ACTIVE)
+## [x] INT-P7 — Remaining Real Data Integration (COMPLETE)
 
 - [x] Weather theo BE-P8/client ownership decision (Open-Meteo direct client, validated coordinates, bounded date window, active-date Trip Detail presentation; automated and Android/live evidence PASS).
-- [x] Saved places persistence (`public.saved_places`, `list_saved_places`, `save_place`, `unsave_place`, owner RLS, idempotency, real populated/empty/reload states; implementation, automated, remote/live and Android PASS; current Stitch audit pending).
-- [x] Google Place Photos (`get-place-photo` Edge Function proxy with skipHttpRedirect, owner RLS verification; implementation, automated, remote/live and Android PASS; current Stitch audit pending).
-- [x] Google Place Ratings & Metadata (`get-place-metadata` Edge Function proxy, real Places API New rating + count, 24h server TTL; implementation, automated, remote/live and Android PASS; current Stitch audit pending).
-- [x] Profile & Settings real data & account deletion (`home_country` column, `get_user_trip_stats()` RPC, `delete_user_account()` RPC, local preference separation; remote/live PASS and Android partial).
-- [ ] INT-P7 current Stitch visual audit, affected Android re-verification, and formal closure readiness. `STITCH_VISUAL_ARTIFACT_ACCESS = PASS` (2026-08-24): all twelve current `get_screen` HTML and screenshot artifacts for `projects/10069552738311964263` were retrieved locally and visually inspected. The repository helper was correctly attempted first but its Windows Schannel curl could not acquire credentials before HTTP; a verified Node/OpenSSL transport then followed the current signed redirects and produced valid local HTML plus image artifacts without persisting signed URLs or secrets. Current Stitch establishes contract **B — Edit Profile edits Home Country**; the smallest remote-backed field mapping and tests are implemented. Android re-verification, including reversible live persistence of the operator's blank country value, remains pending because the approved Windows automation cannot control Android Studio in this environment. Historical screen IDs/artifacts remain non-authoritative.
-- [ ] INT-P7 Final Verification, Live Regression & Formal Closure.
+- [x] Saved places persistence (`public.saved_places`, `list_saved_places`, `save_place`, `unsave_place`, owner RLS, idempotency, real populated/empty/reload states; implementation, automated, remote/live, Android and current Stitch PASS).
+- [x] Google Place Photos (`get-place-photo` Edge Function proxy with skipHttpRedirect, owner RLS verification; implementation, automated, remote/live, Android and current Stitch PASS).
+- [x] Google Place Ratings & Metadata (`get-place-metadata` Edge Function proxy, real Places API New rating + count, 24h mobile in-memory cache; authorized Saved Places consumer, implementation, automated, remote/live, Android and current Stitch PASS).
+- [x] Profile & Settings real data & account deletion (`home_country` column, `get_user_trip_stats()` RPC, `delete_user_account()` RPC, local preference separation; remote/live, Android and current Stitch PASS).
+- [x] INT-P7 current Stitch visual audit, Home Country contract resolution, Android re-verification, and formal closure. `STITCH_VISUAL_ARTIFACT_ACCESS = PASS`; all twelve current artifacts were retrieved and inspected. Home Country contract **B — Edit Profile only** and reversible remote-backed Android save/reload/restore PASS. Settings root discrepancy is resolved. Fresh gates after the production source change PASS: lint, typecheck, full Jest (44/45 suites and 332/333 tests PASS; one pre-existing skipped suite/test), Expo Doctor (21/21), and `git diff --check`. Ratings/Metadata authorized consumer is **Saved Places cards**: real rating is rendered, missing rating is hidden without fake `0.0`, and `userRatingCount` is intentionally preserved in provider payload but omitted from card UI per current Stitch. `PlaceDetailScreen` using `getMockPlaceDetail` remains an **INT-P8 deferred mock-runtime item**, not an INT-P7 blocker. **INT-P7 COMPLETE.** Historical screen IDs/artifacts remain non-authoritative.
+- [x] INT-P7 Final Verification, Live Regression & Formal Closure.
 
 ---
 
-## [ ] INT-P8 — Remove Mock Runtime Dependencies
+## [x] INT-P8 — Remove Mock Runtime Dependencies (COMPLETE)
 
-- [ ] Production dependency injection không còn chọn mock repositories.
-- [ ] Giữ fixtures/fakes cho tests, previews và explicit dev mode nếu hữu ích.
-- [ ] Không xóa visual fixtures cần cho deterministic UI tests.
-- [ ] Audit production build không chứa fake user/trip/place runtime path.
+- [x] Production dependency injection no longer selects mock repositories or fixture data: Home reads one paginated `SupabaseSavedTripsRepository` list, Explore defaults to an empty safe canvas, Place Detail requires `fixtureMode`/`customData`, and UUID Add Place shows an honest unavailable state without mock lookup/list/mutation.
+- [x] Explicit fixtures remain available for deterministic component, visual and stress tests; My Trips, Trip Detail, Trip Map and Route Preview retain explicit fixture boundaries only.
+- [x] Saved Places and Profile production paths remain remote-backed; `savedPlacesStore` and `mockProfile` are fixture-only. Planner styles/options and curated destination suggestions are static local configuration, not provider search results. The Login demo quick-fill fixture was removed from production runtime.
+- [x] Final mock import audit has zero `PRODUCTION_BLOCKER`; retained uses are `EXPLICIT_FIXTURE_ALLOWED`, `TEST_ONLY`, `STATIC_CONFIG`, or `UNSUPPORTED_CAPABILITY_SAFE_STATE`.
+- [x] Regression tests prove normal Home/Explore/Place Detail/UUID Add Place paths do not select mock data, while explicit fixtures still render. Fresh gates PASS: lint, typecheck, full Jest (44/45 suites and 338/339 tests PASS; one intentional skip), Expo Doctor (21/21), and `git diff --check`.
+- [x] Android smoke on `emulator-5554` PASS: Home rendered the operator trip, Explore had no fixture places, My Trips rendered real data, UUID Add Place was unavailable without fake results, and Saved Places rendered a real empty state without fixtures. **INT-P8 COMPLETE.**
 
 ---
 
-## [ ] INT-P9 — Integration & End-to-End QA
+## [x] INT-P9 — Integration & End-to-End QA (COMPLETE)
 
-- [ ] Auth/register/login/session restore/logout.
-- [ ] Generate trip.
-- [ ] Persist trip graph atomically.
-- [ ] Reopen saved trip.
-- [ ] Place details/identity/coordinates.
-- [ ] Map/route and fallback.
-- [ ] Offline/network/error handling.
-- [ ] RLS/cross-user/security tests.
-- [ ] Android smoke test.
-- [ ] iOS smoke test khi environment hỗ trợ.
-- [ ] Regression comparison với Stitch UI.
-- [ ] No secrets/tokens in logs or bundle.
+- [x] Auth/register/login/session restore/logout; preserved the two accepted INT-P2 waivers.
+- [x] Generate-trip validated production repository, frozen request/response mapping, concurrency guard and safe retry; unchanged bounded live evidence retained without another Gemini charge.
+- [x] Atomic/idempotent `create_trip_graph`, keyset Saved Trips list, UUID detail reopen and unresolved-place semantics verified by current automated contracts plus unchanged live evidence.
+- [x] Place identity/resolution, verified coordinates, photos/metadata, Saved Places, Profile/stats and disposable A/B RLS/security evidence audited with no contract change requiring destructive rerun.
+- [x] Map/Route, Weather and representative network/provider failure states PASS; offline support is honestly limited to safe unavailable/error behavior and persisted server snapshots—no local offline database is claimed.
+- [x] Fresh Android smoke PASS on `emulator-5554`: authenticated Home with real operator trip, fixture-free Explore, real My Trips/UUID Trip Detail, UUID Add Place safe unavailable, fixture-free Saved empty state, Profile and current Settings hierarchy. No operator mutation or sign-out was performed.
+- [x] Current Stitch MCP/project/screens re-enumerated; current screen hierarchy remains consistent with the accepted INT-P7/P8 visual boundaries and no redesign/fake sample data was introduced.
+- [x] Secret/bundle/log and production-mock audits found no server secret, sensitive logging or silent normal-production fixture fallback. `NO_SERVER_SECRET_IN_MOBILE = PASS`.
+- [x] Fresh final gates PASS: lint, typecheck, full Jest (44/45 suites and 338/339 tests; one intentional skip), Expo Doctor (21/21), and `git diff --check`.
+- [x] iOS runtime is `BLOCKED_BY_ENVIRONMENT` on Windows and deferred under ADR-019; Android is the current runtime target and the code remains future-iOS compatible. `INT_P9_CLOSURE_READY = YES`. **Integration Track COMPLETE.**
 
 ## 3. Contract checklist
 
@@ -168,7 +165,7 @@ INT-P6 has substantial PASS runtime evidence on Android (Trip Map, Route Preview
 | `delete_saved_trip` | RPC | JWT + RLS | trip UUID | boolean | safe SQLSTATE mapping | typed trip mutation | `SupabaseSavedTripsRepository` | My Trips/Profile | INTEGRATED | Live owner delete/cross-user rejection/non-reopen PASS; UI consumer remains scoped/deferred |
 | `resolve-place` v9 | POST Edge Function | JWT | itinerary item UUID only | validated verification receipt | nine stable place codes | `ResolvePlaceRequest/Result` | `SupabasePlaceResolutionRepository` | Trip Detail/Map/Place | INTEGRATED | Live resolve/refetch VERIFIED, provenance, coordinates and cross-user isolation PASS |
 | `get-place-photo` | POST Edge Function | JWT | `googlePlaceId`, optional `maxWidth` | validated `{ data: PlacePhoto }` | seven stable photo codes | `GetPlacePhotoRequest/PlacePhoto` | `SupabasePlacePhotoRepository` | Trip Detail hero & item photos, Saved Places | INTEGRATED | Owner verification via verified itinerary item or owned saved place; server-side Places API (New); zero client API key exposure |
-| `get-place-metadata` | POST Edge Function | JWT | `googlePlaceId` | validated `{ data: { rating, userRatingCount } }` | safe metadata codes | `PlaceMetadata` | `SupabasePlaceMetadataRepository` | Saved Places cards | INTEGRATED | Real Google Places API (New) rating/count; 24h server cache; owner-verified; missing rating hidden without fake 0.0 |
+| `get-place-metadata` | POST Edge Function | JWT | `googlePlaceId` | validated `{ data: { rating, userRatingCount } }` | safe metadata codes | `PlaceMetadata` | `SupabasePlaceMetadataRepository` | Saved Places cards | INTEGRATED | Real Google Places API (New) rating/count; 24h mobile in-memory cache; owner-verified; missing rating hidden without fake 0.0 |
 | `get_user_trip_stats` | RPC | JWT | none | `{ trips_count: number, saved_places_count: number }` | SQLSTATE validation/auth | `{ tripsCount: number, savedPlacesCount: number }` | `SupabaseSavedTripsRepository.getStats()` | Profile stats header | IMPLEMENTED + AUTOMATED + REMOTE/LIVE VERIFIED | Privilege matrix is authenticated-only; remote schema probe resolves the RPC, anonymous access is rejected, and disposable A/B data returned A=1/1 and B=2/1 without cross-user leakage. |
 | `delete_user_account` | RPC | JWT + RLS | none | void | SQLSTATE validation/auth | `deleteAccount()` | `SupabaseAuthRepository` | Settings / Profile delete account modal | IMPLEMENTED + AUTOMATED + REMOTE/LIVE VERIFIED | `SECURITY DEFINER`, empty `search_path`, null guard, caller-only deletion, explicit `PUBLIC`/`anon` revocation, and authenticated-only grant. Disposable A-only cascade, deleted-session rejection, B preservation, and cleanup PASS. |
 | OSRM | GET direct client | none | 2-25 verified coordinates; driving only | validated route/GeoJSON | input/no-route/retryable/unavailable | `RouteRequest`, `Route` | `OsrmRouteRepository` + `routePlanning` | Route Preview/Trip Map | INTEGRATED | Native map + OSRM driving route, verified coordinates, Directions navigation PASS |
@@ -177,6 +174,6 @@ INT-P6 has substantial PASS runtime evidence on Android (Trip Map, Route Preview
 
 ## 4. Integration rule
 
-> **Integration was explicitly authorized on 2026-08-20. INT-P0 through INT-P5 are complete; INT-P6 is OPEN / PAUSED; INT-P7 is ACTIVE; INT-P8 and INT-P9 are NOT STARTED.**
+> **Integration was explicitly authorized on 2026-08-20. INT-P0 through INT-P9 and the Integration Track are COMPLETE.**
 
 INT-P1 dừng tại infrastructure/repository boundary và không wiring production data vào UI. Chi tiết implementation, deferred wiring và evidence nằm trong `HANDOFF_INTEGRATION.md`.

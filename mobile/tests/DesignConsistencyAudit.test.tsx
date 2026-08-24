@@ -5,6 +5,7 @@ import { ForgotPasswordScreen } from '../src/features/auth/screens/ForgotPasswor
 import { LoginScreen } from '../src/features/auth/screens/LoginScreen';
 import { RegisterScreen } from '../src/features/auth/screens/RegisterScreen';
 import { ExploreScreen } from '../src/features/explore/ExploreScreen';
+import { mockExplorePlaces } from '../src/features/explore/data/mockPlaces';
 import { PlaceDetailScreen } from '../src/features/place/screens/PlaceDetailScreen';
 import { CreateTripWizardScreen } from '../src/features/planner/screens/CreateTripWizardScreen';
 import { resetProfile } from '../src/features/profile/data/mockProfile';
@@ -119,7 +120,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
     });
 
     it('renders Explore in Light + EN', async () => {
-      await renderMatrix(<ExploreScreen />, 'light', 'en');
+      await renderMatrix(<ExploreScreen initialPlaces={mockExplorePlaces} />, 'light', 'en');
       expect(screen.getByPlaceholderText('Search Tokyo, Bangkok...')).toBeTruthy();
     });
 
@@ -127,6 +128,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
       await renderMatrix(
         <PlaceDetailScreen
           {...mockNavProps}
+          fixtureMode
           route={{ key: 'PlaceDetail', name: 'PlaceDetail', params: { placeId: 'place_wat_arun' } }}
         />,
         'light',
@@ -140,6 +142,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
       await renderMatrix(
         <RoutePreviewScreen
           {...mockNavProps}
+          fixtureMode
           route={{
             key: 'RoutePreview',
             name: 'RoutePreview',
@@ -154,7 +157,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
     });
 
     it('renders My Trips in Light + EN', async () => {
-      await renderMatrix(<MyTripsScreen />, 'light', 'en');
+      await renderMatrix(<MyTripsScreen fixtureMode />, 'light', 'en');
       expect(screen.getByText('My Trips')).toBeTruthy();
       expect(screen.getByText('Upcoming')).toBeTruthy();
     });
@@ -191,7 +194,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
     });
 
     it('renders Explore in Light + VI', async () => {
-      await renderMatrix(<ExploreScreen />, 'light', 'vi');
+      await renderMatrix(<ExploreScreen initialPlaces={mockExplorePlaces} />, 'light', 'vi');
       expect(screen.getByPlaceholderText('Tìm địa điểm, quán cafe, khách sạn...')).toBeTruthy();
     });
 
@@ -199,6 +202,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
       await renderMatrix(
         <PlaceDetailScreen
           {...mockNavProps}
+          fixtureMode
           route={{ key: 'PlaceDetail', name: 'PlaceDetail', params: { placeId: 'place_wat_arun' } }}
         />,
         'light',
@@ -209,7 +213,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
     });
 
     it('renders My Trips in Light + VI', async () => {
-      await renderMatrix(<MyTripsScreen />, 'light', 'vi');
+      await renderMatrix(<MyTripsScreen fixtureMode />, 'light', 'vi');
       expect(screen.getByText('Chuyến đi của tôi')).toBeTruthy();
       expect(screen.getByText('Sắp diễn ra')).toBeTruthy();
     });
@@ -228,7 +232,7 @@ describe('Design Consistency Audit (FE-P18-T001)', () => {
     });
 
     it('renders Explore in Dark + EN', async () => {
-      await renderMatrix(<ExploreScreen />, 'dark', 'en');
+      await renderMatrix(<ExploreScreen initialPlaces={mockExplorePlaces} />, 'dark', 'en');
       expect(screen.getByPlaceholderText('Search Tokyo, Bangkok...')).toBeTruthy();
     });
 

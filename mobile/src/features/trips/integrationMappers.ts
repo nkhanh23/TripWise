@@ -17,6 +17,7 @@ export function mapSavedTripSummaryToTripSummary(summary: SavedTripSummary): Tri
     dateLabel: dateLabel(summary.startDate, summary.endDate),
     status: summary.startDate >= now ? 'upcoming' : 'past',
     actionLabel: 'View Itinerary',
+    coverGooglePlaceIds: summary.coverGooglePlaceIds,
   };
 }
 

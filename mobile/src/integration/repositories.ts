@@ -20,6 +20,10 @@ import type {
   WeatherRequest,
   GetPlacePhotoRequest,
   PlacePhoto,
+  PlaceImageRequest,
+  ResolvedImage,
+  TripCoverImageRequest,
+  WikimediaImageRequest,
   SavePlaceCommand,
   SavedPlace,
   SavedPlacesPage,
@@ -75,6 +79,22 @@ export interface WeatherRepository {
 
 export interface PlacePhotoRepository {
   getPhoto(request: GetPlacePhotoRequest, signal?: AbortSignal): Promise<PlacePhoto>;
+}
+
+export interface WikimediaImageRepository {
+  getImage(request: WikimediaImageRequest, signal?: AbortSignal): Promise<ResolvedImage>;
+}
+
+export interface PlaceImageRepository {
+  getPlaceImage(request: PlaceImageRequest, signal?: AbortSignal): Promise<ResolvedImage>;
+}
+
+export interface DestinationCoverRepository {
+  getDestinationCover(destination: string, maxWidth?: number, signal?: AbortSignal): Promise<ResolvedImage>;
+}
+
+export interface TripCoverImageRepository {
+  getTripCover(request: TripCoverImageRequest, signal?: AbortSignal): Promise<ResolvedImage>;
 }
 
 export interface SavedPlacesRepository {

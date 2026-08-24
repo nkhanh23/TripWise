@@ -6,6 +6,7 @@ import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { UpcomingTripData } from '../types';
+import { ImageAttribution } from '../../images/components/ImageAttribution';
 
 type Props = {
   trip: UpcomingTripData;
@@ -47,6 +48,8 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
             <MaterialIcons color={colors.brand.primary} name="landscape" size={48} />
           </View>
         )}
+
+        <ImageAttribution attribution={trip.resolvedImage?.attribution} />
 
         {/* Days Badge */}
         {trip.badgeText ? (

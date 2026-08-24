@@ -1,5 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,15 +15,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '../../../components/AppText';
 import { useTranslation } from '../../../i18n';
+import type { PlacePhotoRepository, SavedTripsRepository, TripCoverImageRepository } from '../../../integration/repositories';
+import type { MainTabParamList, RootStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import { PastTripCard } from '../components/PastTripCard';
 import { TripsEmptyState } from '../components/TripsEmptyState';
 import { TWTripCard } from '../components/TWTripCard';
 import { getMockTripSections } from '../data/mockTrips';
-import type { SavedTripsRepository } from '../../../integration/repositories';
+import { useTripCoverPhotos } from '../hooks/useTripCoverPhotos';
 import { mapSavedTripPageToSections } from '../integrationMappers';
 import type { TripSectionData, TripSummary, TripsUIStatus } from '../types';
+
+type CombinedNavProp = NativeStackNavigationProp<RootStackParamList> &
+  BottomTabNavigationProp<MainTabParamList>;
 
 type Props = {
   initialStatus?: TripsUIStatus;
@@ -29,6 +36,8 @@ type Props = {
   onSelectTrip?: (tripId: string) => void;
   onCreateTrip?: () => void;
   repository?: SavedTripsRepository;
+  photoRepository?: PlacePhotoRepository;
+  tripCoverRepository?: TripCoverImageRepository;
   fixtureMode?: boolean;
 };
 
@@ -38,10 +47,12 @@ export function MyTripsScreen({
   onSelectTrip,
   onCreateTrip,
   repository,
+  photoRepository,
+  tripCoverRepository,
   fixtureMode,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<CombinedNavProp>();
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -54,7 +65,7 @@ export function MyTripsScreen({
     if (!repository) return;
     setStatus('loading');
     try {
-      const page = await repository.list({ limit: 50 });
+      const page = await repository.list({ limit: 20 });
       const mapped = mapSavedTripPageToSections(page.items);
       setRemoteSections(mapped);
       setStatus(page.items.length === 0 ? 'empty' : 'ready');
@@ -83,13 +94,37 @@ export function MyTripsScreen({
   const sections = useMemo(() => {
     if (customSections) return customSections;
     if (repository) return remoteSections ?? [];
-    if (fixtureMode || !repository) return getMockTripSections();
+    if (fixtureMode) return getMockTripSections();
     return [];
   }, [customSections, fixtureMode, repository, remoteSections]);
+  const effectiveTripCoverRepository = useMemo<TripCoverImageRepository | undefined>(() => {
+    if (tripCoverRepository) return tripCoverRepository;
+    if (!photoRepository) return undefined;
+    return {
+      getTripCover: async (request, signal) => {
+        for (const googlePlaceId of request.googlePlaceIds.slice(0, 2)) {
+          try {
+            const photo = await photoRepository.getPhoto({
+              googlePlaceId,
+              ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
+            }, signal);
+            if (photo.photoUri) return { uri: photo.photoUri, source: 'GOOGLE_PLACE' as const };
+          } catch {
+            // A cover is optional; continue to the next bounded candidate.
+          }
+        }
+        return { uri: null, source: 'PLACEHOLDER' as const };
+      },
+    };
+  }, [photoRepository, tripCoverRepository]);
+  const enrichedSections = useTripCoverPhotos(
+    sections,
+    repository && !fixtureMode && !customSections ? effectiveTripCoverRepository : undefined,
+  );
 
   const isEmpty = useMemo(() => {
-    return sections.length === 0 || sections.every((sec) => sec.data.length === 0);
-  }, [sections]);
+    return enrichedSections.length === 0 || enrichedSections.every((sec) => sec.data.length === 0);
+  }, [enrichedSections]);
 
   const handleTripPress = useCallback(
     (tripId: string) => {
@@ -252,7 +287,7 @@ export function MyTripsScreen({
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
-          sections={sections}
+          sections={enrichedSections}
           showsVerticalScrollIndicator={false}
           stickySectionHeadersEnabled={false}
         />

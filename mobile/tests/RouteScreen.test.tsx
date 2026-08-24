@@ -47,7 +47,7 @@ describe('RoutePreviewScreen', () => {
       },
     };
 
-    await render(<RoutePreviewScreen navigation={mockNavigation} route={route} />);
+    await render(<RoutePreviewScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     // Top Bar
     expect(screen.getByText('Route to Wat Arun')).toBeTruthy();
@@ -88,7 +88,7 @@ describe('RoutePreviewScreen', () => {
       },
     };
 
-    await render(<RoutePreviewScreen navigation={mockNavigation} route={route} />);
+    await render(<RoutePreviewScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     // Initially Transit
     expect(screen.getByText('17 min')).toBeTruthy();
@@ -117,7 +117,7 @@ describe('RoutePreviewScreen', () => {
       params: { destinationId: 'place_wat_arun' },
     };
 
-    await render(<RoutePreviewScreen navigation={mockNavigation} route={route} />);
+    await render(<RoutePreviewScreen fixtureMode navigation={mockNavigation} route={route} />);
 
     await user.press(screen.getByLabelText('Back'));
     expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
@@ -153,6 +153,7 @@ describe('RoutePreviewScreen', () => {
 
     await render(
       <RoutePreviewScreen
+        fixtureMode
         initialStatus="unavailable"
         navigation={mockNavigation}
         route={route}
@@ -176,7 +177,7 @@ describe('RoutePreviewScreen', () => {
     };
 
     await render(
-      <RoutePreviewScreen initialStatus="loading" navigation={mockNavigation} route={route} />
+      <RoutePreviewScreen fixtureMode initialStatus="loading" navigation={mockNavigation} route={route} />
     );
 
     expect(screen.getByLabelText('Loading…')).toBeTruthy();
@@ -189,7 +190,7 @@ describe('RoutePreviewScreen', () => {
     };
 
     await render(
-      <RoutePreviewScreen initialStatus="error" navigation={mockNavigation} route={route} />
+      <RoutePreviewScreen fixtureMode initialStatus="error" navigation={mockNavigation} route={route} />
     );
 
     expect(screen.getByText('Unable to calculate route')).toBeTruthy();
@@ -201,5 +202,20 @@ describe('RoutePreviewScreen', () => {
       expect(screen.queryByText('Unable to calculate route')).toBeNull();
     });
     expect(screen.getByText('17 min')).toBeTruthy();
+  });
+
+  it('does not present a mock route on a production navigation without verified coordinates', async () => {
+    const route: any = {
+      params: {
+        destinationId: 'place_wat_arun',
+        destinationName: 'Wat Arun',
+      },
+    };
+
+    await render(<RoutePreviewScreen navigation={mockNavigation} route={route} />);
+
+    expect(screen.getByText('Route unavailable')).toBeTruthy();
+    expect(screen.queryByText('17 min')).toBeNull();
+    expect(screen.queryByText('4.2 km')).toBeNull();
   });
 });

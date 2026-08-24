@@ -50,7 +50,10 @@ export function RoutePreviewScreen({
   const originName = route?.params?.originName ?? t('route.currentLocation');
   const realCoordinates = useMemo(() => route?.params?.coordinates ?? [], [route?.params?.coordinates]);
   const hasRealRouteRequest = realCoordinates.length >= 2;
-  const isFixture = Boolean(fixtureMode || customRoute || (!hasRealRouteRequest && destinationId.startsWith('place_')));
+  // Mock routes are available only to explicit fixtures/tests. A production
+  // navigation without two verified coordinates must remain unavailable rather
+  // than presenting fabricated route metrics or geometry.
+  const isFixture = Boolean(fixtureMode || customRoute);
 
   const effectiveInitialMode = hasRealRouteRequest ? 'driving' : initialMode;
   const [selectedMode, setSelectedMode] = useState<TransportMode>(effectiveInitialMode);

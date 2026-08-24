@@ -182,3 +182,15 @@ export function mapPlacePhotoError(value: unknown): IntegrationError {
   }
 }
 
+export function mapWikimediaImageError(value: unknown): IntegrationError {
+  const payload = isRecord(value) ? value.error : value;
+  const code = isRecord(payload) && typeof payload.code === 'string' ? payload.code : null;
+  switch (code) {
+    case 'IMAGE_INPUT_INVALID': return new IntegrationError('invalidRequest');
+    case 'UNAUTHORIZED': return new IntegrationError('unauthorized');
+    case 'FORBIDDEN': return new IntegrationError('forbidden');
+    case 'WIKIMEDIA_RATE_LIMITED': return new IntegrationError('rateLimited');
+    case 'WIKIMEDIA_UNAVAILABLE': return new IntegrationError('providerUnavailable', true);
+    default: return mapUnknownTransportError(value);
+  }
+}

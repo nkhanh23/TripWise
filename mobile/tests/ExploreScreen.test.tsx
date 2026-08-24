@@ -16,7 +16,7 @@ describe('ExploreScreen', () => {
   });
 
   it('renders explore screen with map canvas, search bar, category chips, and markers', async () => {
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Search bar
     expect(screen.getByPlaceholderText('Search Tokyo, Bangkok...')).toBeTruthy();
@@ -43,7 +43,7 @@ describe('ExploreScreen', () => {
 
   it('filters places by category chip selection', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Initially multiple categories exist
     expect(screen.getByLabelText('Wat Arun')).toBeTruthy();
@@ -63,7 +63,7 @@ describe('ExploreScreen', () => {
 
   it('filters places by search query', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     await user.type(screen.getByPlaceholderText('Search Tokyo, Bangkok...'), 'Pad Thai');
 
@@ -74,7 +74,7 @@ describe('ExploreScreen', () => {
 
   it('displays empty state when search query matches no places and clears filters on reset', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     await user.type(screen.getByPlaceholderText('Search Tokyo, Bangkok...'), 'NonExistentPlaceXYZ');
 
@@ -89,7 +89,7 @@ describe('ExploreScreen', () => {
 
   it('shows place preview bottom sheet when a marker is pressed', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Initially preview is closed
     expect(screen.queryByText('Bangkok Yai, Bangkok')).toBeNull();
@@ -108,7 +108,7 @@ describe('ExploreScreen', () => {
 
   it('switches preview to new place when another marker is pressed', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Select Wat Arun
     await user.press(screen.getByLabelText('Wat Arun'));
@@ -121,7 +121,7 @@ describe('ExploreScreen', () => {
 
   it('closes place preview when close button is pressed', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     await user.press(screen.getByLabelText('Wat Arun'));
     expect(screen.getByText('Bangkok Yai, Bangkok')).toBeTruthy();
@@ -132,7 +132,7 @@ describe('ExploreScreen', () => {
 
   it('toggles between Map and List view modes', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Initial is Map view
     expect(screen.getByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeTruthy();
@@ -154,7 +154,7 @@ describe('ExploreScreen', () => {
 
   it('synchronizes selection between List and Map modes', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Switch to List mode
     await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
@@ -175,7 +175,7 @@ describe('ExploreScreen', () => {
 
   it('filters results in List mode with search query and category chips', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Switch to List mode
     await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
@@ -235,7 +235,7 @@ describe('ExploreScreen', () => {
 
   it('renders error state and recovers on retry', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen initialStatus="error" />);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} initialStatus="error" />);
 
     expect(screen.getByText('Unable to load map')).toBeTruthy();
     expect(screen.getByText('Retry')).toBeTruthy();
@@ -246,5 +246,14 @@ describe('ExploreScreen', () => {
       expect(screen.queryByText('Unable to load map')).toBeNull();
     });
     expect(screen.getByLabelText('Wat Arun')).toBeTruthy();
+  });
+
+  it('shows an empty production canvas without fixture places', async () => {
+    await render(<ExploreScreen />);
+
+    expect(screen.getByText('No places found')).toBeTruthy();
+    expect(screen.queryByLabelText('Wat Arun')).toBeNull();
+    expect(screen.queryByLabelText('The Grand Palace')).toBeNull();
+    expect(screen.queryByLabelText('Blue Whale Cafe')).toBeNull();
   });
 });

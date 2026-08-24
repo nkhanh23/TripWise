@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { SavedPlace } from '../../../integration/contracts';
-import type { PlacePhotoRepository, SavedPlacesRepository, PlaceMetadataRepository } from '../../../integration/repositories';
+import type { ResolvedImage, SavedPlace } from '../../../integration/contracts';
+import { CompositePlaceImageRepository, maximumConcurrentImageRequests } from '../../../integration/imageResolution';
+import type { PlaceImageRepository, PlacePhotoRepository, SavedPlacesRepository, PlaceMetadataRepository } from '../../../integration/repositories';
 import { SupabasePlacePhotoRepository } from '../../../integration/remote/supabasePlacePhotoRepository';
 import { SupabaseSavedPlacesRepository } from '../../../integration/remote/supabaseSavedPlacesRepository';
 import { SupabasePlaceMetadataRepository } from '../../../integration/remote/supabasePlaceMetadataRepository';
+import { SupabaseWikimediaImageRepository } from '../../../integration/remote/supabaseWikimediaImageRepository';
 import { supabase } from '../../../lib/supabase/client';
 import {
   getSavedPlaces,
@@ -14,27 +16,32 @@ import {
 } from '../data/savedPlacesStore';
 import { mapSavedPlaceToUIItem } from '../integrationMappers';
 import type { SavedPlacesUIStatus, SavedPlaceUIItem } from '../types';
+import type { ExplorePlace } from '../../explore/types';
 
-function normalizeCustomPlace(p: any): SavedPlaceUIItem {
+export type SavedPlaceFixtureInput = SavedPlaceUIItem | ExplorePlace;
+
+function normalizeCustomPlace(p: SavedPlaceFixtureInput): SavedPlaceUIItem {
+  const isSavedPlace = 'googlePlaceId' in p;
   return {
     id: p.id,
-    googlePlaceId: p.googlePlaceId || p.id,
+    googlePlaceId: isSavedPlace ? p.googlePlaceId : p.id,
     name: p.name,
-    latitude: typeof p.latitude === 'number' ? p.latitude : 0,
-    longitude: typeof p.longitude === 'number' ? p.longitude : 0,
+    latitude: isSavedPlace ? p.latitude : 0,
+    longitude: isSavedPlace ? p.longitude : 0,
     address: p.address || '',
     category: p.category || 'all',
     categoryLabel: p.categoryLabel || 'Place',
     imageUrl: p.imageUrl,
     rating: p.rating,
-    createdAt: p.createdAt || new Date().toISOString(),
+    createdAt: isSavedPlace ? p.createdAt : new Date().toISOString(),
   };
 }
 
 export type UseSavedPlacesOptions = {
-  customPlaces?: SavedPlaceUIItem[];
+  customPlaces?: SavedPlaceFixtureInput[];
   repository?: SavedPlacesRepository;
   photoRepository?: PlacePhotoRepository;
+  placeImageRepository?: PlaceImageRepository;
   metadataRepository?: PlaceMetadataRepository;
   fixtureMode?: boolean;
 };
@@ -43,6 +50,7 @@ export function useSavedPlaces({
   customPlaces,
   repository,
   photoRepository,
+  placeImageRepository,
   metadataRepository,
   fixtureMode,
 }: UseSavedPlacesOptions = {}) {
@@ -66,6 +74,12 @@ export function useSavedPlaces({
     if (normalizedCustomPlaces || isFixture) return photoRepository;
     return photoRepository ?? new SupabasePlacePhotoRepository(supabase);
   }, [normalizedCustomPlaces, isFixture, photoRepository]);
+  const effectivePlaceImageRepository = useMemo(() => {
+    if (normalizedCustomPlaces || isFixture) return placeImageRepository;
+    if (placeImageRepository) return placeImageRepository;
+    const google = effectivePhotoRepository ?? new SupabasePlacePhotoRepository(supabase);
+    return new CompositePlaceImageRepository(google, new SupabaseWikimediaImageRepository(supabase));
+  }, [effectivePhotoRepository, isFixture, normalizedCustomPlaces, placeImageRepository]);
 
   const [fixturePlaces, setFixturePlaces] = useState<SavedPlaceUIItem[]>(() =>
     isFixture ? getSavedPlaces().map(normalizeCustomPlace) : []
@@ -83,6 +97,8 @@ export function useSavedPlaces({
   });
 
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({});
+  const [resolvedImages, setResolvedImages] = useState<Record<string, ResolvedImage>>({});
+  const resolvedImageKeys = useRef(new Set<string>());
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [lastRemovedPlace, setLastRemovedPlace] = useState<{
     item: SavedPlaceUIItem;
@@ -90,6 +106,30 @@ export function useSavedPlaces({
   } | null>(null);
 
   const activeController = useRef<AbortController | null>(null);
+
+  const loadImagesBounded = useCallback(async (places: SavedPlace[], signal: AbortSignal) => {
+    if (!effectivePlaceImageRepository) return;
+    let nextIndex = 0;
+    const worker = async () => {
+      while (!signal.aborted) {
+        const place = places[nextIndex];
+        nextIndex += 1;
+        if (!place) return;
+        if (resolvedImageKeys.current.has(place.googlePlaceId)) continue;
+        resolvedImageKeys.current.add(place.googlePlaceId);
+        const image = await effectivePlaceImageRepository
+          .getPlaceImage({ googlePlaceId: place.googlePlaceId, maxWidth: 800 }, signal)
+          .catch(() => null);
+        if (image?.uri && !signal.aborted) {
+          setResolvedImages((current) => ({ ...current, [place.googlePlaceId]: image }));
+        } else if (!signal.aborted) {
+          resolvedImageKeys.current.delete(place.googlePlaceId);
+        }
+      }
+    };
+    const workers = Math.min(maximumConcurrentImageRequests, places.length);
+    await Promise.all(Array.from({ length: workers }, worker));
+  }, [effectivePlaceImageRepository]);
 
   useEffect(() => {
     if (isFixture) {
@@ -145,28 +185,13 @@ export function useSavedPlaces({
       }
 
       // Fetch photos in background for items missing photos
-      if (effectivePhotoRepository) {
-        for (const item of page.items) {
-          if (!photoUrls[item.googlePlaceId]) {
-            void effectivePhotoRepository
-              .getPhoto({ googlePlaceId: item.googlePlaceId }, controller.signal)
-              .then((photo) => {
-                if (photo.photoUri && !controller.signal.aborted) {
-                  setPhotoUrls((prev) => ({ ...prev, [item.googlePlaceId]: photo.photoUri! }));
-                }
-              })
-              .catch(() => {
-                // Non-blocking: fallback to placeholder
-              });
-          }
-        }
-      }
+      void loadImagesBounded(page.items, controller.signal);
     } catch {
       if (!controller.signal.aborted) {
         setStatus('error');
       }
     }
-  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, effectivePhotoRepository, photoUrls, ratings]);
+  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, photoUrls, ratings, loadImagesBounded]);
 
   useEffect(() => {
     if (normalizedCustomPlaces || isFixture) {
@@ -203,20 +228,7 @@ export function useSavedPlaces({
           }
         }
 
-        if (effectivePhotoRepository) {
-          for (const item of page.items) {
-            void effectivePhotoRepository
-              .getPhoto({ googlePlaceId: item.googlePlaceId }, controller.signal)
-              .then((photo) => {
-                if (photo.photoUri && !controller.signal.aborted) {
-                  setPhotoUrls((prev) => ({ ...prev, [item.googlePlaceId]: photo.photoUri! }));
-                }
-              })
-              .catch(() => {
-                // Non-blocking
-              });
-          }
-        }
+        void loadImagesBounded(page.items, controller.signal);
       } catch {
         if (!controller.signal.aborted) {
           setStatus('error');
@@ -229,7 +241,7 @@ export function useSavedPlaces({
     return () => {
       controller.abort();
     };
-  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, effectivePhotoRepository]);
+  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, loadImagesBounded]);
 
   const activePlaces = normalizedCustomPlaces ?? (isFixture ? fixturePlaces : remotePlaces);
 
@@ -237,10 +249,11 @@ export function useSavedPlaces({
   const itemsWithRichData: SavedPlaceUIItem[] = useMemo(() => {
     return activePlaces.map((item) => ({
       ...item,
-      imageUrl: photoUrls[item.googlePlaceId] || item.imageUrl,
+      imageUrl: resolvedImages[item.googlePlaceId]?.uri ?? photoUrls[item.googlePlaceId] ?? item.imageUrl,
+      resolvedImage: resolvedImages[item.googlePlaceId] ?? item.resolvedImage,
       rating: ratings[item.googlePlaceId] ?? item.rating,
     }));
-  }, [activePlaces, photoUrls, ratings]);
+  }, [activePlaces, photoUrls, ratings, resolvedImages]);
 
   const handleUnsave = useCallback(
     async (idOrGooglePlaceId: string) => {
