@@ -1,0 +1,387 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TripWise - Place Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#1c1b1b",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-container": "#0070eb",
+                      "surface-variant": "#e5e2e1",
+                      "on-primary-fixed": "#001a41",
+                      "surface": "#fcf9f8",
+                      "tertiary-fixed-dim": "#ffb4aa",
+                      "on-primary-fixed-variant": "#004493",
+                      "outline": "#717786",
+                      "inverse-primary": "#adc6ff",
+                      "primary": "#0058bc",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#f3f0ef",
+                      "surface-tint": "#005bc1",
+                      "on-secondary-fixed-variant": "#3d4853",
+                      "outline-variant": "#c1c6d7",
+                      "tertiary-container": "#e2241f",
+                      "surface-container-low": "#f6f3f2",
+                      "inverse-surface": "#313030",
+                      "secondary-fixed-dim": "#bcc8d5",
+                      "surface-container-high": "#eae7e7",
+                      "error-container": "#ffdad6",
+                      "on-background": "#1c1b1b",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-tertiary-container": "#fffbff",
+                      "secondary-container": "#d8e4f2",
+                      "surface-dim": "#dcd9d9",
+                      "surface-bright": "#fcf9f8",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#fefcff",
+                      "secondary": "#54606b",
+                      "secondary-fixed": "#d8e4f2",
+                      "primary-fixed": "#d8e2ff",
+                      "on-error": "#ffffff",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-secondary-container": "#5a6671",
+                      "on-primary": "#ffffff",
+                      "tertiary": "#bc000a",
+                      "on-tertiary-fixed-variant": "#930005",
+                      "on-tertiary-fixed": "#410001",
+                      "tertiary-fixed": "#ffdad5",
+                      "on-surface-variant": "#414755",
+                      "on-secondary-fixed": "#111d26",
+                      "background": "#fcf9f8",
+                      "surface-container": "#f0eded",
+                      "on-secondary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "12px",
+                      "sm": "8px",
+                      "xs": "4px",
+                      "xl": "20px",
+                      "lg": "16px",
+                      "2xl": "24px",
+                      "3xl": "32px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "title-sm": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "display": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-sm": [
+                              "16px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-lg": [
+                              "22px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "caption": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0;
+        }
+        .material-symbols-outlined.fill {
+          font-variation-settings: 'FILL' 1;
+        }
+      </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<!-- Top Navigation (Task focused context, back button implied instead of shell) -->
+<header class="fixed top-0 w-full z-50 bg-transparent transition-colors duration-300" id="detail-header">
+<div class="flex justify-between items-center px-lg h-16 w-full">
+<button aria-label="Back" class="w-10 h-10 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center shadow-sm text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex gap-sm">
+<button aria-label="Share" class="w-10 h-10 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center shadow-sm text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+<button aria-label="Save" class="w-10 h-10 rounded-full bg-surface/80 backdrop-blur-md flex items-center justify-center shadow-sm text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="bookmark_border">bookmark_border</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pb-[100px]"> <!-- Padding for fixed CTA bottom -->
+<!-- Hero Image -->
+<div class="relative w-full h-[45vh] min-h-[350px]">
+<img class="w-full h-full object-cover" data-alt="A stunning, high-resolution wide shot of Wat Arun temple in Bangkok, Thailand during golden hour. The intricate spires of the temple reflect warm sunlight against a clear blue sky. The image has a bright, modern aesthetic, fitting for a premium travel application, emphasizing spatial clarity and striking architectural details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbjR0KmsmOBVV4vDxNl4pEAydpThWnZIKcNKHF_q7x8TpnrVUI256ZRawF3Ub41xLzZ5QooVM0-ON4F9RPB0m25MjdWNxlBWrWZQNbnVCbLQcywu_hhV1sjGCQvIpqButwZAFeN15qvPTfs7FlmAPG8d306KesEp9WdaD6-CupOhH8y9LXiXT5-0OlprMkQ1tv4UBomlLpnNCEBe5QcJAjIPQyL-0s7AQJ9YrZFExe4LQVQDMd8YEoag">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<!-- Place Details Content (Bottom Sheet Style Overlay) -->
+<div class="relative -mt-xl bg-surface rounded-t-[24px] px-lg pt-xl pb-2xl shadow-[0_-8px_16px_rgba(0,0,0,0.08)]">
+<!-- TWPlaceHeader -->
+<div class="mb-2xl">
+<div class="flex justify-between items-start mb-sm">
+<h1 class="font-display text-display text-on-surface">Wat Arun</h1>
+<div class="flex items-center bg-primary-container text-on-primary-container rounded-full px-sm py-xs gap-xs mt-1">
+<span class="material-symbols-outlined fill text-[16px]" data-icon="star">star</span>
+<span class="font-label-md text-label-md">4.8</span>
+</div>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-md">Riverside Temple of Dawn</p>
+<div class="flex flex-wrap gap-sm">
+<span class="inline-flex items-center gap-xs px-md py-xs rounded-full border border-outline-variant font-label-md text-label-md text-on-surface">
+<span class="material-symbols-outlined text-[16px]" data-icon="history">history</span> Historic
+                    </span>
+<span class="inline-flex items-center gap-xs px-md py-xs rounded-full border border-outline-variant font-label-md text-label-md text-on-surface">
+<span class="material-symbols-outlined text-[16px]" data-icon="church">church</span> Temple
+                    </span>
+<span class="inline-flex items-center gap-xs px-md py-xs rounded-full border border-outline-variant font-label-md text-label-md text-on-surface">
+<span class="material-symbols-outlined text-[16px]" data-icon="photo_camera">photo_camera</span> Photogenic
+                    </span>
+</div>
+</div>
+<!-- TWPlaceQuickActions Bento -->
+<div class="grid grid-cols-4 gap-sm mb-3xl">
+<button class="flex flex-col items-center justify-center p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 text-primary flex items-center justify-center mb-xs">
+<span class="material-symbols-outlined" data-icon="directions">directions</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Route</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface flex items-center justify-center mb-xs">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Website</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface flex items-center justify-center mb-xs">
+<span class="material-symbols-outlined" data-icon="call">call</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Call</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-on-surface flex items-center justify-center mb-xs">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface">Add</span>
+</button>
+</div>
+<!-- About Section -->
+<section class="mb-3xl">
+<h2 class="font-title-lg text-title-lg text-on-surface mb-md">About</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Wat Arun Ratchawararam Ratchawaramahawihan, or Wat Arun, is a Buddhist temple in the Bangkok Yai district of Bangkok, Thailand, on the Thonburi west bank of the Chao Phraya River. The temple derives its name from the Hindu god Aruna, often personified as the radiations of the rising sun.
+                </p>
+<button class="mt-sm font-label-md text-label-md text-primary hover:underline">Read more</button>
+</section>
+<!-- Details Cards (Glassmorphism inspired layout) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-3xl">
+<!-- Opening Hours -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm flex items-start gap-md">
+<div class="mt-xs text-primary">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</div>
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-xs">Opening Hours</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-xs">Open today: <span class="font-bold text-on-surface">08:00 - 18:00</span></p>
+<p class="font-body-sm text-body-sm text-outline">Closes in 3 hours</p>
+</div>
+</div>
+<!-- Tickets / Entry -->
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm flex items-start gap-md">
+<div class="mt-xs text-primary">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-xs">Entry Fee</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">100 THB per foreigner</p>
+<p class="font-body-sm text-body-sm text-outline mt-xs">Free for Thai citizens</p>
+</div>
+</div>
+</div>
+<!-- Location (Mini Map) -->
+<section class="mb-3xl">
+<h2 class="font-title-lg text-title-lg text-on-surface mb-md">Location</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="location_on">location_on</span>
+                    158 Thanon Wang Doem, Wat Arun, Bangkok Yai, Bangkok 10600
+                </p>
+<div class="w-full h-48 rounded-xl overflow-hidden relative shadow-sm" data-location="Wat Arun, Bangkok">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist 2D map view of Bangkok focusing on the Chao Phraya river area around Wat Arun. The map uses a light-mode corporate aesthetic with soft blues for the river and muted whites/grays for landmasses. A prominent, modern primary-color map pin indicates the exact location of the temple. The UI feels premium, efficient, and highly legible without clutter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4TMhWkNF27Hv-daK8KffOmCNo1ScrMvQgaobrMgTHfmSceh5hEXUaOgCIVnxxVya838OYwYCuDelLtwouvGoU40vfPTy7OlzIAWTaT_jJ6Z6QCmRx8t7umwei0goJRBiEy_B65UmLnjpFNtiAA6IsRyLYEWz_zpdHTgzW4_BVNphgzP4U6Q2d0Gk7vlzss_3N6ZXRJcNQvaKn0w2MjuZ3tbOV9gGfbZWPdFP_e-vcgPgAJfGHbtJqBg">
+<!-- Map Pin Overlay simulated -->
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center animate-pulse">
+<div class="w-4 h-4 bg-primary rounded-full border-2 border-white shadow-md"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Reviews -->
+<section>
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-title-lg text-title-lg text-on-surface">Reviews</h2>
+<button class="font-label-md text-label-md text-primary hover:underline">See all (12,450)</button>
+</div>
+<div class="space-y-md">
+<!-- Review Card 1 -->
+<div class="p-lg bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex items-center gap-sm mb-sm">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-title-sm text-on-surface">S</div>
+<div>
+<h4 class="font-title-sm text-title-sm text-on-surface">Sarah Jenkins</h4>
+<div class="flex text-primary text-[14px]">
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+</div>
+</div>
+<span class="ml-auto font-body-sm text-body-sm text-outline">2 weeks ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Absolutely stunning details. Highly recommend going near sunset for the best photos across the river!</p>
+</div>
+<!-- Review Card 2 -->
+<div class="p-lg bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex items-center gap-sm mb-sm">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-title-sm text-on-surface">M</div>
+<div>
+<h4 class="font-title-sm text-title-sm text-on-surface">Marcus T.</h4>
+<div class="flex text-primary text-[14px]">
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined fill" data-icon="star">star</span>
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</div>
+</div>
+<span class="ml-auto font-body-sm text-body-sm text-outline">1 month ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Beautiful temple but very crowded during mid-day. The stairs are quite steep if you plan to climb up.</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Fixed Bottom CTA -->
+<div class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t border-surface-variant p-md pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40">
+<button class="w-full h-12 bg-primary text-on-primary rounded-full font-label-lg text-label-lg flex items-center justify-center gap-sm shadow-md hover:bg-surface-tint transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="navigation">navigation</span>
+            Get Directions
+        </button>
+</div>
+<script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('detail-header');
+            if (window.scrollY > 100) {
+                header.classList.add('bg-surface/90');
+                header.classList.remove('bg-transparent');
+            } else {
+                header.classList.remove('bg-surface/90');
+                header.classList.add('bg-transparent');
+            }
+        });
+    </script>
+</body></html>

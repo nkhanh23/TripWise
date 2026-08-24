@@ -82,18 +82,24 @@ describe('Supabase profile repository integration with mocked transport', () => 
     expect(eq).toHaveBeenCalledWith('id', userId);
   });
 
-  it('updates only reviewed profile fields and returns validated remote state', async () => {
-    const single = jest.fn().mockResolvedValue({ data: { ...row, display_name: 'Updated' }, error: null });
+  it('updates reviewed profile fields, including a blank-safe home country, and returns validated remote state', async () => {
+    const single = jest.fn().mockResolvedValue({
+      data: { ...row, display_name: 'Updated', home_country: 'VN' }, error: null,
+    });
     const abortSignal = jest.fn().mockReturnValue({ single });
     const selectAfterUpdate = jest.fn().mockReturnValue({ abortSignal });
     const eq = jest.fn().mockReturnValue({ select: selectAfterUpdate });
     const update = jest.fn().mockReturnValue({ eq });
     const from = jest.fn().mockReturnValue({ update });
     const repository = new SupabaseProfileRepository({ from } as unknown as SupabaseClient<Database>);
-    await expect(repository.updateOwnProfile(asUserId(userId), { displayName: ' Updated ', avatarUrl: null })).resolves.toMatchObject({
-      displayName: 'Updated', avatarUrl: null,
+    await expect(repository.updateOwnProfile(asUserId(userId), {
+      displayName: ' Updated ', homeCountry: ' VN ', avatarUrl: null,
+    })).resolves.toMatchObject({
+      displayName: 'Updated', homeCountry: 'VN', avatarUrl: null,
     });
-    expect(update).toHaveBeenCalledWith({ display_name: 'Updated', avatar_url: null });
+    expect(update).toHaveBeenCalledWith({
+      display_name: 'Updated', home_country: 'VN', avatar_url: null,
+    });
     expect(eq).toHaveBeenCalledWith('id', userId);
   });
 });

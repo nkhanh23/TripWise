@@ -1,4 +1,8 @@
-import { mapWmoCodeToWeatherInfo } from '../src/features/trips/weather';
+import {
+  getActiveDayWeather,
+  getRequiredForecastDays,
+  mapWmoCodeToWeatherInfo,
+} from '../src/features/trips/weather';
 import { OpenMeteoWeatherRepository } from '../src/integration/remote/publicProviderRepositories';
 import {
   ContractValidationError,
@@ -7,6 +11,68 @@ import {
 } from '../src/integration/validation';
 
 describe('Open-Meteo Weather Integration & Formatting', () => {
+  const tripWithDates = (dates: string[]) => ({
+    id: 'weather-trip',
+    title: 'Weather trip',
+    destination: 'Bangkok',
+    startDate: dates[0] ?? '2026-08-23',
+    endDate: dates[dates.length - 1] ?? '2026-08-23',
+    dateLabel: 'Weather trip',
+    durationDays: dates.length,
+    heroImageUrl: '',
+    budgetSpent: '',
+    budgetTotal: '',
+    budgetPercent: 0,
+    travelers: [],
+    savedPlacesCount: 0,
+    days: dates.map((date, index) => ({
+      id: `day-${index + 1}`,
+      dayNumber: index + 1,
+      date,
+      dateLabel: `Day ${index + 1}`,
+      items: [],
+    })),
+  });
+
+  describe('itinerary forecast window', () => {
+    it('requests one day for a same-day trip', () => {
+      expect(getRequiredForecastDays(tripWithDates(['2026-08-23']), '2026-08-23')).toBe(1);
+    });
+
+    it('covers a future trip date within the provider horizon', () => {
+      expect(getRequiredForecastDays(tripWithDates(['2026-08-25']), '2026-08-23')).toBe(3);
+    });
+
+    it('covers every day of a multi-day future trip within the provider horizon', () => {
+      expect(
+        getRequiredForecastDays(
+          tripWithDates(['2026-08-25', '2026-08-26', '2026-08-27']),
+          '2026-08-23',
+        ),
+      ).toBe(5);
+    });
+
+    it('leaves weather unavailable when the itinerary exceeds the provider horizon', () => {
+      expect(getRequiredForecastDays(tripWithDates(['2026-09-08']), '2026-08-23')).toBeNull();
+    });
+
+    it('never maps weather from a different date onto the active itinerary day', () => {
+      const result = getActiveDayWeather(
+        {
+          days: [{
+            date: '2026-08-23',
+            weatherCode: 0,
+            maximumTemperatureCelsius: 32,
+            minimumTemperatureCelsius: 25,
+            maximumPrecipitationProbability: 0,
+          }],
+        },
+        { id: 'day-25', dayNumber: 1, date: '2026-08-25', dateLabel: 'Day 1', items: [] },
+      );
+      expect(result).toBeNull();
+    });
+  });
+
   describe('validateWeatherRequest', () => {
     it('validates correct coordinate and forecast days', () => {
       const request = validateWeatherRequest({

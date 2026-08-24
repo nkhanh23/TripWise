@@ -1,0 +1,22 @@
+{
+  "project": {
+    "id": "projects/10069552738311964263",
+    "title": "TripWise Design System",
+    "deviceType": "MOBILE"
+  },
+  "syncedAt": "2026-08-24",
+  "screens": [
+    { "id": "52ec564262214ec3b91b5c62daa03d6f", "label": "Profile", "fileStem": "profile", "width": 780, "height": 2580 },
+    { "id": "49c6b6a2c6284f169d1c6140037cebdd", "label": "Edit Profile", "fileStem": "edit-profile", "width": 780, "height": 1768 },
+    { "id": "27bdea676ae041ecb09a7bc987363b9e", "label": "Settings", "fileStem": "settings", "width": 780, "height": 1768 },
+    { "id": "d2cb583265f14761b79be9ea5d6be835", "label": "Language", "fileStem": "language", "width": 780, "height": 1768 },
+    { "id": "c69da60c4d474121b8b71d5b8de57aad", "label": "Currency", "fileStem": "currency", "width": 780, "height": 1894 },
+    { "id": "92e619bfeb504afebd6d87fccbf90f4c", "label": "Help & Support", "fileStem": "help-support", "width": 780, "height": 1768 },
+    { "id": "040103dc04894ee0bc3aff41cd37534e", "label": "Sign Out Confirmation", "fileStem": "sign-out-confirmation", "width": 780, "height": 1768 },
+    { "id": "2f74fdf1e9314c448c49eb7d14447c32", "label": "Delete Account Confirmation", "fileStem": "delete-account-confirmation", "width": 780, "height": 1768 },
+    { "id": "3e59b6c7b2e646feb189eb8a313b6a6e", "label": "Saved Places", "fileStem": "saved-places", "width": 780, "height": 3012 },
+    { "id": "aa0abf7fea0f4e05bebdbf471c9d7ae3", "label": "Saved Empty State", "fileStem": "saved-empty-state", "width": 780, "height": 1768 },
+    { "id": "4a1161c5a2be4ec48989e64e9f0f9c34", "label": "Place Detail", "fileStem": "place-detail", "width": 780, "height": 3794 },
+    { "id": "1e86508f0dd0413db877d859125b630f", "label": "Trip Detail", "fileStem": "trip-detail", "width": 780, "height": 2802 }
+  ]
+}

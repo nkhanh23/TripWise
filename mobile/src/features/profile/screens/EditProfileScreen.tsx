@@ -23,6 +23,7 @@ export const EditProfileScreen = memo(function EditProfileScreen({ navigation }:
   const { t } = useTranslation();
   const { profile, updateProfile } = useProfile();
   const [displayName, setDisplayName] = useState(profile?.displayName ?? '');
+  const [homeCountry, setHomeCountry] = useState(profile?.homeCountry ?? '');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(profile?.avatarUrl ?? null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export const EditProfileScreen = memo(function EditProfileScreen({ navigation }:
     setValidationError(null);
     setSaveError(null);
     try {
-      await updateProfile({ displayName: normalizedName, avatarUrl });
+      await updateProfile({ displayName: normalizedName, homeCountry: homeCountry.trim(), avatarUrl });
       Alert.alert(t('common.success'), t('profile.edit.savedSuccess'), [
         { text: t('common.done'), onPress: () => navigation.goBack() },
       ]);
@@ -55,7 +56,7 @@ export const EditProfileScreen = memo(function EditProfileScreen({ navigation }:
     } finally {
       setSubmitting(false);
     }
-  }, [avatarUrl, displayName, navigation, submitting, t, updateProfile]);
+  }, [avatarUrl, displayName, homeCountry, navigation, submitting, t, updateProfile]);
 
   if (!profile) {
     return (
@@ -136,7 +137,16 @@ export const EditProfileScreen = memo(function EditProfileScreen({ navigation }:
               label={t('profile.edit.email')}
               value={profile.email}
             />
-            <Text style={[styles.noticeText, { color: colors.text.muted }]}>{t('profile.edit.serverFieldsNotice')}</Text>
+            <ProfileField
+              accessibilityLabel={t('profile.edit.homeCountry')}
+              editable={!submitting}
+              icon="public"
+              label={t('profile.edit.homeCountry')}
+              maxLength={2}
+              onChangeText={setHomeCountry}
+              placeholder={t('profile.edit.homeCountryPlaceholder')}
+              value={homeCountry}
+            />
             {saveError ? <Text accessibilityRole="alert" style={[styles.errorText, { color: colors.state.error }]}>{saveError}</Text> : null}
           </View>
 
@@ -164,13 +174,15 @@ export const EditProfileScreen = memo(function EditProfileScreen({ navigation }:
 type ProfileFieldProps = {
   accessibilityLabel: string;
   editable: boolean;
-  icon: 'person' | 'mail';
+  icon: 'person' | 'mail' | 'public';
   label: string;
+  maxLength?: number;
   onChangeText?: (text: string) => void;
+  placeholder?: string;
   value: string;
 };
 
-function ProfileField({ accessibilityLabel, editable, icon, label, onChangeText, value }: ProfileFieldProps) {
+function ProfileField({ accessibilityLabel, editable, icon, label, maxLength, onChangeText, placeholder, value }: ProfileFieldProps) {
   const { colors } = useTheme();
   return (
     <View style={styles.fieldGroup}>
@@ -180,7 +192,10 @@ function ProfileField({ accessibilityLabel, editable, icon, label, onChangeText,
         <TextInput
           accessibilityLabel={accessibilityLabel}
           editable={editable}
+          maxLength={maxLength}
           onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={colors.text.muted}
           style={[styles.textInput, { color: editable ? colors.text.primary : colors.text.muted }]}
           value={value}
         />

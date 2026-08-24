@@ -52,6 +52,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'TripDetail'> & {
   placeResolutionRepository?: PlaceResolutionRepository;
   placePhotoRepository?: PlacePhotoRepository;
   weatherRepository?: WeatherRepository;
+  weatherNow?: () => Date;
   fixtureMode?: boolean;
 };
 
@@ -67,6 +68,7 @@ export function TripDetailScreen({
   placeResolutionRepository,
   placePhotoRepository,
   weatherRepository,
+  weatherNow,
   fixtureMode,
 }: Props) {
   const insets = useSafeAreaInsets();
@@ -209,6 +211,7 @@ export function TripDetailScreen({
     tripData,
     activeDay,
     effectiveWeatherRepository,
+    weatherNow,
   );
 
   const handleBack = useCallback(() => {

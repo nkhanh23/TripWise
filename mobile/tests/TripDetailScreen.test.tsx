@@ -450,6 +450,7 @@ describe('TripDetailScreen', () => {
         navigation={mockNavigation}
         route={route}
         weatherRepository={mockWeatherRepo}
+        weatherNow={() => new Date('2026-10-12T12:00:00')}
       />
     );
 

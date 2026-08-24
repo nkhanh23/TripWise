@@ -84,29 +84,87 @@ function extractVerifiedCoordinates(tripData: TripDetailData | null): { latitude
   return null;
 }
 
-function computeForecastDays(tripData: TripDetailData | null): number {
-  if (!tripData) return 7;
-  const daysCount = tripData.durationDays || (tripData.days ? tripData.days.length : 7);
-  return Math.min(16, Math.max(1, daysCount));
+const maxProviderForecastDays = 16;
+const defaultNow = (): Date => new Date();
+
+function toUtcDayNumber(value: string): number | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+  return Math.floor(date.getTime() / 86_400_000);
+}
+
+function getLocalIsoDate(now: Date): string {
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getRequiredForecastDays(
+  tripData: TripDetailData | null,
+  today: string,
+): number | null {
+  const todayDay = toUtcDayNumber(today);
+  if (todayDay === null || !tripData?.days?.length) return null;
+
+  const itineraryDays = tripData.days
+    .map((day) => toUtcDayNumber(day.date))
+    .filter((day): day is number => day !== null);
+  if (!itineraryDays.length) return null;
+
+  const latestItineraryDay = Math.max(...itineraryDays);
+  if (latestItineraryDay < todayDay) return null;
+
+  const requiredDays = latestItineraryDay - todayDay + 1;
+  return requiredDays <= maxProviderForecastDays ? requiredDays : null;
+}
+
+export function getActiveDayWeather(
+  forecast: WeatherForecast | null,
+  activeDay: TripDayItinerary | null,
+): WeatherBadgeData | null {
+  if (!forecast?.days?.length || !activeDay?.date) return null;
+  const matchingDay: DailyWeather | undefined = forecast.days.find(
+    (day) => day.date === activeDay.date,
+  );
+  if (!matchingDay) return null;
+
+  return mapWmoCodeToWeatherInfo(
+    matchingDay.weatherCode,
+    matchingDay.maximumTemperatureCelsius,
+    matchingDay.minimumTemperatureCelsius,
+    matchingDay.maximumPrecipitationProbability,
+  );
 }
 
 export function useTripWeather(
   tripData: TripDetailData | null,
   activeDay: TripDayItinerary | null,
-  weatherRepository?: WeatherRepository
+  weatherRepository?: WeatherRepository,
+  now: () => Date = defaultNow,
 ) {
   const [fetchedForecast, setFetchedForecast] = useState<WeatherForecast | null>(null);
   const activeController = useRef<AbortController | null>(null);
 
   const coordinates = useMemo(() => extractVerifiedCoordinates(tripData), [tripData]);
-  const forecastDays = useMemo(() => computeForecastDays(tripData), [tripData]);
+  const forecastDays = useMemo(
+    () => getRequiredForecastDays(tripData, getLocalIsoDate(now())),
+    [tripData, now],
+  );
 
   const forecast = coordinates ? fetchedForecast : null;
 
   useEffect(() => {
-    if (!weatherRepository || !coordinates) {
+    const requiredForecastDays = forecastDays;
+    if (!weatherRepository || !coordinates || requiredForecastDays === null) {
       return;
     }
+    const boundedForecastDays: number = requiredForecastDays;
 
     const controller = new AbortController();
     activeController.current = controller;
@@ -117,7 +175,7 @@ export function useTripWeather(
           {
             latitude: coordinates!.latitude,
             longitude: coordinates!.longitude,
-            forecastDays,
+            forecastDays: boundedForecastDays,
           },
           controller.signal
         );
@@ -140,18 +198,7 @@ export function useTripWeather(
 
   // Derive weather badge for the currently selected active day
   const activeDayWeather: WeatherBadgeData | null = useMemo(() => {
-    if (!forecast || !forecast.days || !activeDay?.date) return null;
-    const matchingDay: DailyWeather | undefined = forecast.days.find(
-      (d) => d.date === activeDay.date
-    );
-    if (!matchingDay) return null;
-
-    return mapWmoCodeToWeatherInfo(
-      matchingDay.weatherCode,
-      matchingDay.maximumTemperatureCelsius,
-      matchingDay.minimumTemperatureCelsius,
-      matchingDay.maximumPrecipitationProbability
-    );
+    return getActiveDayWeather(forecast, activeDay);
   }, [forecast, activeDay]);
 
   return {

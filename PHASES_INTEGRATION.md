@@ -22,7 +22,7 @@ Integration chỉ bắt đầu khi user yêu cầu rõ ràng.
 - **Authorization date:** 2026-08-20 (INT-P7 temporarily authorized on 2026-08-22)
 - **Current:** INT-P7 — Remaining Real Data Integration (ACTIVE)
 - **Completed phases:** INT-P0, INT-P1, INT-P2, INT-P3, INT-P4, INT-P5
-- **Open / Paused:** INT-P6 — Map & Route Integration (substantial runtime evidence PASS; pending final closure)
+- **Open / Paused:** INT-P6 — Map & Route Integration (substantial runtime evidence PASS; final closure intentionally deferred)
 
 
 Repository đã có pre-roadmap React Native Supabase Auth/session/profile và typed `generateTrip()` client từ P2/P3. INT-P0 đã audit các foundation này nhưng chưa nối production UI/data flows; mọi wiring vẫn phải theo đúng phase Integration.
@@ -114,18 +114,18 @@ Repository đã có pre-roadmap React Native Supabase Auth/session/profile và t
 - [x] Timeout/error/fallback behavior.
 - [x] Map rebuild/performance regression test.
 
-INT-P6 has substantial PASS runtime evidence on Android (Trip Map, Route Preview, Place Photos, OSRM metrics); remains OPEN for final UI/runtime closure.
+INT-P6 has substantial PASS runtime evidence on Android (Trip Map, Route Preview, Place Photos, OSRM metrics); it remains OPEN / PAUSED by explicit boundary and is not closed by this sync.
 
 ---
 
 ## [ ] INT-P7 — Remaining Real Data Integration (ACTIVE)
 
-- [x] Weather theo BE-P8/client ownership decision (Open-Meteo direct client, validated coordinates, contextual weather badge on Trip Detail).
-- [x] Saved places persistence (`public.saved_places`, `list_saved_places`, `save_place`, `unsave_place`, owner RLS, photo proxy, Stitch-exact empty/populated states).
-- [x] Google Place Photos (`get-place-photo` Edge Function proxy with skipHttpRedirect, owner RLS verification).
-- [x] Google Place Ratings & Metadata (`get-place-metadata` Edge Function proxy, real Places API New rating + count, 24h server TTL).
-- [x] Profile & Settings real data & account deletion (`home_country` column, `get_user_trip_stats()` RPC, `delete_user_account()` RPC, local preference separation).
-- [ ] Profile / Settings live remote + Android capability verification. **REMEDIATED LOCALLY / REMOTE BLOCKED (2026-08-23):** forward migration `20260823000000_harden_profile_stats_and_deletion.sql` explicitly revokes both RPCs from `PUBLIC`/`anon` and grants only `authenticated`; dedicated fresh/upgrade DB contracts prove the privilege matrix, owner isolation, and account cascade. Profile Saved count now comes from the owner-scoped `get_user_trip_stats()` response instead of fixture state. Configured remote still lacks `home_country` (`42703`) and both RPCs (`PGRST202`) because this environment has no Supabase access token, so live stats/disposable deletion remain pending. Android Settings semantics, safe delete-confirmation cancellation, and sign-out PASS; Android Profile real-data/edit persistence remains FAIL/BLOCKED on the missing remote schema.
+- [x] Weather theo BE-P8/client ownership decision (Open-Meteo direct client, validated coordinates, bounded date window, active-date Trip Detail presentation; automated and Android/live evidence PASS).
+- [x] Saved places persistence (`public.saved_places`, `list_saved_places`, `save_place`, `unsave_place`, owner RLS, idempotency, real populated/empty/reload states; implementation, automated, remote/live and Android PASS; current Stitch audit pending).
+- [x] Google Place Photos (`get-place-photo` Edge Function proxy with skipHttpRedirect, owner RLS verification; implementation, automated, remote/live and Android PASS; current Stitch audit pending).
+- [x] Google Place Ratings & Metadata (`get-place-metadata` Edge Function proxy, real Places API New rating + count, 24h server TTL; implementation, automated, remote/live and Android PASS; current Stitch audit pending).
+- [x] Profile & Settings real data & account deletion (`home_country` column, `get_user_trip_stats()` RPC, `delete_user_account()` RPC, local preference separation; remote/live PASS and Android partial).
+- [ ] INT-P7 current Stitch visual audit, affected Android re-verification, and formal closure readiness. `STITCH_VISUAL_ARTIFACT_ACCESS = PASS` (2026-08-24): all twelve current `get_screen` HTML and screenshot artifacts for `projects/10069552738311964263` were retrieved locally and visually inspected. The repository helper was correctly attempted first but its Windows Schannel curl could not acquire credentials before HTTP; a verified Node/OpenSSL transport then followed the current signed redirects and produced valid local HTML plus image artifacts without persisting signed URLs or secrets. Current Stitch establishes contract **B — Edit Profile edits Home Country**; the smallest remote-backed field mapping and tests are implemented. Android re-verification, including reversible live persistence of the operator's blank country value, remains pending because the approved Windows automation cannot control Android Studio in this environment. Historical screen IDs/artifacts remain non-authoritative.
 - [ ] INT-P7 Final Verification, Live Regression & Formal Closure.
 
 ---
@@ -169,14 +169,14 @@ INT-P6 has substantial PASS runtime evidence on Android (Trip Map, Route Preview
 | `resolve-place` v9 | POST Edge Function | JWT | itinerary item UUID only | validated verification receipt | nine stable place codes | `ResolvePlaceRequest/Result` | `SupabasePlaceResolutionRepository` | Trip Detail/Map/Place | INTEGRATED | Live resolve/refetch VERIFIED, provenance, coordinates and cross-user isolation PASS |
 | `get-place-photo` | POST Edge Function | JWT | `googlePlaceId`, optional `maxWidth` | validated `{ data: PlacePhoto }` | seven stable photo codes | `GetPlacePhotoRequest/PlacePhoto` | `SupabasePlacePhotoRepository` | Trip Detail hero & item photos, Saved Places | INTEGRATED | Owner verification via verified itinerary item or owned saved place; server-side Places API (New); zero client API key exposure |
 | `get-place-metadata` | POST Edge Function | JWT | `googlePlaceId` | validated `{ data: { rating, userRatingCount } }` | safe metadata codes | `PlaceMetadata` | `SupabasePlaceMetadataRepository` | Saved Places cards | INTEGRATED | Real Google Places API (New) rating/count; 24h server cache; owner-verified; missing rating hidden without fake 0.0 |
-| `get_user_trip_stats` | RPC | JWT | none | `{ trips_count: number, saved_places_count: number }` | SQLSTATE validation/auth | `{ tripsCount: number, savedPlacesCount: number }` | `SupabaseSavedTripsRepository.getStats()` | Profile stats header | IMPLEMENTED + AUTOMATED VERIFIED / REMOTE BLOCKED | Fresh/upgrade DB contracts prove authenticated-only EXECUTE, exact owner counts, and cross-user isolation. Remote probe still returns `PGRST202`; no authenticated live result exists. |
-| `delete_user_account` | RPC | JWT + RLS | none | void | SQLSTATE validation/auth | `deleteAccount()` | `SupabaseAuthRepository` | Settings / Profile delete account modal | IMPLEMENTED + AUTOMATED VERIFIED / REMOTE BLOCKED | Forward migration preserves `SECURITY DEFINER`, empty `search_path`, null guard, caller-only deletion, explicit `PUBLIC`/`anon` revocation, and authenticated-only grant. DB contracts prove cascade and User B isolation; remote remains `PGRST202`, so disposable live verification is pending. |
+| `get_user_trip_stats` | RPC | JWT | none | `{ trips_count: number, saved_places_count: number }` | SQLSTATE validation/auth | `{ tripsCount: number, savedPlacesCount: number }` | `SupabaseSavedTripsRepository.getStats()` | Profile stats header | IMPLEMENTED + AUTOMATED + REMOTE/LIVE VERIFIED | Privilege matrix is authenticated-only; remote schema probe resolves the RPC, anonymous access is rejected, and disposable A/B data returned A=1/1 and B=2/1 without cross-user leakage. |
+| `delete_user_account` | RPC | JWT + RLS | none | void | SQLSTATE validation/auth | `deleteAccount()` | `SupabaseAuthRepository` | Settings / Profile delete account modal | IMPLEMENTED + AUTOMATED + REMOTE/LIVE VERIFIED | `SECURITY DEFINER`, empty `search_path`, null guard, caller-only deletion, explicit `PUBLIC`/`anon` revocation, and authenticated-only grant. Disposable A-only cascade, deleted-session rejection, B preservation, and cleanup PASS. |
 | OSRM | GET direct client | none | 2-25 verified coordinates; driving only | validated route/GeoJSON | input/no-route/retryable/unavailable | `RouteRequest`, `Route` | `OsrmRouteRepository` + `routePlanning` | Route Preview/Trip Map | INTEGRATED | Native map + OSRM driving route, verified coordinates, Directions navigation PASS |
-| Open-Meteo | GET direct client | none | verified coordinates; 1-16 days | validated bounded daily forecast | input/retryable/optional unavailable | `WeatherRequest/Forecast` | `OpenMeteoWeatherRepository` + `useTripWeather` | Trip Detail weather state | INTEGRATED | Direct client integration with validated coordinates, error tolerance and contextual weather badge on Trip Detail |
+| Open-Meteo | GET direct client | none | verified coordinates; 1-16 days from today through latest required itinerary date | validated bounded daily forecast | input/retryable/optional unavailable | `WeatherRequest/Forecast` | `OpenMeteoWeatherRepository` + `useTripWeather` | Trip Detail weather state | INTEGRATED | Direct client integration with validated coordinates, bounded itinerary-date window, error tolerance and contextual weather badge on Trip Detail; out-of-horizon trips remain optionally unavailable |
 | `saved_places` / `list_saved_places` / `save_place` / `unsave_place` | RPC + RLS | JWT | googlePlaceId, name, coords, address, category | saved place row / paginated page / boolean | SQLSTATE validation/auth | `SavedPlace`, `SavedPlacesPage`, `SavePlaceCommand` | `SupabaseSavedPlacesRepository` + `useSavedPlaces` | Saved Places screen | INTEGRATED | Live save/unsave/undo, idempotent upsert, keyset pagination, owner RLS, real Bangkok seed PASS |
 
 ## 4. Integration rule
 
-> **Integration was explicitly authorized on 2026-08-20. INT-P0 through INT-P5 are complete; INT-P6 is OPEN / PAUSED pending final UI/runtime closure; INT-P7 is ACTIVE.**
+> **Integration was explicitly authorized on 2026-08-20. INT-P0 through INT-P5 are complete; INT-P6 is OPEN / PAUSED; INT-P7 is ACTIVE; INT-P8 and INT-P9 are NOT STARTED.**
 
 INT-P1 dừng tại infrastructure/repository boundary và không wiring production data vào UI. Chi tiết implementation, deferred wiring và evidence nằm trong `HANDOFF_INTEGRATION.md`.

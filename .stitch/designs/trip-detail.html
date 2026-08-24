@@ -1,0 +1,375 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Trip Detail - Bangkok</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "on-surface": "#1c1b1b",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-container": "#0070eb",
+                      "surface-variant": "#e5e2e1",
+                      "on-primary-fixed": "#001a41",
+                      "surface": "#fcf9f8",
+                      "tertiary-fixed-dim": "#ffb4aa",
+                      "on-primary-fixed-variant": "#004493",
+                      "outline": "#717786",
+                      "inverse-primary": "#adc6ff",
+                      "primary": "#0058bc",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#f3f0ef",
+                      "surface-tint": "#005bc1",
+                      "on-secondary-fixed-variant": "#3d4853",
+                      "outline-variant": "#c1c6d7",
+                      "tertiary-container": "#e2241f",
+                      "surface-container-low": "#f6f3f2",
+                      "inverse-surface": "#313030",
+                      "secondary-fixed-dim": "#bcc8d5",
+                      "surface-container-high": "#eae7e7",
+                      "error-container": "#ffdad6",
+                      "on-background": "#1c1b1b",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-tertiary-container": "#fffbff",
+                      "secondary-container": "#d8e4f2",
+                      "surface-dim": "#dcd9d9",
+                      "surface-bright": "#fcf9f8",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#fefcff",
+                      "secondary": "#54606b",
+                      "secondary-fixed": "#d8e4f2",
+                      "primary-fixed": "#d8e2ff",
+                      "on-error": "#ffffff",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-secondary-container": "#5a6671",
+                      "on-primary": "#ffffff",
+                      "tertiary": "#bc000a",
+                      "on-tertiary-fixed-variant": "#930005",
+                      "on-tertiary-fixed": "#410001",
+                      "tertiary-fixed": "#ffdad5",
+                      "on-surface-variant": "#414755",
+                      "on-secondary-fixed": "#111d26",
+                      "background": "#fcf9f8",
+                      "surface-container": "#f0eded",
+                      "on-secondary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "12px",
+                      "sm": "8px",
+                      "xs": "4px",
+                      "xl": "20px",
+                      "lg": "16px",
+                      "2xl": "24px",
+                      "3xl": "32px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "title-sm": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "display": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-sm": [
+                              "16px",
+                              {
+                                      "lineHeight": "22px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-lg": [
+                              "22px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "caption": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "title-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Ambient Shadows */
+        .level-1-shadow {
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.04);
+        }
+        .level-2-shadow {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+        .level-3-shadow {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+      </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen relative overflow-x-hidden">
+<!-- Top Navigation Container -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-lg h-16 w-full max-w-7xl mx-auto">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-sm rounded-full active:scale-95 duration-150 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="font-display text-display text-primary dark:text-primary-fixed-dim truncate px-4">
+                TripWise
+            </div>
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high transition-colors p-sm rounded-full active:scale-95 duration-150 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="pt-16 pb-24 md:pb-lg w-full max-w-7xl mx-auto">
+<!-- Hero Section -->
+<div class="relative w-full h-[40vh] md:h-[50vh] bg-surface-container-highest">
+<div class="bg-cover bg-center w-full h-full absolute inset-0" data-alt="A sweeping aerial view of the Chao Phraya River in Bangkok at golden hour. The river snakes through a dense, modern cityscape peppered with historic, intricate temples. The warm, golden light casts long shadows, highlighting the architectural contrast. The overall aesthetic is vibrant yet serene, fitting for a premium travel app interface." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhwaVH-ppxy46ndaiqygJF8I1VjUVUJxn_e3550wH6W9OmTLXm0InmzfYNmC6tesORyHM6m62OFfgE_vrBOt1yBluux1Z4-g-tu3CB1clD7Exjsu-r_03QaxrZiR2_4d09d8As-xSEys0oCPgUcX7jtlu5cVEBpXN__OtBAgqtB3eVkNFgIIg1O4SuQxJeKBQYnSIxP_FkQs2u1c9brldxoInzdomTaZpbClByeJYXFIOVQMnHRYx4oA')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full p-lg pb-xl">
+<h1 class="font-display text-display text-on-surface mb-xs drop-shadow-md">Bangkok, Thailand</h1>
+<p class="font-body-lg text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="calendar_month" data-weight="fill">calendar_month</span>
+                    Oct 12 - Oct 18 • 6 Days
+                </p>
+</div>
+</div>
+<div class="px-lg -mt-md relative z-10 space-y-xl">
+<!-- Trip Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl level-1-shadow p-lg flex flex-col md:flex-row gap-lg">
+<div class="flex-1 flex flex-col gap-sm border-b md:border-b-0 md:border-r border-outline-variant/30 pb-md md:pb-0 md:pr-md">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Budget Status</span>
+<div class="flex items-end gap-sm">
+<span class="font-title-lg text-title-lg text-on-surface">$1,200</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-1">/ $1,500</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 mt-xs overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 80%;"></div>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-sm border-b md:border-b-0 md:border-r border-outline-variant/30 pb-md md:pb-0 md:px-md">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Companions</span>
+<div class="flex -space-x-sm">
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-lowest bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A small circular portrait photo of a smiling traveler with short dark hair, wearing sunglasses, set against a bright, modern light-mode background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSiu-h2QLsZa6t17jppQA1JZhIPa_X211n-Sr-DDKN1dWui3WYtJ0kgDLgcU9pYWhtjBnc-Wv1nzGwj-gzTdOhNBQ6Ca4dL9CT_MmBnMbHQs7f6Q790bIHp7jUpVMWZA9HF_Bgs0tGHBG9YaMzxEAHkenHeqpg9LXIKfcl_KiCnq7U28j5hBi08z-otYunPhHyP6xXcW7ETOLQLKGDM9flv0VN3-_b5a8GHPUo23iBvHP5YGCjh2BIew">
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-lowest bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A small circular portrait photo of an adventurous woman looking off camera, set against a clean, minimalist white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD81RAMQgxI_bpw5L90MoKQtpFzqBO83UfxuqkBa-styj-uK9QtB_Hmy0QTUwcIjWw9xs3EAOICZ1jJo_Wzbvnb-EB96c6D43OGaxXJl_37GzVlYBa7u5Y_GEkhLZUeXr7S5kYdXOP7DYxJ95IINy7XZItXtdYx-BiBRG66otUs0T42n_JzLUCFRiHHnNYOSJtid68oWkAuxmtnCZZTgrNi7tue1bn33eJ6-jpFEmKsAw9FtEttCpHBQQ">
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-lowest bg-primary-container flex items-center justify-center text-on-primary-container font-label-md text-xs">
+                            +2
+                        </div>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-sm md:pl-md">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Saved Places</span>
+<div class="flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined" data-icon="location_on" data-weight="fill">location_on</span>
+<span class="font-title-md text-title-md">14 Locations</span>
+</div>
+<button class="text-left font-label-md text-label-md text-primary mt-auto hover:text-primary-fixed-dim transition-colors">View Map</button>
+</div>
+</section>
+<!-- Itinerary Section -->
+<section class="space-y-md">
+<div class="flex justify-between items-center mb-md sticky top-16 bg-surface/90 backdrop-blur-sm z-20 py-sm">
+<h2 class="font-title-lg text-title-lg text-on-surface">Itinerary</h2>
+<!-- Day Selector (Chips) -->
+<div class="flex gap-sm overflow-x-auto no-scrollbar pb-xs">
+<button class="flex-shrink-0 px-md py-xs rounded-full bg-primary text-on-primary font-label-md text-label-md whitespace-nowrap transition-colors">Day 1 • Oct 12</button>
+<button class="flex-shrink-0 px-md py-xs rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Day 2</button>
+<button class="flex-shrink-0 px-md py-xs rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Day 3</button>
+<button class="flex-shrink-0 px-md py-xs rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Day 4</button>
+<button class="flex-shrink-0 px-md py-xs rounded-full border border-outline-variant text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-low transition-colors">Day 5</button>
+</div>
+</div>
+<!-- Timeline Container -->
+<div class="relative pl-6 space-y-lg before:content-[''] before:absolute before:left-3 before:top-4 before:bottom-4 before:w-[2px] before:bg-outline-variant/30">
+<!-- Itinerary Card 1 -->
+<div class="relative">
+<!-- Timeline Dot -->
+<div class="absolute -left-[29px] top-4 w-4 h-4 rounded-full bg-surface border-2 border-primary z-10 flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-md level-1-shadow flex gap-md">
+<div class="flex flex-col items-center justify-start min-w-[50px] pt-xs">
+<span class="font-label-md text-label-md text-on-surface">09:00</span>
+<span class="font-caption text-caption text-on-surface-variant">AM</span>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<div class="flex items-start justify-between gap-sm">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Breakfast at Ro Roast</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Trendy cafe with great cold brew.</p>
+</div>
+<div class="p-xs bg-secondary-container text-on-secondary-container rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="restaurant">restaurant</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Itinerary Card 2 -->
+<div class="relative">
+<div class="absolute -left-[29px] top-4 w-4 h-4 rounded-full bg-surface border-2 border-outline z-10"></div>
+<div class="bg-surface-container-lowest rounded-lg p-md level-1-shadow flex gap-md">
+<div class="flex flex-col items-center justify-start min-w-[50px] pt-xs">
+<span class="font-label-md text-label-md text-on-surface">11:00</span>
+<span class="font-caption text-caption text-on-surface-variant">AM</span>
+</div>
+<div class="flex-1 flex flex-col gap-sm">
+<div class="flex items-start justify-between gap-sm">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Wat Arun (Temple of Dawn)</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Iconic riverside temple with intricate porcelain detailing. Best to arrive early.</p>
+</div>
+<div class="p-xs bg-tertiary-container text-on-tertiary-container rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="account_balance">account_balance</span>
+</div>
+</div>
+<!-- Card Image -->
+<div class="w-full h-24 rounded-md overflow-hidden bg-surface-variant mt-xs">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of the intricate porcelain floral patterns decorating the spires of Wat Arun in Bangkok. The bright sunlight highlights the colorful tiles against a clear blue sky, emphasizing the detailed craftsmanship in a crisp, modern photographic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6xCFvQAFLFaJf8Y9Eixg_BN6Xd-6zSBkhaiYMCmHE8Eep4Q1suV2IpUif7U4MRubJISwH6KuQpCNOtWScs83LcTZY7iT4V7nUbwwQmbs8CoUHqNLmJb19uKRjxSzmYUJy4qukP6zk2J1j8lJI2vRoQ16fW_FJhIW1J3mC3HGhqbzKhAvD3O34RCEv7Ytys7WLMSW8uhRf-_tmTLioTktH_S2dgum8Foecdv_EJtxrrC3xSxSIxuQNBA">
+</div>
+<div class="flex items-center gap-sm mt-xs">
+<button class="font-label-sm text-label-sm text-primary flex items-center gap-xs hover:text-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-xs" data-icon="directions">directions</span> Get Directions
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Itinerary Card 3 -->
+<div class="relative">
+<div class="absolute -left-[29px] top-4 w-4 h-4 rounded-full bg-surface border-2 border-outline z-10"></div>
+<div class="bg-surface-container-lowest rounded-lg p-md level-1-shadow flex gap-md">
+<div class="flex flex-col items-center justify-start min-w-[50px] pt-xs">
+<span class="font-label-md text-label-md text-on-surface">01:30</span>
+<span class="font-caption text-caption text-on-surface-variant">PM</span>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<div class="flex items-start justify-between gap-sm">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Lunch at Supanniga Eating Room</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Traditional Thai recipes by the river.</p>
+</div>
+<div class="p-xs bg-secondary-container text-on-secondary-container rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="restaurant">restaurant</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Spacer for floating elements -->
+<div class="h-20 md:h-0"></div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<!-- Displayed here as it aligns with adding places to an active itinerary view -->
+<button class="fixed bottom-24 md:bottom-lg right-lg w-14 h-14 bg-primary-container text-on-primary-container rounded-2xl level-3-shadow flex items-center justify-center hover:bg-primary transition-colors z-40 group">
+<span class="material-symbols-outlined font-title-lg text-[28px] group-hover:scale-110 transition-transform duration-200" data-icon="add">add</span>
+</button>
+<!-- Navigation Shell (Hidden on intent: This is a Detail/Task focused screen, but standard BottomNav provided per JSON if needed. Suppressed logically as user is deep in a specific trip, not global browsing, however the user requested specifically standard components so we provide it if we strictly follow JSON, but rule says "Automatic Suppression: Any sub-page featuring a 'Close' or 'Back' action". Since there is a back button, we suppress the Bottom Nav). -->
+<!-- BOTTOM NAV SUPPRESSED PER SEMANTIC SHELL MANDATE: Linear/Task-focused sub-page with Back action. -->
+</body></html>

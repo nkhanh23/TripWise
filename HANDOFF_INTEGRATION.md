@@ -8,9 +8,9 @@
 
 **Completed:** INT-P0 — Integration Readiness & Contract Freeze; INT-P1 — React Native Backend Infrastructure; INT-P2 — Authentication Integration; INT-P3 — Trip Generation Integration; INT-P4 — Persistence Integration; INT-P5 — Places Integration
 
-**Open / Paused:** INT-P6 — Map & Route Integration (substantial runtime evidence PASS on Android; pending final closure)
+**Open / Paused:** INT-P6 — Map & Route Integration (substantial runtime evidence PASS on Android; closure intentionally deferred)
 
-**Current active phase:** INT-P7 — Remaining Real Data Integration (Weather, Saved Places, Photos, Ratings, Profile/Settings implemented; pending final verification & closure)
+**Current active phase:** INT-P7 — Remaining Real Data Integration (Weather, Saved Places, Photos, Ratings implemented; current Stitch artifacts retrieved and audited; Edit Profile Home Country mapping implemented; Android re-verification remains pending)
 
 **Track status:** Backend COMPLETE; Frontend UI track COMPLETE; INT-P0 through INT-P5 COMPLETE; INT-P6 OPEN / PAUSED; INT-P7 ACTIVE.
 
@@ -85,12 +85,12 @@ at `20260820010000_saved_trip_query_mutation_contracts.sql`.
 ### 3.2 Profile read/update
 
 - Invocation: PostgREST `profiles` table through authenticated Supabase client.
-- Row DTO: `{ id, display_name, avatar_url, created_at, updated_at }`.
-- Nullability: `display_name` and `avatar_url` are nullable; IDs/timestamps are
+- Row DTO: `{ id, display_name, avatar_url, home_country, created_at, updated_at }`.
+- Nullability: `display_name`, `avatar_url`, and `home_country` are nullable; IDs/timestamps are
   non-null.
 - Create: auth trigger creates the owner profile idempotently.
 - Read: own row or `null`; RLS uses `profiles.id = auth.uid()`.
-- Update: only own `display_name`/`avatar_url`; user email comes from Auth, not
+- Update: only own `display_name`/`avatar_url`/`home_country`; user email comes from Auth, not
   `profiles`.
 - Errors: PostgREST/Supabase transport errors; no app-specific stable profile
   code exists, so INT-P1 owns safe domain mapping.
@@ -230,7 +230,9 @@ at `20260820010000_saved_trip_query_mutation_contracts.sql`.
 - Ownership: Integration-owned direct React Native data source; no backend
   proxy/persistence/cache.
 - Request: GET fixed origin `https://api.open-meteo.com/v1/forecast`; validated
-  coordinate pair; `forecast_days` 1-16; `timezone=auto`; daily variables are
+  coordinate pair; `forecast_days` is the inclusive bounded window from local
+  today through the latest required itinerary date (1-16), never merely trip
+  duration; `timezone=auto`; daily variables are
   weather code, max/min temperature and max precipitation probability.
 - Response DTO frozen for INT-P1 validation: `daily.time[]`,
   `daily.weather_code[]`, `daily.temperature_2m_max[]`,
@@ -332,7 +334,7 @@ reach JSX.
 | Retry | bounded provider semantics | retry only changes local status | n/a | UI retry does not rerun work | Error states | INT-P1 | Repository retry policy plus explicit user retry; never retry auth/validation/ambiguity | No |
 | Empty/not found | null/empty arrays/false | multiple UI enums | nullable | Transport meanings differ | Empty/error screens | INT-P1 mapper | Map each contract explicitly: empty list, null detail, false mutation, unavailable provider | No |
 | Stable errors | AI/place codes, `TW001`-`TW005`, SQLSTATE | mixed raw/fallback strings | n/a | Raw errors can leak/inconsistently render | Error UX | INT-P1 | Exhaustive domain error union; unknown becomes safe internal error | No |
-| Profile | compact DB row + Auth email | rich mock `UserProfile` | DB fields nullable | home country/bio/stats not persisted | Profile/Edit | INT-P2 mapper | Auth email + profile row are remote; unsupported rich fields remain local/derived until separate backend contract | No |
+| Profile | compact DB row + Auth email + owner-scoped stats RPC | rich mock `UserProfile` | DB fields nullable | bio remains unsupported; country and stats are now remote | Profile/Edit | INT-P7 | Auth email, profile row including optional `home_country`, and exact owner stats are remote; unsupported rich fields remain local/derived | No |
 | Route modes | OSRM driving, no steps | transit/walk/drive/cycle + steps | n/a | UI promise exceeds real contract | Route Preview | INT-P6 | Wire driving only; other modes use explicit unsupported/unavailable state unless a later contract is approved | No |
 | Weather | compact daily forecast | no FE model | optional | Missing boundary | Trip weather area | INT-P1/P7 | Add transport/domain types in INT-P1; do not wire UI until INT-P7 | No |
 | Legacy REST client | Supabase is production backend | `/api/v1` emulator default | n/a | Wrong backend architecture | Any accidental reuse | INT-P1 | Exclude legacy API client from new Integration composition | No |
@@ -1028,7 +1030,7 @@ INT-P6 remains formally **OPEN / PAUSED**. Substantial verified evidence on Andr
   - Delete Account Modal: screen `d2cb583265f14761b79be9ea5d6be835`
 - **Verification:** Automated tests PASS (`tests/ProfileScreen.test.tsx`, `tests/SettingsScreen.test.tsx`, `tests/AuthProvider.test.tsx`).
 
-### 25.1 Codex verification result (2026-08-23) — NOT COMPLETE
+### 25.1 Historical Codex verification result (2026-08-23) — SUPERSEDED
 
 - **Configured remote migration state: FAIL / NOT APPLIED.** Read-only PostgREST probes against the same Supabase URL/key used by `mobile/.env` returned:
   - `profiles.home_country`: PostgreSQL `42703` (`column profiles.home_country does not exist`);
@@ -1045,7 +1047,7 @@ INT-P6 remains formally **OPEN / PAUSED**. Substantial verified evidence on Andr
 - **Database tests:** the full persistence runner was attempted twice. Both runs were interrupted by Docker/PostgreSQL `terminating connection due to administrator command`, so the full suite has no PASS for this session. A separate isolated disposable-PostgreSQL smoke did PASS the new functions: owner A received `{ "trips_count": 2 }`, owner B received `{ "trips_count": 1 }`, deleting A removed A's auth/profile/trip/saved-place rows, and B plus B's trip remained. The same smoke proved the grant defect: `anon` and `PUBLIC` both currently have EXECUTE on `delete_user_account()`, and `anon` has EXECUTE on `get_user_trip_stats()` in a fresh application of the migration. This smoke was ephemeral and did not test remote session invalidation or persist a new repository test file.
 - **Roadmap decision:** keep INT-P6 OPEN / PAUSED, keep INT-P7 ACTIVE, keep Profile / Settings capability **NOT COMPLETE**, and do not close all INT-P7.
 
-### 25.2 Focused blocker remediation result (2026-08-23) — LOCALLY VERIFIED / REMOTE BLOCKED
+### 25.2 Historical focused blocker remediation result (2026-08-23) — SUPERSEDED
 
 - **Migration-history decision:** the original migration is untracked in the current worktree, has no repository commit history, and is absent from the configured remote contract. It was applied only to disposable local PostgreSQL verification databases. It was not rewritten; security remediation is forward-only in `20260823000000_harden_profile_stats_and_deletion.sql`. No migration history was reset or repaired.
 - **RPC security fix:** the corrective migration recreates `get_user_trip_stats()` as `SECURITY INVOKER` and `delete_user_account()` as `SECURITY DEFINER`, both with `SET search_path = ''` and an explicit null `auth.uid()` guard. Account deletion remains exactly caller-scoped through `delete from auth.users where id = v_uid`. Both functions are revoked from `PUBLIC`, `anon`, and `authenticated`, then granted only to `authenticated`; neither accepts a user ID.
@@ -1059,71 +1061,169 @@ INT-P6 remains formally **OPEN / PAUSED**. Substantial verified evidence on Andr
 - **Stitch:** no UI redesign or Stitch correction was made because the observed blocker is remote schema availability, not a verified Android-versus-current-Stitch visual discrepancy.
 - **Roadmap decision:** preserve INT-P0 through INT-P5 COMPLETE, INT-P6 OPEN / PAUSED, and INT-P7 ACTIVE. Profile / Settings remains NOT COMPLETE until corrected remote deployment, authenticated/live disposable verification, and the blocked Android Profile gates pass.
 
+### 25.3 Historical remote deployment and Stitch continuation (2026-08-23) — SUPERSEDED
+
+- **CLI authorization recheck:** `SUPABASE_ACCESS_TOKEN` is still absent from the execution environment. `npx supabase migration list` again returned `LegacyPlatformAuthRequiredError`. The linked project cannot be deployed to through the CLI, so no migration, schema-cache action, or other remote mutation was attempted.
+- **Authoritative remote contract recheck:** read-only PostgREST probes again returned `profiles.home_country` HTTP 400 / `42703`, `get_user_trip_stats()` HTTP 404 / `PGRST202`, and `delete_user_account()` HTTP 404 / `PGRST202`. Thus both Profile/Settings migrations (`20260822020000` and `20260823000000`) remain required remote deployments.
+- **Safety decision:** no authenticated live stats test, no disposable account creation, no destructive deletion call, and no operator account mutation were performed while the corrected remote contract is absent.
+- **Stitch MCP:** no Stitch MCP tool is available in this Codex session. The mandatory current-screen enumeration and Android-versus-Stitch comparison are therefore **STITCH VERIFIED = BLOCKED**. No visual correction or speculative UI change was made.
+- **Android continuation:** no new authenticated Profile runtime run was possible because the prerequisite remote contract is absent; prior Settings/sign-out evidence remains historical evidence only. Profile real-data, Edit Profile persistence, and current Stitch comparison remain pending after deployment.
+- **Roadmap decision:** INT-P7 remains ACTIVE and NOT COMPLETE. Do not start INT-P8/INT-P9 or resume INT-P6 from this task.
+
+### 25.4 Historical remote/live and Android continuation (2026-08-23) — SUPERSEDED SNAPSHOT
+
+This section supersedes the remote-blocked conclusions in 25.1–25.3. Those entries remain historical evidence of the pre-deployment state.
+
+- **Remote deployment and contract:** `20260822020000_profile_stats_and_deletion.sql` and `20260823000000_harden_profile_stats_and_deletion.sql` are present remotely after `npx supabase db push`. Remote probes confirm `profiles.home_country`, `get_user_trip_stats()`, and `delete_user_account()` resolve; anonymous execution is rejected.
+- **Live disposable safety verification:** confirmed disposable A/B users authenticated with distinct identities. Exact owner stats were A = 1 trip / 1 Saved Place and B = 2 trips / 1 Saved Place; no cross-user count leaked. Deleting A as A removed A's Auth user, profile, trip/day/item graph, and Saved Place; the old A session was rejected; B remained usable and was then cleaned up. No disposable user remains.
+- **Android Profile:** operator Profile loads real display name, authenticated email, and counts. Read-only backend cross-check matched the displayed 2 Trips and 4 Saved Places. Navigation away/back retained those values. A reversible display-name edit saved remotely, reloaded, and was restored remotely. The operator's `home_country` was empty and the current Profile/Edit Profile implementation exposes no home-country field; that sub-gate is not passed. The owner-tagged Profile state remains the implementation safeguard against cross-account stale stats; no fresh Android account-switch runtime was performed in this continuation.
+- **Android Settings:** Appearance selection (Light, then System Default restore), Language (English, then Vietnamese restore), Currency (VND, then USD restore), and Distance (Miles, then kilometres restore) rendered and changed as local preferences. Help & Support loaded. Notification descriptions explicitly say they are app-only preferences with no configured native/OS notifications. The Delete Account confirmation opened and was cancelled; the operator account was not deleted. Sign-out was not rerun in this continuation; prior sign-out evidence remains historical.
+- **Weather Android:** FAIL. The existing upcoming operator trip starts 2026-08-25 and contains two VERIFIED stops. Trip Detail loaded but displayed no weather badge. Source inspection confirms `useTripWeather` requests only `durationDays` days beginning today (one day from 2026-08-23), then looks for the active trip date; the 2026-08-25 day is absent from that response. This is a date-window defect, not a provider-fallback PASS.
+- **Stitch:** **STITCH VERIFIED = BLOCKED.** This Codex environment has no Stitch MCP tool. Historical IDs listed above were not treated as current sources, no current screens/states could be enumerated, and no speculative visual correction was made.
+- **Quality gates:** no production source changed in this continuation, so the earlier lint/typecheck/Jest/Expo Doctor and focused database-contract PASS results are prior verified evidence, not fresh executions.
+- **Roadmap decision:** INT-P0–INT-P5 remain COMPLETE; INT-P6 remains OPEN / PAUSED; INT-P7 remains ACTIVE and NOT COMPLETE; INT-P8/INT-P9 remain NOT STARTED.
+
+### 25.5 Verified Weather remediation and continuation evidence (2026-08-23) — PASS
+
+- **Root cause fixed:** `useTripWeather` had requested only `durationDays` beginning today, so a future active itinerary date could not appear in the provider response. It now derives the inclusive bounded request length from local today through the latest itinerary day. It does not call the provider when the itinerary is wholly past or exceeds Open-Meteo's 16-day horizon; weather remains optional and Trip Detail remains usable.
+- **Automated regression:** deterministic date-input tests PASS for same-day, future (2026-08-23 → 2026-08-25), multi-day future, out-of-horizon unavailable, and wrong-day non-leakage. Existing provider-failure optional fallback and Trip Detail weather rendering tests PASS.
+- **Android live verification:** after restarting the development client, the existing 2026-08-25 operator trip with two VERIFIED stops rendered the active-date Open-Meteo badge: `Rain, 32° / 26°`, maximum precipitation probability `61%`. No fixture/fake value was introduced.
+- **Quality gates:** fresh lint PASS, typecheck PASS, Jest PASS (44/45 suites, 332/333 tests; one pre-existing skip), Expo Doctor PASS (21/21).
+- **Stitch and Home Country:** still blocked/pending as recorded in 25.4; no Profile/Settings UI correction was made without Stitch MCP.
+
+### 25.6 Historical Stitch MCP connection diagnosis (2026-08-23) — SUPERSEDED
+
+- **Session inspection:** the active Codex tool manifest has no callable Stitch tool/server and the MCP resource inventory contains no `stitch` server.
+- **Configuration inspection:** `C:\Users\PC\.codex\config.toml` exists but has no `[mcp_servers.stitch]` section. The TripWise workspace has no project-local MCP configuration; `supabase/config.toml` is unrelated. No secret value was read or output.
+- **Historical connection result:** `STITCH_MCP_CONNECTION = BLOCKED_BY_EXECUTION_ENVIRONMENT`. This is retained only as pre-availability evidence and is superseded by the verified global connection recorded in the authoritative section below.
+- **Scope result:** Profile/Settings, Saved Places, Photos, and Ratings visual audits did not run; Home Country UI remains undecided and no UI source was changed.
+
 ---
 
 # START HERE — NEXT CODEX SESSION
 
-## 1. Repository & Production Stack
-- **Client:** React Native + TypeScript + Expo (`mobile/`) targeting Android runtime.
-- **Backend & Database:** Supabase PostgreSQL + Row Level Security (RLS) + Supabase Auth.
-- **Serverless Functions:** Supabase Edge Functions (Deno / TypeScript).
-- **Public Providers:** Open-Meteo (weather direct client), OSRM (driving routes direct client), Google Places API New (via authenticated Edge Functions proxy).
-- **Zero Secrets in Client:** Google Places server key and Gemini keys reside solely in Supabase Secrets Vault.
+This is the authoritative continuation section. Older “Exact next action”, “Recommended First Task”, and pre-availability Stitch blocker sections above are historical/superseded where they conflict with this section.
 
-## 2. Mandatory Read Order for Codex
-1. `PHASES_INTEGRATION.md` (Active Integration Roadmap)
-2. `HANDOFF_INTEGRATION.md` (Active Integration State & Context)
-3. `DECISIONS.md` (Architecture decision records, especially ADR-017, ADR-018, ADR-019, ADR-020)
-4. `docs/05-engineering/react-native-coding-rules.md` (React Native rules)
-5. `PHASES_BE.md` / `HANDOFF_BE.md` (Backend reference and migration inventory)
-6. `PHASES_FE.md` / `HANDOFF_FE.md` (Frontend Stitch screen mappings and UI context)
+## NEXT SESSION OWNER
 
-## 3. Current Canonical Roadmap Status
-- **INT-P0 through INT-P5:** COMPLETE
-- **INT-P6 (Map & Route Integration):** OPEN / PAUSED (substantial runtime evidence PASS on Android; pending final closure)
-- **INT-P7 (Remaining Real Data Integration):** ACTIVE (all capabilities implemented; pending final verification & formal closure)
-- **INT-P8 & INT-P9:** NOT STARTED
+Codex — Integration.
 
-## 4. INT-P7 Capability Matrix
+## NEXT SESSION EXACT TASK
 
-| Capability | Implementation State | Automated Verified | Live Remote / Edge Verified | Android Operator Verified |
-|---|---|---|---|---|
-| **Weather (Open-Meteo)** | IMPLEMENTED | PASS (`tests/integration-weather.test.ts`) | PASS (live Open-Meteo client) | PENDING runtime check |
-| **Saved Places Persistence** | IMPLEMENTED | PASS (`tests/integration-saved-places.test.ts`) | PASS (live DB & RPCs verified) | PASS (Bangkok seed rendered) |
-| **Google Place Photos** | IMPLEMENTED | PASS (`tests/integration-place-photos.test.ts`) | PASS (`get-place-photo` v1 active) | PASS (Trip Detail hero photo) |
-| **Google Place Ratings** | IMPLEMENTED | PASS (`tests/integration-place-photos.test.ts`) | PASS (`get-place-metadata` v1 active)| PASS (Saved Places rating badge) |
-| **Profile & Settings** | IMPLEMENTED | PASS (mobile + dedicated fresh/upgrade DB security contracts) | BLOCKED (corrective migration not deployable without Supabase access token) | PARTIAL: Settings/sign-out PASS; Profile real data/edit persistence FAIL on absent remote schema |
+`INT-P7 — Stitch MCP Visual Audit + Profile Home Country Contract Resolution + Formal Closure Readiness (BLOCKED pending access to current Stitch visual artifacts)`
 
-## 5. Current Blockers & Pending Verification
-1. **Remote DB Migration Deployment:** BLOCKED by missing `SUPABASE_ACCESS_TOKEN`. Dedicated local security tests PASS and the forward corrective migration is ready; configured remote still lacks both profile migrations/contracts.
-2. **Safe live RPC verification:** BLOCKED until remote deployment. Then verify authenticated stats isolation and use only a newly created disposable user for account deletion/cascade/session cleanup.
-3. **Android Profile Verification:** BLOCKED by remote schema readiness. Android Settings semantics, safe confirmation cancellation, and sign-out are verified; Profile real data and Edit Profile reload remain pending.
-4. **Expo Doctor:** PASS (21/21 on 2026-08-23).
-5. **INT-P7 Formal Closure:** Complete remaining verification checks to tick INT-P7 `[x]`.
-6. **INT-P6 Formal Closure:** Review and close INT-P6 once operator confirms final UI verification.
+Do not redo already verified backend, provider, weather, Saved Places, photo, rating, migration, account-deletion, or runtime work. Do not modify Profile/Settings UI in this documentation-sync session, perform new Stitch remediation now, start INT-P8/INT-P9, close INT-P6, or prematurely close INT-P7.
 
-## 6. Security-Sensitive Contracts
-- **Row Level Security (RLS):** All user tables (`profiles`, `trips`, `itinerary_days`, `itinerary_items`, `saved_places`) strictly enforce `auth.uid() = user_id`.
-- **`get-place-photo` & `get-place-metadata`:** Always enforce JWT authentication and place ownership check (verified trip item or owned saved place).
-- **`delete_user_account()`:** `SECURITY DEFINER` with `SET search_path = ''` operating strictly on `auth.uid()`.
-- **Zero Service-Role in Mobile:** Service-role key is never imported, referenced, or bundled into React Native.
-- **Zero Google Server Key in Mobile:** Server key stays exclusively in Supabase Vault.
+## CANONICAL ROADMAP STATE
 
-## 7. Important Runtime Production Data
-- **Disposable Operator Test Trip UUID:** `db5c6e22-ba18-465a-b803-f03702d4e73a` (Trip to Bangkok with 2 verified stops: Chùa Arun & The Grand Palace).
-- **Operator Account:** `sarah.j@example.com` (used for INT-P6/INT-P7 live verification).
-- Do not cleanup disposable verification trips until final integration QA is closed.
+```text
+INT-P0: COMPLETE
+INT-P1: COMPLETE
+INT-P2: COMPLETE
+INT-P3: COMPLETE
+INT-P4: COMPLETE
+INT-P5: COMPLETE
 
-## 8. Recommended First Task for Codex
+INT-P6: OPEN / PAUSED
+INT-P7: ACTIVE
+INT-P8: NOT STARTED
+INT-P9: NOT STARTED
+```
 
-> **Recommended Task:** After an authorized Supabase CLI access token is available, deploy the existing forward-only profile migrations, probe the remote schema/RPC privilege contract, then run authenticated stats and newly-created disposable-account deletion verification. Re-run the blocked Android Profile real-data/Edit Profile gates afterward. Do not close INT-P7 or return to INT-P6 without explicit authorization.
+Existing INT-P2 waivers remain accepted and must not be reopened: public signup live quota/rate-limit verification and Android real-process kill/restart session-restore smoke.
 
----
+## VERIFIED INT-P7 EVIDENCE TO PRESERVE
 
-## Codex Operating Rules
-- **Never claim COMPLETE from code inspection alone** when live/runtime evidence is required.
-- **Use real Supabase contracts:** Do not inject mock data or fake counts into normal production runtime.
-- **Preserve RLS and Security Isolation:** Never expose service-role key or Google API key to React Native.
-- **Google Stitch is the UI source of truth:** Compare mobile UI directly against Stitch screens before altering layouts.
-- **Do not use Flutter/Dart:** Production mobile stack is React Native + TypeScript + Expo.
-- **Update roadmap/handoff after verified milestone completion.**
+| Capability | Implemented | Automated | Remote/Live | Android | Current Stitch | Result |
+|---|---|---|---|---|---|---|
+| Weather | PASS | PASS (2 suites, 27 tests) | PASS | PASS (`2026-08-25`, Rain, 32° / 26°, 61%) | N/A unless fidelity is audited | PASS runtime/data |
+| Saved Places | PASS | PASS | PASS | PASS (real populated/empty/reload; latest operator count 4) | PARTIAL (current artifacts inspected; Android comparison pending) | PARTIAL closure |
+| Place Photos | PASS | PASS | PASS | PASS | PARTIAL (current artifacts inspected; Android comparison pending) | PARTIAL closure |
+| Ratings / Metadata | PASS | PASS | PASS | PASS | PARTIAL (current artifacts inspected; Android comparison pending) | PARTIAL closure |
+| Profile / Settings | PASS | PASS | PASS | PARTIAL (Home Country change not Android-verified) | PARTIAL (current artifacts inspected) | PARTIAL closure |
+
+Weather is no longer an INT-P7 blocker. Its bounded forecast window covers today through the latest required itinerary date, supports future dates within Open-Meteo’s 16-day horizon, maps only the active itinerary date, and has no mock fallback. Profile remote migrations are applied and verified: `20260822020000_profile_stats_and_deletion.sql` and `20260823000000_harden_profile_stats_and_deletion.sql`. Remote RPC/security, disposable A/B owner isolation and deletion cascade, real Profile counts, reversible display-name persistence, and current Settings runtime behavior are PASS. Android Profile remains PARTIAL only because the `home_country` UI contract is undecided; the operator value is blank and no field is currently rendered. Do not infer a UI defect from that blank value.
+
+Fresh mobile gates already recorded after Weather remediation: lint PASS; typecheck PASS; Jest PASS (44/45 suites, 332/333 tests, one pre-existing skipped suite/test); Expo Doctor PASS (21/21); `git diff --check` PASS. Expo Doctor’s initial npm-cache EPERM was resolved with a temporary local cache and is not a production regression. Do not claim fresh gates in the next session unless rerun.
+
+## STITCH MCP — MANDATORY FIRST ACTION
+
+The global Codex Stitch MCP configuration is now available and verified safe:
+
+```text
+STITCH_MCP_CONNECTION = PASS
+list_projects = PASS
+TripWise Design System = projects/10069552738311964263
+```
+
+The next Codex session must still verify that the Stitch server is callable in its own tool manifest before UI work. Do not print, copy, or document API keys or secret headers. If the server is unexpectedly unavailable, record `STITCH VERIFIED = BLOCKED` and do not use historical IDs as proof.
+
+If callable, enumerate the current TripWise project and exact current screens/states, classify obsolete/superseded variants, and use only current IDs as visual authority. Historical IDs below remain search hints only and never override direct enumeration.
+
+### 2026-08-24 current-session result
+
+- `STITCH_MCP_CONNECTION = PASS`: the Stitch server is callable in this session's manifest; `list_projects`, `get_project`, and `list_screens` all succeeded for `projects/10069552738311964263`.
+- Current-screen metadata inventory was retrieved directly: Profile `52ec564262214ec3b91b5c62daa03d6f`; Edit Profile `49c6b6a2c6284f169d1c6140037cebdd`; Settings `27bdea676ae041ecb09a7bc987363b9e`; Language `d2cb583265f14761b79be9ea5d6be835`; Currency `c69da60c4d474121b8b71d5b8de57aad`; Help & Support `92e619bfeb504afebd6d87fccbf90f4c`; Sign Out Confirmation `040103dc04894ee0bc3aff41cd37534e`; Delete Account Confirmation `2f74fdf1e9314c448c49eb7d14447c32`; Saved Places `3e59b6c7b2e646feb189eb8a313b6a6e`; Saved Empty State `aa0abf7fea0f4e05bebdbf471c9d7ae3`; Place Detail `4a1161c5a2be4ec48989e64e9f0f9c34`; Trip Detail `1e86508f0dd0413db877d859125b630f`. No screen titled Appearance is present. The additional `8ced1424cd284aaaaa8359d45b7f7b25` is titled Trip Detail — Animated and remains a current project asset, but cannot be selected as the active production variant without visual inspection.
+- Historical mapping labels at lines 1027–1030 are superseded by direct enumeration: `040103…` is Sign Out Confirmation, `c69da6…` is Currency, `d2cb58…` is Language, and the direct Delete Account Confirmation ID is `2f74fd…`; those old labels are rejected as visual authority.
+- `STITCH_VISUAL_ARTIFACT_ACCESS = PASS` (2026-08-24): all twelve required current `get_screen` calls returned artifacts and dimensions, and the local HTML/image artifacts were validated and pixel-inspected. The repository helper `.agents/skills/react-native/scripts/fetch-stitch.sh` was correctly attempted first; Git Bash ran it, but Schannel curl failed before HTTP (`curl (35)`, no HTTP status/redirect/local target). A normal certificate-validating Node 24/OpenSSL 3.5.7 transport then followed the exact current signed redirects: each HTML returned HTTP 200 and valid non-empty HTML, and each screenshot returned HTTP 200 JPEG pixels. The locally generated PNG visual copies are valid images; signed URLs, secrets and headers were neither logged nor persisted. Metadata without signed URLs is in `.stitch/metadata.json`. The earlier historical artifacts are preserved and rejected as current authority.
+- Current visual inventory: Profile `52ec564262214ec3b91b5c62daa03d6f` (780×2580); Edit Profile `49c6b6a2c6284f169d1c6140037cebdd` (780×1768); Settings `27bdea676ae041ecb09a7bc987363b9e` (780×1768); Language `d2cb583265f14761b79be9ea5d6be835` (780×1768); Currency `c69da60c4d474121b8b71d5b8de57aad` (780×1894); Help & Support `92e619bfeb504afebd6d87fccbf90f4c` (780×1768); Sign Out Confirmation `040103dc04894ee0bc3aff41cd37534e` (780×1768); Delete Account Confirmation `2f74fdf1e9314c448c49eb7d14447c32` (780×1768); Saved Places `3e59b6c7b2e646feb189eb8a313b6a6e` (780×3012); Saved Empty State `aa0abf7fea0f4e05bebdbf471c9d7ae3` (780×1768); Place Detail `4a1161c5a2be4ec48989e64e9f0f9c34` (780×3794); Trip Detail `1e86508f0dd0413db877d859125b630f` (780×2802). The current-but-uninspected `8ced1424cd284aaaaa8359d45b7f7b25` Trip Detail — Animated is not selected as a production variant. Historical mapping labels and all prior differently identified local HTML files remain superseded/rejected.
+- Home Country contract is **B — Edit Profile edits Home Country**. Current Profile contains no country presentation; current Edit Profile contains a labelled `Home country` control with the `public` icon. `EditProfileScreen` now binds editable country text to `profile.homeCountry`, allows blank state without a fixture fallback, trims on save through the existing remote repository boundary, and keeps EN/VI plus semantic theme tokens. Focused screen/repository tests PASS.
+- Android re-verification is pending: Android Studio exposes the Running Devices window, but approved Windows automation was denied control of Android Studio before a capture or input. No operator profile field was changed. Earlier Profile/Settings Android evidence remains historical, not fresh; the required reversible blank-country persistence verification still needs a permitted Android session.
+
+## CURRENT STITCH AUDIT SCOPE
+
+Enumerate and inspect at least:
+
+- Profile, Edit Profile, and any country/home-country state.
+- Settings, Appearance, Language, Currency, Help & Support, Sign Out confirmation, and Delete Account confirmation.
+- Saved Places populated and empty states.
+- Production consumers displaying Google place photos, rating, and user rating count.
+
+## HOME COUNTRY DECISION
+
+Using current Stitch, choose exactly one:
+
+```text
+A. Profile displays country
+B. Edit Profile edits country
+C. Both
+D. Neither
+```
+
+Do not infer the answer from the database column. If country is required by current Stitch, implement only the smallest exact mapping using real `profile.homeCountry`, clean blank/null handling, remote persistence when editable, EN/VI localization, and semantic theme tokens. If Stitch does not use country, do not invent UI; reconcile the stale “required for Stitch display” wording.
+
+## CURRENT STITCH VISUAL AUDIT AND ANDROID RE-VERIFICATION
+
+With real Android production data, compare current Stitch and Android for Profile, Edit Profile, the Settings family, Saved Places populated/empty, and photo/rating consumers. Compare layout, hierarchy, and components only; real data values do not need to match sample values. Never alter real counts, names, or ratings to match a mock and fix only verified discrepancies. Preserve TypeScript strictness, no `any`, Expo, React Navigation, MaterialIcons, semantic theme tokens, centralized EN/VI localization, no raw provider payload in JSX, and no production mock fallback.
+
+If Home Country or any visual source changes, rerun affected Android verification. If editable country is required: record the original operator value, set a safe temporary valid value, save, reload, verify remote persistence, restore the original, reload, and confirm restoration. Never alter operator email/password or delete the operator account.
+
+## QUALITY AND CLOSURE RULES
+
+When production source changes, run:
+
+```powershell
+cd mobile
+npm run lint
+npm run typecheck
+npm test -- --runInBand
+npx expo-doctor
+```
+
+At the end, rebuild the strict matrix above using only `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`, or `PENDING`. If any required gate is not PASS:
+
+```text
+INT-P7 = ACTIVE
+```
+
+and report the smallest remaining blocker. If every required INT-P7 gate passes:
+
+```text
+INT-P7 READY FOR FORMAL CLOSURE
+```
+
+Do not automatically start INT-P8 or switch to INT-P6. The user chooses the next track after INT-P7 is shown.
+
+## BOUNDARIES
+
+`INT-P6 = OPEN / PAUSED` remains independent and must not be closed merely because INT-P7 finishes. `INT-P8 = NOT STARTED` and `INT-P9 = NOT STARTED`; do not start either automatically. INT-P8 remains its own formal production mock-runtime audit.

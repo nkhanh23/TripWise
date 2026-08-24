@@ -121,7 +121,7 @@ describe('Profile real RLS composition', () => {
     expect(await screen.findByText('Unable to sign out. Please try again.')).toBeTruthy();
   });
 
-  it('updates only server-supported profile fields and reconciles before success confirmation', async () => {
+  it('updates the current Stitch edit-profile fields and reconciles before success confirmation', async () => {
     mockUpdateProfile.mockResolvedValue(undefined);
     const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     const user = userEvent.setup();
@@ -129,8 +129,14 @@ describe('Profile real RLS composition', () => {
     const name = screen.getByDisplayValue('Remote Profile');
     await user.clear(name);
     await user.type(name, 'Updated Remote Name');
+    const homeCountry = screen.getByLabelText('Home country');
+    await user.type(homeCountry, 'VN');
     await user.press(screen.getByLabelText('Save changes'));
-    expect(mockUpdateProfile).toHaveBeenCalledWith({ displayName: 'Updated Remote Name', avatarUrl: null });
+    expect(mockUpdateProfile).toHaveBeenCalledWith({
+      displayName: 'Updated Remote Name',
+      homeCountry: 'VN',
+      avatarUrl: null,
+    });
     expect(alert).toHaveBeenCalledWith('Success', 'Profile updated successfully', expect.any(Array));
     expect(mockGoBack).not.toHaveBeenCalled();
     alert.mockRestore();

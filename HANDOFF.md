@@ -12,11 +12,10 @@ Tài liệu handoff được tách theo ownership để Backend và React Native
 - **Frontend:** COMPLETE ([`HANDOFF_FE.md`](./HANDOFF_FE.md))
 - **Integration:** ACTIVE ([`HANDOFF_INTEGRATION.md`](./HANDOFF_INTEGRATION.md))
   - INT-P0 through INT-P5: COMPLETE
-  - INT-P6: OPEN / PAUSED (substantial runtime evidence PASS; pending final closure)
-  - INT-P7: ACTIVE (Weather, Saved Places persistence, Photos, Ratings, Profile/Settings implemented)
+  - INT-P6: OPEN / PAUSED (substantial runtime evidence PASS; closure intentionally deferred)
+  - INT-P7: ACTIVE (Weather, Saved Places persistence, Photos, Ratings implemented; Profile/Settings remote/live PASS with Android partial; current Stitch audit pending)
 - **Next Operator:** Codex
 
 Roadmap index → [`PHASES.md`](./PHASES.md)
 
 Luôn đọc `AGENTS.md`, roadmap và handoff đúng phạm vi trước khi bắt đầu task. Integration chỉ được bắt đầu khi user yêu cầu rõ ràng.
-
