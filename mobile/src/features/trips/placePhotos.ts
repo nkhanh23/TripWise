@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import type { ResolvedImage } from '../../integration/contracts';
+import { maximumConcurrentImageRequests } from '../../integration/imageResolution';
 import type { PlaceImageRepository, TripCoverImageRepository } from '../../integration/repositories';
 import type { TripDetailData } from './types';
 
@@ -52,14 +53,21 @@ export function useTripPlacePhotos(
 
     async function loadItems(): Promise<void> {
       if (!placeRepository) return;
-      for (const googlePlaceId of activeVerifiedIds) {
-        if (controller.signal.aborted) return;
-        const image = await placeRepository.getPlaceImage({ googlePlaceId, maxWidth: 600 }, controller.signal)
-          .catch(() => null);
-        if (image?.uri && !controller.signal.aborted) {
-          setItemImages((current) => ({ ...current, [googlePlaceId]: image }));
+      let nextIndex = 0;
+      const loadNext = async (): Promise<void> => {
+        while (!controller.signal.aborted) {
+          const googlePlaceId = activeVerifiedIds[nextIndex];
+          nextIndex += 1;
+          if (!googlePlaceId) return;
+          const image = await placeRepository.getPlaceImage({ googlePlaceId, maxWidth: 600 }, controller.signal)
+            .catch(() => null);
+          if (image?.uri && !controller.signal.aborted) {
+            setItemImages((current) => ({ ...current, [googlePlaceId]: image }));
+          }
         }
-      }
+      };
+      const workerCount = Math.min(maximumConcurrentImageRequests, activeVerifiedIds.length);
+      await Promise.all(Array.from({ length: workerCount }, () => loadNext()));
     }
     void Promise.all([loadHero(), loadItems()]);
     return () => controller.abort();

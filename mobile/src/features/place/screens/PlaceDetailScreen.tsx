@@ -3,6 +3,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -71,6 +72,10 @@ export function PlaceDetailScreen({
       });
     }
   }, [navigation, placeData]);
+
+  const handleUnavailableAction = useCallback(() => {
+    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+  }, [t]);
 
   // 1. Loading State
   if (status === 'loading') {
@@ -141,7 +146,12 @@ export function PlaceDetailScreen({
   return (
     <View style={[styles.screen, { backgroundColor: colors.background.surface }]}>
       {/* Floating Top Navigation Header */}
-      <PlaceHeader isSaved={isSaved} onBack={handleBack} onToggleSave={handleToggleSave} />
+      <PlaceHeader
+        isSaved={isSaved}
+        onBack={handleBack}
+        onShare={handleUnavailableAction}
+        onToggleSave={handleToggleSave}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Gallery */}
@@ -203,7 +213,12 @@ export function PlaceDetailScreen({
           </View>
 
           {/* Quick Actions Bento */}
-          <PlaceQuickActions onRoute={handleDirections} />
+          <PlaceQuickActions
+            onAdd={handleUnavailableAction}
+            onCall={handleUnavailableAction}
+            onRoute={handleDirections}
+            onWebsite={handleUnavailableAction}
+          />
 
           {/* About Section */}
           <View style={styles.section}>

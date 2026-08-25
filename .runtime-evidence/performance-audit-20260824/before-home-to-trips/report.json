@@ -1,0 +1,34 @@
+{
+  "name": "before-home-to-trips",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-24T14:23:47.446Z",
+  "measurement": "host performance.now + raw ADB smart-socket screencap + Hermes Network domain",
+  "tap": {
+    "x": 630,
+    "y": 2330,
+    "commandDurationMs": 78.39650000000006
+  },
+  "frames": [
+    {
+      "file": "frame-000.png",
+      "atMs": 841.1782000000001
+    },
+    {
+      "file": "frame-001.png",
+      "atMs": 2144.0832
+    },
+    {
+      "file": "frame-002.png",
+      "atMs": 3984.0351
+    },
+    {
+      "file": "frame-003.png",
+      "atMs": 5076.8749
+    },
+    {
+      "file": "frame-004.png",
+      "atMs": 6085.9549
+    }
+  ],
+  "network": []
+}

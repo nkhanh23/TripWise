@@ -1,0 +1,85 @@
+{
+  "name": "before-home-to-trips-final",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-24T14:29:03.029Z",
+  "measurement": "host performance.now + raw ADB smart-socket screencap + Hermes Network domain",
+  "tap": {
+    "x": 630,
+    "y": 2330,
+    "commandDurationMs": 77.6092000000001
+  },
+  "frames": [
+    {
+      "file": "frame-000.png",
+      "atMs": 891.7467999999999
+    },
+    {
+      "file": "frame-001.png",
+      "atMs": 2151.5389
+    },
+    {
+      "file": "frame-002.png",
+      "atMs": 3724.405
+    },
+    {
+      "file": "frame-003.png",
+      "atMs": 4516.934300000001
+    },
+    {
+      "file": "frame-004.png",
+      "atMs": 5261.486000000001
+    },
+    {
+      "file": "frame-005.png",
+      "atMs": 6283.0509999999995
+    },
+    {
+      "file": "frame-006.png",
+      "atMs": 6902.9406
+    },
+    {
+      "file": "frame-007.png",
+      "atMs": 7794.529900000001
+    },
+    {
+      "file": "frame-008.png",
+      "atMs": 8694.5393
+    },
+    {
+      "file": "frame-009.png",
+      "atMs": 9714.4328
+    },
+    {
+      "file": "frame-010.png",
+      "atMs": 10546.728200000001
+    },
+    {
+      "file": "frame-011.png",
+      "atMs": 11294.7415
+    },
+    {
+      "file": "frame-012.png",
+      "atMs": 12028.7152
+    },
+    {
+      "file": "frame-013.png",
+      "atMs": 12863.5954
+    },
+    {
+      "file": "frame-014.png",
+      "atMs": 13794.9228
+    },
+    {
+      "file": "frame-015.png",
+      "atMs": 14597.8508
+    },
+    {
+      "file": "frame-016.png",
+      "atMs": 15475.295
+    }
+  ],
+  "network": [],
+  "protocolMessages": [],
+  "runtimeRequests": [],
+  "runtimeSamples": []
+}

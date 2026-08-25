@@ -325,6 +325,57 @@ describe('MyTripsScreen', () => {
     expect(getTripCover).toHaveBeenCalledTimes(1);
   });
 
+  it('deduplicates a focus refresh while the initial trip-list request is still pending', async () => {
+    let resolveList: ((value: { items: SavedTripSummary[]; nextCursor: null }) => void) | undefined;
+    const list = jest.fn(() => new Promise<{ items: SavedTripSummary[]; nextCursor: null }>((resolve) => {
+      resolveList = resolve;
+    }));
+    const repository: SavedTripsRepository = {
+      ...createSavedTripsRepository().repository,
+      list,
+    };
+
+    await render(<MyTripsScreen repository={repository} />);
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      mockFocusListener?.();
+    });
+    expect(list).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveList?.({ items: [remoteTrip], nextCursor: null });
+    });
+    expect(await screen.findByText('Bangkok Explorer')).toBeTruthy();
+  });
+
+  it('keeps settled trip content visible while a focus refresh runs in the background', async () => {
+    let resolveRefresh: ((value: { items: SavedTripSummary[]; nextCursor: null }) => void) | undefined;
+    const list = jest.fn()
+      .mockResolvedValueOnce({ items: [remoteTrip], nextCursor: null })
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        resolveRefresh = resolve;
+      }));
+    const repository: SavedTripsRepository = {
+      ...createSavedTripsRepository().repository,
+      list,
+    };
+
+    await render(<MyTripsScreen repository={repository} />);
+    expect(await screen.findByText('Bangkok Explorer')).toBeTruthy();
+
+    await act(async () => {
+      mockFocusListener?.();
+    });
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(2));
+    expect(screen.getByText('Bangkok Explorer')).toBeTruthy();
+    expect(screen.queryByLabelText('Đang tải danh sách chuyến đi')).toBeNull();
+
+    await act(async () => {
+      resolveRefresh?.({ items: [remoteTrip], nextCursor: null });
+    });
+  });
+
   it('keeps the trip visible and uses no fake cover when both trusted candidates have no photo', async () => {
     const { repository } = createSavedTripsRepository();
     const getPhoto = jest.fn(async ({ googlePlaceId }: { googlePlaceId: string }) => ({

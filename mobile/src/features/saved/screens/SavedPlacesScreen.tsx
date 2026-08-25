@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTranslation } from '../../../i18n';
-import type { PlaceImageRepository, PlacePhotoRepository, SavedPlacesRepository } from '../../../integration/repositories';
+import type { PlaceImageRepository, PlaceMetadataRepository, PlacePhotoRepository, SavedPlacesRepository } from '../../../integration/repositories';
 import type { MainTabParamList, RootStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
@@ -35,6 +35,7 @@ type Props = {
   repository?: SavedPlacesRepository;
   photoRepository?: PlacePhotoRepository;
   placeImageRepository?: PlaceImageRepository;
+  metadataRepository?: PlaceMetadataRepository;
   fixtureMode?: boolean;
 };
 
@@ -43,6 +44,7 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
   repository,
   photoRepository,
   placeImageRepository,
+  metadataRepository,
   fixtureMode,
 }: Props) {
   const navigation = useNavigation<CombinedNavProp>();
@@ -64,6 +66,7 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
     repository,
     photoRepository,
     placeImageRepository,
+    metadataRepository,
     customPlaces,
     fixtureMode: isFixture,
   });

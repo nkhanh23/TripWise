@@ -19,6 +19,8 @@ export const enTranslations: Record<string, string> = {
   'common.success': 'Success',
   'common.share': 'Share',
   'common.menu': 'Menu',
+  'common.unavailableTitle': 'Action unavailable',
+  'common.unavailableMessage': 'This action is not available yet.',
 
   // Navigation Tabs
   'navigation.tabs.home': 'Home',
@@ -155,6 +157,7 @@ export const enTranslations: Record<string, string> = {
   'route.tryTransit': 'Try Transit',
   'route.unavailableTitle': 'Route unavailable',
   'route.unavailableSubtitle': "We couldn't find a direct route for this transport mode. Try choosing another mode of travel.",
+  'route.startUnavailable': 'Turn-by-turn navigation is not available yet.',
   'route.errorTitle': 'Unable to calculate route',
   'route.errorSubtitle': 'Something went wrong while calculating the directions.',
 

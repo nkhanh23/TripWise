@@ -1,0 +1,20 @@
+{
+  "name": "delete-confirmation-open",
+  "capturedAt": "2026-08-25T01:48:08.061Z",
+  "coordinates": {
+    "x": 500,
+    "y": 2170
+  },
+  "texts": [
+    "Close",
+    ", Delete account?, This action is permanent and will delete all your trips and saved places.",
+    "",
+    "Delete account?",
+    "This action is permanent and will delete all your trips and saved places.",
+    "Delete account",
+    "",
+    "Delete account",
+    "Cancel",
+    "Cancel"
+  ]
+}

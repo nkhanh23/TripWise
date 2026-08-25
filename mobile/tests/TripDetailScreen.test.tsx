@@ -412,6 +412,46 @@ describe('TripDetailScreen', () => {
     expect(await screen.findByText('Destination author · CC BY 4.0')).toBeTruthy();
   });
 
+  it('starts independent itinerary image resolutions with bounded concurrency', async () => {
+    const getPlaceImage = jest.fn(() => new Promise<ResolvedImage>(() => undefined));
+    const trip: any = {
+      id: 'trip-concurrent-images',
+      title: 'Bangkok Explorer',
+      destination: 'Bangkok, Thailand',
+      dateLabel: 'Oct 12 - Oct 12',
+      startDate: '2026-10-12',
+      endDate: '2026-10-12',
+      durationDays: 1,
+      heroImageUrl: '',
+      budgetSpent: '',
+      budgetTotal: '',
+      budgetPercent: 0,
+      savedPlacesCount: 2,
+      travelers: [],
+      days: [{
+        id: 'day_1',
+        dayNumber: 1,
+        date: '2026-10-12',
+        dateLabel: 'Day 1 • Oct 12',
+        items: [
+          { id: 'item_1', title: 'Wat Arun', time: '09:00', resolution: 'VERIFIED', googlePlaceId: 'place_wat_arun', iconName: 'account-balance' },
+          { id: 'item_2', title: 'Grand Palace', time: '11:00', resolution: 'VERIFIED', googlePlaceId: 'place_grand_palace', iconName: 'account-balance' },
+        ],
+      }],
+    };
+
+    await render(
+      <TripDetailScreen
+        customTripDetail={trip}
+        navigation={mockNavigation}
+        placeImageRepository={{ getPlaceImage }}
+        route={{ params: { tripId: 'trip-concurrent-images' } } as any}
+      />
+    );
+
+    await waitFor(() => expect(getPlaceImage).toHaveBeenCalledTimes(2));
+  });
+
   it('tolerates photo provider failure without breaking Trip Detail UI', async () => {
     const mockFailingPhotoRepo: any = {
       getPhoto: jest.fn().mockRejectedValue(new Error('Network error')),

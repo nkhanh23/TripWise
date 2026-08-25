@@ -1,4 +1,4 @@
-import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
 import { SavedPlacesScreen } from '../src/features/saved/screens/SavedPlacesScreen';
@@ -194,5 +194,58 @@ describe('SavedPlacesScreen (INT-P7 Saved Places Integration)', () => {
         name: 'Chùa Arun',
       })
     );
+  });
+
+  it('bounds metadata request concurrency and publishes the resolved ratings', async () => {
+    let releaseMetadata!: () => void;
+    const metadataGate = new Promise<void>((resolve) => {
+      releaseMetadata = resolve;
+    });
+    let activeRequests = 0;
+    let maximumActiveRequests = 0;
+    const metadataPlaces = Array.from({ length: 7 }, (_, index) => ({
+      ...mockPlacesData[index % mockPlacesData.length],
+      id: `saved-place-${index}` as any,
+      googlePlaceId: `google-place-${index}` as any,
+      name: `Place ${index}`,
+    }));
+    const getMetadata = jest.fn(async (googlePlaceId: string) => {
+      activeRequests += 1;
+      maximumActiveRequests = Math.max(maximumActiveRequests, activeRequests);
+      await metadataGate;
+      activeRequests -= 1;
+      return { googlePlaceId, rating: 4.5 };
+    });
+
+    mockRepo.listSavedPlaces.mockResolvedValueOnce({
+      items: metadataPlaces,
+      nextCursor: null,
+    });
+
+    await renderWithProviders(
+      <SavedPlacesScreen
+        repository={mockRepo}
+        metadataRepository={{ getMetadata }}
+        placeImageRepository={{
+          getPlaceImage: jest.fn().mockResolvedValue({ uri: null, source: 'PLACEHOLDER' }),
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(getMetadata).toHaveBeenCalledTimes(3);
+    });
+    expect(maximumActiveRequests).toBe(3);
+
+    await act(async () => {
+      releaseMetadata();
+      await metadataGate;
+    });
+
+    await waitFor(() => {
+      expect(getMetadata).toHaveBeenCalledTimes(7);
+      expect(screen.getAllByText('4.5')).toHaveLength(7);
+    });
+    expect(maximumActiveRequests).toBe(3);
   });
 });

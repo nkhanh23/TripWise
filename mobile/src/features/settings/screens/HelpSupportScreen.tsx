@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useState } from 'react';
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -76,6 +77,9 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
   const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const handleUnavailableAction = () => {
+    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+  };
 
   return (
     <View
@@ -200,6 +204,7 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                     accessibilityHint={`View ${t(topic.titleKey)}`}
                     accessibilityLabel={t(topic.titleKey)}
                     accessibilityRole="button"
+                    onPress={handleUnavailableAction}
                     style={({ pressed }) => [
                       styles.row,
                       pressed && styles.pressed,
@@ -262,6 +267,7 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                     accessibilityHint={`View ${t(item.titleKey)}`}
                     accessibilityLabel={t(item.titleKey)}
                     accessibilityRole="button"
+                    onPress={handleUnavailableAction}
                     style={({ pressed }) => [
                       styles.row,
                       pressed && styles.pressed,

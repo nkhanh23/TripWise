@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTranslation } from '../../../i18n';
@@ -211,9 +211,11 @@ export const TripMapScreen = memo(function TripMapScreen({
     (item: ItineraryItem) => {
       if (item.placeId) {
         navigation.navigate('PlaceDetail', { placeId: item.placeId });
+      } else {
+        Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
       }
     },
-    [navigation]
+    [navigation, t]
   );
 
   const handlePressDirections = useCallback(
@@ -233,13 +235,15 @@ export const TripMapScreen = memo(function TripMapScreen({
 
   const handleAddPlace = useCallback(() => {
     const dayIdParam = selectedDayId === 'all' ? tripData?.days[0]?.id : selectedDayId;
-    if (tripId) {
+    if (!isFixture) {
+      Alert.alert(t('common.unavailableTitle'), t('addPlace.unavailableSubtitle'));
+    } else if (tripId) {
       navigation.navigate('AddPlace', {
         tripId,
         initialDayId: dayIdParam,
       });
     }
-  }, [navigation, tripId, selectedDayId, tripData]);
+  }, [isFixture, navigation, tripId, selectedDayId, t, tripData]);
 
   const isDark = effectiveTheme === 'dark';
 

@@ -1,5 +1,6 @@
 import { cleanup, render, screen, waitFor, fireEvent, act } from '@testing-library/react-native';
 import React from 'react';
+import { Alert } from 'react-native';
 import { MyTripsScreen } from '../src/features/trips/screens/MyTripsScreen';
 import { TripsScreen } from '../src/features/trips/TripsScreen';
 import { TripDetailScreen } from '../src/features/trips/screens/TripDetailScreen';
@@ -229,6 +230,7 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
   });
 
   it('4. production UUID uses remote detail in TripDetailScreen', async () => {
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
     const mockRepo: SavedTripsRepository = {
       list: jest.fn().mockResolvedValue({ items: [], nextCursor: null }),
       getDetail: jest.fn().mockResolvedValue(sampleRemoteDetail),
@@ -266,9 +268,51 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
     expect(items.length).toBeGreaterThan(0);
     fireEvent.press(items[0]);
     expect(mockNavigate).not.toHaveBeenCalledWith('PlaceDetail', expect.anything());
+    expect(alert).toHaveBeenCalledWith('Action unavailable', 'This action is not available yet.');
 
     // Flush any pending promises to prevent act warnings from leaking
     await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+
+  it('4a. keeps remote detail visible and deduplicates identical focus refreshes', async () => {
+    let resolveRefresh: ((detail: SavedTripDetail) => void) | undefined;
+    const getDetail = jest.fn()
+      .mockResolvedValueOnce(sampleRemoteDetail)
+      .mockImplementationOnce(() => new Promise<SavedTripDetail>((resolve) => {
+        resolveRefresh = resolve;
+      }));
+    const mockRepo: SavedTripsRepository = {
+      list: jest.fn().mockResolvedValue({ items: [], nextCursor: null }),
+      getDetail,
+      deleteTrip: jest.fn(),
+      getStats: jest.fn().mockResolvedValue({ tripsCount: 1, savedPlacesCount: 1 }),
+      updateItemNote: jest.fn().mockResolvedValue(true),
+    };
+    const route: any = { params: { tripId: productionTripId } };
+
+    await renderWithProviders(
+      <TripDetailScreen navigation={mockNavigation} repository={mockRepo} route={route} />
+    );
+    expect(await screen.findByText('Chùa Arun')).toBeTruthy();
+    const focusListener = mockAddListener.mock.calls.find(([event]) => event === 'focus')?.[1];
+    expect(focusListener).toEqual(expect.any(Function));
+
+    await act(async () => {
+      focusListener();
+    });
+    await waitFor(() => expect(getDetail).toHaveBeenCalledTimes(2));
+    expect(screen.getByText('Chùa Arun')).toBeTruthy();
+    expect(screen.queryByLabelText('Loading…')).toBeNull();
+
+    await act(async () => {
+      focusListener();
+    });
+    expect(getDetail).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      resolveRefresh?.(sampleRemoteDetail);
+    });
+    expect(screen.getByText('Chùa Arun')).toBeTruthy();
   });
 
   it('4b. production UUID uses remote detail with UNRESOLVED items rendering Resolve place', async () => {

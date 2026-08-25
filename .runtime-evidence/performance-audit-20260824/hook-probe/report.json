@@ -1,0 +1,24 @@
+{
+  "name": "hook-probe",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-24T14:27:39.490Z",
+  "measurement": "host performance.now + raw ADB smart-socket screencap + Hermes Network domain",
+  "tap": {
+    "x": 10,
+    "y": 10,
+    "commandDurationMs": 97.77009999999996
+  },
+  "frames": [
+    {
+      "file": "frame-000.png",
+      "atMs": 833.634
+    },
+    {
+      "file": "frame-001.png",
+      "atMs": 1022.8588
+    }
+  ],
+  "network": [],
+  "runtimeRequests": [],
+  "runtimeSamples": []
+}

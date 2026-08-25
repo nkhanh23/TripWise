@@ -1,0 +1,37 @@
+{
+  "name": "after-detail-to-back",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-24T14:32:20.660Z",
+  "measurement": "host performance.now + raw ADB smart-socket screencap + Hermes Network domain",
+  "tap": {
+    "x": 90,
+    "y": 130,
+    "commandDurationMs": 96.8592000000001
+  },
+  "frames": [
+    {
+      "file": "frame-000.png",
+      "atMs": 1572.1428
+    },
+    {
+      "file": "frame-001.png",
+      "atMs": 2870.4874
+    },
+    {
+      "file": "frame-002.png",
+      "atMs": 3592.3397999999997
+    },
+    {
+      "file": "frame-003.png",
+      "atMs": 4376.5373
+    },
+    {
+      "file": "frame-004.png",
+      "atMs": 5193.3718
+    }
+  ],
+  "network": [],
+  "protocolMessages": [],
+  "runtimeRequests": [],
+  "runtimeSamples": []
+}

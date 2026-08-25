@@ -1,5 +1,6 @@
 import { cleanup, render, screen, userEvent } from '@testing-library/react-native';
 import React from 'react';
+import { Alert } from 'react-native';
 
 import { resetProfile } from '../src/features/profile/data/mockProfile';
 import { ProfileScreen } from '../src/features/profile/screens/ProfileScreen';
@@ -160,6 +161,24 @@ describe('Settings Feature (FE-P15-T001)', () => {
       const profileHelpRow = screen.getByLabelText('Help & Support');
       await user.press(profileHelpRow);
       expect(mockNavigate).toHaveBeenCalledWith('HelpSupport');
+    });
+
+    it('gives immediate unavailable feedback for Change password', async () => {
+      const user = userEvent.setup();
+      const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+      await renderWithProviders(<SettingsScreen {...mockNavProps} />);
+      await user.press(screen.getByLabelText('Change password'));
+
+      expect(alert).toHaveBeenCalledWith('Action unavailable', 'This action is not available yet.');
+    });
+
+    it('gives immediate unavailable feedback for About', async () => {
+      const user = userEvent.setup();
+      const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+      await renderWithProviders(<ProfileScreen />);
+      await user.press(screen.getByLabelText('About TripWise'));
+
+      expect(alert).toHaveBeenCalledWith('Action unavailable', 'This action is not available yet.');
     });
 
     it('toggles distance unit between Kilometers and Miles', async () => {
@@ -324,6 +343,22 @@ describe('Settings Feature (FE-P15-T001)', () => {
       const backBtn = screen.getByLabelText('Back');
       await user.press(backBtn);
       expect(mockGoBack).toHaveBeenCalledTimes(1);
+    });
+
+    it('gives immediate unavailable feedback for every help and legal row', async () => {
+      const user = userEvent.setup();
+      const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+      await renderWithProviders(<HelpSupportScreen {...mockNavProps} />);
+
+      for (const label of [
+        'Frequently asked questions', 'Contact support', 'Report a problem',
+        'Privacy Policy', 'Terms of Service',
+      ]) {
+        await user.press(screen.getByLabelText(label));
+      }
+
+      expect(alert).toHaveBeenCalledTimes(5);
+      expect(alert).toHaveBeenLastCalledWith('Action unavailable', 'This action is not available yet.');
     });
   });
 

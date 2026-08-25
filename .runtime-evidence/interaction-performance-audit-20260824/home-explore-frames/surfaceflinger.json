@@ -1,0 +1,185 @@
+{
+  "name": "home-explore-frames",
+  "capturedAt": "2026-08-25T01:41:49.624Z",
+  "layer": "VRI-com.anonymous.tripwisemobile/com.anonymous.tripwisemobile.MainActivity#732",
+  "pairs": 5,
+  "samples": [
+    {
+      "direction": "A",
+      "index": 1,
+      "coordinates": {
+        "x": 90,
+        "y": 2330
+      },
+      "beforeTapMs": 11048750,
+      "afterTapMs": 11048790,
+      "tapBracketMs": 40,
+      "firstPresentedNs": 11049110612000,
+      "tapToFirstPresentedEstimateMs": 340.6119999997318,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 320.6119999997318,
+        "max": 360.6119999997318
+      },
+      "presentedFrameCount": 10
+    },
+    {
+      "direction": "B",
+      "index": 1,
+      "coordinates": {
+        "x": 270,
+        "y": 2330
+      },
+      "beforeTapMs": 11050060,
+      "afterTapMs": 11050100,
+      "tapBracketMs": 40,
+      "firstPresentedNs": 11050495067000,
+      "tapToFirstPresentedEstimateMs": 415.0669999998063,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 395.0669999998063,
+        "max": 435.0669999998063
+      },
+      "presentedFrameCount": 27
+    },
+    {
+      "direction": "A",
+      "index": 2,
+      "coordinates": {
+        "x": 90,
+        "y": 2330
+      },
+      "beforeTapMs": 11051400,
+      "afterTapMs": 11051450,
+      "tapBracketMs": 50,
+      "firstPresentedNs": 11051794236700,
+      "tapToFirstPresentedEstimateMs": 369.2367000002414,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 344.2367000002414,
+        "max": 394.2367000002414
+      },
+      "presentedFrameCount": 39
+    },
+    {
+      "direction": "B",
+      "index": 2,
+      "coordinates": {
+        "x": 270,
+        "y": 2330
+      },
+      "beforeTapMs": 11052720,
+      "afterTapMs": 11052770,
+      "tapBracketMs": 50,
+      "firstPresentedNs": null,
+      "tapToFirstPresentedEstimateMs": null,
+      "tapToFirstPresentedBoundsMs": null,
+      "presentedFrameCount": 23
+    },
+    {
+      "direction": "A",
+      "index": 3,
+      "coordinates": {
+        "x": 90,
+        "y": 2330
+      },
+      "beforeTapMs": 11054050,
+      "afterTapMs": 11054100,
+      "tapBracketMs": 50,
+      "firstPresentedNs": 11054059034200,
+      "tapToFirstPresentedEstimateMs": -15.965800000354648,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 0,
+        "max": 9.034199999645352
+      },
+      "presentedFrameCount": 37
+    },
+    {
+      "direction": "B",
+      "index": 3,
+      "coordinates": {
+        "x": 270,
+        "y": 2330
+      },
+      "beforeTapMs": 11055370,
+      "afterTapMs": 11055470,
+      "tapBracketMs": 100,
+      "firstPresentedNs": 11055493760200,
+      "tapToFirstPresentedEstimateMs": 73.76019999943674,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 23.760199999436736,
+        "max": 123.76019999943674
+      },
+      "presentedFrameCount": 53
+    },
+    {
+      "direction": "A",
+      "index": 4,
+      "coordinates": {
+        "x": 90,
+        "y": 2330
+      },
+      "beforeTapMs": 11056970,
+      "afterTapMs": 11057080,
+      "tapBracketMs": 110,
+      "firstPresentedNs": 11056992036500,
+      "tapToFirstPresentedEstimateMs": -32.96350000053644,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 0,
+        "max": 22.036499999463558
+      },
+      "presentedFrameCount": 54
+    },
+    {
+      "direction": "B",
+      "index": 4,
+      "coordinates": {
+        "x": 270,
+        "y": 2330
+      },
+      "beforeTapMs": 11058420,
+      "afterTapMs": 11058540,
+      "tapBracketMs": 120,
+      "firstPresentedNs": 11058526284500,
+      "tapToFirstPresentedEstimateMs": 46.28449999913573,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 0,
+        "max": 106.28449999913573
+      },
+      "presentedFrameCount": 46
+    },
+    {
+      "direction": "A",
+      "index": 5,
+      "coordinates": {
+        "x": 90,
+        "y": 2330
+      },
+      "beforeTapMs": 11060320,
+      "afterTapMs": 11060700,
+      "tapBracketMs": 380,
+      "firstPresentedNs": 11060395174100,
+      "tapToFirstPresentedEstimateMs": -114.82589999958873,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 0,
+        "max": 75.17410000041127
+      },
+      "presentedFrameCount": 38
+    },
+    {
+      "direction": "B",
+      "index": 5,
+      "coordinates": {
+        "x": 270,
+        "y": 2330
+      },
+      "beforeTapMs": 11062080,
+      "afterTapMs": 11062370,
+      "tapBracketMs": 290,
+      "firstPresentedNs": 11062080610300,
+      "tapToFirstPresentedEstimateMs": -144.38969999924302,
+      "tapToFirstPresentedBoundsMs": {
+        "min": 0,
+        "max": 0.610300000756979
+      },
+      "presentedFrameCount": 31
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { memo, useCallback, useState } from 'react';
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -84,6 +85,10 @@ export const SettingsScreen = memo(function SettingsScreen({
   const handleOpenDeleteAccountDialog = useCallback(() => {
     setActiveDestructiveAction('deleteAccount');
   }, []);
+
+  const handleUnavailableAction = useCallback(() => {
+    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+  }, [t]);
 
   const handleCloseDestructiveDialog = useCallback(() => {
     setActiveDestructiveAction(null);
@@ -213,6 +218,7 @@ export const SettingsScreen = memo(function SettingsScreen({
         <SettingsSection title={t('settings.sections.account')}>
           <SettingsRow
             iconName="lock-reset"
+            onPress={handleUnavailableAction}
             title={t('settings.account.changePassword')}
           />
           <SettingsRow

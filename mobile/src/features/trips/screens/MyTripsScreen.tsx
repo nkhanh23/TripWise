@@ -2,7 +2,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -60,24 +60,36 @@ export function MyTripsScreen({
     repository ? 'loading' : initialStatus
   );
   const [remoteSections, setRemoteSections] = useState<TripSectionData[] | null>(null);
+  const hasRemoteSectionsRef = useRef(false);
+  const remoteLoadRef = useRef<Promise<void> | null>(null);
 
-  const loadRemote = useCallback(async () => {
-    if (!repository) return;
-    setStatus('loading');
-    try {
-      const page = await repository.list({ limit: 20 });
-      const mapped = mapSavedTripPageToSections(page.items);
-      setRemoteSections(mapped);
-      setStatus(page.items.length === 0 ? 'empty' : 'ready');
-    } catch {
-      setRemoteSections([]);
-      setStatus('error');
-    }
+  const loadRemote = useCallback((showBlockingLoader = true): Promise<void> => {
+    if (!repository) return Promise.resolve();
+    if (remoteLoadRef.current) return remoteLoadRef.current;
+    if (showBlockingLoader) setStatus('loading');
+    const load = repository.list({ limit: 20 })
+      .then((page) => {
+        const mapped = mapSavedTripPageToSections(page.items);
+        hasRemoteSectionsRef.current = true;
+        setRemoteSections(mapped);
+        setStatus(page.items.length === 0 ? 'empty' : 'ready');
+      })
+      .catch(() => {
+        if (!hasRemoteSectionsRef.current) {
+          setRemoteSections([]);
+          setStatus('error');
+        }
+      })
+      .finally(() => {
+        remoteLoadRef.current = null;
+      });
+    remoteLoadRef.current = load;
+    return load;
   }, [repository]);
 
   useEffect(() => {
     if (repository) {
-      const handle = setTimeout(() => { void loadRemote(); }, 0);
+      const handle = setTimeout(() => { void loadRemote(true); }, 0);
       return () => clearTimeout(handle);
     }
   }, [repository, loadRemote]);
@@ -85,7 +97,7 @@ export function MyTripsScreen({
   useEffect(() => {
     const unsubscribe = navigation?.addListener?.('focus', () => {
       if (repository) {
-        void loadRemote();
+        void loadRemote(!hasRemoteSectionsRef.current);
       }
     });
     return unsubscribe;
@@ -146,7 +158,7 @@ export function MyTripsScreen({
   }, [onCreateTrip, navigation]);
 
   const handleRetry = useCallback(() => {
-    if (repository) void loadRemote();
+    if (repository) void loadRemote(true);
     else setStatus('ready');
   }, [repository, loadRemote]);
 

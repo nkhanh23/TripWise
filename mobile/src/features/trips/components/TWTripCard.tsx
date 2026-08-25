@@ -77,14 +77,9 @@ export const TWTripCard = memo(function TWTripCard({ trip, onPress }: Props) {
           </Text>
         </View>
 
-        <Pressable
-          accessibilityHint="Tùy chọn chuyến đi"
-          accessibilityLabel="Tùy chọn"
-          accessibilityRole="button"
-          hitSlop={8}
-          style={styles.moreButton}>
+        <View style={styles.moreButton}>
           <MaterialIcons color={colors.text.secondary} name="more-vert" size={20} />
-        </Pressable>
+        </View>
       </View>
 
       {trip.coverImageUrl ? (

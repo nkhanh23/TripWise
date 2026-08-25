@@ -1,0 +1,31 @@
+{
+  "name": "edit-profile-screen",
+  "capturedAt": "2026-08-25T01:49:19.961Z",
+  "coordinates": {
+    "x": 480,
+    "y": 600
+  },
+  "texts": [
+    "Tools",
+    "Back",
+    "",
+    "Edit profile",
+    "",
+    "Change photo",
+    "Change photo",
+    "Full name",
+    "",
+    "Sarah Jenkins",
+    "Full name",
+    "Email address",
+    "",
+    "sarah.j@example.com",
+    "Email address",
+    "Home country",
+    "",
+    "Enter your home country",
+    "Home country",
+    "Save changes",
+    "Save changes"
+  ]
+}

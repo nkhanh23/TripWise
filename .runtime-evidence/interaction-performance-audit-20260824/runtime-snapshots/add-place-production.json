@@ -1,0 +1,32 @@
+{
+  "name": "add-place-production",
+  "capturedAt": "2026-08-25T01:46:42.209Z",
+  "coordinates": {
+    "x": 960,
+    "y": 2210
+  },
+  "texts": [
+    "Tools",
+    "Back",
+    "",
+    "Add Place",
+    "",
+    "Search attractions, restaurants...",
+    "Search",
+    ", All",
+    "",
+    "All",
+    ", Attractions",
+    "",
+    "Attractions",
+    ", Restaurants",
+    "",
+    "Restaurants",
+    ", Hotels",
+    "",
+    "Hotels",
+    "",
+    "Adding places is unavailable",
+    "This trip cannot add places until itinerary editing is available."
+  ]
+}

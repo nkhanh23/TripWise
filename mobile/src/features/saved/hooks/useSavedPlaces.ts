@@ -19,6 +19,7 @@ import type { SavedPlacesUIStatus, SavedPlaceUIItem } from '../types';
 import type { ExplorePlace } from '../../explore/types';
 
 export type SavedPlaceFixtureInput = SavedPlaceUIItem | ExplorePlace;
+export const maximumConcurrentMetadataRequests = 3;
 
 function normalizeCustomPlace(p: SavedPlaceFixtureInput): SavedPlaceUIItem {
   const isSavedPlace = 'googlePlaceId' in p;
@@ -99,12 +100,60 @@ export function useSavedPlaces({
   const [resolvedImages, setResolvedImages] = useState<Record<string, ResolvedImage>>({});
   const resolvedImageKeys = useRef(new Set<string>());
   const [ratings, setRatings] = useState<Record<string, number>>({});
+  const ratingsRef = useRef<Record<string, number>>({});
+  const metadataKeysInFlight = useRef(new Map<string, AbortSignal>());
   const [lastRemovedPlace, setLastRemovedPlace] = useState<{
     item: SavedPlaceUIItem;
     index: number;
   } | null>(null);
 
   const activeController = useRef<AbortController | null>(null);
+
+  const loadMetadataBounded = useCallback(async (places: SavedPlace[], signal: AbortSignal) => {
+    if (!effectiveMetadataRepository) return;
+    const pending = places.filter((place) => {
+      const key = place.googlePlaceId;
+      const existingSignal = metadataKeysInFlight.current.get(key);
+      if (ratingsRef.current[key] !== undefined || (existingSignal && !existingSignal.aborted)) return false;
+      metadataKeysInFlight.current.set(key, signal);
+      return true;
+    });
+    const resolved: Record<string, number> = {};
+    let nextIndex = 0;
+    const worker = async () => {
+      while (!signal.aborted) {
+        const place = pending[nextIndex];
+        nextIndex += 1;
+        if (!place) return;
+        try {
+          const metadata = await effectiveMetadataRepository.getMetadata(place.googlePlaceId, signal);
+          if (metadata.rating !== undefined && !signal.aborted) {
+            resolved[place.googlePlaceId] = metadata.rating;
+          }
+        } catch {
+          // Metadata is optional and must not block the saved-place shell.
+        } finally {
+          if (metadataKeysInFlight.current.get(place.googlePlaceId) === signal) {
+            metadataKeysInFlight.current.delete(place.googlePlaceId);
+          }
+        }
+      }
+    };
+    const workerCount = Math.min(maximumConcurrentMetadataRequests, pending.length);
+    await Promise.all(Array.from({ length: workerCount }, worker));
+    pending.forEach((place) => {
+      if (metadataKeysInFlight.current.get(place.googlePlaceId) === signal) {
+        metadataKeysInFlight.current.delete(place.googlePlaceId);
+      }
+    });
+    if (!signal.aborted && Object.keys(resolved).length > 0) {
+      setRatings((current) => {
+        const next = { ...current, ...resolved };
+        ratingsRef.current = next;
+        return next;
+      });
+    }
+  }, [effectiveMetadataRepository]);
 
   const loadImagesBounded = useCallback(async (places: SavedPlace[], signal: AbortSignal) => {
     if (!effectivePlaceImageRepository) return;
@@ -165,21 +214,7 @@ export function useSavedPlaces({
       setRemotePlaces(uiItems);
       setStatus(uiItems.length === 0 ? 'empty' : 'ready');
 
-      // Fetch metadata in background
-      if (effectiveMetadataRepository) {
-        for (const item of page.items) {
-          if (ratings[item.googlePlaceId] === undefined) {
-            void effectiveMetadataRepository
-              .getMetadata(item.googlePlaceId, controller.signal)
-              .then((meta) => {
-                if (meta.rating !== undefined && !controller.signal.aborted) {
-                  setRatings((prev) => ({ ...prev, [item.googlePlaceId]: meta.rating! }));
-                }
-              })
-              .catch(() => {});
-          }
-        }
-      }
+      void loadMetadataBounded(page.items, controller.signal);
 
       // Fetch photos in background for items missing photos
       void loadImagesBounded(page.items, controller.signal);
@@ -188,7 +223,7 @@ export function useSavedPlaces({
         setStatus('error');
       }
     }
-  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, ratings, loadImagesBounded]);
+  }, [normalizedCustomPlaces, isFixture, effectiveRepository, loadImagesBounded, loadMetadataBounded]);
 
   useEffect(() => {
     if (normalizedCustomPlaces || isFixture) {
@@ -212,18 +247,7 @@ export function useSavedPlaces({
         setRemotePlaces(uiItems);
         setStatus(uiItems.length === 0 ? 'empty' : 'ready');
 
-        if (effectiveMetadataRepository) {
-          for (const item of page.items) {
-            void effectiveMetadataRepository
-              .getMetadata(item.googlePlaceId, controller.signal)
-              .then((meta) => {
-                if (meta.rating !== undefined && !controller.signal.aborted) {
-                  setRatings((prev) => ({ ...prev, [item.googlePlaceId]: meta.rating! }));
-                }
-              })
-              .catch(() => {});
-          }
-        }
+        void loadMetadataBounded(page.items, controller.signal);
 
         void loadImagesBounded(page.items, controller.signal);
       } catch {
@@ -238,7 +262,7 @@ export function useSavedPlaces({
     return () => {
       controller.abort();
     };
-  }, [normalizedCustomPlaces, isFixture, effectiveRepository, effectiveMetadataRepository, loadImagesBounded]);
+  }, [normalizedCustomPlaces, isFixture, effectiveRepository, loadImagesBounded, loadMetadataBounded]);
 
   const activePlaces = normalizedCustomPlaces ?? (isFixture ? fixturePlaces : remotePlaces);
 

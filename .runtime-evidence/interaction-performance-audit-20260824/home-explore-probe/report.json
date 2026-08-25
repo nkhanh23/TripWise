@@ -1,0 +1,173 @@
+{
+  "name": "home-explore-probe",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-25T01:37:39.735Z",
+  "coordinates": {
+    "x": 270,
+    "y": 2330
+  },
+  "beforeUptimeMs": 10804480,
+  "afterTapUptimeMs": 10804900,
+  "tapCommandDurationMs": 43.50130000000007,
+  "firstPostTapEvent": {
+    "eventType": "TYPE_WINDOW_STATE_CHANGED",
+    "eventTime": 10804753,
+    "text": "TripWise",
+    "contentDescription": "null",
+    "raw": "08-25 08:37:30.020 EventType: TYPE_WINDOW_STATE_CHANGED; EventTime: 10804753; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: com.anonymous.tripwisemobile.MainActivity; Text: [TripWise]; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: true; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+  },
+  "events": [
+    {
+      "eventType": "TYPE_WINDOW_STATE_CHANGED",
+      "eventTime": 10804753,
+      "text": "TripWise",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:30.020 EventType: TYPE_WINDOW_STATE_CHANGED; EventTime: 10804753; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: com.anonymous.tripwisemobile.MainActivity; Text: [TripWise]; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: true; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_STATE_CHANGED",
+      "eventTime": 10805153,
+      "text": "Home screen 1 of 1",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:30.408 EventType: TYPE_WINDOW_STATE_CHANGED; EventTime: 10805153; PackageName: com.google.android.apps.nexuslauncher; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: com.google.android.apps.nexuslauncher.NexusLauncherActivity; Text: [Home screen 1 of 1]; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: true; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_CONTENT_CHANGED",
+      "eventTime": 10806574,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:31.823 EventType: TYPE_WINDOW_CONTENT_CHANGED; EventTime: 10806574; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: [CONTENT_CHANGE_TYPE_SUBTREE]; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: false; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_CONTENT_CHANGED",
+      "eventTime": 10808534,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.797 EventType: TYPE_WINDOW_CONTENT_CHANGED; EventTime: 10808534; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: [CONTENT_CHANGE_TYPE_SUBTREE]; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_TEXT_SELECTION_CHANGED",
+      "eventTime": 10808538,
+      "text": "Search Tokyo, Bangkok...",
+      "contentDescription": "Tìm kiếm địa điểm",
+      "raw": "08-25 08:37:33.801 EventType: TYPE_VIEW_TEXT_SELECTION_CHANGED; EventTime: 10808538; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.widget.EditText; Text: [Search Tokyo, Bangkok...]; ContentDescription: Tìm kiếm địa điểm; ItemCount: 0; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: 0; ToIndex: 0; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_CONTENT_CHANGED",
+      "eventTime": 10808573,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.829 EventType: TYPE_WINDOW_CONTENT_CHANGED; EventTime: 10808573; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: [CONTENT_CHANGE_TYPE_SUBTREE]; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_SELECTED",
+      "eventTime": 10808573,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.834 EventType: TYPE_VIEW_SELECTED; EventTime: 10808573; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.widget.TextView; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_SELECTED",
+      "eventTime": 10808573,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.839 EventType: TYPE_VIEW_SELECTED; EventTime: 10808573; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.widget.TextView; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_SELECTED",
+      "eventTime": 10808573,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.840 EventType: TYPE_VIEW_SELECTED; EventTime: 10808573; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: false; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_SELECTED",
+      "eventTime": 10808573,
+      "text": "Explore",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.840 EventType: TYPE_VIEW_SELECTED; EventTime: 10808573; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.widget.TextView; Text: [Explore]; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_SELECTED",
+      "eventTime": 10808574,
+      "text": ", , Explore",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.852 EventType: TYPE_VIEW_SELECTED; EventTime: 10808574; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: [, , Explore]; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_CONTENT_CHANGED",
+      "eventTime": 10808577,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:33.853 EventType: TYPE_WINDOW_CONTENT_CHANGED; EventTime: 10808577; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: [CONTENT_CHANGE_TYPE_SUBTREE, CONTENT_CHANGE_TYPE_TEXT]; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_VIEW_TEXT_SELECTION_CHANGED",
+      "eventTime": 10808578,
+      "text": "Search Tokyo, Bangkok...",
+      "contentDescription": "Tìm kiếm địa điểm",
+      "raw": "08-25 08:37:33.855 EventType: TYPE_VIEW_TEXT_SELECTION_CHANGED; EventTime: 10808578; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.widget.EditText; Text: [Search Tokyo, Bangkok...]; ContentDescription: Tìm kiếm địa điểm; ItemCount: 0; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: 0; ToIndex: 0; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_CONTENT_CHANGED",
+      "eventTime": 10808977,
+      "text": "",
+      "contentDescription": "null",
+      "raw": "08-25 08:37:34.224 EventType: TYPE_WINDOW_CONTENT_CHANGED; EventTime: 10808977; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: [CONTENT_CHANGE_TYPE_SUBTREE, CONTENT_CHANGE_TYPE_TEXT]; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.ViewGroup; Text: []; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    },
+    {
+      "eventType": "TYPE_WINDOW_CONTENT_CHANGED",
+      "eventTime": 10809135,
+      "text": "",
+      "contentDescription": "Google Map",
+      "raw": "08-25 08:37:34.383 EventType: TYPE_WINDOW_CONTENT_CHANGED; EventTime: 10809135; PackageName: com.anonymous.tripwisemobile; MovementGranularity: 0; Action: 0; ContentChangeTypes: [CONTENT_CHANGE_TYPE_SUBTREE]; WindowChangeTypes: []; TextChangeTypes: [] [ ClassName: android.view.TextureView; Text: []; ContentDescription: Google Map; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: false; Scrollable: false; ImportantForAccessibility: true; AccessibilityDataSensitive: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null; DisplayId: 0 ]; recordCount: 0"
+    }
+  ],
+  "hierarchyTexts": [
+    "Tools",
+    "Interactive Map",
+    "Google Map",
+    "Zoom in",
+    "Zoom out",
+    "",
+    "Search Tokyo, Bangkok...",
+    "Tìm kiếm địa điểm",
+    "Bộ lọc",
+    "",
+    "All",
+    "",
+    "All",
+    "Attractions",
+    "",
+    "Attractions",
+    "Restaurants",
+    "",
+    "Restaurants",
+    "Hotels",
+    "",
+    "Hotels",
+    "",
+    "No places found",
+    "Try adjusting your search query or selecting a different category.",
+    "Clear filters",
+    "Clear filters",
+    ", Home",
+    "",
+    "Home",
+    ", Explore",
+    "",
+    "Explore",
+    ", Plan Trip",
+    "",
+    "Plan Trip",
+    ", My Trips",
+    "",
+    "My Trips",
+    ", Saved",
+    "",
+    "Saved",
+    ", Profile",
+    "",
+    "Profile"
+  ]
+}

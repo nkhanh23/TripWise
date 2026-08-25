@@ -1,4 +1,5 @@
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import {
   generateLongMockRouteSteps,
   mockTransitRoute,
@@ -39,6 +40,8 @@ describe('RoutePreviewScreen', () => {
   });
 
   it('renders route preview with map canvas, origin/destination, transport chips, summary card, and steps', async () => {
+    const user = userEvent.setup();
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
     const route: any = {
       params: {
         destinationId: 'place_wat_arun',
@@ -77,6 +80,8 @@ describe('RoutePreviewScreen', () => {
 
     // Bottom CTA
     expect(screen.getByText('Start Route')).toBeTruthy();
+    await user.press(screen.getByText('Start Route'));
+    expect(alert).toHaveBeenCalledWith('Action unavailable', 'Turn-by-turn navigation is not available yet.');
   });
 
   it('switches transport mode and updates ETA/distance/summary', async () => {

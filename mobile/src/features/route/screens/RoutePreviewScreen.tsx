@@ -3,6 +3,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -161,6 +162,10 @@ export function RoutePreviewScreen({
   const handleRetry = useCallback(() => {
     fetchRoute(selectedMode);
   }, [fetchRoute, selectedMode]);
+
+  const handleStartRoute = useCallback(() => {
+    Alert.alert(t('common.unavailableTitle'), t('route.startUnavailable'));
+  }, [t]);
 
   // List header containing Address box + Transport selector + Summary card
   const listHeader = useMemo(() => {
@@ -388,6 +393,7 @@ export function RoutePreviewScreen({
             accessibilityHint={t('route.startRoute')}
             accessibilityLabel={t('route.startRoute')}
             accessibilityRole="button"
+            onPress={handleStartRoute}
             style={({ pressed }) => [
               styles.ctaButton,
               { backgroundColor: colors.brand.primary },

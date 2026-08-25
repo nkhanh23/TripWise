@@ -1,4 +1,5 @@
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { TWPlaceCard } from '../src/features/place/components/TWPlaceCard';
 import * as placeDetailFixtures from '../src/features/place/data/mockPlaceDetail';
 import { PlaceDetailScreen } from '../src/features/place/screens/PlaceDetailScreen';
@@ -201,6 +202,20 @@ describe('PlaceDetailScreen', () => {
       destinationId: 'place_wat_arun',
       destinationName: 'Wat Arun',
     });
+  });
+
+  it('gives immediate unavailable feedback for unsupported place actions', async () => {
+    const user = userEvent.setup();
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    const route: any = { params: { placeId: 'place_wat_arun' } };
+    await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
+
+    for (const label of ['Trang web', 'Gọi điện', 'Thêm vào chuyến đi', 'Chia sẻ']) {
+      await user.press(screen.getByLabelText(label));
+    }
+
+    expect(alert).toHaveBeenCalledTimes(4);
+    expect(alert).toHaveBeenLastCalledWith('Action unavailable', 'This action is not available yet.');
   });
 
   it('does not resolve fixture details for a production place identity', async () => {

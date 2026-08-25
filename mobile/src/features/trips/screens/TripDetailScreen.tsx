@@ -1,8 +1,9 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -165,46 +166,71 @@ export function TripDetailScreen({
   const [selectedDayIdState, setSelectedDayId] = useState<string>('');
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [remoteTripData, setRemoteTripData] = useState<TripDetailData | null>(null);
+  const remoteTripDataRef = useRef<TripDetailData | null>(null);
+  const remoteLoadRef = useRef<{ tripId: string; promise: Promise<boolean> } | null>(null);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener?.('focus', () => {
-      setRefreshKey((prev) => prev + 1);
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  const loadRemoteDetail = useCallback(async (): Promise<boolean> => {
-    if (!effectiveRepository || !tripId || !isRemoteTrip) return false;
+  const loadRemoteDetail = useCallback((showBlockingLoader = true): Promise<boolean> => {
+    if (!effectiveRepository || !tripId || !isRemoteTrip) return Promise.resolve(false);
+    const inFlight = remoteLoadRef.current;
+    if (inFlight?.tripId === tripId) return inFlight.promise;
     let typedTripId: TripId;
     try {
       typedTripId = asTripId(tripId);
     } catch {
       setRemoteTripData(null);
       setStatus('not_found');
-      return false;
+      return Promise.resolve(false);
     }
-    setStatus('loading');
-    try {
-      const detail = await effectiveRepository.getDetail(typedTripId);
-      if (!detail) {
-        setRemoteTripData(null);
-        setStatus('not_found');
+    const hadExistingContent = remoteTripDataRef.current !== null;
+    if (showBlockingLoader) setStatus('loading');
+
+    let load!: Promise<boolean>;
+    load = effectiveRepository.getDetail(typedTripId)
+      .then((detail) => {
+        if (!detail) {
+          remoteTripDataRef.current = null;
+          setRemoteTripData(null);
+          setStatus('not_found');
+          return false;
+        }
+        const mapped = mapSavedTripDetailToTripDetailData(detail);
+        remoteTripDataRef.current = mapped;
+        setRemoteTripData(mapped);
+        setStatus('ready');
+        return true;
+      })
+      .catch(() => {
+        if (hadExistingContent && !showBlockingLoader) {
+          setStatus('ready');
+        } else {
+          remoteTripDataRef.current = null;
+          setRemoteTripData(null);
+          setStatus('error');
+        }
         return false;
-      }
-      setRemoteTripData(mapSavedTripDetailToTripDetailData(detail));
-      setStatus('ready');
-      return true;
-    } catch {
-      setRemoteTripData(null);
-      setStatus('error');
-      return false;
-    }
+      })
+      .finally(() => {
+        if (remoteLoadRef.current?.promise === load) remoteLoadRef.current = null;
+      });
+    remoteLoadRef.current = { tripId, promise: load };
+    return load;
   }, [effectiveRepository, tripId, isRemoteTrip]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener?.('focus', () => {
+      if (isRemoteTrip) {
+        void loadRemoteDetail(remoteTripDataRef.current === null);
+      } else {
+        setRefreshKey((prev) => prev + 1);
+      }
+    });
+    return unsubscribe;
+  }, [isRemoteTrip, loadRemoteDetail, navigation]);
 
   useEffect(() => {
     if (!effectiveRepository || !isRemoteTrip) return;
     const handle = setTimeout(() => {
-      void loadRemoteDetail();
+      void loadRemoteDetail(true);
     }, 0);
     return () => clearTimeout(handle);
   }, [loadRemoteDetail, refreshKey, effectiveRepository, isRemoteTrip]);
@@ -283,9 +309,11 @@ export function TripDetailScreen({
     (item: ItineraryItem) => {
       if (item.placeId) {
         navigation.navigate('PlaceDetail', { placeId: item.placeId });
+      } else {
+        Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
       }
     },
-    [navigation]
+    [navigation, t]
   );
 
   const handleGetDirections = useCallback(
@@ -322,7 +350,7 @@ export function TripDetailScreen({
 
   const handleRetry = useCallback(() => {
     if (isRemoteTrip) {
-      void loadRemoteDetail();
+      void loadRemoteDetail(true);
     } else {
       setStatus('ready');
     }
@@ -331,13 +359,15 @@ export function TripDetailScreen({
   const handleFABPress = useCallback(() => {
     if (onPressAddPlace) {
       onPressAddPlace();
+    } else if (!isFixture) {
+      Alert.alert(t('common.unavailableTitle'), t('addPlace.unavailableSubtitle'));
     } else if (tripId) {
       navigation.navigate('AddPlace', {
         tripId,
         initialDayId: activeDay?.id ?? effectiveSelectedDayId,
       });
     }
-  }, [onPressAddPlace, navigation, tripId, activeDay, effectiveSelectedDayId]);
+  }, [onPressAddPlace, isFixture, navigation, tripId, activeDay, effectiveSelectedDayId, t]);
 
   // Header Component for Virtualized Itinerary FlatList
   const listHeader = useMemo(() => {

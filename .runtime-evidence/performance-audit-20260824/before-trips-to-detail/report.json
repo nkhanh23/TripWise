@@ -1,0 +1,73 @@
+{
+  "name": "before-trips-to-detail",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-24T14:29:41.020Z",
+  "measurement": "host performance.now + raw ADB smart-socket screencap + Hermes Network domain",
+  "tap": {
+    "x": 500,
+    "y": 650,
+    "commandDurationMs": 103.14709999999991
+  },
+  "frames": [
+    {
+      "file": "frame-000.png",
+      "atMs": 804.4054
+    },
+    {
+      "file": "frame-001.png",
+      "atMs": 1595.7064
+    },
+    {
+      "file": "frame-002.png",
+      "atMs": 2610.2014
+    },
+    {
+      "file": "frame-003.png",
+      "atMs": 3635.7976
+    },
+    {
+      "file": "frame-004.png",
+      "atMs": 4761.9793
+    },
+    {
+      "file": "frame-005.png",
+      "atMs": 5803.7157
+    },
+    {
+      "file": "frame-006.png",
+      "atMs": 6834.6483
+    },
+    {
+      "file": "frame-007.png",
+      "atMs": 7503.714499999999
+    },
+    {
+      "file": "frame-008.png",
+      "atMs": 9614.5232
+    },
+    {
+      "file": "frame-009.png",
+      "atMs": 11343.9597
+    },
+    {
+      "file": "frame-010.png",
+      "atMs": 13279.0651
+    },
+    {
+      "file": "frame-011.png",
+      "atMs": 15569.104
+    },
+    {
+      "file": "frame-012.png",
+      "atMs": 17507.666100000002
+    },
+    {
+      "file": "frame-013.png",
+      "atMs": 19139.137300000002
+    }
+  ],
+  "network": [],
+  "protocolMessages": [],
+  "runtimeRequests": [],
+  "runtimeSamples": []
+}

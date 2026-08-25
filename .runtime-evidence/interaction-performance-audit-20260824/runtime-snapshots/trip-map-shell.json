@@ -1,0 +1,29 @@
+{
+  "name": "trip-map-shell",
+  "capturedAt": "2026-08-25T01:45:27.128Z",
+  "coordinates": {
+    "x": 980,
+    "y": 130
+  },
+  "texts": [
+    "App Icon",
+    "TripWise",
+    "Runtime version: exposdk:57.0.0",
+    "Close",
+    "Reload",
+    "Reload",
+    "Home",
+    "Go home",
+    "TOOLS",
+    "Performance monitor",
+    "Toggle performance monitor",
+    "Element inspector",
+    "Toggle element inspector",
+    "DevTools",
+    "Open DevTools",
+    "React Native dev menu",
+    "Open React Native dev menu",
+    "Fast Refresh",
+    "Fast Refresh"
+  ]
+}

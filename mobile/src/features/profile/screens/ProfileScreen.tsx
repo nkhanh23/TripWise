@@ -3,7 +3,7 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { memo, useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTranslation } from '../../../i18n';
@@ -42,6 +42,9 @@ export const ProfileScreen = memo(function ProfileScreen({ onNavigateSettings }:
     else navigation.navigate('Settings');
   }, [navigation, onNavigateSettings]);
   const handleOpenHelpSupport = useCallback(() => navigation.navigate('HelpSupport'), [navigation]);
+  const handleUnavailableAction = useCallback(() => {
+    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+  }, [t]);
 
   const handleConfirmAction = useCallback(async () => {
     if (activeAction === 'deleteAccount') {
@@ -90,14 +93,14 @@ export const ProfileScreen = memo(function ProfileScreen({ onNavigateSettings }:
       title: t('profile.sections.support'),
       items: [
         { id: 'help_support', label: t('profile.menu.helpSupport'), iconName: 'help', onPress: handleOpenHelpSupport },
-        { id: 'about', label: t('profile.menu.about'), iconName: 'info', onPress: () => {} },
+        { id: 'about', label: t('profile.menu.about'), iconName: 'info', onPress: handleUnavailableAction },
         {
           id: 'delete_account', label: t('profile.menu.deleteAccount'), iconName: 'delete',
           isDestructive: true, onPress: () => setActiveAction('deleteAccount'),
         },
       ],
     },
-  ], [handleEditPress, handleNavigateSaved, handleNavigateTrips, handleOpenHelpSupport, handleOpenSettings, t]);
+  ], [handleEditPress, handleNavigateSaved, handleNavigateTrips, handleOpenHelpSupport, handleOpenSettings, handleUnavailableAction, t]);
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background.canvas, paddingTop: insets.top }]}>

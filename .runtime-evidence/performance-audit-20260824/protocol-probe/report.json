@@ -1,0 +1,29 @@
+{
+  "name": "protocol-probe",
+  "device": "emulator-5554",
+  "capturedAt": "2026-08-24T14:28:01.252Z",
+  "measurement": "host performance.now + raw ADB smart-socket screencap + Hermes Network domain",
+  "tap": {
+    "x": 10,
+    "y": 10,
+    "commandDurationMs": 96.23389999999995
+  },
+  "frames": [
+    {
+      "file": "frame-000.png",
+      "atMs": 819.9639999999999
+    },
+    {
+      "file": "frame-001.png",
+      "atMs": 972.1032
+    },
+    {
+      "file": "frame-002.png",
+      "atMs": 1814.8113999999998
+    }
+  ],
+  "network": [],
+  "protocolMessages": [],
+  "runtimeRequests": [],
+  "runtimeSamples": []
+}

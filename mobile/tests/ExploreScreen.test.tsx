@@ -1,4 +1,5 @@
 import { cleanup, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { largeMockExplorePlaces, mockExplorePlaces } from '../src/features/explore/data/mockPlaces';
 import { ExploreScreen } from '../src/features/explore/ExploreScreen';
 
@@ -246,6 +247,20 @@ describe('ExploreScreen', () => {
       expect(screen.queryByText('Unable to load map')).toBeNull();
     });
     expect(screen.getByLabelText('Wat Arun')).toBeTruthy();
+  });
+
+  it('gives immediate unavailable feedback for preview actions without production contracts', async () => {
+    const user = userEvent.setup();
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
+
+    await user.press(screen.getByLabelText('Wat Arun'));
+    for (const label of ['Chỉ đường', 'Lưu địa điểm', 'Vé tham quan', 'Chia sẻ địa điểm']) {
+      await user.press(screen.getByLabelText(label));
+    }
+
+    expect(alert).toHaveBeenCalledTimes(4);
+    expect(alert).toHaveBeenLastCalledWith('Action unavailable', 'This action is not available yet.');
   });
 
   it('shows an empty production canvas without fixture places', async () => {

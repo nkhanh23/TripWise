@@ -1,6 +1,6 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppText } from '../../../components/AppText';
 import { useTranslation } from '../../../i18n';
@@ -21,6 +21,9 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
 }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const handleUnavailableAction = () => {
+    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+  };
 
   return (
     <View
@@ -111,7 +114,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Xem tuyến đường và chỉ đường tới địa điểm"
           accessibilityLabel="Chỉ đường"
           accessibilityRole="button"
-          onPress={() => onPressDetail?.(place.id)}
+          onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
           <View style={[styles.actionIconCircle, { backgroundColor: colors.brand.primary }]}>
             <MaterialIcons color={colors.text.inverse} name="navigation" size={20} />
@@ -125,6 +128,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Lưu địa điểm này vào danh sách yêu thích"
           accessibilityLabel="Lưu địa điểm"
           accessibilityRole="button"
+          onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
           <View
             style={[
@@ -142,6 +146,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Xem thông tin giá vé tham quan"
           accessibilityLabel="Vé tham quan"
           accessibilityRole="button"
+          onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
           <View
             style={[
@@ -159,6 +164,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Chia sẻ địa điểm này cho bạn bè"
           accessibilityLabel="Chia sẻ địa điểm"
           accessibilityRole="button"
+          onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
           <View
             style={[

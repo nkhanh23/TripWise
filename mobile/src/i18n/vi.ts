@@ -18,6 +18,8 @@ export const viTranslations: Record<string, string> = {
   'common.success': 'Thành công',
   'common.notFound': 'Không tìm thấy',
   'common.menu': 'Menu',
+  'common.unavailableTitle': 'Chưa hỗ trợ thao tác',
+  'common.unavailableMessage': 'Thao tác này hiện chưa khả dụng.',
 
   // Navigation Tabs
   'navigation.tabs.home': 'Trang chủ',
@@ -153,6 +155,7 @@ export const viTranslations: Record<string, string> = {
   'route.steps': 'Chỉ dẫn chi tiết',
   'route.unavailableTitle': 'Không tìm thấy lộ trình',
   'route.unavailableSubtitle': 'Không thể tính toán đường đi cho phương tiện đã chọn.',
+  'route.startUnavailable': 'Dẫn đường từng chặng hiện chưa khả dụng.',
   'route.errorTitle': 'Không thể tính toán lộ trình',
   'route.errorSubtitle': 'Đã xảy ra sự cố khi tính toán chỉ dẫn đường đi.',
 
