@@ -1,4 +1,4 @@
-import { lightPalette } from './palettes';
+import { lightPalette } from "./palettes";
 
 export const colors = {
   ...lightPalette,
@@ -23,9 +23,9 @@ export const typography = {
   titleSmall: 18,
   lineHeight: 24,
   fontWeight: {
-    regular: '400',
-    semibold: '600',
-    bold: '700',
+    regular: "400",
+    semibold: "600",
+    bold: "700",
   },
 } as const;
 

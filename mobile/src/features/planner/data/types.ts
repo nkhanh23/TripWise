@@ -34,9 +34,9 @@ export type GeneratedTrip = {
 };
 
 export type GenerateTripErrorCode =
-  | 'INVALID_REQUEST'
-  | 'UNAUTHORIZED'
-  | 'AI_TIMEOUT'
-  | 'AI_UNAVAILABLE'
-  | 'AI_INVALID_RESPONSE'
-  | 'INTERNAL_ERROR';
+  | "INVALID_REQUEST"
+  | "UNAUTHORIZED"
+  | "AI_TIMEOUT"
+  | "AI_UNAVAILABLE"
+  | "AI_INVALID_RESPONSE"
+  | "INTERNAL_ERROR";

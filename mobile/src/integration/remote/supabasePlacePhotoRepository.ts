@@ -1,11 +1,14 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { Database } from '../../lib/supabase/database.types';
-import type { GetPlacePhotoRequest, PlacePhoto } from '../contracts';
-import { mapPlacePhotoError, readFunctionErrorPayload } from '../errors';
-import type { PlacePhotoRepository } from '../repositories';
-import { executeWithReliability, supabaseReadPolicy } from '../reliability';
-import { parseGetPlacePhotoSuccess, validateGetPlacePhotoRequest } from '../validation';
+import type { Database } from "../../lib/supabase/database.types";
+import type { GetPlacePhotoRequest, PlacePhoto } from "../contracts";
+import { mapPlacePhotoError, readFunctionErrorPayload } from "../errors";
+import type { PlacePhotoRepository } from "../repositories";
+import { executeWithReliability, supabaseReadPolicy } from "../reliability";
+import {
+  parseGetPlacePhotoSuccess,
+  validateGetPlacePhotoRequest,
+} from "../validation";
 
 const cacheTtlMilliseconds = 1000 * 60 * 60 * 2; // 2 hours
 
@@ -19,7 +22,10 @@ export class SupabasePlacePhotoRepository implements PlacePhotoRepository {
 
   constructor(private readonly client: SupabaseClient<Database>) {}
 
-  async getPhoto(request: GetPlacePhotoRequest, signal?: AbortSignal): Promise<PlacePhoto> {
+  async getPhoto(
+    request: GetPlacePhotoRequest,
+    signal?: AbortSignal,
+  ): Promise<PlacePhoto> {
     const body = validateGetPlacePhotoRequest(request);
     const cacheKey = `${body.googlePlaceId}_${body.maxWidth ?? 1200}`;
 
@@ -30,10 +36,13 @@ export class SupabasePlacePhotoRepository implements PlacePhotoRepository {
 
     return executeWithReliability(
       async (attemptSignal) => {
-        const { data, error } = await this.client.functions.invoke('get-place-photo', {
-          body,
-          signal: attemptSignal,
-        });
+        const { data, error } = await this.client.functions.invoke(
+          "get-place-photo",
+          {
+            body,
+            signal: attemptSignal,
+          },
+        );
 
         if (error) {
           const payload = await readFunctionErrorPayload(error);
@@ -48,7 +57,7 @@ export class SupabasePlacePhotoRepository implements PlacePhotoRepository {
         return parsed;
       },
       supabaseReadPolicy,
-      signal
+      signal,
     );
   }
 

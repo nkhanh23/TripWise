@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ItineraryItem, TripMapMarkerItem } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ItineraryItem, TripMapMarkerItem } from "../types";
 
 type Props = {
   selectedMarker: TripMapMarkerItem;
@@ -30,15 +30,15 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
     item.subtitle ||
     item.description ||
     (item.durationMinutes
-      ? t('tripMap.durationStay', {
+      ? t("tripMap.durationStay", {
           duration: `${item.durationMinutes}m`,
         })
-      : '');
+      : "");
 
   const locationText =
     item.location ||
     item.subtitle ||
-    t('tripMap.walkFromPrevious', { duration: '12 min' });
+    t("tripMap.walkFromPrevious", { duration: "12 min" });
 
   return (
     <View
@@ -48,13 +48,11 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       {/* Grabber Handle */}
       <View
-        style={[
-          styles.grabber,
-          { backgroundColor: colors.border.default },
-        ]}
+        style={[styles.grabber, { backgroundColor: colors.border.default }]}
       />
 
       {/* Place Preview Card */}
@@ -69,13 +67,15 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
             backgroundColor: colors.background.surfaceVariant,
           },
           pressed && styles.pressed,
-        ]}>
+        ]}
+      >
         {/* Thumbnail Image + Order Badge */}
         <View
           style={[
             styles.imageContainer,
             { backgroundColor: colors.border.subtle },
-          ]}>
+          ]}
+        >
           {item.imageUrl ? (
             <Image
               resizeMode="cover"
@@ -86,7 +86,7 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
             <View style={styles.placeholderIcon}>
               <MaterialIcons
                 color={colors.brand.primary}
-                name={item.iconName || 'place'}
+                name={item.iconName || "place"}
                 size={32}
               />
             </View>
@@ -97,12 +97,11 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
             style={[
               styles.orderBadge,
               { backgroundColor: colors.brand.primary },
-            ]}>
+            ]}
+          >
             <Text
-              style={[
-                styles.orderBadgeText,
-                { color: colors.text.inverse },
-              ]}>
+              style={[styles.orderBadgeText, { color: colors.text.inverse }]}
+            >
               {orderNumber}
             </Text>
           </View>
@@ -114,10 +113,8 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
           <View style={styles.titleRow}>
             <Text
               numberOfLines={1}
-              style={[
-                styles.titleText,
-                { color: colors.text.primary },
-              ]}>
+              style={[styles.titleText, { color: colors.text.primary }]}
+            >
               {item.title}
             </Text>
             {timeFormatted ? (
@@ -125,12 +122,14 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
                 style={[
                   styles.timeBadge,
                   { backgroundColor: `${colors.brand.primary}18` },
-                ]}>
+                ]}
+              >
                 <Text
                   style={[
                     styles.timeBadgeText,
                     { color: colors.brand.primary },
-                  ]}>
+                  ]}
+                >
                   {timeFormatted}
                 </Text>
               </View>
@@ -141,10 +140,8 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
           {subtitleText ? (
             <Text
               numberOfLines={1}
-              style={[
-                styles.subtitleText,
-                { color: colors.text.secondary },
-              ]}>
+              style={[styles.subtitleText, { color: colors.text.secondary }]}
+            >
               {subtitleText}
             </Text>
           ) : null}
@@ -158,10 +155,8 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
             />
             <Text
               numberOfLines={1}
-              style={[
-                styles.metaText,
-                { color: colors.text.muted },
-              ]}>
+              style={[styles.metaText, { color: colors.text.muted }]}
+            >
               {locationText}
             </Text>
           </View>
@@ -170,7 +165,7 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
         {/* Action Button: Directions */}
         <Pressable
           accessibilityHint="Get directions to this place"
-          accessibilityLabel={t('tripMap.getDirections')}
+          accessibilityLabel={t("tripMap.getDirections")}
           accessibilityRole="button"
           hitSlop={8}
           onPress={() => onPressDirections?.(item)}
@@ -180,7 +175,8 @@ export const TripMapPlacePreview = memo(function TripMapPlacePreview({
               backgroundColor: `${colors.brand.primary}15`,
             },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.brand.primary}
             name="directions"
@@ -203,52 +199,52 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.12,
     shadowRadius: 12,
     zIndex: 40,
   },
   grabber: {
-    alignSelf: 'center',
+    alignSelf: "center",
     borderRadius: radius.pill,
     height: 4,
     marginBottom: spacing.sm,
     width: 40,
   },
   card: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.control,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     padding: spacing.sm,
   },
   imageContainer: {
     borderRadius: radius.input,
     height: 72,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
     width: 72,
   },
   image: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   placeholderIcon: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
+    alignItems: "center",
+    height: "100%",
+    justifyContent: "center",
+    width: "100%",
   },
   orderBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
     left: 4,
-    position: 'absolute',
+    position: "absolute",
     top: 4,
     width: 20,
   },
@@ -262,9 +258,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   titleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   titleText: {
     flex: 1,
@@ -285,8 +281,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginTop: 2,
   },
@@ -295,10 +291,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   actionButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   pressed: {

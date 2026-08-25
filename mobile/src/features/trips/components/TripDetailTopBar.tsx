@@ -1,10 +1,10 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   title?: string;
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const TripDetailTopBar = memo(function TripDetailTopBar({
-  title = 'TripWise',
+  title = "TripWise",
   topInset,
   onBack,
   onEdit,
@@ -32,18 +32,19 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
         styles.container,
         {
           backgroundColor:
-            effectiveTheme === 'dark'
-              ? 'rgba(19, 20, 24, 0.92)'
-              : 'rgba(252, 249, 248, 0.92)',
+            effectiveTheme === "dark"
+              ? "rgba(19, 20, 24, 0.92)"
+              : "rgba(252, 249, 248, 0.92)",
           borderBottomColor: colors.border.subtle,
           paddingTop: Math.max(topInset, spacing.xs),
         },
-      ]}>
+      ]}
+    >
       <View style={styles.contentRow}>
         {/* Back Button */}
         <Pressable
-          accessibilityHint={t('common.back')}
-          accessibilityLabel={t('common.back')}
+          accessibilityHint={t("common.back")}
+          accessibilityLabel={t("common.back")}
           accessibilityRole="button"
           hitSlop={8}
           onPress={onBack}
@@ -51,20 +52,26 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
             styles.iconButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             pressed && styles.pressed,
-          ]}>
-          <MaterialIcons color={colors.brand.primary} name="arrow-back" size={22} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.brand.primary}
+            name="arrow-back"
+            size={22}
+          />
         </Pressable>
 
         {/* Center Title */}
         <View style={styles.centerTitleContainer}>
           <Text
             numberOfLines={1}
-            style={[styles.titleText, { color: colors.brand.primary }]}>
+            style={[styles.titleText, { color: colors.brand.primary }]}
+          >
             {title}
           </Text>
         </View>
@@ -73,8 +80,8 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
         <View style={styles.actionsRow}>
           {onMap ? (
             <Pressable
-              accessibilityHint={t('tripDetail.viewMap')}
-              accessibilityLabel={t('tripDetail.viewMap')}
+              accessibilityHint={t("tripDetail.viewMap")}
+              accessibilityLabel={t("tripDetail.viewMap")}
               accessibilityRole="button"
               hitSlop={8}
               onPress={onMap}
@@ -82,13 +89,18 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
                 styles.iconButton,
                 {
                   backgroundColor:
-                    effectiveTheme === 'dark'
-                      ? 'rgba(30, 31, 36, 0.9)'
-                      : 'rgba(255, 255, 255, 0.9)',
+                    effectiveTheme === "dark"
+                      ? "rgba(30, 31, 36, 0.9)"
+                      : "rgba(255, 255, 255, 0.9)",
                 },
                 pressed && styles.pressed,
-              ]}>
-              <MaterialIcons color={colors.brand.primary} name="map" size={20} />
+              ]}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="map"
+                size={20}
+              />
             </Pressable>
           ) : null}
 
@@ -103,13 +115,18 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
                 styles.iconButton,
                 {
                   backgroundColor:
-                    effectiveTheme === 'dark'
-                      ? 'rgba(30, 31, 36, 0.9)'
-                      : 'rgba(255, 255, 255, 0.9)',
+                    effectiveTheme === "dark"
+                      ? "rgba(30, 31, 36, 0.9)"
+                      : "rgba(255, 255, 255, 0.9)",
                 },
                 pressed && styles.pressed,
-              ]}>
-              <MaterialIcons color={colors.brand.primary} name="share" size={20} />
+              ]}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="share"
+                size={20}
+              />
             </Pressable>
           ) : null}
 
@@ -124,13 +141,18 @@ export const TripDetailTopBar = memo(function TripDetailTopBar({
                 styles.iconButton,
                 {
                   backgroundColor:
-                    effectiveTheme === 'dark'
-                      ? 'rgba(30, 31, 36, 0.9)'
-                      : 'rgba(255, 255, 255, 0.9)',
+                    effectiveTheme === "dark"
+                      ? "rgba(30, 31, 36, 0.9)"
+                      : "rgba(255, 255, 255, 0.9)",
                 },
                 pressed && styles.pressed,
-              ]}>
-              <MaterialIcons color={colors.brand.primary} name="edit" size={20} />
+              ]}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="edit"
+                size={20}
+              />
             </Pressable>
           ) : null}
         </View>
@@ -143,32 +165,32 @@ const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 0.5,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     zIndex: 50,
   },
   contentRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     height: 52,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   iconButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     elevation: 2,
     height: 38,
-    justifyContent: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 3,
     width: 38,
   },
   centerTitleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     paddingHorizontal: spacing.sm,
   },
@@ -177,8 +199,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   actionsRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.xs,
   },
   pressed: {

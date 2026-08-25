@@ -1,9 +1,9 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import type { WizardStepNumber } from '../types';
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
+import type { WizardStepNumber } from "../types";
 
 type Props = {
   currentStep: WizardStepNumber;
@@ -13,11 +13,11 @@ type Props = {
 };
 
 const STEP_TITLES: Record<WizardStepNumber, string> = {
-  1: 'Where are you going?',
-  2: 'When is your trip?',
-  3: 'What are your interests?',
-  4: 'Budget & Group size',
-  5: 'Review & Generate',
+  1: "Where are you going?",
+  2: "When is your trip?",
+  3: "What are your interests?",
+  4: "Budget & Group size",
+  5: "Review & Generate",
 };
 
 export const WizardProgressBar = memo(function WizardProgressBar({
@@ -36,8 +36,16 @@ export const WizardProgressBar = memo(function WizardProgressBar({
           accessibilityRole="button"
           hitSlop={8}
           onPress={onBack}
-          style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}>
-          <MaterialIcons color={colors.text.primary} name="arrow-back" size={20} />
+          style={({ pressed }) => [
+            styles.iconButton,
+            pressed && styles.pressed,
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.primary}
+            name="arrow-back"
+            size={20}
+          />
         </Pressable>
 
         <View style={styles.stepBadge}>
@@ -53,8 +61,16 @@ export const WizardProgressBar = memo(function WizardProgressBar({
             accessibilityRole="button"
             hitSlop={8}
             onPress={onCancel}
-            style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}>
-            <MaterialIcons color={colors.text.secondary} name="close" size={20} />
+            style={({ pressed }) => [
+              styles.iconButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.secondary}
+              name="close"
+              size={20}
+            />
           </Pressable>
         ) : (
           <View style={styles.spacer} />
@@ -95,21 +111,21 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xs,
   },
   topRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     height: 40,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   iconButton: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.background.surfaceVariant,
     borderRadius: radius.pill,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 36,
   },
   stepBadge: {
-    backgroundColor: '#D8E2FF',
+    backgroundColor: "#D8E2FF",
     borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: 4,
@@ -123,7 +139,7 @@ const styles = StyleSheet.create({
     width: 36,
   },
   barTrack: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 4,
     marginTop: 2,
@@ -132,7 +148,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.outlineVariant,
     borderRadius: radius.pill,
     flex: 1,
-    height: '100%',
+    height: "100%",
   },
   barSegmentCompleted: {
     backgroundColor: colors.brand.primary,

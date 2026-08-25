@@ -1,4 +1,4 @@
-import type { ExplorePlace } from '../types';
+import type { ExplorePlace } from "../types";
 
 export type ExploreMapCoordinate = {
   latitude: number;
@@ -10,13 +10,16 @@ export type ExploreMapCoordinate = {
 // be treated as verified place metadata.
 const VIEWPORT = {
   north: 13.82,
-  south: 13.70,
+  south: 13.7,
   west: 100.42,
   east: 100.62,
 };
 
-export function mapFixturePlaceToCoordinate(place: ExplorePlace): ExploreMapCoordinate {
-  const left = Math.min(100, Math.max(0, place.mapCoordinate.leftPercent)) / 100;
+export function mapFixturePlaceToCoordinate(
+  place: ExplorePlace,
+): ExploreMapCoordinate {
+  const left =
+    Math.min(100, Math.max(0, place.mapCoordinate.leftPercent)) / 100;
   const top = Math.min(100, Math.max(0, place.mapCoordinate.topPercent)) / 100;
 
   return {
@@ -24,4 +27,3 @@ export function mapFixturePlaceToCoordinate(place: ExplorePlace): ExploreMapCoor
     longitude: VIEWPORT.west + (VIEWPORT.east - VIEWPORT.west) * left,
   };
 }
-

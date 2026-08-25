@@ -1,12 +1,12 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ExplorePlace } from "../types";
 
 type Props = {
   place: ExplorePlace;
@@ -22,7 +22,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
   const { colors } = useTheme();
   const { t } = useTranslation();
   const handleUnavailableAction = () => {
-    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+    Alert.alert(t("common.unavailableTitle"), t("common.unavailableMessage"));
   };
 
   return (
@@ -33,19 +33,26 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           backgroundColor: colors.background.surface,
           borderTopColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       {/* Grabber handle */}
-      <View style={[styles.grabber, { backgroundColor: colors.border.default }]} />
+      <View
+        style={[styles.grabber, { backgroundColor: colors.border.default }]}
+      />
 
       {/* Header Info */}
       <View style={styles.headerRow}>
         <Pressable
-          accessibilityHint={t('explore.viewDetails')}
+          accessibilityHint={t("explore.viewDetails")}
           accessibilityLabel={`${place.name}`}
           accessibilityRole="button"
           onPress={() => onPressDetail?.(place.id)}
-          style={styles.titleInfo}>
-          <Text numberOfLines={1} style={[styles.placeName, { color: colors.text.primary }]}>
+          style={styles.titleInfo}
+        >
+          <Text
+            numberOfLines={1}
+            style={[styles.placeName, { color: colors.text.primary }]}
+          >
             {place.name}
           </Text>
           <View style={styles.metaRow}>
@@ -56,8 +63,12 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
             <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
               ({place.reviewCount.toLocaleString()}+ reviews)
             </Text>
-            <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
-            <Text style={[styles.categoryBadge, { color: colors.brand.primary }]}>
+            <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>
+              •
+            </Text>
+            <Text
+              style={[styles.categoryBadge, { color: colors.brand.primary }]}
+            >
               {place.categoryLabel}
             </Text>
           </View>
@@ -74,18 +85,20 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
             styles.closeButton,
             { backgroundColor: colors.background.surfaceVariant },
             pressed && styles.closeButtonPressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.text.primary} name="close" size={18} />
         </Pressable>
       </View>
 
       {/* Thumbnail + Context Info */}
       <Pressable
-        accessibilityHint={t('explore.viewDetails')}
+        accessibilityHint={t("explore.viewDetails")}
         accessibilityLabel={place.name}
         accessibilityRole="button"
         onPress={() => onPressDetail?.(place.id)}
-        style={styles.contentRow}>
+        style={styles.contentRow}
+      >
         <Image
           accessibilityLabel={place.name}
           accessibilityRole="image"
@@ -93,15 +106,39 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           style={styles.thumbnail}
         />
         <View style={styles.pillsColumn}>
-          <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
-            <MaterialIcons color={colors.text.secondary} name="location-on" size={14} />
-            <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
+          <View
+            style={[
+              styles.pill,
+              { backgroundColor: colors.background.surfaceVariant },
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.secondary}
+              name="location-on"
+              size={14}
+            />
+            <Text
+              numberOfLines={1}
+              style={[styles.pillText, { color: colors.text.secondary }]}
+            >
               {place.address}
             </Text>
           </View>
-          <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
-            <MaterialIcons color={colors.text.secondary} name="schedule" size={14} />
-            <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
+          <View
+            style={[
+              styles.pill,
+              { backgroundColor: colors.background.surfaceVariant },
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.secondary}
+              name="schedule"
+              size={14}
+            />
+            <Text
+              numberOfLines={1}
+              style={[styles.pillText, { color: colors.text.secondary }]}
+            >
               {place.openStatus}
             </Text>
           </View>
@@ -114,13 +151,28 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Xem tuyến đường và chỉ đường tới địa điểm"
           accessibilityLabel="Chỉ đường"
           accessibilityRole="button"
+          disabled={true}
           onPress={handleUnavailableAction}
-          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
-          <View style={[styles.actionIconCircle, { backgroundColor: colors.brand.primary }]}>
-            <MaterialIcons color={colors.text.inverse} name="navigation" size={20} />
+          style={({ pressed }) => [
+            styles.actionButton,
+            { opacity: 0.5 },
+            pressed && styles.actionPressed,
+          ]}
+        >
+          <View
+            style={[
+              styles.actionIconCircle,
+              { backgroundColor: colors.brand.primary },
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.inverse}
+              name="navigation"
+              size={20}
+            />
           </View>
           <Text style={[styles.actionLabel, { color: colors.brand.primary }]}>
-            {t('explore.directions')}
+            {t("explore.directions")}
           </Text>
         </Pressable>
 
@@ -128,17 +180,28 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Lưu địa điểm này vào danh sách yêu thích"
           accessibilityLabel="Lưu địa điểm"
           accessibilityRole="button"
+          disabled={true}
           onPress={handleUnavailableAction}
-          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
+          style={({ pressed }) => [
+            styles.actionButton,
+            { opacity: 0.5 },
+            pressed && styles.actionPressed,
+          ]}
+        >
           <View
             style={[
               styles.actionIconCircle,
               { backgroundColor: colors.background.surfaceVariant },
-            ]}>
-            <MaterialIcons color={colors.text.secondary} name="bookmark-border" size={20} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.secondary}
+              name="bookmark-border"
+              size={20}
+            />
           </View>
           <Text style={[styles.actionLabel, { color: colors.text.secondary }]}>
-            {t('common.save')}
+            {t("common.save")}
           </Text>
         </Pressable>
 
@@ -146,17 +209,28 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Xem thông tin giá vé tham quan"
           accessibilityLabel="Vé tham quan"
           accessibilityRole="button"
+          disabled={true}
           onPress={handleUnavailableAction}
-          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
+          style={({ pressed }) => [
+            styles.actionButton,
+            { opacity: 0.5 },
+            pressed && styles.actionPressed,
+          ]}
+        >
           <View
             style={[
               styles.actionIconCircle,
               { backgroundColor: colors.background.surfaceVariant },
-            ]}>
-            <MaterialIcons color={colors.text.secondary} name="confirmation-number" size={20} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.secondary}
+              name="confirmation-number"
+              size={20}
+            />
           </View>
           <Text style={[styles.actionLabel, { color: colors.text.secondary }]}>
-            {t('place.entryFee')}
+            {t("place.entryFee")}
           </Text>
         </Pressable>
 
@@ -164,17 +238,28 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityHint="Chia sẻ địa điểm này cho bạn bè"
           accessibilityLabel="Chia sẻ địa điểm"
           accessibilityRole="button"
+          disabled={true}
           onPress={handleUnavailableAction}
-          style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
+          style={({ pressed }) => [
+            styles.actionButton,
+            { opacity: 0.5 },
+            pressed && styles.actionPressed,
+          ]}
+        >
           <View
             style={[
               styles.actionIconCircle,
               { backgroundColor: colors.background.surfaceVariant },
-            ]}>
-            <MaterialIcons color={colors.text.secondary} name="share" size={20} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.secondary}
+              name="share"
+              size={20}
+            />
           </View>
           <Text style={[styles.actionLabel, { color: colors.text.secondary }]}>
-            {t('common.share')}
+            {t("common.share")}
           </Text>
         </Pressable>
       </View>
@@ -200,25 +285,25 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     zIndex: 40,
   },
   grabber: {
-    alignSelf: 'center',
+    alignSelf: "center",
     borderRadius: radius.pill,
     height: 4,
     marginBottom: spacing.xs,
     width: 40,
   },
   headerRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   titleInfo: {
     flex: 1,
@@ -230,9 +315,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 4,
     marginTop: 2,
   },
@@ -251,17 +336,17 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   closeButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 32,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 32,
   },
   closeButtonPressed: {
     opacity: 0.7,
   },
   contentRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginVertical: 2,
   },
@@ -273,12 +358,12 @@ const styles = StyleSheet.create({
   pillsColumn: {
     flex: 1,
     gap: 6,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   pill: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
@@ -287,12 +372,12 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   actionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginVertical: spacing.xs,
   },
   actionButton: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 4,
   },
   actionPressed: {
@@ -300,10 +385,10 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
   actionIconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 44,
   },
   actionLabel: {

@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { DraftTripData } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { DraftTripData } from "../types";
 
 type Props = {
   draft: DraftTripData;
@@ -19,7 +19,10 @@ export const HomeContinuePlanningCard = memo(function HomeContinuePlanningCard({
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  const progressPercent = Math.min(100, Math.max(0, (draft.step / draft.totalSteps) * 100));
+  const progressPercent = Math.min(
+    100,
+    Math.max(0, (draft.step / draft.totalSteps) * 100),
+  );
 
   return (
     <View
@@ -29,18 +32,26 @@ export const HomeContinuePlanningCard = memo(function HomeContinuePlanningCard({
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       <View>
         {/* Drafting Header Tag */}
         <View style={styles.tagRow}>
-          <MaterialIcons color={colors.text.secondary} name="architecture" size={16} />
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="architecture"
+            size={16}
+          />
           <Text style={[styles.tagText, { color: colors.text.secondary }]}>
-            {t('home.drafting').toUpperCase()}
+            {t("home.drafting").toUpperCase()}
           </Text>
         </View>
 
         {/* Title */}
-        <Text numberOfLines={1} style={[styles.title, { color: colors.text.primary }]}>
+        <Text
+          numberOfLines={1}
+          style={[styles.title, { color: colors.text.primary }]}
+        >
           {draft.title}
         </Text>
 
@@ -50,7 +61,8 @@ export const HomeContinuePlanningCard = memo(function HomeContinuePlanningCard({
             style={[
               styles.progressBarTrack,
               { backgroundColor: colors.background.surfaceVariant },
-            ]}>
+            ]}
+          >
             <View
               style={[
                 styles.progressBarFill,
@@ -62,24 +74,28 @@ export const HomeContinuePlanningCard = memo(function HomeContinuePlanningCard({
             />
           </View>
           <Text style={[styles.stepText, { color: colors.text.secondary }]}>
-            {t('home.stepProgress', { step: draft.step, total: draft.totalSteps })}
+            {t("home.stepProgress", {
+              step: draft.step,
+              total: draft.totalSteps,
+            })}
           </Text>
         </View>
       </View>
 
       {/* Continue CTA */}
       <Pressable
-        accessibilityHint={t('home.continue')}
-        accessibilityLabel={`${t('home.continue')}: ${draft.title}`}
+        accessibilityHint={t("home.continue")}
+        accessibilityLabel={`${t("home.continue")}: ${draft.title}`}
         accessibilityRole="button"
         onPress={onPressContinue}
         style={({ pressed }) => [
           styles.button,
           { backgroundColor: colors.background.surfaceVariant },
           pressed && styles.buttonPressed,
-        ]}>
+        ]}
+      >
         <Text style={[styles.buttonText, { color: colors.brand.primary }]}>
-          {t('home.continue')}
+          {t("home.continue")}
         </Text>
       </Pressable>
     </View>
@@ -92,16 +108,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     elevation: 2,
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: spacing.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
   },
   tagRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.xs,
     marginBottom: spacing.xs,
   },
@@ -116,8 +132,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   progressRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.sm,
     marginBottom: spacing.lg,
   },
@@ -125,22 +141,22 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     flex: 1,
     height: 6,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressBarFill: {
     borderRadius: radius.pill,
-    height: '100%',
+    height: "100%",
   },
   stepText: {
     fontSize: 11,
     fontWeight: typography.fontWeight.semibold,
   },
   button: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
-    width: '100%',
+    justifyContent: "center",
+    width: "100%",
   },
   buttonPressed: {
     opacity: 0.88,

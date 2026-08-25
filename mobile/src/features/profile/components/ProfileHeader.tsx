@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { UserProfile } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { UserProfile } from "../types";
 
 type Props = {
   profile: UserProfile;
@@ -33,7 +33,8 @@ export const ProfileHeader = memo(function ProfileHeader({
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       {/* 1. Top Identity Row */}
       <View style={styles.identityRow}>
         {/* Avatar with Camera Badge */}
@@ -46,9 +47,10 @@ export const ProfileHeader = memo(function ProfileHeader({
               style={[
                 styles.avatar,
                 {
-                  borderColor: effectiveTheme === 'dark'
-                    ? colors.background.surfaceVariant
-                    : colors.brand.primaryContainer,
+                  borderColor:
+                    effectiveTheme === "dark"
+                      ? colors.background.surfaceVariant
+                      : colors.brand.primaryContainer,
                 },
               ]}
             />
@@ -63,16 +65,26 @@ export const ProfileHeader = memo(function ProfileHeader({
                   backgroundColor: colors.background.surfaceVariant,
                   borderColor: colors.brand.primaryContainer,
                 },
-              ]}>
-              <MaterialIcons color={colors.brand.primary} name="person" size={40} />
+              ]}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="person"
+                size={40}
+              />
             </View>
           )}
           <View
             style={[
               styles.cameraBadge,
               { backgroundColor: colors.brand.primary },
-            ]}>
-            <MaterialIcons color={colors.text.inverse} name="camera-alt" size={14} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.text.inverse}
+              name="camera-alt"
+              size={14}
+            />
           </View>
         </View>
 
@@ -80,54 +92,56 @@ export const ProfileHeader = memo(function ProfileHeader({
         <View style={styles.infoColumn}>
           <Text
             numberOfLines={1}
-            style={[styles.displayName, { color: colors.text.primary }]}>
+            style={[styles.displayName, { color: colors.text.primary }]}
+          >
             {profile.displayName}
           </Text>
           <Text
             numberOfLines={1}
-            style={[styles.emailText, { color: colors.text.secondary }]}>
+            style={[styles.emailText, { color: colors.text.secondary }]}
+          >
             {profile.email}
           </Text>
 
           {/* Edit Profile Outlined Button */}
           <Pressable
             accessibilityHint="Open profile editor"
-            accessibilityLabel={t('profile.editProfile')}
+            accessibilityLabel={t("profile.editProfile")}
             accessibilityRole="button"
             onPress={onEditPress}
             style={({ pressed }) => [
               styles.editButton,
               { borderColor: colors.border.default },
               pressed && styles.pressed,
-            ]}>
+            ]}
+          >
             <Text
-              style={[
-                styles.editButtonText,
-                { color: colors.text.primary },
-              ]}>
-              {t('profile.editProfile')}
+              style={[styles.editButtonText, { color: colors.text.primary }]}
+            >
+              {t("profile.editProfile")}
             </Text>
           </Pressable>
         </View>
       </View>
 
       {/* 2. Statistics Row */}
-      <View
-        style={[
-          styles.statsRow,
-          { borderTopColor: colors.border.subtle },
-        ]}>
+      <View style={[styles.statsRow, { borderTopColor: colors.border.subtle }]}>
         {/* Trips Stat */}
         <View style={styles.statItem}>
           <Text style={[styles.statValue, { color: colors.brand.primary }]}>
             {tripsCount}
           </Text>
           <Text style={[styles.statLabel, { color: colors.text.secondary }]}>
-            {t('profile.tripsCount')}
+            {t("profile.tripsCount")}
           </Text>
         </View>
 
-        <View style={[styles.statDivider, { backgroundColor: colors.border.subtle }]} />
+        <View
+          style={[
+            styles.statDivider,
+            { backgroundColor: colors.border.subtle },
+          ]}
+        />
 
         {/* Saved Stat */}
         <View style={styles.statItem}>
@@ -135,11 +149,16 @@ export const ProfileHeader = memo(function ProfileHeader({
             {savedCount}
           </Text>
           <Text style={[styles.statLabel, { color: colors.text.secondary }]}>
-            {t('profile.savedCount')}
+            {t("profile.savedCount")}
           </Text>
         </View>
 
-        <View style={[styles.statDivider, { backgroundColor: colors.border.subtle }]} />
+        <View
+          style={[
+            styles.statDivider,
+            { backgroundColor: colors.border.subtle },
+          ]}
+        />
 
         {/* Countries Stat */}
         <View style={styles.statItem}>
@@ -147,7 +166,7 @@ export const ProfileHeader = memo(function ProfileHeader({
             {countriesCount}
           </Text>
           <Text style={[styles.statLabel, { color: colors.text.secondary }]}>
-            {t('profile.countriesCount')}
+            {t("profile.countriesCount")}
           </Text>
         </View>
       </View>
@@ -163,19 +182,19 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.lg,
     marginTop: spacing.sm,
     padding: spacing.xl,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
   },
   identityRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.lg,
   },
   avatarContainer: {
     height: 80,
-    position: 'relative',
+    position: "relative",
     width: 80,
   },
   avatar: {
@@ -185,23 +204,23 @@ const styles = StyleSheet.create({
     width: 80,
   },
   avatarPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   cameraBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     bottom: 0,
     elevation: 2,
     height: 26,
-    justifyContent: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    position: "absolute",
     right: 0,
     width: 26,
   },
   infoColumn: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   displayName: {
     fontSize: typography.titleSmall,
@@ -213,11 +232,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   editButton: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
+    alignItems: "center",
+    alignSelf: "flex-start",
     borderRadius: radius.pill,
     borderWidth: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.lg,
     paddingVertical: 6,
   },
@@ -227,13 +246,13 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     borderTopWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginTop: spacing.lg,
     paddingTop: spacing.lg,
   },
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
   },
   statValue: {
@@ -245,7 +264,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   statDivider: {
-    height: '70%',
+    height: "70%",
     width: 1,
   },
   pressed: {

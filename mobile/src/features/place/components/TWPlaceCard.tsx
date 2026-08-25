@@ -1,18 +1,21 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { PlaceDetailData } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { PlaceDetailData } from "../types";
 
 type Props = {
   place: PlaceDetailData;
   onPress: (placeId: string) => void;
 };
 
-export const TWPlaceCard = memo(function TWPlaceCard({ place, onPress }: Props) {
+export const TWPlaceCard = memo(function TWPlaceCard({
+  place,
+  onPress,
+}: Props) {
   const { colors, effectiveTheme } = useTheme();
 
   return (
@@ -28,7 +31,8 @@ export const TWPlaceCard = memo(function TWPlaceCard({ place, onPress }: Props) 
           borderColor: colors.border.default,
         },
         pressed && styles.pressed,
-      ]}>
+      ]}
+    >
       {/* Thumbnail */}
       <Image
         accessibilityLabel={place.name}
@@ -45,14 +49,19 @@ export const TWPlaceCard = memo(function TWPlaceCard({ place, onPress }: Props) 
         <View style={styles.headerRow}>
           <Text
             numberOfLines={1}
-            style={[styles.name, { color: colors.text.primary }]}>
+            style={[styles.name, { color: colors.text.primary }]}
+          >
             {place.name}
           </Text>
           <View
             style={[
               styles.ratingBadge,
-              { backgroundColor: effectiveTheme === 'dark' ? '#332914' : '#FFF4E5' },
-            ]}>
+              {
+                backgroundColor:
+                  effectiveTheme === "dark" ? "#332914" : "#FFF4E5",
+              },
+            ]}
+          >
             <MaterialIcons color={colors.brand.yellow} name="star" size={12} />
             <Text style={[styles.ratingValue, { color: colors.brand.yellow }]}>
               {place.rating}
@@ -65,17 +74,23 @@ export const TWPlaceCard = memo(function TWPlaceCard({ place, onPress }: Props) 
         </Text>
 
         <View style={styles.locationRow}>
-          <MaterialIcons color={colors.text.secondary} name="location-on" size={13} />
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="location-on"
+            size={13}
+          />
           <Text
             numberOfLines={1}
-            style={[styles.addressText, { color: colors.text.secondary }]}>
+            style={[styles.addressText, { color: colors.text.secondary }]}
+          >
             {place.address}
           </Text>
         </View>
 
         <AppText
           numberOfLines={1}
-          style={[styles.openStatusText, { color: colors.state.success }]}>
+          style={[styles.openStatusText, { color: colors.state.success }]}
+        >
           {place.openStatus}
         </AppText>
       </View>
@@ -88,12 +103,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 3,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginHorizontal: spacing.lg,
     marginVertical: spacing.xs,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -106,12 +121,12 @@ const styles = StyleSheet.create({
   infoColumn: {
     flex: 1,
     gap: 2,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   headerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   name: {
     flex: 1,
@@ -120,9 +135,9 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   ratingBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 3,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -136,8 +151,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   locationRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
   },
   addressText: {

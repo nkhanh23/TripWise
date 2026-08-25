@@ -1,12 +1,12 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ResolvedImage } from '../../../integration/contracts';
-import { ImageAttribution } from '../../images/components/ImageAttribution';
-import { getResolvedImageSource } from '../../images/resolvedImageSource';
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ResolvedImage } from "../../../integration/contracts";
+import { ImageAttribution } from "../../images/components/ImageAttribution";
+import { getResolvedImageSource } from "../../images/resolvedImageSource";
 
 type Props = {
   destination: string;
@@ -26,7 +26,7 @@ export const TripDetailHero = memo(function TripDetailHero({
   const { colors, effectiveTheme } = useTheme();
   const validHeroImageUrl =
     heroImageUrl &&
-    (heroImageUrl.startsWith('http://') || heroImageUrl.startsWith('https://'))
+    (heroImageUrl.startsWith("http://") || heroImageUrl.startsWith("https://"))
       ? heroImageUrl
       : undefined;
   const hasValidPhoto = Boolean(validHeroImageUrl);
@@ -41,11 +41,12 @@ export const TripDetailHero = memo(function TripDetailHero({
           height: heroHeight,
           backgroundColor: hasValidPhoto
             ? colors.background.surfaceVariant
-            : effectiveTheme === 'dark'
-            ? '#0E2A4A'
-            : colors.brand.primary,
+            : effectiveTheme === "dark"
+              ? "#0E2A4A"
+              : colors.brand.primary,
         },
-      ]}>
+      ]}
+    >
       {validHeroImageUrl ? (
         <Image
           accessibilityLabel={destination}
@@ -73,10 +74,11 @@ export const TripDetailHero = memo(function TripDetailHero({
           {
             paddingTop: topInset + 48,
             backgroundColor: hasValidPhoto
-              ? 'rgba(0, 0, 0, 0.38)'
-              : 'transparent',
+              ? "rgba(0, 0, 0, 0.38)"
+              : "transparent",
           },
-        ]}>
+        ]}
+      >
         <View style={styles.contentWrap}>
           <Text numberOfLines={2} style={styles.destinationTitle}>
             {destination}
@@ -86,22 +88,26 @@ export const TripDetailHero = memo(function TripDetailHero({
               styles.metaRow,
               {
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(30, 31, 36, 0.88)'
-                    : 'rgba(255, 255, 255, 0.92)',
+                  effectiveTheme === "dark"
+                    ? "rgba(30, 31, 36, 0.88)"
+                    : "rgba(255, 255, 255, 0.92)",
               },
-            ]}>
-            <MaterialIcons color={colors.brand.primary} name="calendar-today" size={14} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.brand.primary}
+              name="calendar-today"
+              size={14}
+            />
             <Text
               style={[
                 styles.metaText,
                 {
                   color:
-                    effectiveTheme === 'dark'
-                      ? colors.text.primary
-                      : '#1C1B1B',
+                    effectiveTheme === "dark" ? colors.text.primary : "#1C1B1B",
                 },
-              ]}>
+              ]}
+            >
               {dateLabel}
             </Text>
           </View>
@@ -113,34 +119,34 @@ export const TripDetailHero = memo(function TripDetailHero({
 
 const styles = StyleSheet.create({
   container: {
-    overflow: 'hidden',
-    position: 'relative',
-    width: '100%',
+    overflow: "hidden",
+    position: "relative",
+    width: "100%",
   },
   heroImage: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   placeholderPattern: {
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    justifyContent: "center",
+    alignItems: "flex-end",
     paddingRight: spacing.lg,
   },
   watermarkIcon: {
-    transform: [{ rotate: '-12deg' }],
+    transform: [{ rotate: "-12deg" }],
   },
   gradientOverlay: {
     bottom: 0,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     left: 0,
     paddingBottom: 28,
     paddingHorizontal: spacing.lg,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
@@ -148,19 +154,19 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   destinationTitle: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 26,
     fontWeight: typography.fontWeight.bold,
     letterSpacing: -0.3,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
   metaRow: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
+    alignItems: "center",
+    alignSelf: "flex-start",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     paddingHorizontal: spacing.md,
     paddingVertical: 5,

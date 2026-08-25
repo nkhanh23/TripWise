@@ -1,8 +1,8 @@
-import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { memo } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   title: string;
@@ -27,7 +27,8 @@ export const SettingsSection = memo(function SettingsSection({
             backgroundColor: colors.background.surface,
             borderColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         {children}
       </View>
     </View>
@@ -44,11 +45,11 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.sm,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   card: {
     borderRadius: radius.card,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 });

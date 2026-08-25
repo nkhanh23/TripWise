@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 
-import type { ResolvedImage } from '../../../integration/contracts';
-import { maximumConcurrentImageRequests } from '../../../integration/imageResolution';
-import type { TripCoverImageRepository } from '../../../integration/repositories';
-import type { TripSectionData } from '../types';
+import type { ResolvedImage } from "../../../integration/contracts";
+import { maximumConcurrentImageRequests } from "../../../integration/imageResolution";
+import type { TripCoverImageRepository } from "../../../integration/repositories";
+import type { TripSectionData } from "../types";
 
 export const tripCoverMaximumCandidates = 2;
 export const tripCoverMaximumConcurrency = maximumConcurrentImageRequests;
@@ -19,18 +19,24 @@ export function useTripCoverPhotos(
   sections: TripSectionData[],
   coverRepository?: TripCoverImageRepository,
 ): TripSectionData[] {
-  const [coverImages, setCoverImages] = useState<Record<string, ResolvedImage>>({});
-  const nextTasks = useMemo<TripCoverTask[]>(() => sections.flatMap((section) =>
-    section.data.map((trip) => ({
-      tripId: trip.id,
-      destination: trip.destination,
-      googlePlaceIds: (trip.coverGooglePlaceIds ?? []).slice(0, tripCoverMaximumCandidates),
-    })),
-  ), [sections]);
-  const taskIdentity = useMemo(
-    () => JSON.stringify(nextTasks),
-    [nextTasks],
+  const [coverImages, setCoverImages] = useState<Record<string, ResolvedImage>>(
+    {},
   );
+  const nextTasks = useMemo<TripCoverTask[]>(
+    () =>
+      sections.flatMap((section) =>
+        section.data.map((trip) => ({
+          tripId: trip.id,
+          destination: trip.destination,
+          googlePlaceIds: (trip.coverGooglePlaceIds ?? []).slice(
+            0,
+            tripCoverMaximumCandidates,
+          ),
+        })),
+      ),
+    [sections],
+  );
+  const taskIdentity = useMemo(() => JSON.stringify(nextTasks), [nextTasks]);
 
   useEffect(() => {
     if (!coverRepository) return;
@@ -45,15 +51,23 @@ export function useTripCoverPhotos(
         nextTaskIndex += 1;
         if (!task) return;
 
-        const image = await coverRepository.getTripCover({
-          googlePlaceIds: task.googlePlaceIds,
-          destination: task.destination,
-          maxWidth: tripCoverThumbnailWidth,
-        }, controller.signal).catch(() => null);
+        const image = await coverRepository
+          .getTripCover(
+            {
+              googlePlaceIds: task.googlePlaceIds,
+              destination: task.destination,
+              maxWidth: tripCoverThumbnailWidth,
+            },
+            controller.signal,
+          )
+          .catch(() => null);
         if (controller.signal.aborted) return;
-        if (image?.uri) setCoverImages((current) => current[task.tripId]
-          ? current
-          : { ...current, [task.tripId]: image });
+        if (image?.uri)
+          setCoverImages((current) =>
+            current[task.tripId]
+              ? current
+              : { ...current, [task.tripId]: image },
+          );
       }
     };
 
@@ -64,12 +78,19 @@ export function useTripCoverPhotos(
   }, [coverRepository, taskIdentity]);
 
   return useMemo(
-    () => sections.map((section) => ({
-      ...section,
-      data: section.data.map((trip) => coverImages[trip.id]
-        ? { ...trip, coverImage: coverImages[trip.id], coverImageUrl: coverImages[trip.id].uri ?? undefined }
-        : trip),
-    })),
+    () =>
+      sections.map((section) => ({
+        ...section,
+        data: section.data.map((trip) =>
+          coverImages[trip.id]
+            ? {
+                ...trip,
+                coverImage: coverImages[trip.id],
+                coverImageUrl: coverImages[trip.id].uri ?? undefined,
+              }
+            : trip,
+        ),
+      })),
     [coverImages, sections],
   );
 }

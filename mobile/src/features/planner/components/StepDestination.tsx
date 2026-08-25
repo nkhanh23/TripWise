@@ -1,5 +1,5 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useMemo, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo, useMemo, useState } from "react";
 import {
   Image,
   Pressable,
@@ -8,12 +8,12 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import { mockPopularDestinations } from '../data/mockWizardData';
-import type { DestinationOption } from '../types';
+import { AppText } from "../../../components/AppText";
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
+import { mockPopularDestinations } from "../data/mockWizardData";
+import type { DestinationOption } from "../types";
 
 type Props = {
   selectedDestination: DestinationOption | null;
@@ -30,7 +30,7 @@ export const StepDestination = memo(function StepDestination({
   onChangeCustomName,
   error,
 }: Props) {
-  const [searchQuery, setSearchQuery] = useState(customDestinationName || '');
+  const [searchQuery, setSearchQuery] = useState(customDestinationName || "");
 
   const filteredDestinations = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -39,8 +39,7 @@ export const StepDestination = memo(function StepDestination({
     const q = searchQuery.toLowerCase();
     return mockPopularDestinations.filter(
       (d) =>
-        d.name.toLowerCase().includes(q) ||
-        d.country.toLowerCase().includes(q)
+        d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q),
     );
   }, [searchQuery]);
 
@@ -58,7 +57,8 @@ export const StepDestination = memo(function StepDestination({
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+    >
       {/* Subtitle description */}
       <AppText style={styles.subtitle}>
         Choose your dream destination or type any city to explore.
@@ -91,8 +91,9 @@ export const StepDestination = memo(function StepDestination({
               accessibilityLabel="Xóa điểm đến"
               accessibilityRole="button"
               hitSlop={8}
-              onPress={() => handleSearchChange('')}
-              style={styles.clearButton}>
+              onPress={() => handleSearchChange("")}
+              style={styles.clearButton}
+            >
               <MaterialIcons color={colors.text.muted} name="close" size={16} />
             </Pressable>
           ) : null}
@@ -102,7 +103,11 @@ export const StepDestination = memo(function StepDestination({
       {/* Error Alert */}
       {error ? (
         <View accessibilityRole="alert" style={styles.errorBanner}>
-          <MaterialIcons color={colors.brand.red} name="error-outline" size={16} />
+          <MaterialIcons
+            color={colors.brand.red}
+            name="error-outline"
+            size={16}
+          />
           <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : null}
@@ -134,7 +139,8 @@ export const StepDestination = memo(function StepDestination({
                 styles.card,
                 isSelected && styles.cardSelected,
                 pressed && styles.cardPressed,
-              ]}>
+              ]}
+            >
               <Image
                 accessibilityLabel={dest.name}
                 accessibilityRole="image"
@@ -186,16 +192,16 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   searchBar: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.pill,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 48,
     paddingHorizontal: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -207,21 +213,21 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     flex: 1,
     fontSize: typography.body,
-    height: '100%',
+    height: "100%",
     paddingVertical: 0,
   },
   clearButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 24,
   },
   errorBanner: {
-    alignItems: 'center',
-    backgroundColor: '#FDE8E8',
+    alignItems: "center",
+    backgroundColor: "#FDE8E8",
     borderRadius: radius.input,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     marginBottom: spacing.md,
     paddingHorizontal: spacing.md,
@@ -233,9 +239,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   sectionHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
   sectionTitle: {
@@ -248,28 +254,28 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.md,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
-    width: '47.5%',
+    width: "47.5%",
   },
   cardSelected: {
     borderColor: colors.brand.primary,
     borderWidth: 2,
-    backgroundColor: '#F3F8FF',
+    backgroundColor: "#F3F8FF",
   },
   cardPressed: {
     opacity: 0.88,
@@ -278,19 +284,19 @@ const styles = StyleSheet.create({
   cardImage: {
     backgroundColor: colors.background.surfaceVariant,
     height: 100,
-    width: '100%',
+    width: "100%",
   },
   tagBadge: {
-    backgroundColor: 'rgba(28, 27, 27, 0.8)',
+    backgroundColor: "rgba(28, 27, 27, 0.8)",
     borderRadius: radius.pill,
     left: 8,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    position: 'absolute',
+    position: "absolute",
     top: 8,
   },
   tagBadgeText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 10,
     fontWeight: typography.fontWeight.bold,
   },
@@ -299,9 +305,9 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   cardTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   cardName: {
     color: colors.text.primary,

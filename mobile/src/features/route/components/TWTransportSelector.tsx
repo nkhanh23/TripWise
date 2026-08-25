@@ -1,12 +1,12 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { transportOptions } from '../data/mockRoutes';
-import type { TransportMode } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { transportOptions } from "../data/mockRoutes";
+import type { TransportMode } from "../types";
 
 type Props = {
   selectedMode: TransportMode;
@@ -25,13 +25,13 @@ export const TWTransportSelector = memo(function TWTransportSelector({
       {transportOptions.map((opt) => {
         const isSelected = opt.mode === selectedMode;
         const localizedLabel =
-          opt.mode === 'transit'
-            ? t('route.modes.transit')
-            : opt.mode === 'driving'
-            ? t('route.modes.driving')
-            : opt.mode === 'walking'
-            ? t('route.modes.walking')
-            : t('route.modes.cycling');
+          opt.mode === "transit"
+            ? t("route.modes.transit")
+            : opt.mode === "driving"
+              ? t("route.modes.driving")
+              : opt.mode === "walking"
+                ? t("route.modes.walking")
+                : t("route.modes.cycling");
 
         return (
           <Pressable
@@ -44,7 +44,10 @@ export const TWTransportSelector = memo(function TWTransportSelector({
             style={({ pressed }) => [
               styles.chip,
               isSelected
-                ? [styles.chipSelected, { backgroundColor: colors.brand.primary }]
+                ? [
+                    styles.chipSelected,
+                    { backgroundColor: colors.brand.primary },
+                  ]
                 : [
                     styles.chipUnselected,
                     {
@@ -53,7 +56,8 @@ export const TWTransportSelector = memo(function TWTransportSelector({
                     },
                   ],
               pressed && styles.pressed,
-            ]}>
+            ]}
+          >
             <MaterialIcons
               color={isSelected ? colors.text.inverse : colors.text.primary}
               name={opt.iconName}
@@ -65,7 +69,8 @@ export const TWTransportSelector = memo(function TWTransportSelector({
                 isSelected
                   ? [styles.labelSelected, { color: colors.text.inverse }]
                   : [styles.labelUnselected, { color: colors.text.primary }],
-              ]}>
+              ]}
+            >
               {localizedLabel}
             </Text>
           </Pressable>
@@ -77,23 +82,23 @@ export const TWTransportSelector = memo(function TWTransportSelector({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     marginVertical: spacing.sm,
   },
   chip: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.sm,
   },
   chipSelected: {
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,

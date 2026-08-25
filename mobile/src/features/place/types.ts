@@ -1,4 +1,4 @@
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export type PlaceTag = {
   label: string;
@@ -35,4 +35,4 @@ export type PlaceDetailData = {
   reviews: PlaceReview[];
 };
 
-export type PlaceDetailStatus = 'loading' | 'ready' | 'error' | 'not-found';
+export type PlaceDetailStatus = "loading" | "ready" | "error" | "not-found";

@@ -3,7 +3,7 @@ import type {
   MockMapCoordinate,
   TripDayItinerary,
   TripMapMarkerItem,
-} from '../types';
+} from "../types";
 
 export const DEFAULT_MOCK_MAP_ANCHORS: MockMapCoordinate[] = [
   { topPercent: 26, leftPercent: 24 },
@@ -20,7 +20,7 @@ export const DEFAULT_MOCK_MAP_ANCHORS: MockMapCoordinate[] = [
 
 export function getItemMapCoordinate(
   _item: ItineraryItem,
-  index: number
+  index: number,
 ): MockMapCoordinate {
   return DEFAULT_MOCK_MAP_ANCHORS[index % DEFAULT_MOCK_MAP_ANCHORS.length];
 }
@@ -34,7 +34,7 @@ export type PolylineSegment = {
 };
 
 export function computePolylineSegments(
-  points: MockMapCoordinate[]
+  points: MockMapCoordinate[],
 ): PolylineSegment[] {
   const segments: PolylineSegment[] = [];
 
@@ -63,9 +63,9 @@ export function computePolylineSegments(
 
 export function deriveTripMapMarkers(
   days: TripDayItinerary[],
-  selectedDayId: string | 'all'
+  selectedDayId: string | "all",
 ): TripMapMarkerItem[] {
-  if (selectedDayId === 'all') {
+  if (selectedDayId === "all") {
     const markers: TripMapMarkerItem[] = [];
     let globalIndex = 0;
 
@@ -99,22 +99,33 @@ export function deriveTripMapMarkers(
 
 export function deriveVerifiedTripMapMarkers(
   days: TripDayItinerary[],
-  selectedDayId: string | 'all',
+  selectedDayId: string | "all",
 ): TripMapMarkerItem[] {
-  const selectedDays = selectedDayId === 'all'
-    ? days
-    : days.filter((day) => day.id === selectedDayId);
+  const selectedDays =
+    selectedDayId === "all"
+      ? days
+      : days.filter((day) => day.id === selectedDayId);
   const markers: TripMapMarkerItem[] = [];
   let order = 1;
-  for (const day of [...selectedDays].sort((a, b) => a.dayNumber - b.dayNumber)) {
+  for (const day of [...selectedDays].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  )) {
     for (const item of day.items) {
-      if (item.resolution !== 'VERIFIED' || item.latitude === undefined || item.longitude === undefined) continue;
+      if (
+        item.resolution !== "VERIFIED" ||
+        item.latitude === undefined ||
+        item.longitude === undefined
+      )
+        continue;
       markers.push({
         item,
         dayNumber: day.dayNumber,
         orderNumber: order,
         coordinate: { topPercent: 0, leftPercent: 0 },
-        verifiedCoordinate: { latitude: item.latitude, longitude: item.longitude },
+        verifiedCoordinate: {
+          latitude: item.latitude,
+          longitude: item.longitude,
+        },
       });
       order += 1;
     }

@@ -1,5 +1,5 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import React, { useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import React, { useState } from "react";
 import {
   Image,
   Modal,
@@ -8,15 +8,15 @@ import {
   StyleSheet,
   TextInput,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppText } from '../../../components/AppText';
-import type { ExplorePlace } from '../../explore/types';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { TripDayItinerary } from '../types';
+import { AppText } from "../../../components/AppText";
+import type { ExplorePlace } from "../../explore/types";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { TripDayItinerary } from "../types";
 
 type Props = {
   place: ExplorePlace | null;
@@ -34,38 +34,38 @@ type Props = {
 };
 
 const TIME_OPTIONS = [
-  '08:00',
-  '08:30',
-  '09:00',
-  '09:30',
-  '10:00',
-  '10:30',
-  '11:00',
-  '11:30',
-  '12:00',
-  '12:30',
-  '13:00',
-  '13:30',
-  '14:00',
-  '14:30',
-  '15:00',
-  '15:30',
-  '16:00',
-  '16:30',
-  '17:00',
-  '17:30',
-  '18:00',
-  '18:30',
-  '19:00',
-  '20:00',
+  "08:00",
+  "08:30",
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "20:00",
 ];
 
 const DURATION_OPTIONS = [
-  { key: '30m', minutes: 30 },
-  { key: '1h', minutes: 60 },
-  { key: '1h30m', minutes: 90 },
-  { key: '2h', minutes: 120 },
-  { key: '3h', minutes: 180 },
+  { key: "30m", minutes: 30 },
+  { key: "1h", minutes: 60 },
+  { key: "1h30m", minutes: 90 },
+  { key: "2h", minutes: 120 },
+  { key: "3h", minutes: 180 },
 ];
 
 export function AddPlaceConfirmationSheet({
@@ -81,11 +81,11 @@ export function AddPlaceConfirmationSheet({
   const { t } = useTranslation();
 
   const [selectedDayId, setSelectedDayId] = useState<string>(
-    initialDayId ?? days[0]?.id ?? 'day_1'
+    initialDayId ?? days[0]?.id ?? "day_1",
   );
-  const [selectedTime, setSelectedTime] = useState<string>('09:00');
+  const [selectedTime, setSelectedTime] = useState<string>("09:00");
   const [selectedDuration, setSelectedDuration] = useState<number>(90);
-  const [note, setNote] = useState<string>('');
+  const [note, setNote] = useState<string>("");
 
   // Dropdown open states
   const [showDayPicker, setShowDayPicker] = useState<boolean>(false);
@@ -112,12 +112,13 @@ export function AddPlaceConfirmationSheet({
       animationType="slide"
       onRequestClose={onClose}
       transparent
-      visible={visible}>
+      visible={visible}
+    >
       <View style={styles.modalOverlay}>
         {/* Scrim tap to dismiss */}
         <Pressable
-          accessibilityHint={t('common.close')}
-          accessibilityLabel={t('common.close')}
+          accessibilityHint={t("common.close")}
+          accessibilityLabel={t("common.close")}
           accessibilityRole="button"
           onPress={onClose}
           style={[styles.scrim, { backgroundColor: colors.overlay.scrim }]}
@@ -131,21 +132,30 @@ export function AddPlaceConfirmationSheet({
               backgroundColor: colors.background.surface,
               paddingBottom: Math.max(insets.bottom, spacing.md),
             },
-          ]}>
+          ]}
+        >
           {/* Grabber handle */}
           <View style={styles.grabberWrapper}>
-            <View style={[styles.grabber, { backgroundColor: colors.border.default }]} />
+            <View
+              style={[
+                styles.grabber,
+                { backgroundColor: colors.border.default },
+              ]}
+            />
           </View>
 
           <ScrollView
             bounces={false}
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}>
+            showsVerticalScrollIndicator={false}
+          >
             {/* Sheet Header */}
             <View style={styles.headerRow}>
               <View style={styles.headerInfo}>
-                <AppText style={[styles.placeName, { color: colors.text.primary }]}>
+                <AppText
+                  style={[styles.placeName, { color: colors.text.primary }]}
+                >
                   {place.name}
                 </AppText>
                 <View style={styles.locationRow}>
@@ -156,7 +166,11 @@ export function AddPlaceConfirmationSheet({
                   />
                   <AppText
                     numberOfLines={1}
-                    style={[styles.locationText, { color: colors.text.secondary }]}>
+                    style={[
+                      styles.locationText,
+                      { color: colors.text.secondary },
+                    ]}
+                  >
                     {place.address}
                   </AppText>
                 </View>
@@ -170,9 +184,16 @@ export function AddPlaceConfirmationSheet({
                     backgroundColor: colors.background.surfaceVariant,
                     borderColor: colors.border.subtle,
                   },
-                ]}>
-                <MaterialIcons color={colors.brand.primary} name="star" size={14} />
-                <AppText style={[styles.ratingScore, { color: colors.text.primary }]}>
+                ]}
+              >
+                <MaterialIcons
+                  color={colors.brand.primary}
+                  name="star"
+                  size={14}
+                />
+                <AppText
+                  style={[styles.ratingScore, { color: colors.text.primary }]}
+                >
                   {place.rating.toFixed(1)}
                 </AppText>
               </View>
@@ -180,7 +201,12 @@ export function AddPlaceConfirmationSheet({
 
             {/* Place Thumbnail */}
             {place.imageUrl ? (
-              <View style={[styles.imageWrapper, { backgroundColor: colors.background.surfaceVariant }]}>
+              <View
+                style={[
+                  styles.imageWrapper,
+                  { backgroundColor: colors.background.surfaceVariant },
+                ]}
+              >
                 <Image
                   resizeMode="cover"
                   source={{ uri: place.imageUrl }}
@@ -193,12 +219,14 @@ export function AddPlaceConfirmationSheet({
             <View style={styles.selectionGrid}>
               {/* Day Selector */}
               <View style={styles.gridColumn}>
-                <AppText style={[styles.fieldLabel, { color: colors.text.secondary }]}>
-                  {t('addPlace.dayLabel')}
+                <AppText
+                  style={[styles.fieldLabel, { color: colors.text.secondary }]}
+                >
+                  {t("addPlace.dayLabel")}
                 </AppText>
                 <Pressable
-                  accessibilityHint={t('addPlace.dayLabel')}
-                  accessibilityLabel={`${t('addPlace.dayLabel')}: ${selectedDay?.dateLabel ?? selectedDayId}`}
+                  accessibilityHint={t("addPlace.dayLabel")}
+                  accessibilityLabel={`${t("addPlace.dayLabel")}: ${selectedDay?.dateLabel ?? selectedDayId}`}
                   accessibilityRole="combobox"
                   onPress={() => {
                     setShowDayPicker(!showDayPicker);
@@ -208,15 +236,25 @@ export function AddPlaceConfirmationSheet({
                     styles.selectorInput,
                     {
                       backgroundColor: colors.background.surfaceVariant,
-                      borderColor: showDayPicker ? colors.brand.primary : colors.border.subtle,
+                      borderColor: showDayPicker
+                        ? colors.brand.primary
+                        : colors.border.subtle,
                     },
-                  ]}>
-                  <AppText numberOfLines={1} style={[styles.selectorText, { color: colors.text.primary }]}>
-                    {selectedDay?.dateLabel ?? `Day ${selectedDay?.dayNumber ?? 1}`}
+                  ]}
+                >
+                  <AppText
+                    numberOfLines={1}
+                    style={[
+                      styles.selectorText,
+                      { color: colors.text.primary },
+                    ]}
+                  >
+                    {selectedDay?.dateLabel ??
+                      `Day ${selectedDay?.dayNumber ?? 1}`}
                   </AppText>
                   <MaterialIcons
                     color={colors.icon.secondary}
-                    name={showDayPicker ? 'expand-less' : 'expand-more'}
+                    name={showDayPicker ? "expand-less" : "expand-more"}
                     size={20}
                   />
                 </Pressable>
@@ -224,12 +262,14 @@ export function AddPlaceConfirmationSheet({
 
               {/* Time Selector */}
               <View style={styles.gridColumn}>
-                <AppText style={[styles.fieldLabel, { color: colors.text.secondary }]}>
-                  {t('addPlace.timeLabel')}
+                <AppText
+                  style={[styles.fieldLabel, { color: colors.text.secondary }]}
+                >
+                  {t("addPlace.timeLabel")}
                 </AppText>
                 <Pressable
-                  accessibilityHint={t('addPlace.timeLabel')}
-                  accessibilityLabel={`${t('addPlace.timeLabel')}: ${selectedTime}`}
+                  accessibilityHint={t("addPlace.timeLabel")}
+                  accessibilityLabel={`${t("addPlace.timeLabel")}: ${selectedTime}`}
                   accessibilityRole="combobox"
                   onPress={() => {
                     setShowTimePicker(!showTimePicker);
@@ -239,15 +279,23 @@ export function AddPlaceConfirmationSheet({
                     styles.selectorInput,
                     {
                       backgroundColor: colors.background.surfaceVariant,
-                      borderColor: showTimePicker ? colors.brand.primary : colors.border.subtle,
+                      borderColor: showTimePicker
+                        ? colors.brand.primary
+                        : colors.border.subtle,
                     },
-                  ]}>
-                  <AppText style={[styles.selectorText, { color: colors.text.primary }]}>
+                  ]}
+                >
+                  <AppText
+                    style={[
+                      styles.selectorText,
+                      { color: colors.text.primary },
+                    ]}
+                  >
                     {selectedTime}
                   </AppText>
                   <MaterialIcons
                     color={colors.icon.secondary}
-                    name={showTimePicker ? 'expand-less' : 'expand-more'}
+                    name={showTimePicker ? "expand-less" : "expand-more"}
                     size={20}
                   />
                 </Pressable>
@@ -263,7 +311,8 @@ export function AddPlaceConfirmationSheet({
                     backgroundColor: colors.background.surface,
                     borderColor: colors.border.default,
                   },
-                ]}>
+                ]}
+              >
                 {days.map((day) => {
                   const isDaySelected = day.id === selectedDayId;
                   return (
@@ -279,23 +328,31 @@ export function AddPlaceConfirmationSheet({
                         {
                           backgroundColor: isDaySelected
                             ? colors.background.surfaceVariant
-                            : 'transparent',
+                            : "transparent",
                         },
-                      ]}>
+                      ]}
+                    >
                       <AppText
                         style={[
                           styles.dropdownItemText,
                           {
-                            color: isDaySelected ? colors.brand.primary : colors.text.primary,
+                            color: isDaySelected
+                              ? colors.brand.primary
+                              : colors.text.primary,
                             fontWeight: isDaySelected
                               ? typography.fontWeight.bold
                               : typography.fontWeight.regular,
                           },
-                        ]}>
+                        ]}
+                      >
                         {day.dateLabel || `Day ${day.dayNumber}`}
                       </AppText>
                       {isDaySelected ? (
-                        <MaterialIcons color={colors.brand.primary} name="check" size={18} />
+                        <MaterialIcons
+                          color={colors.brand.primary}
+                          name="check"
+                          size={18}
+                        />
                       ) : null}
                     </Pressable>
                   );
@@ -313,7 +370,8 @@ export function AddPlaceConfirmationSheet({
                     borderColor: colors.border.default,
                     maxHeight: 180,
                   },
-                ]}>
+                ]}
+              >
                 <ScrollView nestedScrollEnabled>
                   {TIME_OPTIONS.map((timeOption) => {
                     const isTimeSelected = timeOption === selectedTime;
@@ -330,23 +388,31 @@ export function AddPlaceConfirmationSheet({
                           {
                             backgroundColor: isTimeSelected
                               ? colors.background.surfaceVariant
-                              : 'transparent',
+                              : "transparent",
                           },
-                        ]}>
+                        ]}
+                      >
                         <AppText
                           style={[
                             styles.dropdownItemText,
                             {
-                              color: isTimeSelected ? colors.brand.primary : colors.text.primary,
+                              color: isTimeSelected
+                                ? colors.brand.primary
+                                : colors.text.primary,
                               fontWeight: isTimeSelected
                                 ? typography.fontWeight.bold
                                 : typography.fontWeight.regular,
                             },
-                          ]}>
+                          ]}
+                        >
                           {timeOption}
                         </AppText>
                         {isTimeSelected ? (
-                          <MaterialIcons color={colors.brand.primary} name="check" size={18} />
+                          <MaterialIcons
+                            color={colors.brand.primary}
+                            name="check"
+                            size={18}
+                          />
                         ) : null}
                       </Pressable>
                     );
@@ -357,8 +423,10 @@ export function AddPlaceConfirmationSheet({
 
             {/* Estimated Duration Selector */}
             <View style={styles.sectionBlock}>
-              <AppText style={[styles.fieldLabel, { color: colors.text.secondary }]}>
-                {t('addPlace.durationLabel')}
+              <AppText
+                style={[styles.fieldLabel, { color: colors.text.secondary }]}
+              >
+                {t("addPlace.durationLabel")}
               </AppText>
               <View style={styles.durationRow}>
                 {DURATION_OPTIONS.map((opt) => {
@@ -380,17 +448,21 @@ export function AddPlaceConfirmationSheet({
                             ? colors.brand.primaryContainer
                             : colors.border.default,
                         },
-                      ]}>
+                      ]}
+                    >
                       <AppText
                         style={[
                           styles.durationPillText,
                           {
-                            color: isSelected ? colors.text.inverse : colors.text.primary,
+                            color: isSelected
+                              ? colors.text.inverse
+                              : colors.text.primary,
                             fontWeight: isSelected
                               ? typography.fontWeight.bold
                               : typography.fontWeight.regular,
                           },
-                        ]}>
+                        ]}
+                      >
                         {t(labelKey)}
                       </AppText>
                     </Pressable>
@@ -401,17 +473,19 @@ export function AddPlaceConfirmationSheet({
 
             {/* Notes Multiline TextInput */}
             <View style={styles.sectionBlock}>
-              <AppText style={[styles.fieldLabel, { color: colors.text.secondary }]}>
-                {t('addPlace.notesLabel')}
+              <AppText
+                style={[styles.fieldLabel, { color: colors.text.secondary }]}
+              >
+                {t("addPlace.notesLabel")}
               </AppText>
               <TextInput
-                accessibilityHint={t('addPlace.notesPlaceholder')}
-                accessibilityLabel={t('addPlace.notesLabel')}
+                accessibilityHint={t("addPlace.notesPlaceholder")}
+                accessibilityLabel={t("addPlace.notesLabel")}
                 maxLength={300}
                 multiline
                 numberOfLines={3}
                 onChangeText={setNote}
-                placeholder={t('addPlace.notesPlaceholder')}
+                placeholder={t("addPlace.notesPlaceholder")}
                 placeholderTextColor={colors.text.muted}
                 style={[
                   styles.notesInput,
@@ -434,10 +508,11 @@ export function AddPlaceConfirmationSheet({
                 backgroundColor: colors.background.surface,
                 borderTopColor: colors.border.subtle,
               },
-            ]}>
+            ]}
+          >
             <Pressable
-              accessibilityHint={t('addPlace.addToItinerary')}
-              accessibilityLabel={t('addPlace.addToItinerary')}
+              accessibilityHint={t("addPlace.addToItinerary")}
+              accessibilityLabel={t("addPlace.addToItinerary")}
               accessibilityRole="button"
               onPress={handleConfirm}
               style={({ pressed }) => [
@@ -446,10 +521,13 @@ export function AddPlaceConfirmationSheet({
                   backgroundColor: colors.brand.primary,
                   opacity: pressed ? 0.92 : 1,
                 },
-              ]}>
+              ]}
+            >
               <MaterialIcons color={colors.text.inverse} name="add" size={20} />
-              <AppText style={[styles.ctaButtonText, { color: colors.text.inverse }]}>
-                {t('addPlace.addToItinerary')}
+              <AppText
+                style={[styles.ctaButtonText, { color: colors.text.inverse }]}
+              >
+                {t("addPlace.addToItinerary")}
               </AppText>
             </Pressable>
           </View>
@@ -462,7 +540,7 @@ export function AddPlaceConfirmationSheet({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   scrim: {
     ...StyleSheet.absoluteFill,
@@ -470,15 +548,15 @@ const styles = StyleSheet.create({
   sheetContainer: {
     borderTopLeftRadius: radius.card,
     borderTopRightRadius: radius.card,
-    maxHeight: '90%',
-    shadowColor: '#000',
+    maxHeight: "90%",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -8 },
     shadowOpacity: 0.1,
     shadowRadius: 24,
     elevation: 8,
   },
   grabberWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingBottom: spacing.sm,
     paddingTop: spacing.md,
   },
@@ -493,9 +571,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   headerRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   headerInfo: {
     flex: 1,
@@ -506,8 +584,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   locationRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginTop: spacing.xs,
   },
@@ -516,10 +594,10 @@ const styles = StyleSheet.create({
     fontSize: typography.body,
   },
   ratingBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 0.5,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
@@ -531,15 +609,15 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderRadius: radius.control,
     height: 128,
-    overflow: 'hidden',
-    width: '100%',
+    overflow: "hidden",
+    width: "100%",
   },
   image: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   selectionGrid: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
   },
   gridColumn: {
@@ -551,12 +629,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   selectorInput: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.input,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 48,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.md,
   },
   selectorText: {
@@ -567,17 +645,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.input,
     borderWidth: 1,
     marginTop: -spacing.md,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 4,
   },
   dropdownItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
   },
@@ -588,15 +666,15 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   durationRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.xs,
   },
   durationPill: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 1,
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingVertical: spacing.sm,
   },
   durationPillText: {
@@ -609,7 +687,7 @@ const styles = StyleSheet.create({
     height: 80,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   ctaContainer: {
     borderTopWidth: 1,
@@ -617,13 +695,13 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   ctaButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     height: 50,
-    justifyContent: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 8,

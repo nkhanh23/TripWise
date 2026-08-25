@@ -1,6 +1,6 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCallback, useMemo, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -9,20 +9,20 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import type { RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { PlaceGallery } from '../components/PlaceGallery';
-import { PlaceHeader } from '../components/PlaceHeader';
-import { PlaceQuickActions } from '../components/PlaceQuickActions';
-import { getMockPlaceDetail } from '../data/mockPlaceDetail';
-import type { PlaceDetailData, PlaceDetailStatus } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import type { RootStackParamList } from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { PlaceGallery } from "../components/PlaceGallery";
+import { PlaceHeader } from "../components/PlaceHeader";
+import { PlaceQuickActions } from "../components/PlaceQuickActions";
+import { getMockPlaceDetail } from "../data/mockPlaceDetail";
+import type { PlaceDetailData, PlaceDetailStatus } from "../types";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PlaceDetail'> & {
+type Props = NativeStackScreenProps<RootStackParamList, "PlaceDetail"> & {
   initialStatus?: PlaceDetailStatus;
   customData?: PlaceDetailData;
   fixtureMode?: boolean;
@@ -31,13 +31,13 @@ type Props = NativeStackScreenProps<RootStackParamList, 'PlaceDetail'> & {
 export function PlaceDetailScreen({
   route,
   navigation,
-  initialStatus = 'ready',
+  initialStatus = "ready",
   customData,
   fixtureMode = false,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
-  const placeId = route?.params?.placeId ?? '';
+  const placeId = route?.params?.placeId ?? "";
 
   const [status, setStatus] = useState<PlaceDetailStatus>(initialStatus);
   const [isSaved, setIsSaved] = useState(false);
@@ -56,17 +56,17 @@ export function PlaceDetailScreen({
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate('MainTabs');
+      navigation.navigate("MainTabs");
     }
   }, [navigation]);
 
   const handleRetry = useCallback(() => {
-    setStatus('ready');
+    setStatus("ready");
   }, []);
 
   const handleDirections = useCallback(() => {
     if (placeData) {
-      navigation.navigate('RoutePreview', {
+      navigation.navigate("RoutePreview", {
         destinationId: placeData.id,
         destinationName: placeData.name,
       });
@@ -74,15 +74,20 @@ export function PlaceDetailScreen({
   }, [navigation, placeData]);
 
   const handleUnavailableAction = useCallback(() => {
-    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+    Alert.alert(t("common.unavailableTitle"), t("common.unavailableMessage"));
   }, [t]);
 
   // 1. Loading State
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: colors.background.surface }]}>
+      <View
+        style={[
+          styles.centerContainer,
+          { backgroundColor: colors.background.surface },
+        ]}
+      >
         <ActivityIndicator
-          accessibilityLabel={t('common.loading')}
+          accessibilityLabel={t("common.loading")}
           color={colors.brand.primary}
           size="large"
         />
@@ -91,26 +96,40 @@ export function PlaceDetailScreen({
   }
 
   // 2. Error State
-  if (status === 'error') {
+  if (status === "error") {
     return (
       <View
         accessibilityRole="alert"
-        style={[styles.centerContainer, { backgroundColor: colors.background.surface }]}>
-        <MaterialIcons color={colors.state.error} name="error-outline" size={40} />
+        style={[
+          styles.centerContainer,
+          { backgroundColor: colors.background.surface },
+        ]}
+      >
+        <MaterialIcons
+          color={colors.state.error}
+          name="error-outline"
+          size={40}
+        />
         <Text style={[styles.errorTitle, { color: colors.state.error }]}>
-          {t('place.errorTitle')}
+          {t("place.errorTitle")}
         </Text>
         <AppText style={styles.errorSubtitle}>
-          {t('place.errorSubtitle')}
+          {t("place.errorSubtitle")}
         </AppText>
         <Pressable
-          accessibilityHint={t('common.retry')}
-          accessibilityLabel={t('common.retry')}
+          accessibilityHint={t("common.retry")}
+          accessibilityLabel={t("common.retry")}
           accessibilityRole="button"
           onPress={handleRetry}
-          style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
-          <Text style={[styles.retryButtonText, { color: colors.text.inverse }]}>
-            {t('common.retry')}
+          style={[
+            styles.retryButton,
+            { backgroundColor: colors.brand.primary },
+          ]}
+        >
+          <Text
+            style={[styles.retryButtonText, { color: colors.text.inverse }]}
+          >
+            {t("common.retry")}
           </Text>
         </Pressable>
       </View>
@@ -118,25 +137,40 @@ export function PlaceDetailScreen({
   }
 
   // 3. Not Found State
-  if (!placeData || status === 'not-found') {
+  if (!placeData || status === "not-found") {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: colors.background.surface }]}>
+      <View
+        style={[
+          styles.centerContainer,
+          { backgroundColor: colors.background.surface },
+        ]}
+      >
         <MaterialIcons color={colors.text.muted} name="search-off" size={40} />
         <Text style={[styles.errorTitle, { color: colors.text.primary }]}>
-          {t('place.notFound')}
+          {t("place.notFound")}
         </Text>
         <AppText style={styles.errorSubtitle}>
-          {t('place.notFoundSubtitle')}
+          {t("place.notFoundSubtitle")}
         </AppText>
         <Pressable
-          accessibilityHint={t('common.back')}
-          accessibilityLabel={t('common.back')}
+          accessibilityHint={t("common.back")}
+          accessibilityLabel={t("common.back")}
           accessibilityRole="button"
           onPress={handleBack}
-          style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
-          <MaterialIcons color={colors.text.inverse} name="arrow-back" size={16} />
-          <Text style={[styles.retryButtonText, { color: colors.text.inverse }]}>
-            {t('common.back')}
+          style={[
+            styles.retryButton,
+            { backgroundColor: colors.brand.primary },
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.inverse}
+            name="arrow-back"
+            size={16}
+          />
+          <Text
+            style={[styles.retryButtonText, { color: colors.text.inverse }]}
+          >
+            {t("common.back")}
           </Text>
         </Pressable>
       </View>
@@ -144,16 +178,22 @@ export function PlaceDetailScreen({
   }
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background.surface }]}>
+    <View
+      style={[styles.screen, { backgroundColor: colors.background.surface }]}
+    >
       {/* Floating Top Navigation Header */}
       <PlaceHeader
         isSaved={isSaved}
         onBack={handleBack}
         onShare={handleUnavailableAction}
+        shareDisabled={true}
         onToggleSave={handleToggleSave}
       />
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Hero Gallery */}
         <PlaceGallery
           galleryUrls={placeData.galleryImageUrls}
@@ -167,29 +207,45 @@ export function PlaceDetailScreen({
             styles.contentSheet,
             {
               backgroundColor: colors.background.surface,
-              shadowColor: '#000',
+              shadowColor: "#000",
             },
-          ]}>
+          ]}
+        >
           {/* Title & Rating */}
           <View style={styles.titleSection}>
             <View style={styles.titleRow}>
-              <Text numberOfLines={2} style={[styles.placeTitle, { color: colors.text.primary }]}>
+              <Text
+                numberOfLines={2}
+                style={[styles.placeTitle, { color: colors.text.primary }]}
+              >
                 {placeData.name}
               </Text>
               <View
                 style={[
                   styles.ratingBadge,
-                  { backgroundColor: effectiveTheme === 'dark' ? '#332914' : '#FFF4E5' },
-                ]}>
-                <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
-                <Text style={[styles.ratingValue, { color: colors.brand.yellow }]}>
+                  {
+                    backgroundColor:
+                      effectiveTheme === "dark" ? "#332914" : "#FFF4E5",
+                  },
+                ]}
+              >
+                <MaterialIcons
+                  color={colors.brand.yellow}
+                  name="star"
+                  size={14}
+                />
+                <Text
+                  style={[styles.ratingValue, { color: colors.brand.yellow }]}
+                >
                   {placeData.rating}
                 </Text>
               </View>
             </View>
 
             {placeData.subtitle ? (
-              <Text style={[styles.subtitleText, { color: colors.text.secondary }]}>
+              <Text
+                style={[styles.subtitleText, { color: colors.text.secondary }]}
+              >
                 {placeData.subtitle}
               </Text>
             ) : null}
@@ -202,9 +258,16 @@ export function PlaceDetailScreen({
                   style={[
                     styles.tagPill,
                     { backgroundColor: colors.background.surfaceVariant },
-                  ]}>
-                  <MaterialIcons color={colors.brand.primary} name={tag.iconName} size={14} />
-                  <Text style={[styles.tagLabel, { color: colors.text.secondary }]}>
+                  ]}
+                >
+                  <MaterialIcons
+                    color={colors.brand.primary}
+                    name={tag.iconName}
+                    size={14}
+                  />
+                  <Text
+                    style={[styles.tagLabel, { color: colors.text.secondary }]}
+                  >
                     {tag.label}
                   </Text>
                 </View>
@@ -222,19 +285,31 @@ export function PlaceDetailScreen({
 
           {/* About Section */}
           <View style={styles.section}>
-            <Text style={[styles.sectionHeading, { color: colors.text.primary }]}>
-              {t('place.overview')}
+            <Text
+              style={[styles.sectionHeading, { color: colors.text.primary }]}
+            >
+              {t("place.overview")}
             </Text>
-            <AppText numberOfLines={showFullAbout ? undefined : 3} style={styles.aboutText}>
+            <AppText
+              numberOfLines={showFullAbout ? undefined : 3}
+              style={styles.aboutText}
+            >
               {placeData.description}
             </AppText>
             <Pressable
-              accessibilityHint={showFullAbout ? 'Thu gọn phần giới thiệu' : 'Xem toàn bộ phần giới thiệu'}
-              accessibilityLabel={showFullAbout ? 'Thu gọn' : 'Xem thêm'}
+              accessibilityHint={
+                showFullAbout
+                  ? "Thu gọn phần giới thiệu"
+                  : "Xem toàn bộ phần giới thiệu"
+              }
+              accessibilityLabel={showFullAbout ? "Thu gọn" : "Xem thêm"}
               accessibilityRole="button"
-              onPress={() => setShowFullAbout((prev) => !prev)}>
-              <Text style={[styles.readMoreText, { color: colors.brand.primary }]}>
-                {showFullAbout ? 'Show less' : 'Read more'}
+              onPress={() => setShowFullAbout((prev) => !prev)}
+            >
+              <Text
+                style={[styles.readMoreText, { color: colors.brand.primary }]}
+              >
+                {showFullAbout ? "Show less" : "Read more"}
               </Text>
             </Pressable>
           </View>
@@ -245,17 +320,28 @@ export function PlaceDetailScreen({
               style={[
                 styles.detailCard,
                 { backgroundColor: colors.background.surfaceVariant },
-              ]}>
-              <MaterialIcons color={colors.brand.primary} name="schedule" size={22} />
+              ]}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="schedule"
+                size={22}
+              />
               <View style={styles.detailInfo}>
-                <Text style={[styles.detailTitle, { color: colors.text.muted }]}>
-                  {t('place.openingHours')}
+                <Text
+                  style={[styles.detailTitle, { color: colors.text.muted }]}
+                >
+                  {t("place.openingHours")}
                 </Text>
-                <Text style={[styles.detailMain, { color: colors.text.primary }]}>
+                <Text
+                  style={[styles.detailMain, { color: colors.text.primary }]}
+                >
                   {placeData.openStatus}
                 </Text>
                 {placeData.closingNotice ? (
-                  <Text style={[styles.detailSub, { color: colors.text.secondary }]}>
+                  <Text
+                    style={[styles.detailSub, { color: colors.text.secondary }]}
+                  >
                     {placeData.closingNotice}
                   </Text>
                 ) : null}
@@ -266,17 +352,28 @@ export function PlaceDetailScreen({
               style={[
                 styles.detailCard,
                 { backgroundColor: colors.background.surfaceVariant },
-              ]}>
-              <MaterialIcons color={colors.brand.primary} name="confirmation-number" size={22} />
+              ]}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="confirmation-number"
+                size={22}
+              />
               <View style={styles.detailInfo}>
-                <Text style={[styles.detailTitle, { color: colors.text.muted }]}>
-                  {t('place.entryFee')}
+                <Text
+                  style={[styles.detailTitle, { color: colors.text.muted }]}
+                >
+                  {t("place.entryFee")}
                 </Text>
-                <Text style={[styles.detailMain, { color: colors.text.primary }]}>
+                <Text
+                  style={[styles.detailMain, { color: colors.text.primary }]}
+                >
                   {placeData.entryFee}
                 </Text>
                 {placeData.entryFeeNote ? (
-                  <Text style={[styles.detailSub, { color: colors.text.secondary }]}>
+                  <Text
+                    style={[styles.detailSub, { color: colors.text.secondary }]}
+                  >
                     {placeData.entryFeeNote}
                   </Text>
                 ) : null}
@@ -286,12 +383,20 @@ export function PlaceDetailScreen({
 
           {/* Location Section */}
           <View style={styles.section}>
-            <Text style={[styles.sectionHeading, { color: colors.text.primary }]}>
-              {t('place.address')}
+            <Text
+              style={[styles.sectionHeading, { color: colors.text.primary }]}
+            >
+              {t("place.address")}
             </Text>
             <View style={styles.addressRow}>
-              <MaterialIcons color={colors.state.error} name="location-on" size={16} />
-              <Text style={[styles.addressText, { color: colors.text.secondary }]}>
+              <MaterialIcons
+                color={colors.state.error}
+                name="location-on"
+                size={16}
+              />
+              <Text
+                style={[styles.addressText, { color: colors.text.secondary }]}
+              >
                 {placeData.address}
               </Text>
             </View>
@@ -301,7 +406,8 @@ export function PlaceDetailScreen({
               style={[
                 styles.miniMap,
                 { backgroundColor: colors.background.surfaceVariant },
-              ]}>
+              ]}
+            >
               <View
                 style={[
                   styles.miniMapGrid,
@@ -312,8 +418,13 @@ export function PlaceDetailScreen({
                 style={[
                   styles.miniMapPin,
                   { backgroundColor: colors.background.surface },
-                ]}>
-                <MaterialIcons color={colors.state.error} name="location-on" size={24} />
+                ]}
+              >
+                <MaterialIcons
+                  color={colors.state.error}
+                  name="location-on"
+                  size={24}
+                />
               </View>
             </View>
           </View>
@@ -321,10 +432,14 @@ export function PlaceDetailScreen({
           {/* Reviews Section */}
           <View style={styles.section}>
             <View style={styles.reviewsHeader}>
-              <Text style={[styles.sectionHeading, { color: colors.text.primary }]}>
-                {t('place.reviews')}
+              <Text
+                style={[styles.sectionHeading, { color: colors.text.primary }]}
+              >
+                {t("place.reviews")}
               </Text>
-              <Text style={[styles.seeAllText, { color: colors.brand.primary }]}>
+              <Text
+                style={[styles.seeAllText, { color: colors.brand.primary }]}
+              >
                 See all ({placeData.reviewCount.toLocaleString()})
               </Text>
             </View>
@@ -336,19 +451,31 @@ export function PlaceDetailScreen({
                   style={[
                     styles.reviewCard,
                     { backgroundColor: colors.background.surfaceVariant },
-                  ]}>
+                  ]}
+                >
                   <View style={styles.reviewAuthorRow}>
                     <View
                       style={[
                         styles.avatar,
                         { backgroundColor: colors.brand.primary },
-                      ]}>
-                      <Text style={[styles.avatarText, { color: colors.text.inverse }]}>
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.avatarText,
+                          { color: colors.text.inverse },
+                        ]}
+                      >
                         {rev.avatarLetter}
                       </Text>
                     </View>
                     <View style={styles.authorInfo}>
-                      <Text style={[styles.authorName, { color: colors.text.primary }]}>
+                      <Text
+                        style={[
+                          styles.authorName,
+                          { color: colors.text.primary },
+                        ]}
+                      >
                         {rev.author}
                       </Text>
                       <View style={styles.reviewStarsRow}>
@@ -362,7 +489,9 @@ export function PlaceDetailScreen({
                         ))}
                       </View>
                     </View>
-                    <Text style={[styles.reviewTime, { color: colors.text.muted }]}>
+                    <Text
+                      style={[styles.reviewTime, { color: colors.text.muted }]}
+                    >
                       {rev.timeAgo}
                     </Text>
                   </View>
@@ -382,7 +511,8 @@ export function PlaceDetailScreen({
             backgroundColor: colors.background.surface,
             borderTopColor: colors.border.default,
           },
-        ]}>
+        ]}
+      >
         <Pressable
           accessibilityHint="Mở bản đồ xem lộ trình di chuyển tới địa điểm"
           accessibilityLabel="Chỉ đường"
@@ -392,10 +522,15 @@ export function PlaceDetailScreen({
             styles.ctaButton,
             { backgroundColor: colors.brand.primary },
             pressed && styles.ctaButtonPressed,
-          ]}>
-          <MaterialIcons color={colors.text.inverse} name="navigation" size={20} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.inverse}
+            name="navigation"
+            size={20}
+          />
           <Text style={[styles.ctaText, { color: colors.text.inverse }]}>
-            {t('place.getDirections')}
+            {t("place.getDirections")}
           </Text>
         </Pressable>
       </View>
@@ -426,9 +561,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   titleRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   placeTitle: {
     flex: 1,
@@ -437,9 +572,9 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   ratingBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -453,15 +588,15 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.xs,
     marginTop: 2,
   },
   tagPill: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
@@ -488,15 +623,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   detailsGrid: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     marginTop: spacing.xl,
   },
   detailCard: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     padding: spacing.md,
   },
@@ -507,7 +642,7 @@ const styles = StyleSheet.create({
   detailTitle: {
     fontSize: 11,
     fontWeight: typography.fontWeight.semibold,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   detailMain: {
     fontSize: 12,
@@ -517,8 +652,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   addressRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginBottom: spacing.sm,
   },
@@ -527,36 +662,36 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   miniMap: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     height: 120,
-    justifyContent: 'center',
-    overflow: 'hidden',
-    position: 'relative',
-    width: '100%',
+    justifyContent: "center",
+    overflow: "hidden",
+    position: "relative",
+    width: "100%",
   },
   miniMapGrid: {
     height: 8,
     opacity: 0.6,
-    position: 'absolute',
-    width: '100%',
+    position: "absolute",
+    width: "100%",
   },
   miniMapPin: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     elevation: 3,
     height: 36,
-    justifyContent: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     width: 36,
   },
   reviewsHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
   seeAllText: {
@@ -572,15 +707,15 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   reviewAuthorRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.sm,
   },
   avatar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 32,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 32,
   },
   avatarText: {
@@ -596,7 +731,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   reviewStarsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 1,
   },
   reviewTime: {
@@ -612,17 +747,17 @@ const styles = StyleSheet.create({
     elevation: 10,
     left: 0,
     padding: spacing.md,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
   },
   ctaButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 48,
-    justifyContent: 'center',
-    width: '100%',
+    justifyContent: "center",
+    width: "100%",
   },
   ctaButtonPressed: {
     opacity: 0.85,
@@ -633,10 +768,10 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   centerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     gap: spacing.sm,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: spacing.xl,
   },
   errorTitle: {
@@ -645,15 +780,15 @@ const styles = StyleSheet.create({
   },
   errorSubtitle: {
     fontSize: typography.bodySmall,
-    textAlign: 'center',
+    textAlign: "center",
   },
   retryButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 42,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xl,
   },

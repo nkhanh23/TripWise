@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ExplorePlace } from "../types";
 
 type Props = {
   place: ExplorePlace;
@@ -36,12 +36,13 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
         isSelected && [
           styles.selectedCard,
           {
-            backgroundColor: effectiveTheme === 'dark' ? '#1A2E44' : '#F3F8FF',
+            backgroundColor: effectiveTheme === "dark" ? "#1A2E44" : "#F3F8FF",
             borderColor: colors.brand.primary,
           },
         ],
         pressed && styles.cardPressed,
-      ]}>
+      ]}
+    >
       {/* Thumbnail */}
       <Image
         accessibilityLabel={place.name}
@@ -58,7 +59,8 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
         <View style={styles.titleRow}>
           <Text
             numberOfLines={1}
-            style={[styles.placeName, { color: colors.text.primary }]}>
+            style={[styles.placeName, { color: colors.text.primary }]}
+          >
             {place.name}
           </Text>
           <Text style={[styles.categoryBadge, { color: colors.brand.primary }]}>
@@ -77,17 +79,23 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
         </View>
 
         <View style={styles.addressRow}>
-          <MaterialIcons color={colors.text.secondary} name="location-on" size={13} />
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="location-on"
+            size={13}
+          />
           <Text
             numberOfLines={1}
-            style={[styles.addressText, { color: colors.text.secondary }]}>
+            style={[styles.addressText, { color: colors.text.secondary }]}
+          >
             {place.address}
           </Text>
         </View>
 
         <AppText
           numberOfLines={1}
-          style={[styles.openStatusText, { color: colors.state.success }]}>
+          style={[styles.openStatusText, { color: colors.state.success }]}
+        >
           {place.openStatus}
         </AppText>
       </View>
@@ -100,12 +108,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginHorizontal: spacing.lg,
     marginVertical: spacing.xs,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
@@ -125,12 +133,12 @@ const styles = StyleSheet.create({
   detailsColumn: {
     flex: 1,
     gap: 3,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   titleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   placeName: {
     flex: 1,
@@ -143,8 +151,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
   },
   ratingText: {
@@ -155,8 +163,8 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   addressRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
   },
   addressText: {

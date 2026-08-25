@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { InspirationItem } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { InspirationItem } from "../types";
 
 type Props = {
   inspiration: InspirationItem;
@@ -21,8 +21,8 @@ export const HomeExplorePreview = memo(function HomeExplorePreview({
 
   return (
     <Pressable
-      accessibilityHint={t('home.exploreMap')}
-      accessibilityLabel={`${inspiration.title}, ${t('home.exploreMap')}`}
+      accessibilityHint={t("home.exploreMap")}
+      accessibilityLabel={`${inspiration.title}, ${t("home.exploreMap")}`}
       accessibilityRole="button"
       onPress={onPressExplore}
       style={({ pressed }) => [
@@ -32,7 +32,8 @@ export const HomeExplorePreview = memo(function HomeExplorePreview({
           borderColor: colors.border.default,
         },
         pressed && styles.cardPressed,
-      ]}>
+      ]}
+    >
       {/* Background Image */}
       {inspiration.imageUrl ? (
         <Image
@@ -46,7 +47,8 @@ export const HomeExplorePreview = memo(function HomeExplorePreview({
           style={[
             styles.imagePlaceholder,
             { backgroundColor: colors.background.surfaceVariant },
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.brand.primary} name="map" size={40} />
         </View>
       )}
@@ -69,8 +71,13 @@ export const HomeExplorePreview = memo(function HomeExplorePreview({
           style={[
             styles.circleButton,
             { backgroundColor: colors.brand.primary },
-          ]}>
-          <MaterialIcons color={colors.text.inverse} name="arrow-forward" size={18} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.inverse}
+            name="arrow-forward"
+            size={18}
+          />
         </View>
       </View>
     </Pressable>
@@ -84,9 +91,9 @@ const styles = StyleSheet.create({
     elevation: 2,
     flex: 1,
     minHeight: 140,
-    overflow: 'hidden',
-    position: 'relative',
-    shadowColor: '#000',
+    overflow: "hidden",
+    position: "relative",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -96,31 +103,31 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   image: {
-    height: '100%',
-    position: 'absolute',
-    width: '100%',
+    height: "100%",
+    position: "absolute",
+    width: "100%",
   },
   imagePlaceholder: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    position: 'absolute',
-    width: '100%',
+    alignItems: "center",
+    height: "100%",
+    justifyContent: "center",
+    position: "absolute",
+    width: "100%",
   },
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.42)',
-    height: '100%',
-    position: 'absolute',
-    width: '100%',
+    backgroundColor: "rgba(0, 0, 0, 0.42)",
+    height: "100%",
+    position: "absolute",
+    width: "100%",
   },
   contentRow: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     bottom: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     left: 0,
     padding: spacing.md,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
   },
   textColumn: {
@@ -128,26 +135,26 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   title: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: typography.body,
     fontWeight: typography.fontWeight.bold,
-    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowColor: "rgba(0,0,0,0.5)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   subtitle: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: "rgba(255, 255, 255, 0.85)",
     fontSize: 11,
     marginTop: 2,
-    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowColor: "rgba(0,0,0,0.5)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
   circleButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 32,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 32,
   },
 });

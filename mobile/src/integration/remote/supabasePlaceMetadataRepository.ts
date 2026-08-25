@@ -1,24 +1,33 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { PlaceMetadata } from '../contracts';
-import type { PlaceMetadataRepository } from '../repositories';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PlaceMetadata } from "../contracts";
+import type { PlaceMetadataRepository } from "../repositories";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-const memoryCache = new Map<string, { timestamp: number, data: PlaceMetadata }>();
+const memoryCache = new Map<
+  string,
+  { timestamp: number; data: PlaceMetadata }
+>();
 
 export class SupabasePlaceMetadataRepository implements PlaceMetadataRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
-  async getMetadata(googlePlaceId: string, signal?: AbortSignal): Promise<PlaceMetadata> {
+  async getMetadata(
+    googlePlaceId: string,
+    signal?: AbortSignal,
+  ): Promise<PlaceMetadata> {
     const cached = memoryCache.get(googlePlaceId);
-    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
       return cached.data;
     }
 
-    const { data, error } = await this.supabase.functions.invoke('get-place-metadata', {
-      body: { googlePlaceId },
-      ...(signal && { signal }),
-    });
+    const { data, error } = await this.supabase.functions.invoke(
+      "get-place-metadata",
+      {
+        body: { googlePlaceId },
+        ...(signal && { signal }),
+      },
+    );
 
     if (error) {
       throw error;

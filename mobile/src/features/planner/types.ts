@@ -1,4 +1,4 @@
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export type DestinationOption = {
   id: string;
@@ -16,7 +16,7 @@ export type TravelStyleOption = {
   description: string;
 };
 
-export type TravelPace = 'relaxed' | 'moderate' | 'fast';
+export type TravelPace = "relaxed" | "moderate" | "fast";
 
 export type PaceOption = {
   id: TravelPace;
@@ -26,7 +26,7 @@ export type PaceOption = {
   dailyPlacesLabel: string;
 };
 
-export type BudgetTier = 'budget' | 'moderate' | 'luxury';
+export type BudgetTier = "budget" | "moderate" | "luxury";
 
 export type BudgetOption = {
   id: BudgetTier;
@@ -37,7 +37,7 @@ export type BudgetOption = {
   iconName: keyof typeof MaterialIcons.glyphMap;
 };
 
-export type GroupType = 'solo' | 'couple' | 'family' | 'friends';
+export type GroupType = "solo" | "couple" | "family" | "friends";
 
 export type GroupOption = {
   id: GroupType;
@@ -61,4 +61,4 @@ export type CreateTripWizardState = {
 
 export type WizardStepNumber = 1 | 2 | 3 | 4 | 5;
 
-export type WizardStatus = 'editing' | 'generating' | 'success';
+export type WizardStatus = "editing" | "generating" | "success";

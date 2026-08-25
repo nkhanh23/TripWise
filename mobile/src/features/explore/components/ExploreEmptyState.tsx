@@ -1,10 +1,10 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   onReset: () => void;
@@ -22,26 +22,26 @@ export function ExploreEmptyState({ onReset }: Props) {
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       <MaterialIcons color={colors.text.muted} name="search-off" size={32} />
       <Text style={[styles.title, { color: colors.text.primary }]}>
-        {t('explore.emptyTitle')}
+        {t("explore.emptyTitle")}
       </Text>
-      <AppText style={styles.subtitle}>
-        {t('explore.emptySubtitle')}
-      </AppText>
+      <AppText style={styles.subtitle}>{t("explore.emptySubtitle")}</AppText>
       <Pressable
-        accessibilityHint={t('explore.clearFilters')}
-        accessibilityLabel={t('explore.clearFilters')}
+        accessibilityHint={t("explore.clearFilters")}
+        accessibilityLabel={t("explore.clearFilters")}
         accessibilityRole="button"
         onPress={onReset}
         style={({ pressed }) => [
           styles.resetButton,
           { backgroundColor: colors.brand.primary },
           pressed && styles.resetButtonPressed,
-        ]}>
+        ]}
+      >
         <Text style={[styles.resetButtonText, { color: colors.text.inverse }]}>
-          {t('explore.clearFilters')}
+          {t("explore.clearFilters")}
         </Text>
       </Pressable>
     </View>
@@ -50,8 +50,8 @@ export function ExploreEmptyState({ onReset }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    alignItems: 'center',
-    alignSelf: 'center',
+    alignItems: "center",
+    alignSelf: "center",
     borderRadius: radius.card,
     borderWidth: 1,
     bottom: spacing.xxl,
@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     left: spacing.lg,
     padding: spacing.lg,
-    position: 'absolute',
+    position: "absolute",
     right: spacing.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: typography.bodySmall,
-    textAlign: 'center',
+    textAlign: "center",
   },
   resetButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: spacing.sm,
     paddingHorizontal: spacing.lg,
   },

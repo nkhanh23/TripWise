@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   dayLabel?: string;
@@ -24,18 +24,25 @@ export const TripEmptyDayState = memo(function TripEmptyDayState({
       <View
         style={[
           styles.iconCircle,
-          { backgroundColor: effectiveTheme === 'dark' ? '#1E3A5F' : '#D8E2FF' },
-        ]}>
-        <MaterialIcons color={colors.brand.primary} name="event-busy" size={32} />
+          {
+            backgroundColor: effectiveTheme === "dark" ? "#1E3A5F" : "#D8E2FF",
+          },
+        ]}
+      >
+        <MaterialIcons
+          color={colors.brand.primary}
+          name="event-busy"
+          size={32}
+        />
       </View>
 
       <Text style={[styles.title, { color: colors.text.primary }]}>
-        {t('tripDetail.emptyDayTitle')}
+        {t("tripDetail.emptyDayTitle")}
       </Text>
       <AppText style={styles.subtitle}>
         {dayLabel
           ? `There are no scheduled activities for ${dayLabel} yet.`
-          : t('tripDetail.emptyDaySubtitle')}
+          : t("tripDetail.emptyDaySubtitle")}
       </AppText>
 
       {onExplore ? (
@@ -48,10 +55,11 @@ export const TripEmptyDayState = memo(function TripEmptyDayState({
             styles.button,
             { backgroundColor: colors.brand.primary },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.text.inverse} name="explore" size={18} />
           <Text style={[styles.buttonText, { color: colors.text.inverse }]}>
-            {t('tripDetail.explorePlaces')}
+            {t("tripDetail.explorePlaces")}
           </Text>
         </Pressable>
       ) : null}
@@ -61,17 +69,17 @@ export const TripEmptyDayState = memo(function TripEmptyDayState({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.xs,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xxl,
   },
   iconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 64,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: spacing.sm,
     width: 64,
   },
@@ -82,19 +90,19 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.bodySmall,
     lineHeight: 18,
-    textAlign: 'center',
+    textAlign: "center",
   },
   button: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 42,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: spacing.md,
     paddingHorizontal: spacing.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,

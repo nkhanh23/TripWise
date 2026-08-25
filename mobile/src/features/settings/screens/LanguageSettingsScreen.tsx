@@ -1,16 +1,16 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import type { AppLocale } from '../../../i18n/types';
-import type { RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import type { AppLocale } from "../../../i18n/types";
+import type { RootStackParamList } from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'LanguageSettings'>;
+type Props = NativeStackScreenProps<RootStackParamList, "LanguageSettings">;
 
 type LanguageOption = {
   locale: AppLocale;
@@ -21,15 +21,15 @@ type LanguageOption = {
 
 const LANGUAGE_OPTIONS: LanguageOption[] = [
   {
-    locale: 'en',
-    labelKey: 'settings.language.en',
-    nativeLabel: 'English',
+    locale: "en",
+    labelKey: "settings.language.en",
+    nativeLabel: "English",
     isDefault: true,
   },
   {
-    locale: 'vi',
-    labelKey: 'settings.language.vi',
-    nativeLabel: 'Tiếng Việt',
+    locale: "vi",
+    labelKey: "settings.language.vi",
+    nativeLabel: "Tiếng Việt",
     isDefault: false,
   },
 ];
@@ -49,19 +49,21 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
           backgroundColor: colors.background.canvas,
           paddingTop: insets.top,
         },
-      ]}>
+      ]}
+    >
       {/* Top App Bar */}
       <View
         style={[
           styles.topBar,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(19, 20, 24, 0.95)'
-                : 'rgba(252, 249, 248, 0.95)',
+              effectiveTheme === "dark"
+                ? "rgba(19, 20, 24, 0.95)"
+                : "rgba(252, 249, 248, 0.95)",
             borderBottomColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         <Pressable
           accessibilityHint="Go back to Settings"
           accessibilityLabel="Back"
@@ -72,12 +74,13 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
             styles.backButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.brand.primary}
             name="arrow-back"
@@ -86,7 +89,7 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
         </Pressable>
 
         <Text style={[styles.title, { color: colors.text.primary }]}>
-          {t('settings.language.title')}
+          {t("settings.language.title")}
         </Text>
 
         <View style={styles.spacer} />
@@ -97,9 +100,10 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
         style={[
           styles.content,
           { paddingBottom: insets.bottom + spacing.xxxl },
-        ]}>
+        ]}
+      >
         <Text style={[styles.description, { color: colors.text.muted }]}>
-          {t('settings.language.description')}
+          {t("settings.language.description")}
         </Text>
 
         <View
@@ -109,7 +113,8 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
               backgroundColor: colors.background.surface,
               borderColor: colors.border.subtle,
             },
-          ]}>
+          ]}
+        >
           {LANGUAGE_OPTIONS.map((option, index) => {
             const isSelected = locale === option.locale;
             const isLast = index === LANGUAGE_OPTIONS.length - 1;
@@ -127,12 +132,13 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
                     pressed && styles.pressed,
                     {
                       backgroundColor: isSelected
-                        ? effectiveTheme === 'dark'
-                          ? 'rgba(216, 228, 242, 0.08)'
-                          : 'rgba(0, 88, 188, 0.04)'
-                        : 'transparent',
+                        ? effectiveTheme === "dark"
+                          ? "rgba(216, 228, 242, 0.08)"
+                          : "rgba(0, 88, 188, 0.04)"
+                        : "transparent",
                     },
-                  ]}>
+                  ]}
+                >
                   <View style={styles.optionLeft}>
                     <Text
                       style={[
@@ -143,7 +149,8 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
                             ? typography.fontWeight.bold
                             : typography.fontWeight.semibold,
                         },
-                      ]}>
+                      ]}
+                    >
                       {option.nativeLabel}
                     </Text>
                     {option.isDefault && (
@@ -151,13 +158,15 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
                         style={[
                           styles.defaultBadge,
                           { backgroundColor: colors.background.surfaceVariant },
-                        ]}>
+                        ]}
+                      >
                         <Text
                           style={[
                             styles.defaultBadgeText,
                             { color: colors.text.secondary },
-                          ]}>
-                          {t('settings.language.defaultBadge')}
+                          ]}
+                        >
+                          {t("settings.language.defaultBadge")}
                         </Text>
                       </View>
                     )}
@@ -173,9 +182,10 @@ export const LanguageSettingsScreen = memo(function LanguageSettingsScreen({
                           : colors.border.default,
                         backgroundColor: isSelected
                           ? colors.brand.primary
-                          : 'transparent',
+                          : "transparent",
                       },
-                    ]}>
+                    ]}
+                  >
                     {isSelected && (
                       <MaterialIcons
                         color={colors.brand.primaryContainer}
@@ -207,18 +217,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 56,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   backButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   title: {
@@ -243,19 +253,19 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: radius.card,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   optionRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     minHeight: 56,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   optionLeft: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.md,
   },
   optionLabel: {
@@ -271,11 +281,11 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   radioIndicator: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 2,
     height: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 24,
   },
   divider: {

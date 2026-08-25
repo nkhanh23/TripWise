@@ -21,7 +21,7 @@ export type RootStackParamList = {
     destinationId: string;
     destinationName?: string;
     originName?: string;
-    coordinates?: import('../integration/contracts').Coordinate[];
+    coordinates?: import("../integration/contracts").Coordinate[];
   };
   CreateTripWizard?: {
     initialStep?: 1 | 2 | 3 | 4 | 5;

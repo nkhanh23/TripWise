@@ -1,11 +1,18 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { DestructiveActionType } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { DestructiveActionType } from "../types";
 
 type Props = {
   actionType: DestructiveActionType;
@@ -27,18 +34,18 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
 
   if (!actionType || !visible) return null;
 
-  const isDelete = actionType === 'deleteAccount';
+  const isDelete = actionType === "deleteAccount";
 
   const title = isDelete
-    ? t('profile.deleteConfirm.title')
-    : t('profile.signOutConfirm.title');
+    ? t("profile.deleteConfirm.title")
+    : t("profile.signOutConfirm.title");
   const description = isDelete
-    ? t('profile.deleteConfirm.description')
-    : t('profile.signOutConfirm.description');
+    ? t("profile.deleteConfirm.description")
+    : t("profile.signOutConfirm.description");
   const confirmText = isDelete
-    ? t('profile.deleteConfirm.confirm')
-    : t('profile.signOutConfirm.confirm');
-  const iconName = isDelete ? 'warning' : 'logout';
+    ? t("profile.deleteConfirm.confirm")
+    : t("profile.signOutConfirm.confirm");
+  const iconName = isDelete ? "warning" : "logout";
 
   return (
     <Modal
@@ -46,14 +53,16 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
       hardwareAccelerated
       onRequestClose={onCancel}
       transparent
-      visible={visible}>
+      visible={visible}
+    >
       {/* 1. Backdrop Overlay */}
       <Pressable
-        accessibilityHint={t('common.close')}
-        accessibilityLabel={t('common.close')}
+        accessibilityHint={t("common.close")}
+        accessibilityLabel={t("common.close")}
         accessibilityRole="button"
         onPress={onCancel}
-        style={styles.backdrop}>
+        style={styles.backdrop}
+      >
         {/* 2. Dialog Bottom Sheet Card */}
         <Pressable
           accessibilityViewIsModal={true}
@@ -64,7 +73,8 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
               backgroundColor: colors.background.surface,
               borderColor: colors.border.default,
             },
-          ]}>
+          ]}
+        >
           {/* Grabber Handle */}
           <View accessible={false} style={styles.grabberContainer}>
             <View
@@ -81,11 +91,12 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
               styles.iconCircle,
               {
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(186, 26, 26, 0.25)'
-                    : '#FFDAD6',
+                  effectiveTheme === "dark"
+                    ? "rgba(186, 26, 26, 0.25)"
+                    : "#FFDAD6",
               },
-            ]}>
+            ]}
+          >
             <MaterialIcons
               color={colors.state.error}
               name={iconName}
@@ -96,17 +107,13 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
           {/* Text Information */}
           <Text
             accessibilityRole="header"
-            style={[
-              styles.titleText,
-              { color: colors.text.primary },
-            ]}>
+            style={[styles.titleText, { color: colors.text.primary }]}
+          >
             {title}
           </Text>
           <Text
-            style={[
-              styles.descriptionText,
-              { color: colors.text.secondary },
-            ]}>
+            style={[styles.descriptionText, { color: colors.text.secondary }]}
+          >
             {description}
           </Text>
 
@@ -123,19 +130,33 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
                 styles.confirmButton,
                 { backgroundColor: colors.state.error },
                 pressed && styles.pressed,
-              ]}>
-              {submitting ? <ActivityIndicator color={colors.text.inverse} size="small" /> : (
+              ]}
+            >
+              {submitting ? (
+                <ActivityIndicator color={colors.text.inverse} size="small" />
+              ) : (
                 <>
-                  <MaterialIcons color={colors.text.inverse} name={iconName} size={18} />
-                  <Text style={[styles.confirmButtonText, { color: colors.text.inverse }]}>{confirmText}</Text>
+                  <MaterialIcons
+                    color={colors.text.inverse}
+                    name={iconName}
+                    size={18}
+                  />
+                  <Text
+                    style={[
+                      styles.confirmButtonText,
+                      { color: colors.text.inverse },
+                    ]}
+                  >
+                    {confirmText}
+                  </Text>
                 </>
               )}
             </Pressable>
 
             {/* Cancel Button */}
             <Pressable
-              accessibilityHint={t('common.cancel')}
-              accessibilityLabel={t('common.cancel')}
+              accessibilityHint={t("common.cancel")}
+              accessibilityLabel={t("common.cancel")}
               accessibilityRole="button"
               disabled={submitting}
               onPress={onCancel}
@@ -143,19 +164,21 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
                 styles.cancelButton,
                 {
                   backgroundColor:
-                    effectiveTheme === 'dark'
+                    effectiveTheme === "dark"
                       ? colors.background.surfaceVariant
                       : colors.background.canvas,
                   borderColor: colors.border.default,
                 },
                 pressed && styles.pressed,
-              ]}>
+              ]}
+            >
               <Text
                 style={[
                   styles.cancelButtonText,
                   { color: colors.text.primary },
-                ]}>
-                {t('common.cancel')}
+                ]}
+              >
+                {t("common.cancel")}
               </Text>
             </Pressable>
           </View>
@@ -167,10 +190,10 @@ export const ProfileDestructiveDialog = memo(function ProfileDestructiveDialog({
 
 const styles = StyleSheet.create({
   backdrop: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   dialogCard: {
     borderTopLeftRadius: radius.card,
@@ -181,16 +204,16 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxxl,
     paddingHorizontal: spacing.xxl,
     paddingTop: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
-    width: '100%',
+    width: "100%",
   },
   grabberContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: spacing.md,
-    width: '100%',
+    width: "100%",
   },
   grabber: {
     borderRadius: radius.pill,
@@ -198,11 +221,11 @@ const styles = StyleSheet.create({
     width: 40,
   },
   iconCircle: {
-    alignItems: 'center',
-    alignSelf: 'center',
+    alignItems: "center",
+    alignSelf: "center",
     borderRadius: radius.pill,
     height: 48,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: spacing.md,
     width: 48,
   },
@@ -210,25 +233,25 @@ const styles = StyleSheet.create({
     fontSize: typography.titleSmall,
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.xs,
-    textAlign: 'center',
+    textAlign: "center",
   },
   descriptionText: {
     fontSize: typography.body,
     lineHeight: 22,
     marginBottom: spacing.xl,
-    textAlign: 'center',
+    textAlign: "center",
   },
   actionsContainer: {
     gap: spacing.md,
-    width: '100%',
+    width: "100%",
   },
   confirmButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.xs,
-    justifyContent: 'center',
+    justifyContent: "center",
     minHeight: 48,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
@@ -238,10 +261,10 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   cancelButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     minHeight: 48,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,

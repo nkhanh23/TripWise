@@ -1,8 +1,8 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { memo, useCallback, useMemo, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,22 +10,30 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import type { PlaceImageRepository, PlaceMetadataRepository, PlacePhotoRepository, SavedPlacesRepository } from '../../../integration/repositories';
-import type { MainTabParamList, RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ExploreCategory } from '../../explore/types';
-import { SavedCategoryChips } from '../components/SavedCategoryChips';
-import { SavedEmptyState } from '../components/SavedEmptyState';
-import { SavedPlaceCard } from '../components/SavedPlaceCard';
-import { SavedUndoBar } from '../components/SavedUndoBar';
-import { useSavedPlaces } from '../hooks/useSavedPlaces';
-import type { SavedPlaceFixtureInput } from '../hooks/useSavedPlaces';
-import type { SavedPlaceUIItem } from '../types';
+import { useTranslation } from "../../../i18n";
+import type {
+  PlaceImageRepository,
+  PlaceMetadataRepository,
+  PlacePhotoRepository,
+  SavedPlacesRepository,
+} from "../../../integration/repositories";
+import type {
+  MainTabParamList,
+  RootStackParamList,
+} from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ExploreCategory } from "../../explore/types";
+import { SavedCategoryChips } from "../components/SavedCategoryChips";
+import { SavedEmptyState } from "../components/SavedEmptyState";
+import { SavedPlaceCard } from "../components/SavedPlaceCard";
+import { SavedUndoBar } from "../components/SavedUndoBar";
+import { useSavedPlaces } from "../hooks/useSavedPlaces";
+import type { SavedPlaceFixtureInput } from "../hooks/useSavedPlaces";
+import type { SavedPlaceUIItem } from "../types";
 
 type CombinedNavProp = NativeStackNavigationProp<RootStackParamList> &
   BottomTabNavigationProp<MainTabParamList>;
@@ -71,11 +79,12 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
     fixtureMode: isFixture,
   });
 
-  const [selectedCategory, setSelectedCategory] = useState<ExploreCategory>('all');
+  const [selectedCategory, setSelectedCategory] =
+    useState<ExploreCategory>("all");
 
   // Filter places based on selected category
   const filteredPlaces = useMemo(() => {
-    if (selectedCategory === 'all') {
+    if (selectedCategory === "all") {
       return savedPlaces;
     }
     return savedPlaces.filter((p) => p.category === selectedCategory);
@@ -84,26 +93,26 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
   const handleNavigatePlaceDetail = useCallback(
     (placeId: string) => {
       // Only route to PlaceDetail if it's a fixture ID; real Google Places don't have rich details yet
-      if (placeId.startsWith('place_')) {
-        navigation.navigate('PlaceDetail', { placeId });
+      if (placeId.startsWith("place_")) {
+        navigation.navigate("PlaceDetail", { placeId });
       }
     },
-    [navigation]
+    [navigation],
   );
 
   const handleExplore = useCallback(() => {
-    navigation.navigate('Explore');
+    navigation.navigate("Explore");
   }, [navigation]);
 
   const handleShowAll = useCallback(() => {
-    setSelectedCategory('all');
+    setSelectedCategory("all");
   }, []);
 
   const handleBack = useCallback(() => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate('Explore');
+      navigation.navigate("Explore");
     }
   }, [navigation]);
 
@@ -111,12 +120,8 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
     <View style={styles.headerContainer}>
       {/* 1. Page Title */}
       <View style={styles.titleRow}>
-        <Text
-          style={[
-            styles.pageTitle,
-            { color: colors.text.primary },
-          ]}>
-          {t('savedPlaces.title')}
+        <Text style={[styles.pageTitle, { color: colors.text.primary }]}>
+          {t("savedPlaces.title")}
         </Text>
         <Text
           style={[
@@ -125,7 +130,8 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
               backgroundColor: colors.background.surfaceVariant,
               color: colors.brand.primary,
             },
-          ]}>
+          ]}
+        >
           {savedPlaces.length}
         </Text>
       </View>
@@ -140,7 +146,8 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
     </View>
   );
 
-  const isGloballyEmpty = status === 'empty' || (status === 'ready' && savedPlaces.length === 0);
+  const isGloballyEmpty =
+    status === "empty" || (status === "ready" && savedPlaces.length === 0);
   const isFilteredEmpty = !isGloballyEmpty && filteredPlaces.length === 0;
 
   const keyExtractor = useCallback((item: SavedPlaceUIItem) => item.id, []);
@@ -154,7 +161,7 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
         place={item}
       />
     ),
-    [handleNavigatePlaceDetail, handleUnsave]
+    [handleNavigatePlaceDetail, handleUnsave],
   );
 
   return (
@@ -165,19 +172,21 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
           backgroundColor: colors.background.canvas,
           paddingTop: insets.top,
         },
-      ]}>
+      ]}
+    >
       {/* 1. Top App Bar */}
       <View
         style={[
           styles.topBar,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(19, 20, 24, 0.95)'
-                : 'rgba(252, 249, 248, 0.95)',
+              effectiveTheme === "dark"
+                ? "rgba(19, 20, 24, 0.95)"
+                : "rgba(252, 249, 248, 0.95)",
             borderBottomColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         {navigation.canGoBack() ? (
           <Pressable
             accessibilityHint="Go back"
@@ -189,13 +198,18 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
               styles.iconButton,
               {
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(30, 31, 36, 0.9)'
-                    : 'rgba(255, 255, 255, 0.9)',
+                  effectiveTheme === "dark"
+                    ? "rgba(30, 31, 36, 0.9)"
+                    : "rgba(255, 255, 255, 0.9)",
               },
               pressed && styles.pressed,
-            ]}>
-            <MaterialIcons color={colors.brand.primary} name="arrow-back" size={22} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.brand.primary}
+              name="arrow-back"
+              size={22}
+            />
           </Pressable>
         ) : (
           <View style={styles.placeholderIcon} />
@@ -215,22 +229,23 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
             styles.iconButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.brand.primary} name="search" size={22} />
         </Pressable>
       </View>
 
       {/* 2. Loading State */}
-      {status === 'loading' ? (
+      {status === "loading" ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator color={colors.brand.primary} size="large" />
         </View>
-      ) : status === 'error' ? (
+      ) : status === "error" ? (
         /* Error State with Retry */
         <View style={styles.centerContainer}>
           <Text style={[styles.errorText, { color: colors.text.primary }]}>
@@ -238,8 +253,14 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
           </Text>
           <Pressable
             onPress={refresh}
-            style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
-            <Text style={[styles.retryText, { color: colors.text.inverse }]}>Retry</Text>
+            style={[
+              styles.retryButton,
+              { backgroundColor: colors.brand.primary },
+            ]}
+          >
+            <Text style={[styles.retryText, { color: colors.text.inverse }]}>
+              Retry
+            </Text>
           </Pressable>
         </View>
       ) : isGloballyEmpty ? (
@@ -283,18 +304,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 56,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   iconButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   placeholderIcon: {
@@ -311,8 +332,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   titleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.sm,
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
@@ -332,16 +353,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   centerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     gap: spacing.md,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: spacing.xl,
   },
   errorText: {
     fontSize: typography.body,
     fontWeight: typography.fontWeight.semibold,
-    textAlign: 'center',
+    textAlign: "center",
   },
   retryButton: {
     borderRadius: radius.pill,

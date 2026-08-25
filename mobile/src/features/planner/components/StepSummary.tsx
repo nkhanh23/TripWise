@@ -1,5 +1,5 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
 import {
   Image,
   ScrollView,
@@ -7,32 +7,36 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { AppText } from "../../../components/AppText";
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
 import {
   mockBudgetOptions,
   mockGroupOptions,
   mockPaceOptions,
   mockTravelStyles,
-} from '../data/mockWizardData';
-import type { CreateTripWizardState } from '../types';
+} from "../data/mockWizardData";
+import type { CreateTripWizardState } from "../types";
 
 type Props = {
   state: CreateTripWizardState;
   onChangeTitle: (title: string) => void;
 };
 
-export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: Props) {
-  const destName = state.destination?.name || state.customDestinationName || 'Destination';
-  const destCountry = state.destination?.country || '';
+export const StepSummary = memo(function StepSummary({
+  state,
+  onChangeTitle,
+}: Props) {
+  const destName =
+    state.destination?.name || state.customDestinationName || "Destination";
+  const destCountry = state.destination?.country || "";
   const heroImage =
     state.destination?.imageUrl ||
-    'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80';
+    "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80";
 
   const selectedStylesData = mockTravelStyles.filter((s) =>
-    state.selectedStyles.includes(s.id)
+    state.selectedStyles.includes(s.id),
   );
   const paceData = mockPaceOptions.find((p) => p.id === state.pace);
   const budgetData = mockBudgetOptions.find((b) => b.id === state.budget);
@@ -42,7 +46,8 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+    >
       <AppText style={styles.subtitle}>
         Review your trip parameters and customize your plan title.
       </AppText>
@@ -82,7 +87,7 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
             <MaterialIcons color="#FFFFFF" name="location-on" size={14} />
             <Text style={styles.heroBadgeText}>
               {destName}
-              {destCountry ? `, ${destCountry}` : ''}
+              {destCountry ? `, ${destCountry}` : ""}
             </Text>
           </View>
 
@@ -100,7 +105,11 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
         {/* Selected Interests */}
         <View style={styles.summaryBox}>
           <View style={styles.boxHeader}>
-            <MaterialIcons color={colors.brand.primary} name="interests" size={18} />
+            <MaterialIcons
+              color={colors.brand.primary}
+              name="interests"
+              size={18}
+            />
             <Text style={styles.boxTitle}>Interests</Text>
           </View>
           <View style={styles.chipWrap}>
@@ -121,19 +130,29 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
         <View style={styles.row}>
           <View style={[styles.summaryBox, styles.halfBox]}>
             <View style={styles.boxHeader}>
-              <MaterialIcons color={colors.brand.primary} name="bolt" size={18} />
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="bolt"
+                size={18}
+              />
               <Text style={styles.boxTitle}>Pace</Text>
             </View>
-            <Text style={styles.boxValue}>{paceData?.label || 'Moderate'}</Text>
+            <Text style={styles.boxValue}>{paceData?.label || "Moderate"}</Text>
             <Text style={styles.boxSub}>{paceData?.dailyPlacesLabel}</Text>
           </View>
 
           <View style={[styles.summaryBox, styles.halfBox]}>
             <View style={styles.boxHeader}>
-              <MaterialIcons color={colors.brand.primary} name="payments" size={18} />
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="payments"
+                size={18}
+              />
               <Text style={styles.boxTitle}>Budget</Text>
             </View>
-            <Text style={styles.boxValue}>{budgetData?.label || 'Standard'}</Text>
+            <Text style={styles.boxValue}>
+              {budgetData?.label || "Standard"}
+            </Text>
             <Text style={styles.boxSub}>{budgetData?.rangeText}</Text>
           </View>
         </View>
@@ -143,13 +162,13 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
           <View style={styles.boxHeader}>
             <MaterialIcons
               color={colors.brand.primary}
-              name={groupData?.iconName || 'groups'}
+              name={groupData?.iconName || "groups"}
               size={18}
             />
             <Text style={styles.boxTitle}>Travel Party</Text>
           </View>
           <Text style={styles.boxValue}>
-            {groupData?.label || 'Couple'} ({groupData?.travelerCountLabel})
+            {groupData?.label || "Couple"} ({groupData?.travelerCountLabel})
           </Text>
         </View>
       </View>
@@ -179,16 +198,16 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   titleInputWrap: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 48,
     paddingHorizontal: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -201,7 +220,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: typography.fontWeight.semibold,
-    height: '100%',
+    height: "100%",
     paddingVertical: 0,
   },
   heroCard: {
@@ -209,45 +228,45 @@ const styles = StyleSheet.create({
     elevation: 4,
     height: 140,
     marginBottom: spacing.md,
-    overflow: 'hidden',
-    position: 'relative',
-    shadowColor: '#000',
+    overflow: "hidden",
+    position: "relative",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
   },
   heroImage: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   heroOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
     bottom: 0,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     left: 0,
     padding: spacing.md,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
   heroBadge: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginBottom: 4,
   },
   heroBadgeText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
     fontWeight: typography.fontWeight.bold,
   },
   heroDatesRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 6,
   },
   heroDatesText: {
-    color: '#F0EDED',
+    color: "#F0EDED",
     fontSize: 12,
     fontWeight: typography.fontWeight.semibold,
   },
@@ -255,47 +274,47 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   summaryBox: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
     gap: 6,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   halfBox: {
     flex: 1,
   },
   boxHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 6,
   },
   boxTitle: {
     color: colors.text.muted,
     fontSize: 11,
     fontWeight: typography.fontWeight.bold,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   chipWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 6,
     marginTop: 2,
   },
   interestChip: {
-    alignItems: 'center',
-    backgroundColor: '#E8F1FC',
+    alignItems: "center",
+    backgroundColor: "#E8F1FC",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,

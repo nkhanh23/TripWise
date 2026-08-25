@@ -1,42 +1,42 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import type { RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ThemePreference } from '../../../theme/types';
+import { useTranslation } from "../../../i18n";
+import type { RootStackParamList } from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ThemePreference } from "../../../theme/types";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'AppearanceSettings'>;
+type Props = NativeStackScreenProps<RootStackParamList, "AppearanceSettings">;
 
 type ThemeOption = {
   key: ThemePreference;
   titleKey: string;
   descKey: string;
-  iconName: 'brightness-auto' | 'light-mode' | 'dark-mode';
+  iconName: "brightness-auto" | "light-mode" | "dark-mode";
 };
 
 const THEME_OPTIONS: ThemeOption[] = [
   {
-    key: 'system',
-    titleKey: 'settings.theme.system',
-    descKey: 'settings.theme.systemDesc',
-    iconName: 'brightness-auto',
+    key: "system",
+    titleKey: "settings.theme.system",
+    descKey: "settings.theme.systemDesc",
+    iconName: "brightness-auto",
   },
   {
-    key: 'light',
-    titleKey: 'settings.theme.light',
-    descKey: 'settings.theme.lightDesc',
-    iconName: 'light-mode',
+    key: "light",
+    titleKey: "settings.theme.light",
+    descKey: "settings.theme.lightDesc",
+    iconName: "light-mode",
   },
   {
-    key: 'dark',
-    titleKey: 'settings.theme.dark',
-    descKey: 'settings.theme.darkDesc',
-    iconName: 'dark-mode',
+    key: "dark",
+    titleKey: "settings.theme.dark",
+    descKey: "settings.theme.darkDesc",
+    iconName: "dark-mode",
   },
 ];
 
@@ -56,19 +56,21 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
           backgroundColor: colors.background.canvas,
           paddingTop: insets.top,
         },
-      ]}>
+      ]}
+    >
       {/* Top App Bar */}
       <View
         style={[
           styles.topBar,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(19, 20, 24, 0.95)'
-                : 'rgba(252, 249, 248, 0.95)',
+              effectiveTheme === "dark"
+                ? "rgba(19, 20, 24, 0.95)"
+                : "rgba(252, 249, 248, 0.95)",
             borderBottomColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         <Pressable
           accessibilityHint="Go back to Settings"
           accessibilityLabel="Back"
@@ -79,12 +81,13 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
             styles.backButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.brand.primary}
             name="arrow-back"
@@ -93,7 +96,7 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
         </Pressable>
 
         <Text style={[styles.title, { color: colors.text.primary }]}>
-          {t('settings.theme.title')}
+          {t("settings.theme.title")}
         </Text>
 
         <View style={styles.spacer} />
@@ -104,9 +107,10 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
         style={[
           styles.content,
           { paddingBottom: insets.bottom + spacing.xxxl },
-        ]}>
+        ]}
+      >
         <Text style={[styles.description, { color: colors.text.muted }]}>
-          {t('settings.theme.description')}
+          {t("settings.theme.description")}
         </Text>
 
         <View
@@ -116,7 +120,8 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
               backgroundColor: colors.background.surface,
               borderColor: colors.border.subtle,
             },
-          ]}>
+          ]}
+        >
           {THEME_OPTIONS.map((option, index) => {
             const isSelected = themePreference === option.key;
             const isLast = index === THEME_OPTIONS.length - 1;
@@ -134,12 +139,13 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
                     pressed && styles.pressed,
                     {
                       backgroundColor: isSelected
-                        ? effectiveTheme === 'dark'
-                          ? 'rgba(216, 228, 242, 0.08)'
-                          : 'rgba(0, 88, 188, 0.04)'
-                        : 'transparent',
+                        ? effectiveTheme === "dark"
+                          ? "rgba(216, 228, 242, 0.08)"
+                          : "rgba(0, 88, 188, 0.04)"
+                        : "transparent",
                     },
-                  ]}>
+                  ]}
+                >
                   <View style={styles.optionLeft}>
                     <View
                       style={[
@@ -147,11 +153,12 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
                         {
                           backgroundColor: isSelected
                             ? colors.brand.primaryContainer
-                            : effectiveTheme === 'dark'
-                              ? 'rgba(255, 255, 255, 0.06)'
+                            : effectiveTheme === "dark"
+                              ? "rgba(255, 255, 255, 0.06)"
                               : colors.background.surfaceVariant,
                         },
-                      ]}>
+                      ]}
+                    >
                       <MaterialIcons
                         color={
                           isSelected
@@ -172,14 +179,16 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
                               ? typography.fontWeight.bold
                               : typography.fontWeight.semibold,
                           },
-                        ]}>
+                        ]}
+                      >
                         {t(option.titleKey)}
                       </Text>
                       <Text
                         style={[
                           styles.optionDesc,
                           { color: colors.text.muted },
-                        ]}>
+                        ]}
+                      >
                         {t(option.descKey)}
                       </Text>
                     </View>
@@ -195,9 +204,10 @@ export const AppearanceSettingsScreen = memo(function AppearanceSettingsScreen({
                           : colors.border.default,
                         backgroundColor: isSelected
                           ? colors.brand.primary
-                          : 'transparent',
+                          : "transparent",
                       },
-                    ]}>
+                    ]}
+                  >
                     {isSelected && (
                       <MaterialIcons
                         color={colors.brand.primaryContainer}
@@ -229,18 +239,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 56,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   backButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   title: {
@@ -265,28 +275,28 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: radius.card,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   optionRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     minHeight: 64,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   optionLeft: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginRight: spacing.md,
   },
   iconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 40,
   },
   textContainer: {
@@ -300,11 +310,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   radioIndicator: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 2,
     height: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 24,
   },
   divider: {

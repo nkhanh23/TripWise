@@ -1,4 +1,4 @@
-import type { SavedTripDetail } from './contracts';
+import type { SavedTripDetail } from "./contracts";
 
 export type SavedTripResolutionModel = {
   id: string;
@@ -7,7 +7,7 @@ export type SavedTripResolutionModel = {
     items: {
       id: string;
       placeName: string;
-      resolution: 'UNRESOLVED' | 'VERIFIED';
+      resolution: "UNRESOLVED" | "VERIFIED";
       googlePlaceId?: string;
       latitude: number | null;
       longitude: number | null;
@@ -19,23 +19,38 @@ export type SavedTripResolutionModel = {
 };
 
 /** Node-safe domain mapper shared by production UI adapters and live smoke. */
-export function mapSavedTripDetailToResolutionModel(detail: SavedTripDetail): SavedTripResolutionModel {
+export function mapSavedTripDetailToResolutionModel(
+  detail: SavedTripDetail,
+): SavedTripResolutionModel {
   return {
     id: detail.id,
     days: detail.days.map((day) => ({
       dayNumber: day.dayNumber,
-      items: day.items.map((item) => item.resolution === 'VERIFIED'
-        ? {
-          id: item.id, placeName: item.placeName, resolution: 'VERIFIED' as const,
-          googlePlaceId: item.googlePlaceId, latitude: item.latitude, longitude: item.longitude,
-          ...(item.placeAddress === undefined ? {} : { placeAddress: item.placeAddress }),
-          ...(item.placeCategory === undefined ? {} : { placeCategory: item.placeCategory }),
-          placeResolvedAt: item.placeResolvedAt,
-        }
-        : {
-          id: item.id, placeName: item.placeName, resolution: 'UNRESOLVED' as const,
-          latitude: null, longitude: null,
-        }),
+      items: day.items.map((item) =>
+        item.resolution === "VERIFIED"
+          ? {
+              id: item.id,
+              placeName: item.placeName,
+              resolution: "VERIFIED" as const,
+              googlePlaceId: item.googlePlaceId,
+              latitude: item.latitude,
+              longitude: item.longitude,
+              ...(item.placeAddress === undefined
+                ? {}
+                : { placeAddress: item.placeAddress }),
+              ...(item.placeCategory === undefined
+                ? {}
+                : { placeCategory: item.placeCategory }),
+              placeResolvedAt: item.placeResolvedAt,
+            }
+          : {
+              id: item.id,
+              placeName: item.placeName,
+              resolution: "UNRESOLVED" as const,
+              latitude: null,
+              longitude: null,
+            },
+      ),
     })),
   };
 }

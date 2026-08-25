@@ -1,9 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from "react-native";
 
-import { AppText } from './AppText';
-import { Screen } from './Screen';
-import { radius, spacing } from '../theme/tokens';
-import { useTheme } from '../theme/useTheme';
+import { AppText } from "./AppText";
+import { Screen } from "./Screen";
+import { radius, spacing } from "../theme/tokens";
+import { useTheme } from "../theme/useTheme";
 
 type PlaceholderScreenProps = {
   title: string;
@@ -22,7 +22,8 @@ export function PlaceholderScreen({ title }: PlaceholderScreenProps) {
             backgroundColor: colors.background.surface,
             borderColor: colors.border.default,
           },
-        ]}>
+        ]}
+      >
         <AppText variant="title">{title}</AppText>
         <AppText>Mobile foundation placeholder</AppText>
       </View>

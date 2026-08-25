@@ -1,12 +1,22 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+import { useColorScheme } from "react-native";
 
-import { darkPalette, lightPalette } from './palettes';
-import type { EffectiveTheme, ThemeContextValue, ThemePreference } from './types';
+import { darkPalette, lightPalette } from "./palettes";
+import type {
+  EffectiveTheme,
+  ThemeContextValue,
+  ThemePreference,
+} from "./types";
 
 const ThemeContext = createContext<ThemeContextValue>({
-  themePreference: 'system',
-  effectiveTheme: 'light',
+  themePreference: "system",
+  effectiveTheme: "light",
   colors: lightPalette,
   setThemePreference: () => {},
 });
@@ -16,22 +26,26 @@ type Props = {
   initialPreference?: ThemePreference;
 };
 
-export function ThemeProvider({ children, initialPreference = 'system' }: Props) {
+export function ThemeProvider({
+  children,
+  initialPreference = "system",
+}: Props) {
   const systemColorScheme = useColorScheme();
-  const [themePreference, setThemePreferenceState] = useState<ThemePreference>(initialPreference);
+  const [themePreference, setThemePreferenceState] =
+    useState<ThemePreference>(initialPreference);
 
   const effectiveTheme: EffectiveTheme = useMemo(() => {
-    if (themePreference === 'dark') {
-      return 'dark';
+    if (themePreference === "dark") {
+      return "dark";
     }
-    if (themePreference === 'light') {
-      return 'light';
+    if (themePreference === "light") {
+      return "light";
     }
-    return systemColorScheme === 'dark' ? 'dark' : 'light';
+    return systemColorScheme === "dark" ? "dark" : "light";
   }, [themePreference, systemColorScheme]);
 
   const colors = useMemo(() => {
-    return effectiveTheme === 'dark' ? darkPalette : lightPalette;
+    return effectiveTheme === "dark" ? darkPalette : lightPalette;
   }, [effectiveTheme]);
 
   const setThemePreference = useCallback((pref: ThemePreference) => {
@@ -45,10 +59,12 @@ export function ThemeProvider({ children, initialPreference = 'system' }: Props)
       colors,
       setThemePreference,
     }),
-    [themePreference, effectiveTheme, colors, setThemePreference]
+    [themePreference, effectiveTheme, colors, setThemePreference],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme(): ThemeContextValue {

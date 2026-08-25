@@ -1,11 +1,11 @@
-import { mockExplorePlaces } from '../../explore/data/mockPlaces';
-import type { ExplorePlace } from '../../explore/types';
+import { mockExplorePlaces } from "../../explore/data/mockPlaces";
+import type { ExplorePlace } from "../../explore/types";
 
 export const INITIAL_SAVED_PLACE_IDS = [
-  'place_wat_arun',
-  'place_iconsiam',
-  'place_thip_samai',
-  'place_grand_palace',
+  "place_wat_arun",
+  "place_iconsiam",
+  "place_thip_samai",
+  "place_grand_palace",
 ];
 
 // In-memory persistent array for active session
@@ -61,7 +61,11 @@ export function unsavePlace(placeId: string): {
 export function restorePlace(placeId: string, priorIndex?: number): void {
   if (!currentSavedPlaceIds.includes(placeId)) {
     const next = [...currentSavedPlaceIds];
-    if (priorIndex !== undefined && priorIndex >= 0 && priorIndex <= next.length) {
+    if (
+      priorIndex !== undefined &&
+      priorIndex >= 0 &&
+      priorIndex <= next.length
+    ) {
       next.splice(priorIndex, 0, placeId);
     } else {
       next.unshift(placeId);

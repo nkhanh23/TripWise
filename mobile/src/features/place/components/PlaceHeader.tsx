@@ -1,17 +1,18 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing } from "../../../theme/tokens";
 
 type Props = {
   isSaved: boolean;
   onToggleSave: () => void;
   onBack: () => void;
   onShare?: () => void;
+  shareDisabled?: boolean;
 };
 
 export const PlaceHeader = memo(function PlaceHeader({
@@ -19,17 +20,23 @@ export const PlaceHeader = memo(function PlaceHeader({
   onToggleSave,
   onBack,
   onShare,
+  shareDisabled,
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View style={[styles.headerContainer, { top: Math.max(insets.top, spacing.sm) }]}>
+    <View
+      style={[
+        styles.headerContainer,
+        { top: Math.max(insets.top, spacing.sm) },
+      ]}
+    >
       {/* Back button */}
       <Pressable
-        accessibilityHint={t('common.back')}
-        accessibilityLabel={t('common.back')}
+        accessibilityHint={t("common.back")}
+        accessibilityLabel={t("common.back")}
         accessibilityRole="button"
         hitSlop={8}
         onPress={onBack}
@@ -37,13 +44,18 @@ export const PlaceHeader = memo(function PlaceHeader({
           styles.circleButton,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(30, 31, 36, 0.9)'
-                : 'rgba(255, 255, 255, 0.9)',
+              effectiveTheme === "dark"
+                ? "rgba(30, 31, 36, 0.9)"
+                : "rgba(255, 255, 255, 0.9)",
           },
           pressed && styles.pressed,
-        ]}>
-        <MaterialIcons color={colors.text.primary} name="arrow-back" size={20} />
+        ]}
+      >
+        <MaterialIcons
+          color={colors.text.primary}
+          name="arrow-back"
+          size={20}
+        />
       </Pressable>
 
       {/* Right action group */}
@@ -53,25 +65,29 @@ export const PlaceHeader = memo(function PlaceHeader({
             accessibilityHint="Chia sẻ địa điểm này"
             accessibilityLabel="Chia sẻ"
             accessibilityRole="button"
+            accessibilityState={{ disabled: shareDisabled }}
+            disabled={shareDisabled}
             hitSlop={8}
             onPress={onShare}
             style={({ pressed }) => [
               styles.circleButton,
+              shareDisabled && { opacity: 0.5 },
               {
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(30, 31, 36, 0.9)'
-                    : 'rgba(255, 255, 255, 0.9)',
+                  effectiveTheme === "dark"
+                    ? "rgba(30, 31, 36, 0.9)"
+                    : "rgba(255, 255, 255, 0.9)",
               },
               pressed && styles.pressed,
-            ]}>
+            ]}
+          >
             <MaterialIcons color={colors.text.primary} name="share" size={20} />
           </Pressable>
         ) : null}
 
         <Pressable
           accessibilityHint="Lưu hoặc bỏ lưu địa điểm này"
-          accessibilityLabel={isSaved ? 'Đã lưu địa điểm' : 'Lưu địa điểm'}
+          accessibilityLabel={isSaved ? "Đã lưu địa điểm" : "Lưu địa điểm"}
           accessibilityRole="button"
           accessibilityState={{ selected: isSaved }}
           hitSlop={8}
@@ -80,9 +96,9 @@ export const PlaceHeader = memo(function PlaceHeader({
             styles.circleButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             isSaved && [
               styles.savedCircleButton,
@@ -92,10 +108,11 @@ export const PlaceHeader = memo(function PlaceHeader({
               },
             ],
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={isSaved ? colors.brand.primary : colors.text.primary}
-            name={isSaved ? 'bookmark' : 'bookmark-border'}
+            name={isSaved ? "bookmark" : "bookmark-border"}
             size={20}
           />
         </Pressable>
@@ -106,25 +123,25 @@ export const PlaceHeader = memo(function PlaceHeader({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     left: spacing.lg,
-    position: 'absolute',
+    position: "absolute",
     right: spacing.lg,
     zIndex: 50,
   },
   rightGroup: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
   },
   circleButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     elevation: 4,
     height: 40,
-    justifyContent: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 6,

@@ -1,30 +1,39 @@
-import type { ResolvedImage, TripCoverImageRequest } from './contracts';
+import type { ResolvedImage, TripCoverImageRequest } from "./contracts";
 import type {
   DestinationCoverRepository,
   PlaceImageRepository,
   PlacePhotoRepository,
   TripCoverImageRepository,
   WikimediaImageRepository,
-} from './repositories';
+} from "./repositories";
 
 export const maximumTripImageResolutionAttempts = 5;
 export const maximumConcurrentImageRequests = 3;
 
-const placeholder: ResolvedImage = { uri: null, source: 'PLACEHOLDER' };
+const placeholder: ResolvedImage = { uri: null, source: "PLACEHOLDER" };
 
-function googleImage(photo: Awaited<ReturnType<PlacePhotoRepository['getPhoto']>>): ResolvedImage {
+function googleImage(
+  photo: Awaited<ReturnType<PlacePhotoRepository["getPhoto"]>>,
+): ResolvedImage {
   if (!photo.photoUri) return placeholder;
   const author = photo.authorAttribution;
   return {
     uri: photo.photoUri,
-    source: 'GOOGLE_PLACE',
-    ...(author?.displayName && author.uri ? {
-      attribution: { displayName: author.displayName, sourceUrl: author.uri },
-    } : {}),
+    source: "GOOGLE_PLACE",
+    ...(author?.displayName && author.uri
+      ? {
+          attribution: {
+            displayName: author.displayName,
+            sourceUrl: author.uri,
+          },
+        }
+      : {}),
   };
 }
 
-async function safelyResolve(action: () => Promise<ResolvedImage>): Promise<ResolvedImage> {
+async function safelyResolve(
+  action: () => Promise<ResolvedImage>,
+): Promise<ResolvedImage> {
   try {
     return await action();
   } catch {
@@ -38,15 +47,27 @@ export class CompositePlaceImageRepository implements PlaceImageRepository {
     private readonly wikimedia: WikimediaImageRepository,
   ) {}
 
-  async getPlaceImage(request: { googlePlaceId: string; maxWidth?: number }, signal?: AbortSignal) {
-    const google = await safelyResolve(async () => googleImage(await this.google.getPhoto(request, signal)));
+  async getPlaceImage(
+    request: { googlePlaceId: string; maxWidth?: number },
+    signal?: AbortSignal,
+  ) {
+    const google = await safelyResolve(async () =>
+      googleImage(await this.google.getPhoto(request, signal)),
+    );
     if (google.uri) return google;
-    const wikimedia = await safelyResolve(() => this.wikimedia.getImage({
-      kind: 'PLACE',
-      googlePlaceId: request.googlePlaceId,
-      ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
-    }, signal));
-    return wikimedia.uri && wikimedia.source === 'WIKIMEDIA_PLACE' ? wikimedia : placeholder;
+    const wikimedia = await safelyResolve(() =>
+      this.wikimedia.getImage(
+        {
+          kind: "PLACE",
+          googlePlaceId: request.googlePlaceId,
+          ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
+        },
+        signal,
+      ),
+    );
+    return wikimedia.uri && wikimedia.source === "WIKIMEDIA_PLACE"
+      ? wikimedia
+      : placeholder;
   }
 }
 
@@ -57,28 +78,47 @@ export class SequentialTripCoverImageRepository implements TripCoverImageReposit
     private readonly destination: DestinationCoverRepository,
   ) {}
 
-  async getTripCover(request: TripCoverImageRequest, signal?: AbortSignal): Promise<ResolvedImage> {
+  async getTripCover(
+    request: TripCoverImageRequest,
+    signal?: AbortSignal,
+  ): Promise<ResolvedImage> {
     const candidates = [...new Set(request.googlePlaceIds)].slice(0, 2);
     for (const googlePlaceId of candidates) {
-      const image = await safelyResolve(async () => googleImage(await this.google.getPhoto({
-        googlePlaceId,
-        ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
-      }, signal)));
+      const image = await safelyResolve(async () =>
+        googleImage(
+          await this.google.getPhoto(
+            {
+              googlePlaceId,
+              ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
+            },
+            signal,
+          ),
+        ),
+      );
       if (image.uri) return image;
     }
     for (const googlePlaceId of candidates) {
-      const image = await safelyResolve(() => this.wikimedia.getImage({
-        kind: 'PLACE',
-        googlePlaceId,
-        ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
-      }, signal));
-      if (image.uri && image.source === 'WIKIMEDIA_PLACE') return image;
+      const image = await safelyResolve(() =>
+        this.wikimedia.getImage(
+          {
+            kind: "PLACE",
+            googlePlaceId,
+            ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
+          },
+          signal,
+        ),
+      );
+      if (image.uri && image.source === "WIKIMEDIA_PLACE") return image;
     }
-    const destination = await safelyResolve(() => this.destination.getDestinationCover(
-      request.destination,
-      request.maxWidth,
-      signal,
-    ));
-    return destination.uri && destination.source === 'DESTINATION_COVER' ? destination : placeholder;
+    const destination = await safelyResolve(() =>
+      this.destination.getDestinationCover(
+        request.destination,
+        request.maxWidth,
+        signal,
+      ),
+    );
+    return destination.uri && destination.source === "DESTINATION_COVER"
+      ? destination
+      : placeholder;
   }
 }

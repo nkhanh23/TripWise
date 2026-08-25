@@ -1,10 +1,10 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   onRoute?: () => void;
@@ -28,21 +28,32 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
         accessibilityHint="Xem tuyến đường di chuyển tới địa điểm"
         accessibilityLabel="Chỉ đường"
         accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        disabled={true}
         onPress={onRoute}
         style={({ pressed }) => [
           styles.actionCard,
           { backgroundColor: colors.background.surfaceVariant },
           pressed && styles.pressed,
-        ]}>
+        ]}
+      >
         <View
           style={[
             styles.iconCircle,
-            { backgroundColor: effectiveTheme === 'dark' ? '#1E3A5F' : '#D8E2FF' },
-          ]}>
-          <MaterialIcons color={colors.brand.primary} name="directions" size={22} />
+            {
+              backgroundColor:
+                effectiveTheme === "dark" ? "#1E3A5F" : "#D8E2FF",
+            },
+          ]}
+        >
+          <MaterialIcons
+            color={colors.brand.primary}
+            name="directions"
+            size={22}
+          />
         </View>
         <Text style={[styles.actionLabel, { color: colors.brand.primary }]}>
-          {t('place.route')}
+          {t("place.route")}
         </Text>
       </Pressable>
 
@@ -50,21 +61,29 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
         accessibilityHint="Truy cập trang web chính thức của địa điểm"
         accessibilityLabel="Trang web"
         accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        disabled={true}
         onPress={onWebsite}
         style={({ pressed }) => [
           styles.actionCard,
-          { backgroundColor: colors.background.surfaceVariant },
+          { backgroundColor: colors.background.surfaceVariant, opacity: 0.5 },
           pressed && styles.pressed,
-        ]}>
+        ]}
+      >
         <View
           style={[
             styles.iconCircle,
             { backgroundColor: colors.background.surface },
-          ]}>
-          <MaterialIcons color={colors.text.secondary} name="language" size={22} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="language"
+            size={22}
+          />
         </View>
         <Text style={[styles.actionLabel, { color: colors.text.primary }]}>
-          {t('place.website')}
+          {t("place.website")}
         </Text>
       </Pressable>
 
@@ -72,21 +91,25 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
         accessibilityHint="Gọi điện thoại liên hệ địa điểm"
         accessibilityLabel="Gọi điện"
         accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        disabled={true}
         onPress={onCall}
         style={({ pressed }) => [
           styles.actionCard,
-          { backgroundColor: colors.background.surfaceVariant },
+          { backgroundColor: colors.background.surfaceVariant, opacity: 0.5 },
           pressed && styles.pressed,
-        ]}>
+        ]}
+      >
         <View
           style={[
             styles.iconCircle,
             { backgroundColor: colors.background.surface },
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.text.secondary} name="call" size={22} />
         </View>
         <Text style={[styles.actionLabel, { color: colors.text.primary }]}>
-          {t('place.call')}
+          {t("place.call")}
         </Text>
       </Pressable>
 
@@ -94,21 +117,29 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
         accessibilityHint="Thêm địa điểm này vào lịch trình chuyến đi của bạn"
         accessibilityLabel="Thêm vào chuyến đi"
         accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        disabled={true}
         onPress={onAdd}
         style={({ pressed }) => [
           styles.actionCard,
-          { backgroundColor: colors.background.surfaceVariant },
+          { backgroundColor: colors.background.surfaceVariant, opacity: 0.5 },
           pressed && styles.pressed,
-        ]}>
+        ]}
+      >
         <View
           style={[
             styles.iconCircle,
             { backgroundColor: colors.background.surface },
-          ]}>
-          <MaterialIcons color={colors.text.secondary} name="bookmark-add" size={22} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="bookmark-add"
+            size={22}
+          />
         </View>
         <Text style={[styles.actionLabel, { color: colors.text.primary }]}>
-          {t('place.addToTrip')}
+          {t("place.addToTrip")}
         </Text>
       </Pressable>
     </View>
@@ -117,23 +148,23 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
 
 const styles = StyleSheet.create({
   gridContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginVertical: spacing.md,
   },
   actionCard: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     flex: 1,
     gap: 6,
     paddingVertical: spacing.md,
   },
   iconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 40,
   },
   actionLabel: {

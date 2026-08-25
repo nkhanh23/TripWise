@@ -1,6 +1,6 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { memo, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { memo, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -9,41 +9,41 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import type { RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import type { RootStackParamList } from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'HelpSupport'>;
+type Props = NativeStackScreenProps<RootStackParamList, "HelpSupport">;
 
 type HelpTopic = {
   id: string;
   titleKey: string;
   defaultTitle: string;
-  iconName: 'help-outline' | 'headset-mic' | 'report-problem';
+  iconName: "help-outline" | "headset-mic" | "report-problem";
 };
 
 const COMMON_TOPICS: HelpTopic[] = [
   {
-    id: 'faq',
-    titleKey: 'helpSupport.topics.faq',
-    defaultTitle: 'Frequently asked questions',
-    iconName: 'help-outline',
+    id: "faq",
+    titleKey: "helpSupport.topics.faq",
+    defaultTitle: "Frequently asked questions",
+    iconName: "help-outline",
   },
   {
-    id: 'contact',
-    titleKey: 'helpSupport.topics.contact',
-    defaultTitle: 'Contact support',
-    iconName: 'headset-mic',
+    id: "contact",
+    titleKey: "helpSupport.topics.contact",
+    defaultTitle: "Contact support",
+    iconName: "headset-mic",
   },
   {
-    id: 'report',
-    titleKey: 'helpSupport.topics.report',
-    defaultTitle: 'Report a problem',
-    iconName: 'report-problem',
+    id: "report",
+    titleKey: "helpSupport.topics.report",
+    defaultTitle: "Report a problem",
+    iconName: "report-problem",
   },
 ];
 
@@ -51,21 +51,21 @@ type LegalItem = {
   id: string;
   titleKey: string;
   defaultTitle: string;
-  iconName: 'privacy-tip' | 'description';
+  iconName: "privacy-tip" | "description";
 };
 
 const LEGAL_ITEMS: LegalItem[] = [
   {
-    id: 'privacy',
-    titleKey: 'helpSupport.legal.privacyPolicy',
-    defaultTitle: 'Privacy Policy',
-    iconName: 'privacy-tip',
+    id: "privacy",
+    titleKey: "helpSupport.legal.privacyPolicy",
+    defaultTitle: "Privacy Policy",
+    iconName: "privacy-tip",
   },
   {
-    id: 'terms',
-    titleKey: 'helpSupport.legal.termsOfService',
-    defaultTitle: 'Terms of Service',
-    iconName: 'description',
+    id: "terms",
+    titleKey: "helpSupport.legal.termsOfService",
+    defaultTitle: "Terms of Service",
+    iconName: "description",
   },
 ];
 
@@ -76,9 +76,9 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const handleUnavailableAction = () => {
-    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+    Alert.alert(t("common.unavailableTitle"), t("common.unavailableMessage"));
   };
 
   return (
@@ -89,19 +89,21 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
           backgroundColor: colors.background.canvas,
           paddingTop: insets.top,
         },
-      ]}>
+      ]}
+    >
       {/* Top App Bar */}
       <View
         style={[
           styles.topBar,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(19, 20, 24, 0.95)'
-                : 'rgba(252, 249, 248, 0.95)',
+              effectiveTheme === "dark"
+                ? "rgba(19, 20, 24, 0.95)"
+                : "rgba(252, 249, 248, 0.95)",
             borderBottomColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         <Pressable
           accessibilityHint="Go back"
           accessibilityLabel="Back"
@@ -112,12 +114,13 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
             styles.backButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.brand.primary}
             name="arrow-back"
@@ -126,7 +129,7 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
         </Pressable>
 
         <Text style={[styles.title, { color: colors.text.primary }]}>
-          {t('helpSupport.title')}
+          {t("helpSupport.title")}
         </Text>
 
         <View style={styles.spacer} />
@@ -138,18 +141,20 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
           { paddingBottom: insets.bottom + spacing.xxxl },
         ]}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         {/* Search Bar */}
         <View
           style={[
             styles.searchContainer,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(255, 255, 255, 0.06)'
+                effectiveTheme === "dark"
+                  ? "rgba(255, 255, 255, 0.06)"
                   : colors.background.surfaceVariant,
             },
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.icon.muted}
             name="search"
@@ -157,11 +162,11 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
             style={styles.searchIcon}
           />
           <TextInput
-            accessibilityLabel={t('helpSupport.searchPlaceholder')}
+            accessibilityLabel={t("helpSupport.searchPlaceholder")}
             autoCapitalize="none"
             autoCorrect={false}
             onChangeText={setSearchQuery}
-            placeholder={t('helpSupport.searchPlaceholder')}
+            placeholder={t("helpSupport.searchPlaceholder")}
             placeholderTextColor={colors.text.muted}
             style={[styles.searchInput, { color: colors.text.primary }]}
             value={searchQuery}
@@ -171,7 +176,8 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
               accessibilityLabel="Clear search"
               accessibilityRole="button"
               hitSlop={8}
-              onPress={() => setSearchQuery('')}>
+              onPress={() => setSearchQuery("")}
+            >
               <MaterialIcons
                 color={colors.icon.muted}
                 name="cancel"
@@ -184,7 +190,7 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
         {/* Common Topics Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.brand.primary }]}>
-            {t('helpSupport.sections.commonTopics')}
+            {t("helpSupport.sections.commonTopics")}
           </Text>
 
           <View
@@ -194,7 +200,8 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                 backgroundColor: colors.background.surface,
                 borderColor: colors.border.subtle,
               },
-            ]}>
+            ]}
+          >
             {COMMON_TOPICS.map((topic, index) => {
               const isLast = index === COMMON_TOPICS.length - 1;
 
@@ -204,11 +211,14 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                     accessibilityHint={`View ${t(topic.titleKey)}`}
                     accessibilityLabel={t(topic.titleKey)}
                     accessibilityRole="button"
+                    disabled={true}
                     onPress={handleUnavailableAction}
                     style={({ pressed }) => [
                       styles.row,
+                      { opacity: 0.5 },
                       pressed && styles.pressed,
-                    ]}>
+                    ]}
+                  >
                     <View style={styles.rowLeft}>
                       <MaterialIcons
                         color={colors.brand.primary}
@@ -219,7 +229,8 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                         style={[
                           styles.rowTitle,
                           { color: colors.text.primary },
-                        ]}>
+                        ]}
+                      >
                         {t(topic.titleKey)}
                       </Text>
                     </View>
@@ -247,7 +258,7 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
         {/* Legal Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.brand.primary }]}>
-            {t('helpSupport.sections.legal')}
+            {t("helpSupport.sections.legal")}
           </Text>
 
           <View
@@ -257,7 +268,8 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                 backgroundColor: colors.background.surface,
                 borderColor: colors.border.subtle,
               },
-            ]}>
+            ]}
+          >
             {LEGAL_ITEMS.map((item, index) => {
               const isLast = index === LEGAL_ITEMS.length - 1;
 
@@ -267,11 +279,14 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                     accessibilityHint={`View ${t(item.titleKey)}`}
                     accessibilityLabel={t(item.titleKey)}
                     accessibilityRole="button"
+                    disabled={true}
                     onPress={handleUnavailableAction}
                     style={({ pressed }) => [
                       styles.row,
+                      { opacity: 0.5 },
                       pressed && styles.pressed,
-                    ]}>
+                    ]}
+                  >
                     <View style={styles.rowLeft}>
                       <MaterialIcons
                         color={colors.brand.primary}
@@ -282,7 +297,8 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
                         style={[
                           styles.rowTitle,
                           { color: colors.text.primary },
-                        ]}>
+                        ]}
+                      >
                         {t(item.titleKey)}
                       </Text>
                     </View>
@@ -315,11 +331,12 @@ export const HelpSupportScreen = memo(function HelpSupportScreen({
               {
                 borderColor: colors.border.default,
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(255, 255, 255, 0.04)'
+                  effectiveTheme === "dark"
+                    ? "rgba(255, 255, 255, 0.04)"
                     : colors.background.surfaceVariant,
               },
-            ]}>
+            ]}
+          >
             <MaterialIcons
               color={colors.icon.muted}
               name="support-agent"
@@ -337,18 +354,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 56,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   backButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   title: {
@@ -364,9 +381,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
   },
   searchContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 48,
     marginBottom: spacing.xl,
     paddingHorizontal: spacing.md,
@@ -377,7 +394,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: typography.body,
-    height: '100%',
+    height: "100%",
     padding: 0,
   },
   section: {
@@ -389,24 +406,24 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.sm,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   card: {
     borderRadius: radius.card,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     minHeight: 56,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   rowLeft: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.md,
   },
   rowTitle: {
@@ -417,19 +434,19 @@ const styles = StyleSheet.create({
     marginLeft: 52,
   },
   illustrationContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: spacing.xl,
     opacity: 0.6,
     paddingVertical: spacing.xxl,
   },
   illustrationCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
     borderWidth: 2,
     height: 100,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 100,
   },
   pressed: {

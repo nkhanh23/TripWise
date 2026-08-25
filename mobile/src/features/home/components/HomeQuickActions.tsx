@@ -1,10 +1,10 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   onNavigatePlan: () => void;
@@ -24,30 +24,30 @@ export const HomeQuickActions = memo(function HomeQuickActions({
 
   const actions = [
     {
-      key: 'plan',
-      label: t('home.actions.plan'),
-      icon: 'edit-calendar' as const,
+      key: "plan",
+      label: t("home.actions.plan"),
+      icon: "edit-calendar" as const,
       isPrimary: true,
       onPress: onNavigatePlan,
     },
     {
-      key: 'explore',
-      label: t('home.actions.explore'),
-      icon: 'explore' as const,
+      key: "explore",
+      label: t("home.actions.explore"),
+      icon: "explore" as const,
       isPrimary: false,
       onPress: onNavigateExplore,
     },
     {
-      key: 'trips',
-      label: t('home.actions.trips'),
-      icon: 'flight' as const,
+      key: "trips",
+      label: t("home.actions.trips"),
+      icon: "flight" as const,
       isPrimary: false,
       onPress: onNavigateTrips,
     },
     {
-      key: 'saved',
-      label: t('home.actions.saved'),
-      icon: 'bookmark' as const,
+      key: "saved",
+      label: t("home.actions.saved"),
+      icon: "bookmark" as const,
       isPrimary: false,
       onPress: onNavigateSaved,
     },
@@ -69,27 +69,32 @@ export const HomeQuickActions = memo(function HomeQuickActions({
               borderColor: colors.border.default,
             },
             pressed && styles.cardPressed,
-          ]}>
+          ]}
+        >
           <View
             style={[
               styles.iconCircle,
               {
                 backgroundColor: act.isPrimary
-                  ? effectiveTheme === 'dark'
-                    ? '#1E354D'
-                    : '#D8E2FF'
+                  ? effectiveTheme === "dark"
+                    ? "#1E354D"
+                    : "#D8E2FF"
                   : colors.background.surfaceVariant,
               },
-            ]}>
+            ]}
+          >
             <MaterialIcons
-              color={act.isPrimary ? colors.brand.primary : colors.text.secondary}
+              color={
+                act.isPrimary ? colors.brand.primary : colors.text.secondary
+              }
               name={act.icon}
               size={22}
             />
           </View>
           <Text
             numberOfLines={1}
-            style={[styles.label, { color: colors.text.primary }]}>
+            style={[styles.label, { color: colors.text.primary }]}
+          >
             {act.label}
           </Text>
         </Pressable>
@@ -100,20 +105,20 @@ export const HomeQuickActions = memo(function HomeQuickActions({
 
 const styles = StyleSheet.create({
   grid: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   card: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.control, // 16px matching Stitch rounded-xl
     borderWidth: 1,
     elevation: 2,
     flex: 1,
     gap: spacing.xs,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingVertical: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -123,10 +128,10 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.96 }],
   },
   iconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 48,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 48,
   },
   label: {

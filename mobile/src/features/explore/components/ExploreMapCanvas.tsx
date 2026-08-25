@@ -1,21 +1,25 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import { mapFixturePlaceToCoordinate } from '../utils/exploreMapUtils';
-import type { ClusterMarkerModel, ExploreMarkerItem, ExplorePlace } from '../types';
-import { ExploreClusterMarker } from './ExploreClusterMarker';
-import { ExploreMarker } from './ExploreMarker';
+import { useTranslation } from "../../../i18n";
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
+import { mapFixturePlaceToCoordinate } from "../utils/exploreMapUtils";
+import type {
+  ClusterMarkerModel,
+  ExploreMarkerItem,
+  ExplorePlace,
+} from "../types";
+import { ExploreClusterMarker } from "./ExploreClusterMarker";
+import { ExploreMarker } from "./ExploreMarker";
 
 let MapView: any = null;
 let Marker: any = null;
 let PROVIDER_GOOGLE: any = undefined;
 try {
-  if (Platform.OS !== 'web' && !process.env.JEST_WORKER_ID) {
-    const Maps = require('react-native-maps');
+  if (Platform.OS !== "web" && !process.env.JEST_WORKER_ID) {
+    const Maps = require("react-native-maps");
     MapView = Maps.default || Maps;
     Marker = Maps.Marker;
     PROVIDER_GOOGLE = Maps.PROVIDER_GOOGLE;
@@ -39,7 +43,10 @@ const INITIAL_REGION = {
   longitudeDelta: 0.22,
 };
 
-function isValidCoordinate(coordinate: { latitude: number; longitude: number }) {
+function isValidCoordinate(coordinate: {
+  latitude: number;
+  longitude: number;
+}) {
   return (
     Number.isFinite(coordinate.latitude) &&
     Number.isFinite(coordinate.longitude) &&
@@ -64,7 +71,8 @@ function MarkerPin({
       accessibilityLabel={place.name}
       accessibilityRole="button"
       onPress={onPress}
-      style={styles.nativeMarkerWrap}>
+      style={styles.nativeMarkerWrap}
+    >
       {selected ? (
         <View style={styles.nameBadge}>
           <Text numberOfLines={1} style={styles.nameBadgeText}>
@@ -72,12 +80,27 @@ function MarkerPin({
           </Text>
         </View>
       ) : null}
-      <View style={[styles.pinOuter, selected ? styles.pinOuterSelected : styles.pinOuterDefault]}>
-        <View style={[styles.pinInner, selected ? styles.pinInnerSelected : styles.pinInnerDefault]}>
+      <View
+        style={[
+          styles.pinOuter,
+          selected ? styles.pinOuterSelected : styles.pinOuterDefault,
+        ]}
+      >
+        <View
+          style={[
+            styles.pinInner,
+            selected ? styles.pinInnerSelected : styles.pinInnerDefault,
+          ]}
+        >
           <MaterialIcons color="#FFFFFF" name={place.iconName} size={14} />
         </View>
       </View>
-      <View style={[styles.pinPoint, selected ? styles.pinPointSelected : styles.pinPointDefault]} />
+      <View
+        style={[
+          styles.pinPoint,
+          selected ? styles.pinPointSelected : styles.pinPointDefault,
+        ]}
+      />
     </Pressable>
   );
 }
@@ -105,25 +128,30 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
     () =>
       markerItems.map((item) => ({
         item,
-        coordinate: mapFixturePlaceToCoordinate(item.type === 'place' ? item.place : item.places[0]),
+        coordinate: mapFixturePlaceToCoordinate(
+          item.type === "place" ? item.place : item.places[0],
+        ),
       })),
-    [markerItems]
+    [markerItems],
   );
   const validMarkerCoordinates = useMemo(
-    () => markerCoordinates.filter(({ coordinate }) => isValidCoordinate(coordinate)),
-    [markerCoordinates]
+    () =>
+      markerCoordinates.filter(({ coordinate }) =>
+        isValidCoordinate(coordinate),
+      ),
+    [markerCoordinates],
   );
   const mapInstanceKey = useMemo(
     () =>
       validMarkerCoordinates
-        .map(({ item }) => (item.type === 'place' ? item.place.id : item.id))
-        .join('|') || 'empty',
-    [validMarkerCoordinates]
+        .map(({ item }) => (item.type === "place" ? item.place.id : item.id))
+        .join("|") || "empty",
+    [validMarkerCoordinates],
   );
 
   useEffect(() => {
     if (__DEV__) {
-      console.info('[ExploreMapCanvas] marker diagnostics', {
+      console.info("[ExploreMapCanvas] marker diagnostics", {
         renderedMarkers: validMarkerCoordinates.length,
         validCoordinates: validMarkerCoordinates.length,
         visiblePlaces: markerItems.length,
@@ -142,7 +170,9 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
     }
 
     const timer = setTimeout(() => {
-      const coordinates = validMarkerCoordinates.map(({ coordinate }) => coordinate);
+      const coordinates = validMarkerCoordinates.map(
+        ({ coordinate }) => coordinate,
+      );
       if (coordinates.length === 1) {
         mapRef.current?.animateToRegion(
           {
@@ -150,7 +180,7 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
             latitudeDelta: 0.04,
             longitudeDelta: 0.06,
           },
-          250
+          250,
         );
       } else {
         mapRef.current?.fitToCoordinates(coordinates, {
@@ -166,14 +196,14 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
     return (
       <View style={styles.canvasContainer}>
         <Pressable
-          accessibilityHint={t('explore.mapA11yHint')}
-          accessibilityLabel={t('explore.mapA11yLabel')}
+          accessibilityHint={t("explore.mapA11yHint")}
+          accessibilityLabel={t("explore.mapA11yLabel")}
           accessibilityRole="image"
           onPress={onDismissSelection}
           style={styles.fallbackSurface}
         />
         {markerItems.map((item) =>
-          item.type === 'place' ? (
+          item.type === "place" ? (
             <ExploreMarker
               isSelected={item.place.id === selectedPlaceId}
               key={item.place.id}
@@ -185,10 +215,12 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
               cluster={item}
               key={item.id}
               onPress={(cluster) =>
-                onSelectCluster ? onSelectCluster(cluster) : onSelectPlace(cluster.places[0])
+                onSelectCluster
+                  ? onSelectCluster(cluster)
+                  : onSelectPlace(cluster.places[0])
               }
             />
-          )
+          ),
         )}
       </View>
     );
@@ -197,8 +229,8 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
   return (
     <View style={styles.canvasContainer}>
       <MapView
-        accessibilityHint={t('explore.mapA11yHint')}
-        accessibilityLabel={t('explore.mapA11yLabel')}
+        accessibilityHint={t("explore.mapA11yHint")}
+        accessibilityLabel={t("explore.mapA11yLabel")}
         initialRegion={INITIAL_REGION}
         key={mapInstanceKey}
         onLayout={() => setLayoutMapKey(mapInstanceKey)}
@@ -210,15 +242,17 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
         scrollEnabled
         style={StyleSheet.absoluteFill}
         zoomControlEnabled
-        zoomEnabled>
+        zoomEnabled
+      >
         {validMarkerCoordinates.map(({ item, coordinate }) =>
-          item.type === 'place' ? (
+          item.type === "place" ? (
             <Marker
               calloutEnabled={false}
               coordinate={coordinate}
               key={item.place.id}
               onPress={() => onSelectPlace(item.place)}
-              tracksViewChanges={item.place.id === selectedPlaceId}>
+              tracksViewChanges={item.place.id === selectedPlaceId}
+            >
               <MarkerPin
                 onPress={() => onSelectPlace(item.place)}
                 place={item.place}
@@ -231,12 +265,15 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
               coordinate={coordinate}
               key={item.id}
               onPress={() =>
-                onSelectCluster ? onSelectCluster(item) : onSelectPlace(item.places[0])
+                onSelectCluster
+                  ? onSelectCluster(item)
+                  : onSelectPlace(item.places[0])
               }
-              tracksViewChanges={false}>
+              tracksViewChanges={false}
+            >
               <ClusterPin cluster={item} />
             </Marker>
-          )
+          ),
         )}
       </MapView>
     </View>
@@ -247,19 +284,19 @@ const styles = StyleSheet.create({
   canvasContainer: {
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
   fallbackSurface: {
-    backgroundColor: '#F3F2EE',
+    backgroundColor: "#F3F2EE",
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
-  nativeMarkerWrap: { alignItems: 'center' },
+  nativeMarkerWrap: { alignItems: "center" },
   nameBadge: {
     backgroundColor: colors.brand.primary,
     borderRadius: radius.input,
@@ -275,41 +312,55 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   pinOuter: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderRadius: radius.pill,
     elevation: 3,
     height: 34,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 34,
   },
-  pinOuterDefault: { borderColor: '#FFFFFF', borderWidth: 2 },
-  pinOuterSelected: { borderColor: colors.brand.red, borderWidth: 2.5, transform: [{ scale: 1.15 }] },
-  pinInner: { alignItems: 'center', borderRadius: radius.pill, height: 24, justifyContent: 'center', width: 24 },
+  pinOuterDefault: { borderColor: "#FFFFFF", borderWidth: 2 },
+  pinOuterSelected: {
+    borderColor: colors.brand.red,
+    borderWidth: 2.5,
+    transform: [{ scale: 1.15 }],
+  },
+  pinInner: {
+    alignItems: "center",
+    borderRadius: radius.pill,
+    height: 24,
+    justifyContent: "center",
+    width: 24,
+  },
   pinInnerDefault: { backgroundColor: colors.brand.primary },
   pinInnerSelected: { backgroundColor: colors.brand.red },
   pinPoint: {
-    borderLeftColor: 'transparent',
+    borderLeftColor: "transparent",
     borderLeftWidth: 5,
-    borderRightColor: 'transparent',
+    borderRightColor: "transparent",
     borderRightWidth: 5,
     borderTopWidth: 6,
     height: 0,
     marginTop: -2,
     width: 0,
   },
-  pinPointDefault: { borderTopColor: '#FFFFFF' },
+  pinPointDefault: { borderTopColor: "#FFFFFF" },
   pinPointSelected: { borderTopColor: colors.brand.red },
   clusterCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: colors.brand.primary,
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
     borderRadius: radius.pill,
     borderWidth: 2.5,
     elevation: 4,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 36,
   },
-  countText: { color: colors.text.inverse, fontSize: typography.bodySmall, fontWeight: typography.fontWeight.bold },
+  countText: {
+    color: colors.text.inverse,
+    fontSize: typography.bodySmall,
+    fontWeight: typography.fontWeight.bold,
+  },
 });

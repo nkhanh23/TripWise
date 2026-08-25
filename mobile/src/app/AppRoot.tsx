@@ -1,9 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { getSupabaseConfig } from '../lib/supabase/config';
-import { AuthProvider } from '../features/auth/AuthProvider';
-import { AppNavigator } from '../navigation/AppNavigator';
+import { getSupabaseConfig } from "../lib/supabase/config";
+import { AuthProvider } from "../features/auth/AuthProvider";
+import { AppNavigator } from "../navigation/AppNavigator";
 
 export function AppRoot() {
   getSupabaseConfig();

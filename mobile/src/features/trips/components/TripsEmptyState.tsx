@@ -1,17 +1,19 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   onCreateTrip: () => void;
 };
 
-export const TripsEmptyState = memo(function TripsEmptyState({ onCreateTrip }: Props) {
+export const TripsEmptyState = memo(function TripsEmptyState({
+  onCreateTrip,
+}: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -31,7 +33,11 @@ export const TripsEmptyState = memo(function TripsEmptyState({ onCreateTrip }: P
             { backgroundColor: colors.background.surfaceVariant },
           ]}
         >
-          <MaterialIcons color={colors.text.muted} name="flight-takeoff" size={56} />
+          <MaterialIcons
+            color={colors.text.muted}
+            name="flight-takeoff"
+            size={56}
+          />
         </View>
         <View
           style={[
@@ -39,17 +45,19 @@ export const TripsEmptyState = memo(function TripsEmptyState({ onCreateTrip }: P
             { backgroundColor: colors.background.surface },
           ]}
         >
-          <MaterialIcons color={colors.brand.primary} name="location-on" size={20} />
+          <MaterialIcons
+            color={colors.brand.primary}
+            name="location-on"
+            size={20}
+          />
         </View>
       </View>
 
       {/* Heading & Subtitle */}
       <Text style={[styles.titleText, { color: colors.text.primary }]}>
-        {t('trips.emptyTitle')}
+        {t("trips.emptyTitle")}
       </Text>
-      <AppText style={styles.subtitleText}>
-        {t('trips.emptySubtitle')}
-      </AppText>
+      <AppText style={styles.subtitleText}>{t("trips.emptySubtitle")}</AppText>
 
       {/* Primary CTA */}
       <Pressable
@@ -61,10 +69,11 @@ export const TripsEmptyState = memo(function TripsEmptyState({ onCreateTrip }: P
           styles.ctaButton,
           { backgroundColor: colors.brand.primary },
           pressed && styles.ctaPressed,
-        ]}>
+        ]}
+      >
         <MaterialIcons color={colors.text.inverse} name="add" size={18} />
         <Text style={[styles.ctaText, { color: colors.text.inverse }]}>
-          {t('trips.createFirstTrip')}
+          {t("trips.createFirstTrip")}
         </Text>
       </Pressable>
     </View>
@@ -73,43 +82,43 @@ export const TripsEmptyState = memo(function TripsEmptyState({ onCreateTrip }: P
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.xxxl,
   },
   illustrationWrap: {
-    alignItems: 'center',
+    alignItems: "center",
     height: 140,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: spacing.xl,
-    position: 'relative',
+    position: "relative",
     width: 140,
   },
   outerCircle: {
     borderRadius: radius.pill,
     height: 130,
     opacity: 0.8,
-    position: 'absolute',
+    position: "absolute",
     width: 130,
   },
   innerCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 100,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 100,
   },
   badgeLocation: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     bottom: 8,
     elevation: 3,
     height: 36,
-    justifyContent: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    position: "absolute",
     right: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,
@@ -119,25 +128,25 @@ const styles = StyleSheet.create({
     fontSize: typography.titleSmall,
     fontWeight: typography.fontWeight.bold,
     marginBottom: spacing.xs,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitleText: {
     fontSize: typography.bodySmall,
     lineHeight: 20,
     marginBottom: spacing.xl,
     maxWidth: 280,
-    textAlign: 'center',
+    textAlign: "center",
   },
   ctaButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 48,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.xxl,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 6,

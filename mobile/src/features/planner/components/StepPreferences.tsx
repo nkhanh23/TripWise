@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import { mockPaceOptions, mockTravelStyles } from '../data/mockWizardData';
-import type { TravelPace } from '../types';
+import { AppText } from "../../../components/AppText";
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
+import { mockPaceOptions, mockTravelStyles } from "../data/mockWizardData";
+import type { TravelPace } from "../types";
 
 type Props = {
   selectedStyles: string[];
@@ -25,7 +25,8 @@ export const StepPreferences = memo(function StepPreferences({
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+    >
       <AppText style={styles.subtitle}>
         Tailor your experience by choosing what you love most.
       </AppText>
@@ -33,7 +34,11 @@ export const StepPreferences = memo(function StepPreferences({
       {/* Error Alert */}
       {error ? (
         <View accessibilityRole="alert" style={styles.errorBanner}>
-          <MaterialIcons color={colors.brand.red} name="error-outline" size={16} />
+          <MaterialIcons
+            color={colors.brand.red}
+            name="error-outline"
+            size={16}
+          />
           <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : null}
@@ -65,14 +70,18 @@ export const StepPreferences = memo(function StepPreferences({
                   styles.styleCard,
                   isSelected && styles.styleCardSelected,
                   pressed && styles.pressed,
-                ]}>
+                ]}
+              >
                 <View
                   style={[
                     styles.styleIconCircle,
                     isSelected && styles.styleIconCircleSelected,
-                  ]}>
+                  ]}
+                >
                   <MaterialIcons
-                    color={isSelected ? colors.text.inverse : colors.brand.primary}
+                    color={
+                      isSelected ? colors.text.inverse : colors.brand.primary
+                    }
                     name={style.iconName}
                     size={20}
                   />
@@ -82,7 +91,8 @@ export const StepPreferences = memo(function StepPreferences({
                     style={[
                       styles.styleLabel,
                       isSelected && styles.styleLabelSelected,
-                    ]}>
+                    ]}
+                  >
                     {style.label}
                   </Text>
                   <Text numberOfLines={1} style={styles.styleDesc}>
@@ -121,14 +131,18 @@ export const StepPreferences = memo(function StepPreferences({
                   styles.paceCard,
                   isSelected && styles.paceCardSelected,
                   pressed && styles.pressed,
-                ]}>
+                ]}
+              >
                 <View
                   style={[
                     styles.paceIconCircle,
                     isSelected && styles.paceIconCircleSelected,
-                  ]}>
+                  ]}
+                >
                   <MaterialIcons
-                    color={isSelected ? colors.brand.primary : colors.text.secondary}
+                    color={
+                      isSelected ? colors.brand.primary : colors.text.secondary
+                    }
                     name={opt.iconName}
                     size={20}
                   />
@@ -138,7 +152,9 @@ export const StepPreferences = memo(function StepPreferences({
                   <View style={styles.paceTitleRow}>
                     <Text style={styles.paceLabel}>{opt.label}</Text>
                     <View style={styles.dailyBadge}>
-                      <Text style={styles.dailyBadgeText}>{opt.dailyPlacesLabel}</Text>
+                      <Text style={styles.dailyBadgeText}>
+                        {opt.dailyPlacesLabel}
+                      </Text>
                     </View>
                   </View>
                   <AppText style={styles.paceDesc}>{opt.description}</AppText>
@@ -165,10 +181,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   errorBanner: {
-    alignItems: 'center',
-    backgroundColor: '#FDE8E8',
+    alignItems: "center",
+    backgroundColor: "#FDE8E8",
     borderRadius: radius.input,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     marginBottom: spacing.md,
     paddingHorizontal: spacing.md,
@@ -183,9 +199,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
   sectionTitle: {
@@ -194,7 +210,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   countBadge: {
-    backgroundColor: '#E8F1FC',
+    backgroundColor: "#E8F1FC",
     borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
@@ -208,31 +224,31 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   styleCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
   styleCardSelected: {
-    backgroundColor: '#F3F8FF',
+    backgroundColor: "#F3F8FF",
     borderColor: colors.brand.primary,
     borderWidth: 1.5,
   },
   styleIconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#E8F1FC',
+    alignItems: "center",
+    backgroundColor: "#E8F1FC",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   styleIconCircleSelected: {
@@ -259,45 +275,45 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   paceCard: {
-    alignItems: 'flex-start',
-    backgroundColor: '#FFFFFF',
+    alignItems: "flex-start",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
   paceCardSelected: {
-    backgroundColor: '#F3F8FF',
+    backgroundColor: "#F3F8FF",
     borderColor: colors.brand.primary,
     borderWidth: 1.5,
   },
   paceIconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#F0EDED',
+    alignItems: "center",
+    backgroundColor: "#F0EDED",
     borderRadius: radius.pill,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: 2,
     width: 36,
   },
   paceIconCircleSelected: {
-    backgroundColor: '#D8E2FF',
+    backgroundColor: "#D8E2FF",
   },
   paceContent: {
     flex: 1,
     gap: 3,
   },
   paceTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   paceLabel: {
     color: colors.text.primary,
@@ -305,7 +321,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   dailyBadge: {
-    backgroundColor: '#F0EDED',
+    backgroundColor: "#F0EDED",
     borderRadius: radius.pill,
     paddingHorizontal: 8,
     paddingVertical: 2,

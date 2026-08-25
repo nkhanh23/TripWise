@@ -1,12 +1,12 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { exploreCategories } from '../data/mockPlaces';
-import type { CategoryOption, ExploreCategory } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { exploreCategories } from "../data/mockPlaces";
+import type { CategoryOption, ExploreCategory } from "../types";
 
 type Props = {
   selectedCategory: ExploreCategory;
@@ -22,9 +22,10 @@ export const ExploreCategoryChips = memo(function ExploreCategoryChips({
 
   const renderItem = ({ item }: { item: CategoryOption }) => {
     const isSelected = item.id === selectedCategory;
-    const localizedLabel = t(`explore.categories.${item.id}`) !== `explore.categories.${item.id}`
-      ? t(`explore.categories.${item.id}`)
-      : item.label;
+    const localizedLabel =
+      t(`explore.categories.${item.id}`) !== `explore.categories.${item.id}`
+        ? t(`explore.categories.${item.id}`)
+        : item.label;
 
     return (
       <Pressable
@@ -45,7 +46,8 @@ export const ExploreCategoryChips = memo(function ExploreCategoryChips({
                 },
               ],
           pressed && styles.chipPressed,
-        ]}>
+        ]}
+      >
         <MaterialIcons
           color={isSelected ? colors.text.inverse : colors.text.secondary}
           name={item.iconName}
@@ -57,7 +59,8 @@ export const ExploreCategoryChips = memo(function ExploreCategoryChips({
             isSelected
               ? [styles.selectedLabel, { color: colors.text.inverse }]
               : [styles.unselectedLabel, { color: colors.text.primary }],
-          ]}>
+          ]}
+        >
           {localizedLabel}
         </Text>
       </Pressable>
@@ -81,7 +84,7 @@ export const ExploreCategoryChips = memo(function ExploreCategoryChips({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: spacing.xs,
-    width: '100%',
+    width: "100%",
     zIndex: 20,
   },
   listContent: {
@@ -89,16 +92,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   chip: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 38,
     paddingHorizontal: spacing.md,
   },
   selectedChip: {
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,

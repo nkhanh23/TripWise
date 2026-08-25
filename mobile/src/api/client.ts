@@ -1,6 +1,6 @@
-import { apiConfig } from './config';
-import type { BackendErrorResponse } from './contracts';
-import { ApiException, ApiTimeoutException } from './errors';
+import { apiConfig } from "./config";
+import type { BackendErrorResponse } from "./contracts";
+import { ApiException, ApiTimeoutException } from "./errors";
 
 export type ApiClientOptions = {
   baseUrl?: string;
@@ -8,7 +8,10 @@ export type ApiClientOptions = {
   getAccessToken?: () => string | undefined;
 };
 
-export type RequestOptions = Omit<RequestInit, 'body' | 'headers' | 'signal'> & {
+export type RequestOptions = Omit<
+  RequestInit,
+  "body" | "headers" | "signal"
+> & {
   body?: unknown;
   headers?: Record<string, string>;
   signal?: AbortSignal;
@@ -16,12 +19,16 @@ export type RequestOptions = Omit<RequestInit, 'body' | 'headers' | 'signal'> & 
 };
 
 function isBackendErrorResponse(value: unknown): value is BackendErrorResponse {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return false;
   }
 
   const candidate = value as Record<string, unknown>;
-  return typeof candidate.status === 'number' && typeof candidate.error === 'string' && typeof candidate.message === 'string';
+  return (
+    typeof candidate.status === "number" &&
+    typeof candidate.error === "string" &&
+    typeof candidate.message === "string"
+  );
 }
 
 async function parseJson(response: Response): Promise<unknown> {
@@ -30,8 +37,8 @@ async function parseJson(response: Response): Promise<unknown> {
 }
 
 function buildUrl(baseUrl: string, path: string): string {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${baseUrl.replace(/\/+$/, '')}${normalizedPath}`;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl.replace(/\/+$/, "")}${normalizedPath}`;
 }
 
 export class ApiClient {
@@ -49,18 +56,21 @@ export class ApiClient {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     const externalAbort = () => controller.abort();
-    options.signal?.addEventListener('abort', externalAbort, { once: true });
+    options.signal?.addEventListener("abort", externalAbort, { once: true });
 
     try {
-      const headers = new Headers({ Accept: 'application/json', ...options.headers });
+      const headers = new Headers({
+        Accept: "application/json",
+        ...options.headers,
+      });
       const token = options.requiresAuth ? this.getAccessToken?.() : undefined;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
 
       const hasBody = options.body !== undefined;
-      if (hasBody && !headers.has('Content-Type')) {
-        headers.set('Content-Type', 'application/json');
+      if (hasBody && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
       }
 
       const response = await fetch(buildUrl(this.baseUrl, path), {
@@ -75,7 +85,11 @@ export class ApiClient {
         if (isBackendErrorResponse(payload)) {
           throw new ApiException(payload);
         }
-        throw new ApiException({ status: response.status, error: response.statusText, message: response.statusText || 'Request failed' });
+        throw new ApiException({
+          status: response.status,
+          error: response.statusText,
+          message: response.statusText || "Request failed",
+        });
       }
 
       return payload as T;
@@ -86,7 +100,7 @@ export class ApiClient {
       throw error;
     } finally {
       clearTimeout(timeout);
-      options.signal?.removeEventListener('abort', externalAbort);
+      options.signal?.removeEventListener("abort", externalAbort);
     }
   }
 }

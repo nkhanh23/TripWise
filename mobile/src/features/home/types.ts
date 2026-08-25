@@ -1,6 +1,6 @@
-import type { ResolvedImage } from '../../integration/contracts';
+import type { ResolvedImage } from "../../integration/contracts";
 
-export type HomeUIStatus = 'ready' | 'loading' | 'empty' | 'error';
+export type HomeUIStatus = "ready" | "loading" | "empty" | "error";
 
 export type UpcomingTripData = {
   id: string;

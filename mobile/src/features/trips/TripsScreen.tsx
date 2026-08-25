@@ -1,11 +1,15 @@
-import { useMemo } from 'react';
-import { SequentialTripCoverImageRepository } from '../../integration/imageResolution';
-import type { PlacePhotoRepository, SavedTripsRepository, TripCoverImageRepository } from '../../integration/repositories';
-import { SupabasePlacePhotoRepository } from '../../integration/remote/supabasePlacePhotoRepository';
-import { SupabaseWikimediaImageRepository } from '../../integration/remote/supabaseWikimediaImageRepository';
-import { SupabaseSavedTripsRepository } from '../../integration/remote/supabaseTripRepositories';
-import { supabase } from '../../lib/supabase/client';
-import { MyTripsScreen } from './screens/MyTripsScreen';
+import { useMemo } from "react";
+import { SequentialTripCoverImageRepository } from "../../integration/imageResolution";
+import type {
+  PlacePhotoRepository,
+  SavedTripsRepository,
+  TripCoverImageRepository,
+} from "../../integration/repositories";
+import { SupabasePlacePhotoRepository } from "../../integration/remote/supabasePlacePhotoRepository";
+import { SupabaseWikimediaImageRepository } from "../../integration/remote/supabaseWikimediaImageRepository";
+import { SupabaseSavedTripsRepository } from "../../integration/remote/supabaseTripRepositories";
+import { supabase } from "../../lib/supabase/client";
+import { MyTripsScreen } from "./screens/MyTripsScreen";
 
 type Props = {
   repository?: SavedTripsRepository;
@@ -13,7 +17,11 @@ type Props = {
   tripCoverRepository?: TripCoverImageRepository;
 };
 
-export function TripsScreen({ repository, photoRepository, tripCoverRepository }: Props) {
+export function TripsScreen({
+  repository,
+  photoRepository,
+  tripCoverRepository,
+}: Props) {
   const effectiveRepository = useMemo(
     () => repository ?? new SupabaseSavedTripsRepository(supabase),
     [repository],
@@ -25,7 +33,11 @@ export function TripsScreen({ repository, photoRepository, tripCoverRepository }
   const effectiveTripCoverRepository = useMemo(() => {
     if (tripCoverRepository) return tripCoverRepository;
     const wikimedia = new SupabaseWikimediaImageRepository(supabase);
-    return new SequentialTripCoverImageRepository(effectivePhotoRepository, wikimedia, wikimedia);
+    return new SequentialTripCoverImageRepository(
+      effectivePhotoRepository,
+      wikimedia,
+      wikimedia,
+    );
   }, [effectivePhotoRepository, tripCoverRepository]);
   return (
     <MyTripsScreen

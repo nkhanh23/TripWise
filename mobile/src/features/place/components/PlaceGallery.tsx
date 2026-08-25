@@ -1,7 +1,7 @@
-import { memo, useCallback, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, View } from 'react-native';
+import { memo, useCallback, useState } from "react";
+import { FlatList, Image, Pressable, StyleSheet, View } from "react-native";
 
-import { colors, radius, spacing } from '../../../theme/tokens';
+import { colors, radius, spacing } from "../../../theme/tokens";
 
 type Props = {
   heroImageUrl: string;
@@ -28,7 +28,8 @@ export const PlaceGallery = memo(function PlaceGallery({
           accessibilityRole="button"
           accessibilityState={{ selected: isSelected }}
           onPress={() => setSelectedImage(item)}
-          style={[styles.thumbnailWrap, isSelected && styles.thumbnailSelected]}>
+          style={[styles.thumbnailWrap, isSelected && styles.thumbnailSelected]}
+        >
           <Image
             accessibilityLabel={`${placeName} thumbnail ${index + 1}`}
             accessibilityRole="image"
@@ -38,7 +39,7 @@ export const PlaceGallery = memo(function PlaceGallery({
         </Pressable>
       );
     },
-    [selectedImage, placeName]
+    [selectedImage, placeName],
   );
 
   return (
@@ -72,23 +73,23 @@ export const PlaceGallery = memo(function PlaceGallery({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
   },
   heroWrap: {
     height: 320,
-    position: 'relative',
-    width: '100%',
+    position: "relative",
+    width: "100%",
   },
   heroImage: {
     backgroundColor: colors.background.surfaceVariant,
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   gradientOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
@@ -98,10 +99,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   thumbnailWrap: {
-    borderColor: 'transparent',
+    borderColor: "transparent",
     borderRadius: radius.input,
     borderWidth: 2,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   thumbnailSelected: {
     borderColor: colors.brand.primary,

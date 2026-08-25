@@ -1,19 +1,19 @@
-import { memo } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { TripDayItinerary } from '../types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { TripDayItinerary } from "../types";
 
 type Props = {
   days: TripDayItinerary[];
-  selectedDayId: string | 'all';
-  onSelectDay: (dayId: string | 'all') => void;
+  selectedDayId: string | "all";
+  onSelectDay: (dayId: string | "all") => void;
 };
 
 type DayFilterOption = {
-  id: string | 'all';
+  id: string | "all";
   label: string;
 };
 
@@ -26,10 +26,10 @@ export const TripMapDaySelector = memo(function TripMapDaySelector({
   const { t } = useTranslation();
 
   const options: DayFilterOption[] = [
-    { id: 'all', label: t('tripMap.allDays') },
+    { id: "all", label: t("tripMap.allDays") },
     ...days.map((day) => ({
       id: day.id,
-      label: t('tripMap.dayNumber', { number: day.dayNumber }),
+      label: t("tripMap.dayNumber", { number: day.dayNumber }),
     })),
   ];
 
@@ -55,14 +55,16 @@ export const TripMapDaySelector = memo(function TripMapDaySelector({
                 },
               ],
           pressed && styles.pressed,
-        ]}>
+        ]}
+      >
         <Text
           style={[
             styles.chipText,
             isSelected
               ? [styles.selectedText, { color: colors.text.inverse }]
               : [styles.unselectedText, { color: colors.text.primary }],
-          ]}>
+          ]}
+        >
           {item.label}
         </Text>
       </Pressable>
@@ -86,7 +88,7 @@ export const TripMapDaySelector = memo(function TripMapDaySelector({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: spacing.xs,
-    width: '100%',
+    width: "100%",
     zIndex: 20,
   },
   listContent: {
@@ -94,15 +96,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   chip: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.lg,
   },
   selectedChip: {
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,

@@ -1,27 +1,32 @@
-import type { PropsWithChildren } from 'react';
-import type { StyleProp, TextStyle } from 'react-native';
-import { StyleSheet, Text } from 'react-native';
+import type { PropsWithChildren } from "react";
+import type { StyleProp, TextStyle } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
-import { typography } from '../theme/tokens';
-import { useTheme } from '../theme/useTheme';
+import { typography } from "../theme/tokens";
+import { useTheme } from "../theme/useTheme";
 
 type AppTextProps = PropsWithChildren<{
-  variant?: 'body' | 'title' | 'caption' | 'muted';
+  variant?: "body" | "title" | "caption" | "muted";
   style?: StyleProp<TextStyle>;
   numberOfLines?: number;
 }>;
 
-export function AppText({ children, variant = 'body', style, numberOfLines }: AppTextProps) {
+export function AppText({
+  children,
+  variant = "body",
+  style,
+  numberOfLines,
+}: AppTextProps) {
   const { colors } = useTheme();
 
   const getVariantColor = () => {
     switch (variant) {
-      case 'title':
+      case "title":
         return colors.text.primary;
-      case 'caption':
-      case 'muted':
+      case "caption":
+      case "muted":
         return colors.text.muted;
-      case 'body':
+      case "body":
       default:
         return colors.text.secondary;
     }
@@ -32,10 +37,11 @@ export function AppText({ children, variant = 'body', style, numberOfLines }: Ap
       numberOfLines={numberOfLines}
       style={[
         styles.base,
-        variant === 'title' ? styles.title : styles.body,
+        variant === "title" ? styles.title : styles.body,
         { color: getVariantColor() },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </Text>
   );

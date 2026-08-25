@@ -14,6 +14,7 @@ type Props = {
   isDestructive?: boolean;
   showChevron?: boolean;
   showDivider?: boolean;
+  disabled?: boolean;
   onPress?: () => void;
 };
 
@@ -25,6 +26,7 @@ export const SettingsRow = memo(function SettingsRow({
   isDestructive = false,
   showChevron = true,
   showDivider = true,
+  disabled = false,
   onPress,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
@@ -40,17 +42,18 @@ export const SettingsRow = memo(function SettingsRow({
       : colors.brand.primaryContainer;
 
   return (
-    <View>
+    <View style={disabled ? { opacity: 0.5 } : undefined}>
       <Pressable
         accessibilityHint={subtitle || value || `Navigate to ${title}`}
         accessibilityLabel={title}
         accessibilityRole="button"
+        disabled={disabled}
         onPress={onPress}
         style={({ pressed }) => [
           styles.row,
-          pressed && styles.pressed,
+          pressed && !disabled && styles.pressed,
           {
-            backgroundColor: pressed
+            backgroundColor: pressed && !disabled
               ? effectiveTheme === 'dark'
                 ? 'rgba(255, 255, 255, 0.05)'
                 : 'rgba(0, 0, 0, 0.02)'

@@ -27,7 +27,7 @@ import type {
   SavePlaceCommand,
   SavedPlace,
   SavedPlacesPage,
-} from './contracts';
+} from "./contracts";
 
 export type SignUpResult = {
   session: AuthenticatedSession | null;
@@ -36,21 +36,39 @@ export type SignUpResult = {
 
 export interface AuthRepository {
   restoreSession(signal?: AbortSignal): Promise<AuthenticatedSession | null>;
-  signIn(email: string, password: string, signal?: AbortSignal): Promise<AuthenticatedSession>;
-  signUp(displayName: string, email: string, password: string, signal?: AbortSignal): Promise<SignUpResult>;
+  signIn(
+    email: string,
+    password: string,
+    signal?: AbortSignal,
+  ): Promise<AuthenticatedSession>;
+  signUp(
+    displayName: string,
+    email: string,
+    password: string,
+    signal?: AbortSignal,
+  ): Promise<SignUpResult>;
   resetPassword(email: string, signal?: AbortSignal): Promise<void>;
   signOut(signal?: AbortSignal): Promise<void>;
   deleteAccount(signal?: AbortSignal): Promise<void>;
-  subscribe(listener: (session: AuthenticatedSession | null) => void): () => void;
+  subscribe(
+    listener: (session: AuthenticatedSession | null) => void,
+  ): () => void;
 }
 
 export interface ProfileRepository {
   getOwnProfile(userId: UserId, signal?: AbortSignal): Promise<Profile | null>;
-  updateOwnProfile(userId: UserId, update: ProfileUpdate, signal?: AbortSignal): Promise<Profile>;
+  updateOwnProfile(
+    userId: UserId,
+    update: ProfileUpdate,
+    signal?: AbortSignal,
+  ): Promise<Profile>;
 }
 
 export interface TripGenerationRepository {
-  generate(request: GenerateTripRequest, signal?: AbortSignal): Promise<GeneratedTrip>;
+  generate(
+    request: GenerateTripRequest,
+    signal?: AbortSignal,
+  ): Promise<GeneratedTrip>;
 }
 
 export interface TripPersistenceRepository {
@@ -58,15 +76,28 @@ export interface TripPersistenceRepository {
 }
 
 export interface SavedTripsRepository {
-  list(request?: SavedTripsPageRequest, signal?: AbortSignal): Promise<SavedTripsPage>;
-  getDetail(tripId: TripId, signal?: AbortSignal): Promise<SavedTripDetail | null>;
-  updateItemNote(itemId: ItineraryItemId, note: string | null, signal?: AbortSignal): Promise<boolean>;
+  list(
+    request?: SavedTripsPageRequest,
+    signal?: AbortSignal,
+  ): Promise<SavedTripsPage>;
+  getDetail(
+    tripId: TripId,
+    signal?: AbortSignal,
+  ): Promise<SavedTripDetail | null>;
+  updateItemNote(
+    itemId: ItineraryItemId,
+    note: string | null,
+    signal?: AbortSignal,
+  ): Promise<boolean>;
   deleteTrip(tripId: TripId, signal?: AbortSignal): Promise<boolean>;
   getStats(signal?: AbortSignal): Promise<ProfileStatistics>;
 }
 
 export interface PlaceResolutionRepository {
-  resolve(request: ResolvePlaceRequest, signal?: AbortSignal): Promise<ResolvePlaceResult>;
+  resolve(
+    request: ResolvePlaceRequest,
+    signal?: AbortSignal,
+  ): Promise<ResolvePlaceResult>;
 }
 
 export interface RouteRepository {
@@ -74,27 +105,46 @@ export interface RouteRepository {
 }
 
 export interface WeatherRepository {
-  getForecast(request: WeatherRequest, signal?: AbortSignal): Promise<WeatherForecast | null>;
+  getForecast(
+    request: WeatherRequest,
+    signal?: AbortSignal,
+  ): Promise<WeatherForecast | null>;
 }
 
 export interface PlacePhotoRepository {
-  getPhoto(request: GetPlacePhotoRequest, signal?: AbortSignal): Promise<PlacePhoto>;
+  getPhoto(
+    request: GetPlacePhotoRequest,
+    signal?: AbortSignal,
+  ): Promise<PlacePhoto>;
 }
 
 export interface WikimediaImageRepository {
-  getImage(request: WikimediaImageRequest, signal?: AbortSignal): Promise<ResolvedImage>;
+  getImage(
+    request: WikimediaImageRequest,
+    signal?: AbortSignal,
+  ): Promise<ResolvedImage>;
 }
 
 export interface PlaceImageRepository {
-  getPlaceImage(request: PlaceImageRequest, signal?: AbortSignal): Promise<ResolvedImage>;
+  getPlaceImage(
+    request: PlaceImageRequest,
+    signal?: AbortSignal,
+  ): Promise<ResolvedImage>;
 }
 
 export interface DestinationCoverRepository {
-  getDestinationCover(destination: string, maxWidth?: number, signal?: AbortSignal): Promise<ResolvedImage>;
+  getDestinationCover(
+    destination: string,
+    maxWidth?: number,
+    signal?: AbortSignal,
+  ): Promise<ResolvedImage>;
 }
 
 export interface TripCoverImageRepository {
-  getTripCover(request: TripCoverImageRequest, signal?: AbortSignal): Promise<ResolvedImage>;
+  getTripCover(
+    request: TripCoverImageRequest,
+    signal?: AbortSignal,
+  ): Promise<ResolvedImage>;
 }
 
 export interface SavedPlacesRepository {
@@ -104,16 +154,20 @@ export interface SavedPlacesRepository {
       cursor?: { createdAt: string; id: string } | null;
       category?: string | null;
     },
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<SavedPlacesPage>;
 
-  savePlace(command: SavePlaceCommand, signal?: AbortSignal): Promise<SavedPlace>;
+  savePlace(
+    command: SavePlaceCommand,
+    signal?: AbortSignal,
+  ): Promise<SavedPlace>;
 
   unsavePlace(googlePlaceId: string, signal?: AbortSignal): Promise<boolean>;
 }
 
-
-
-
-
-export interface PlaceMetadataRepository { getMetadata(googlePlaceId: string, signal?: AbortSignal): Promise<import('./contracts').PlaceMetadata>; }
+export interface PlaceMetadataRepository {
+  getMetadata(
+    googlePlaceId: string,
+    signal?: AbortSignal,
+  ): Promise<import("./contracts").PlaceMetadata>;
+}

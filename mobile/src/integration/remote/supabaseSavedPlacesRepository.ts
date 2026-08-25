@@ -1,16 +1,24 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { Database } from '../../lib/supabase/database.types';
-import type { SavePlaceCommand, SavedPlace, SavedPlacesPage } from '../contracts';
-import { mapPostgrestError } from '../errors';
-import { mapSavedPlace } from '../mappers';
-import type { SavedPlacesRepository } from '../repositories';
-import { executeWithReliability, supabaseMutationPolicy, supabaseReadPolicy } from '../reliability';
+import type { Database } from "../../lib/supabase/database.types";
+import type {
+  SavePlaceCommand,
+  SavedPlace,
+  SavedPlacesPage,
+} from "../contracts";
+import { mapPostgrestError } from "../errors";
+import { mapSavedPlace } from "../mappers";
+import type { SavedPlacesRepository } from "../repositories";
+import {
+  executeWithReliability,
+  supabaseMutationPolicy,
+  supabaseReadPolicy,
+} from "../reliability";
 import {
   parseSavedPlaceTransport,
   parseSavedPlacesPage,
   validateSavePlaceCommand,
-} from '../validation';
+} from "../validation";
 
 export class SupabaseSavedPlacesRepository implements SavedPlacesRepository {
   constructor(private readonly client: SupabaseClient<Database>) {}
@@ -21,12 +29,12 @@ export class SupabaseSavedPlacesRepository implements SavedPlacesRepository {
       cursor?: { createdAt: string; id: string } | null;
       category?: string | null;
     },
-    signal?: AbortSignal
+    signal?: AbortSignal,
   ): Promise<SavedPlacesPage> {
     return executeWithReliability(
       async (attemptSignal) => {
         const { data, error } = await this.client
-          .rpc('list_saved_places', {
+          .rpc("list_saved_places", {
             p_limit: params?.limit ?? 20,
             p_cursor_created_at: params?.cursor?.createdAt,
             p_cursor_id: params?.cursor?.id,
@@ -42,16 +50,19 @@ export class SupabaseSavedPlacesRepository implements SavedPlacesRepository {
         };
       },
       supabaseReadPolicy,
-      signal
+      signal,
     );
   }
 
-  async savePlace(command: SavePlaceCommand, signal?: AbortSignal): Promise<SavedPlace> {
+  async savePlace(
+    command: SavePlaceCommand,
+    signal?: AbortSignal,
+  ): Promise<SavedPlace> {
     const validated = validateSavePlaceCommand(command);
     return executeWithReliability(
       async (attemptSignal) => {
         const { data, error } = await this.client
-          .rpc('save_place', {
+          .rpc("save_place", {
             p_google_place_id: validated.googlePlaceId,
             p_place_name: validated.name,
             p_latitude: validated.latitude,
@@ -66,16 +77,19 @@ export class SupabaseSavedPlacesRepository implements SavedPlacesRepository {
         return mapSavedPlace(parsed);
       },
       supabaseMutationPolicy,
-      signal
+      signal,
     );
   }
 
-  async unsavePlace(googlePlaceId: string, signal?: AbortSignal): Promise<boolean> {
-    if (!googlePlaceId || typeof googlePlaceId !== 'string') return false;
+  async unsavePlace(
+    googlePlaceId: string,
+    signal?: AbortSignal,
+  ): Promise<boolean> {
+    if (!googlePlaceId || typeof googlePlaceId !== "string") return false;
     return executeWithReliability(
       async (attemptSignal) => {
         const { data, error } = await this.client
-          .rpc('unsave_place', {
+          .rpc("unsave_place", {
             p_google_place_id: googlePlaceId.trim(),
           })
           .abortSignal(attemptSignal);
@@ -84,7 +98,7 @@ export class SupabaseSavedPlacesRepository implements SavedPlacesRepository {
         return Boolean(data);
       },
       supabaseMutationPolicy,
-      signal
+      signal,
     );
   }
 }

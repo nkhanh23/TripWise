@@ -24,6 +24,7 @@ export type ProfileMenuItem = {
   iconName: string;
   onPress: () => void;
   isDestructive?: boolean;
+  disabled?: boolean;
 };
 
 export type ProfileMenuSectionData = {
@@ -31,4 +32,4 @@ export type ProfileMenuSectionData = {
   items: ProfileMenuItem[];
 };
 
-export type DestructiveActionType = 'signOut' | 'deleteAccount' | null;
+export type DestructiveActionType = "signOut" | "deleteAccount" | null;

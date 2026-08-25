@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
 import {
   getSettings,
   subscribeToSettings,
   updateSettings,
-} from '../data/settingsStore';
+} from "../data/settingsStore";
 import type {
   AppSettings,
   CurrencyCode,
   DistanceUnit,
   NotificationPreferences,
-} from '../types';
+} from "../types";
 
 export function useSettings() {
   const { themePreference, effectiveTheme, setThemePreference } = useTheme();
@@ -46,7 +46,7 @@ export function useSettings() {
         },
       });
     },
-    [settings.notifications]
+    [settings.notifications],
   );
 
   return {

@@ -1,9 +1,9 @@
-import { memo, useCallback } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { memo, useCallback } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
-import { spacing } from '../../../theme/tokens';
-import type { RouteStep } from '../types';
-import { RouteStepItem } from './RouteStepItem';
+import { spacing } from "../../../theme/tokens";
+import type { RouteStep } from "../types";
+import { RouteStepItem } from "./RouteStepItem";
 
 type Props = {
   steps: RouteStep[];
@@ -22,7 +22,7 @@ export const RouteStepList = memo(function RouteStepList({
     ({ item, index }: { item: RouteStep; index: number }) => (
       <RouteStepItem isLast={index === steps.length - 1} step={item} />
     ),
-    [steps.length]
+    [steps.length],
   );
 
   return (

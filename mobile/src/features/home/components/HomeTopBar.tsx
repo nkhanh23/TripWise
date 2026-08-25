@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   onPressMenu?: () => void;
@@ -29,27 +29,37 @@ export const HomeTopBar = memo(function HomeTopBar({
           borderBottomColor: colors.border.default,
           paddingTop: Math.max(insets.top, spacing.sm),
         },
-      ]}>
+      ]}
+    >
       <Pressable
-        accessibilityHint={t('common.menu')}
-        accessibilityLabel={t('common.menu')}
+        accessibilityHint={t("common.menu")}
+        accessibilityLabel={t("common.menu")}
         accessibilityRole="button"
         onPress={onPressMenu}
-        style={styles.iconButton}>
+        style={styles.iconButton}
+      >
         <MaterialIcons color={colors.text.secondary} name="menu" size={24} />
       </Pressable>
 
       <Text style={[styles.brandTitle, { color: colors.brand.primary }]}>
-        {t('common.appName')}
+        {t("common.appName")}
       </Text>
 
       <Pressable
-        accessibilityHint={t('navigation.tabs.profile')}
-        accessibilityLabel={t('navigation.tabs.profile')}
+        accessibilityHint={t("navigation.tabs.profile")}
+        accessibilityLabel={t("navigation.tabs.profile")}
         accessibilityRole="button"
         onPress={onPressProfile}
-        style={[styles.avatarButton, { backgroundColor: colors.background.surfaceVariant }]}>
-        <MaterialIcons color={colors.brand.primary} name="account-circle" size={24} />
+        style={[
+          styles.avatarButton,
+          { backgroundColor: colors.background.surfaceVariant },
+        ]}
+      >
+        <MaterialIcons
+          color={colors.brand.primary}
+          name="account-circle"
+          size={24}
+        />
       </Pressable>
     </View>
   );
@@ -57,19 +67,19 @@ export const HomeTopBar = memo(function HomeTopBar({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 64,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
     zIndex: 10,
   },
   iconButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 40,
   },
   brandTitle: {
@@ -78,11 +88,11 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   avatarButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 36,
-    justifyContent: 'center',
-    overflow: 'hidden',
+    justifyContent: "center",
+    overflow: "hidden",
     width: 36,
   },
 });

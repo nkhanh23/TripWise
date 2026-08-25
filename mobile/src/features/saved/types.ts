@@ -1,5 +1,5 @@
-import type { ExploreCategory } from '../explore/types';
-import type { ResolvedImage } from '../../integration/contracts';
+import type { ExploreCategory } from "../explore/types";
+import type { ResolvedImage } from "../../integration/contracts";
 
 export type SavedPlaceUIItem = {
   id: string;
@@ -17,4 +17,4 @@ export type SavedPlaceUIItem = {
   createdAt: string;
 };
 
-export type SavedPlacesUIStatus = 'loading' | 'ready' | 'error' | 'empty';
+export type SavedPlacesUIStatus = "loading" | "ready" | "error" | "empty";

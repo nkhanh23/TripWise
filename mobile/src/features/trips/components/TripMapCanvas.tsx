@@ -1,11 +1,11 @@
-import { memo, useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo, useMemo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, typography } from '../../../theme/tokens';
-import type { TripMapMarkerItem } from '../types';
-import { computePolylineSegments } from '../utils/tripMapUtils';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, typography } from "../../../theme/tokens";
+import type { TripMapMarkerItem } from "../types";
+import { computePolylineSegments } from "../utils/tripMapUtils";
 
 type Props = {
   markerItems: TripMapMarkerItem[];
@@ -25,35 +25,36 @@ export const TripMapCanvas = memo(function TripMapCanvas({
 
   const coordinates = useMemo(
     () => markerItems.map((m) => m.coordinate),
-    [markerItems]
+    [markerItems],
   );
 
   const polylineSegments = useMemo(
     () => computePolylineSegments(coordinates),
-    [coordinates]
+    [coordinates],
   );
 
-  const isDark = effectiveTheme === 'dark';
+  const isDark = effectiveTheme === "dark";
 
   return (
     <View style={styles.canvasContainer}>
       {/* Background Interactive Map Canvas */}
       <Pressable
-        accessibilityHint={t('tripMap.interactiveMap')}
-        accessibilityLabel={t('tripMap.interactiveMap')}
+        accessibilityHint={t("tripMap.interactiveMap")}
+        accessibilityLabel={t("tripMap.interactiveMap")}
         accessibilityRole="image"
         onPress={onDismissSelection}
         style={[
           styles.mapSurface,
           {
-            backgroundColor: isDark ? '#18191E' : '#F3F2EE',
+            backgroundColor: isDark ? "#18191E" : "#F3F2EE",
           },
-        ]}>
+        ]}
+      >
         {/* River Water Feature */}
         <View
           style={[
             styles.riverCurve,
-            { backgroundColor: isDark ? '#1C2E42' : '#D6E8FA' },
+            { backgroundColor: isDark ? "#1C2E42" : "#D6E8FA" },
           ]}
         />
 
@@ -61,31 +62,31 @@ export const TripMapCanvas = memo(function TripMapCanvas({
         <View
           style={[
             styles.roadHorizontal1,
-            { backgroundColor: isDark ? '#262830' : '#FFFFFF' },
+            { backgroundColor: isDark ? "#262830" : "#FFFFFF" },
           ]}
         />
         <View
           style={[
             styles.roadHorizontal2,
-            { backgroundColor: isDark ? '#262830' : '#FFFFFF' },
+            { backgroundColor: isDark ? "#262830" : "#FFFFFF" },
           ]}
         />
         <View
           style={[
             styles.roadVertical1,
-            { backgroundColor: isDark ? '#262830' : '#FFFFFF' },
+            { backgroundColor: isDark ? "#262830" : "#FFFFFF" },
           ]}
         />
         <View
           style={[
             styles.roadVertical2,
-            { backgroundColor: isDark ? '#262830' : '#FFFFFF' },
+            { backgroundColor: isDark ? "#262830" : "#FFFFFF" },
           ]}
         />
         <View
           style={[
             styles.roadDiagonal,
-            { backgroundColor: isDark ? '#262830' : '#FFFFFF' },
+            { backgroundColor: isDark ? "#262830" : "#FFFFFF" },
           ]}
         />
 
@@ -93,13 +94,13 @@ export const TripMapCanvas = memo(function TripMapCanvas({
         <View
           style={[
             styles.parkPatch1,
-            { backgroundColor: isDark ? '#1E2B1F' : '#E2F0D9' },
+            { backgroundColor: isDark ? "#1E2B1F" : "#E2F0D9" },
           ]}
         />
         <View
           style={[
             styles.parkPatch2,
-            { backgroundColor: isDark ? '#1E2B1F' : '#E2F0D9' },
+            { backgroundColor: isDark ? "#1E2B1F" : "#E2F0D9" },
           ]}
         />
       </Pressable>
@@ -125,18 +126,18 @@ export const TripMapCanvas = memo(function TripMapCanvas({
       {markerItems.map((marker) => {
         const isSelected = marker.item.id === selectedItemId;
         const a11yLabel = isSelected
-          ? t('tripMap.selectedMarkerA11y', {
+          ? t("tripMap.selectedMarkerA11y", {
               number: marker.orderNumber,
               title: marker.item.title,
             })
-          : t('tripMap.markerA11y', {
+          : t("tripMap.markerA11y", {
               number: marker.orderNumber,
               title: marker.item.title,
             });
 
         return (
           <Pressable
-            accessibilityHint={t('tripMap.markerA11yHint')}
+            accessibilityHint={t("tripMap.markerA11yHint")}
             accessibilityLabel={a11yLabel}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
@@ -149,7 +150,8 @@ export const TripMapCanvas = memo(function TripMapCanvas({
                 left: `${marker.coordinate.leftPercent}%`,
                 zIndex: isSelected ? 30 : 10,
               },
-            ]}>
+            ]}
+          >
             {/* Active/Selected Pulse Halo */}
             {isSelected && (
               <View
@@ -164,23 +166,29 @@ export const TripMapCanvas = memo(function TripMapCanvas({
             <View
               style={[
                 styles.markerOuter,
-                isSelected ? styles.markerOuterSelected : styles.markerOuterNormal,
+                isSelected
+                  ? styles.markerOuterSelected
+                  : styles.markerOuterNormal,
                 {
                   backgroundColor: colors.background.surface,
                   borderColor: isSelected
                     ? colors.brand.primary
                     : colors.border.default,
                 },
-              ]}>
+              ]}
+            >
               {/* Inner Circle with Number */}
               <View
                 style={[
                   styles.markerInner,
-                  isSelected ? styles.markerInnerSelected : styles.markerInnerNormal,
+                  isSelected
+                    ? styles.markerInnerSelected
+                    : styles.markerInnerNormal,
                   {
                     backgroundColor: colors.brand.primary,
                   },
-                ]}>
+                ]}
+              >
                 <Text
                   style={[
                     styles.markerNumberText,
@@ -188,7 +196,8 @@ export const TripMapCanvas = memo(function TripMapCanvas({
                       color: colors.text.inverse,
                       fontSize: isSelected ? 15 : 13,
                     },
-                  ]}>
+                  ]}
+                >
                   {marker.orderNumber}
                 </Text>
               </View>
@@ -204,114 +213,114 @@ const styles = StyleSheet.create({
   canvasContainer: {
     bottom: 0,
     left: 0,
-    overflow: 'hidden',
-    position: 'absolute',
+    overflow: "hidden",
+    position: "absolute",
     right: 0,
     top: 0,
   },
   mapSurface: {
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
   riverCurve: {
     borderRadius: 90,
-    height: '140%',
-    left: '24%',
+    height: "140%",
+    left: "24%",
     opacity: 0.8,
-    position: 'absolute',
-    top: '-20%',
-    transform: [{ rotate: '-22deg' }],
+    position: "absolute",
+    top: "-20%",
+    transform: [{ rotate: "-22deg" }],
     width: 70,
   },
   roadHorizontal1: {
     height: 12,
     left: 0,
     opacity: 0.9,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
-    top: '30%',
+    top: "30%",
   },
   roadHorizontal2: {
     height: 14,
     left: 0,
     opacity: 0.9,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
-    top: '64%',
+    top: "64%",
   },
   roadVertical1: {
     bottom: 0,
-    left: '48%',
+    left: "48%",
     opacity: 0.9,
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     width: 14,
   },
   roadVertical2: {
     bottom: 0,
-    left: '80%',
+    left: "80%",
     opacity: 0.7,
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     width: 10,
   },
   roadDiagonal: {
     height: 12,
-    left: '-15%',
+    left: "-15%",
     opacity: 0.8,
-    position: 'absolute',
-    top: '46%',
-    transform: [{ rotate: '38deg' }],
-    width: '130%',
+    position: "absolute",
+    top: "46%",
+    transform: [{ rotate: "38deg" }],
+    width: "130%",
   },
   parkPatch1: {
     borderRadius: 24,
     height: 120,
-    left: '56%',
+    left: "56%",
     opacity: 0.8,
-    position: 'absolute',
-    top: '12%',
+    position: "absolute",
+    top: "12%",
     width: 140,
   },
   parkPatch2: {
     borderRadius: 30,
     height: 100,
-    left: '10%',
+    left: "10%",
     opacity: 0.8,
-    position: 'absolute',
-    top: '74%',
+    position: "absolute",
+    top: "74%",
     width: 120,
   },
   polylineSegment: {
     borderRadius: 3,
     height: 4,
     opacity: 0.7,
-    position: 'absolute',
-    transformOrigin: 'left center',
+    position: "absolute",
+    transformOrigin: "left center",
     zIndex: 5,
   },
   markerAnchor: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
     transform: [{ translateX: -22 }, { translateY: -22 }],
   },
   markerPulseHalo: {
     borderRadius: radius.pill,
     height: 52,
-    position: 'absolute',
+    position: "absolute",
     width: 52,
   },
   markerOuter: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 1.5,
     elevation: 4,
-    justifyContent: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.16,
     shadowRadius: 5,
@@ -325,9 +334,9 @@ const styles = StyleSheet.create({
     width: 44,
   },
   markerInner: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   markerInnerNormal: {
     height: 30,
@@ -339,6 +348,6 @@ const styles = StyleSheet.create({
   },
   markerNumberText: {
     fontWeight: typography.fontWeight.bold,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

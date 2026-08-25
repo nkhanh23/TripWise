@@ -1,10 +1,10 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { StyleSheet, Switch, Text, View } from "react-native";
 
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { MaterialIconName } from '../types';
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { MaterialIconName } from "../types";
 
 type Props = {
   title: string;
@@ -26,8 +26,8 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
   const { colors, effectiveTheme } = useTheme();
 
   const iconBg =
-    effectiveTheme === 'dark'
-      ? 'rgba(216, 228, 242, 0.12)'
+    effectiveTheme === "dark"
+      ? "rgba(216, 228, 242, 0.12)"
       : colors.brand.primaryContainer;
 
   return (
@@ -37,7 +37,8 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
         accessibilityLabel={title}
         accessibilityRole="switch"
         accessibilityState={{ checked: value }}
-        style={styles.row}>
+        style={styles.row}
+      >
         <View style={styles.leftContent}>
           <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
             <MaterialIcons
@@ -64,9 +65,9 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
           thumbColor={
             value
               ? colors.background.surface
-              : effectiveTheme === 'dark'
+              : effectiveTheme === "dark"
                 ? colors.text.muted
-                : '#f4f3f4'
+                : "#f4f3f4"
           }
           trackColor={{
             false: colors.border.default,
@@ -86,30 +87,30 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
 
 const styles = StyleSheet.create({
   row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     minHeight: 56,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   leftContent: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginRight: spacing.md,
   },
   iconContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 36,
   },
   textContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
     fontSize: typography.body,

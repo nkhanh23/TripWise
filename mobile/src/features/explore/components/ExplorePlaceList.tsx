@@ -1,9 +1,9 @@
-import { memo, useCallback } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { memo, useCallback } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
-import { spacing } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
-import { ExplorePlaceListItem } from './ExplorePlaceListItem';
+import { spacing } from "../../../theme/tokens";
+import type { ExplorePlace } from "../types";
+import { ExplorePlaceListItem } from "./ExplorePlaceListItem";
 
 type Props = {
   places: ExplorePlace[];
@@ -28,13 +28,16 @@ export const ExplorePlaceList = memo(function ExplorePlaceList({
         place={item}
       />
     ),
-    [selectedPlaceId, onSelectPlace]
+    [selectedPlaceId, onSelectPlace],
   );
 
   return (
     <View style={styles.container}>
       <FlatList
-        contentContainerStyle={[styles.listContent, { paddingTop: topPadding + spacing.xs }]}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingTop: topPadding + spacing.xs },
+        ]}
         data={places}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
@@ -48,7 +51,7 @@ const styles = StyleSheet.create({
   container: {
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },

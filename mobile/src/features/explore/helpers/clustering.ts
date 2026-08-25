@@ -1,4 +1,8 @@
-import type { ExploreMarkerItem, ExplorePlace, SinglePlaceMarker } from '../types';
+import type {
+  ExploreMarkerItem,
+  ExplorePlace,
+  SinglePlaceMarker,
+} from "../types";
 
 /**
  * Deterministic spatial grouping of places into clusters or single markers
@@ -6,17 +10,15 @@ import type { ExploreMarkerItem, ExplorePlace, SinglePlaceMarker } from '../type
  */
 export function clusterPlaces(
   places: ExplorePlace[],
-  thresholdPercent = 8
+  thresholdPercent = 8,
 ): ExploreMarkerItem[] {
   // If list is small, render individual markers directly
   if (places.length <= 12) {
-    return places.map(
-      (place): SinglePlaceMarker => ({
-        type: 'place',
-        id: place.id,
-        place,
-      })
-    );
+    return places.map((place): SinglePlaceMarker => ({
+      type: "place",
+      id: place.id,
+      place,
+    }));
   }
 
   const clusters: {
@@ -60,7 +62,7 @@ export function clusterPlaces(
     if (c.places.length === 1) {
       const singlePlace = c.places[0];
       return {
-        type: 'place',
+        type: "place",
         id: singlePlace.id,
         place: singlePlace,
       };
@@ -70,7 +72,7 @@ export function clusterPlaces(
     const avgLeft = Math.round(c.totalLeft / c.places.length);
 
     return {
-      type: 'cluster',
+      type: "cluster",
       id: c.id,
       count: c.places.length,
       places: c.places,

@@ -1,4 +1,4 @@
-import type { Session, User } from '@supabase/supabase-js';
+import type { Session, User } from "@supabase/supabase-js";
 
 import type {
   AuthenticatedSession,
@@ -16,19 +16,30 @@ import type {
   SavedTripDetail,
   TripGraphPayload,
   WeatherForecast,
-} from './contracts';
-import { asGooglePlaceId, asSavedPlaceId, asUserId, ContractValidationError, inclusiveDurationDays } from './validation';
+} from "./contracts";
+import {
+  asGooglePlaceId,
+  asSavedPlaceId,
+  asUserId,
+  ContractValidationError,
+  inclusiveDurationDays,
+} from "./validation";
 
 export function mapAuthenticatedUser(user: User): AuthenticatedUser {
   const metadataName = user.user_metadata.display_name;
   return {
     id: asUserId(user.id),
     email: user.email ?? null,
-    displayName: typeof metadataName === 'string' && metadataName.trim() ? metadataName.trim() : null,
+    displayName:
+      typeof metadataName === "string" && metadataName.trim()
+        ? metadataName.trim()
+        : null,
   };
 }
 
-export function mapAuthenticatedSession(session: Session): AuthenticatedSession {
+export function mapAuthenticatedSession(
+  session: Session,
+): AuthenticatedSession {
   return {
     user: mapAuthenticatedUser(session.user),
     expiresAt: session.expires_at ?? null,
@@ -40,7 +51,7 @@ export function mapProfile(profile: ProfileTransport): Profile {
     id: asUserId(profile.id),
     displayName: profile.display_name,
     avatarUrl: profile.avatar_url,
-    homeCountry: profile.home_country ?? '',
+    homeCountry: profile.home_country ?? "",
     createdAt: profile.created_at,
     updatedAt: profile.updated_at,
   };
@@ -48,21 +59,31 @@ export function mapProfile(profile: ProfileTransport): Profile {
 
 export function asFixtureId(value: string): FixtureId {
   const trimmed = value.trim();
-  if (!trimmed) throw new ContractValidationError('fixture ID');
+  if (!trimmed) throw new ContractValidationError("fixture ID");
   return trimmed as FixtureId;
 }
 
-export function resolveTripTitle(userEnteredTitle: string | null | undefined, generatedTitle: string): string {
+export function resolveTripTitle(
+  userEnteredTitle: string | null | undefined,
+  generatedTitle: string,
+): string {
   const preferred = userEnteredTitle?.trim();
   const fallback = generatedTitle.trim();
   if (preferred) return preferred;
   if (fallback) return fallback;
-  throw new ContractValidationError('trip title');
+  throw new ContractValidationError("trip title");
 }
 
-export function assertInclusiveDuration(startDate: string, endDate: string, durationDays: number): void {
-  if (!Number.isInteger(durationDays) || inclusiveDurationDays(startDate, endDate) !== durationDays) {
-    throw new ContractValidationError('inclusive trip duration');
+export function assertInclusiveDuration(
+  startDate: string,
+  endDate: string,
+  durationDays: number,
+): void {
+  if (
+    !Number.isInteger(durationDays) ||
+    inclusiveDurationDays(startDate, endDate) !== durationDays
+  ) {
+    throw new ContractValidationError("inclusive trip duration");
   }
 }
 
@@ -77,13 +98,21 @@ export function mapGeneratedTripToGraph(
   options: GeneratedTripPersistenceOptions = {},
 ): TripGraphPayload {
   const estimatedBudget = options.estimatedBudget;
-  if (estimatedBudget !== undefined && estimatedBudget !== null
-    && (!Number.isFinite(estimatedBudget) || estimatedBudget < 0 || estimatedBudget > 1_000_000_000)) {
-    throw new ContractValidationError('estimated budget');
+  if (
+    estimatedBudget !== undefined &&
+    estimatedBudget !== null &&
+    (!Number.isFinite(estimatedBudget) ||
+      estimatedBudget < 0 ||
+      estimatedBudget > 1_000_000_000)
+  ) {
+    throw new ContractValidationError("estimated budget");
   }
   const currency = options.currency?.trim().toUpperCase() ?? null;
-  if (estimatedBudget != null && (currency === null || !/^[A-Z]{3}$/.test(currency))) {
-    throw new ContractValidationError('currency');
+  if (
+    estimatedBudget != null &&
+    (currency === null || !/^[A-Z]{3}$/.test(currency))
+  ) {
+    throw new ContractValidationError("currency");
   }
   return {
     title: resolveTripTitle(options.userEnteredTitle, generated.title),
@@ -99,7 +128,9 @@ export function mapGeneratedTripToGraph(
       items: day.items.map((item) => ({
         position: item.position,
         placeName: item.placeName,
-        ...(item.placeQuery === undefined ? {} : { placeQuery: item.placeQuery }),
+        ...(item.placeQuery === undefined
+          ? {}
+          : { placeQuery: item.placeQuery }),
         ...(item.startTime === undefined ? {} : { startTime: item.startTime }),
         ...(item.endTime === undefined ? {} : { endTime: item.endTime }),
         ...(item.note === undefined ? {} : { note: item.note }),
@@ -121,20 +152,26 @@ export function mapSavedTripDetail(detail: SavedTripDetail): SavedTripDetail {
 export function mapOsrmRoute(transport: OsrmRouteTransport): Route {
   const route = transport.routes[0];
   return {
-    profile: 'driving',
+    profile: "driving",
     distanceMeters: route.distance,
     durationSeconds: route.duration,
-    geometry: route.geometry.coordinates.map(([longitude, latitude]) => ({ latitude, longitude })),
+    geometry: route.geometry.coordinates.map(([longitude, latitude]) => ({
+      latitude,
+      longitude,
+    })),
   };
 }
 
-export function mapOpenMeteoForecast(transport: OpenMeteoTransport): WeatherForecast {
+export function mapOpenMeteoForecast(
+  transport: OpenMeteoTransport,
+): WeatherForecast {
   const days: DailyWeather[] = transport.daily.time.map((date, index) => ({
     date,
     weatherCode: transport.daily.weather_code[index],
     maximumTemperatureCelsius: transport.daily.temperature_2m_max[index],
     minimumTemperatureCelsius: transport.daily.temperature_2m_min[index],
-    maximumPrecipitationProbability: transport.daily.precipitation_probability_max[index],
+    maximumPrecipitationProbability:
+      transport.daily.precipitation_probability_max[index],
   }));
   return { days };
 }
@@ -151,4 +188,3 @@ export function mapSavedPlace(transport: SavedPlaceTransport): SavedPlace {
     createdAt: transport.createdAt,
   };
 }
-

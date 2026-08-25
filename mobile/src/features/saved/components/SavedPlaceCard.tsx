@@ -1,13 +1,13 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ResolvedImage } from '../../../integration/contracts';
-import { ImageAttribution } from '../../images/components/ImageAttribution';
-import { getResolvedImageSource } from '../../images/resolvedImageSource';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ResolvedImage } from "../../../integration/contracts";
+import { ImageAttribution } from "../../images/components/ImageAttribution";
+import { getResolvedImageSource } from "../../images/resolvedImageSource";
 
 type CardPlaceItem = {
   id: string;
@@ -36,11 +36,12 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
   const { t } = useTranslation();
 
   // Extract simple city/area name for bottom-left location pill
-  const locationTag = (place.address || '').split(',').pop()?.trim() || 'Bangkok';
+  const locationTag =
+    (place.address || "").split(",").pop()?.trim() || "Bangkok";
 
   return (
     <Pressable
-      accessibilityHint={t('savedPlaces.viewDetailsHint', { name: place.name })}
+      accessibilityHint={t("savedPlaces.viewDetailsHint", { name: place.name })}
       accessibilityLabel={`${place.name}, ${place.categoryLabel}`}
       accessibilityRole="button"
       onPress={() => onPress(place.id)}
@@ -51,7 +52,8 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
           borderColor: colors.border.default,
         },
         pressed && styles.pressed,
-      ]}>
+      ]}
+    >
       {/* 1. Image Container with Badges */}
       <View style={styles.imageContainer}>
         {place.imageUrl ? (
@@ -69,22 +71,19 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
             style={[
               styles.imagePlaceholder,
               { backgroundColor: colors.background.surfaceVariant },
-            ]}>
-            <MaterialIcons
-              color={colors.text.muted}
-              name="image"
-              size={36}
-            />
+            ]}
+          >
+            <MaterialIcons color={colors.text.muted} name="image" size={36} />
           </View>
         )}
 
         {/* Top-Right Bookmark Button */}
         <Pressable
           accessibilityHint={
-            isSaved ? t('savedPlaces.unsaveHint') : t('savedPlaces.saveHint')
+            isSaved ? t("savedPlaces.unsaveHint") : t("savedPlaces.saveHint")
           }
           accessibilityLabel={
-            isSaved ? t('savedPlaces.unsaveHint') : t('savedPlaces.saveHint')
+            isSaved ? t("savedPlaces.unsaveHint") : t("savedPlaces.saveHint")
           }
           accessibilityRole="button"
           accessibilityState={{ selected: isSaved }}
@@ -97,15 +96,16 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
             styles.bookmarkButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.85)'
-                  : 'rgba(255, 255, 255, 0.85)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.85)"
+                  : "rgba(255, 255, 255, 0.85)",
             },
             btnPressed && styles.btnPressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.brand.primary}
-            name={isSaved ? 'bookmark' : 'bookmark-border'}
+            name={isSaved ? "bookmark" : "bookmark-border"}
             size={20}
           />
         </Pressable>
@@ -116,15 +116,21 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
             styles.locationPill,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(20, 21, 25, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(20, 21, 25, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
-          ]}>
-          <MaterialIcons color={colors.text.secondary} name="location-on" size={14} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="location-on"
+            size={14}
+          />
           <Text
             numberOfLines={1}
-            style={[styles.locationText, { color: colors.text.secondary }]}>
+            style={[styles.locationText, { color: colors.text.secondary }]}
+          >
             {locationTag}
           </Text>
         </View>
@@ -137,22 +143,28 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
         <View style={styles.headerRow}>
           <Text
             numberOfLines={1}
-            style={[styles.placeName, { color: colors.text.primary }]}>
+            style={[styles.placeName, { color: colors.text.primary }]}
+          >
             {place.name}
           </Text>
           {place.rating !== undefined && place.rating !== null ? (
             <View style={styles.ratingRow}>
-              <MaterialIcons color={colors.brand.yellow} name="star" size={16} />
+              <MaterialIcons
+                color={colors.brand.yellow}
+                name="star"
+                size={16}
+              />
               <Text
                 style={[
                   styles.ratingText,
                   {
                     color:
-                      effectiveTheme === 'dark'
+                      effectiveTheme === "dark"
                         ? colors.brand.yellow
                         : colors.brand.primary,
                   },
-                ]}>
+                ]}
+              >
                 {place.rating.toFixed(1)}
               </Text>
             </View>
@@ -161,7 +173,8 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
 
         <Text
           numberOfLines={1}
-          style={[styles.categorySubtitle, { color: colors.text.secondary }]}>
+          style={[styles.categorySubtitle, { color: colors.text.secondary }]}
+        >
           {place.categoryLabel}
         </Text>
       </View>
@@ -176,47 +189,47 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal: spacing.lg,
     marginVertical: spacing.sm,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
   },
   imageContainer: {
     height: 180,
-    position: 'relative',
-    width: '100%',
+    position: "relative",
+    width: "100%",
   },
   image: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   imagePlaceholder: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
+    alignItems: "center",
+    height: "100%",
+    justifyContent: "center",
+    width: "100%",
   },
   bookmarkButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    position: "absolute",
     right: spacing.sm,
     top: spacing.sm,
     width: 38,
   },
   locationPill: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     bottom: spacing.sm,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     left: spacing.sm,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
-    position: 'absolute',
+    position: "absolute",
   },
   locationText: {
     fontSize: typography.bodySmall,
@@ -227,9 +240,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   headerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   placeName: {
     flex: 1,
@@ -238,8 +251,8 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   ratingRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 3,
   },
   ratingText: {

@@ -1,8 +1,8 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -10,22 +10,29 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import type { PlacePhotoRepository, SavedTripsRepository, TripCoverImageRepository } from '../../../integration/repositories';
-import type { MainTabParamList, RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { PastTripCard } from '../components/PastTripCard';
-import { TripsEmptyState } from '../components/TripsEmptyState';
-import { TWTripCard } from '../components/TWTripCard';
-import { getMockTripSections } from '../data/mockTrips';
-import { useTripCoverPhotos } from '../hooks/useTripCoverPhotos';
-import { mapSavedTripPageToSections } from '../integrationMappers';
-import type { TripSectionData, TripSummary, TripsUIStatus } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import type {
+  PlacePhotoRepository,
+  SavedTripsRepository,
+  TripCoverImageRepository,
+} from "../../../integration/repositories";
+import type {
+  MainTabParamList,
+  RootStackParamList,
+} from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { PastTripCard } from "../components/PastTripCard";
+import { TripsEmptyState } from "../components/TripsEmptyState";
+import { TWTripCard } from "../components/TWTripCard";
+import { getMockTripSections } from "../data/mockTrips";
+import { useTripCoverPhotos } from "../hooks/useTripCoverPhotos";
+import { mapSavedTripPageToSections } from "../integrationMappers";
+import type { TripSectionData, TripSummary, TripsUIStatus } from "../types";
 
 type CombinedNavProp = NativeStackNavigationProp<RootStackParamList> &
   BottomTabNavigationProp<MainTabParamList>;
@@ -42,7 +49,7 @@ type Props = {
 };
 
 export function MyTripsScreen({
-  initialStatus = 'ready',
+  initialStatus = "ready",
   customSections,
   onSelectTrip,
   onCreateTrip,
@@ -57,45 +64,53 @@ export function MyTripsScreen({
   const { t } = useTranslation();
 
   const [status, setStatus] = useState<TripsUIStatus>(
-    repository ? 'loading' : initialStatus
+    repository ? "loading" : initialStatus,
   );
-  const [remoteSections, setRemoteSections] = useState<TripSectionData[] | null>(null);
+  const [remoteSections, setRemoteSections] = useState<
+    TripSectionData[] | null
+  >(null);
   const hasRemoteSectionsRef = useRef(false);
   const remoteLoadRef = useRef<Promise<void> | null>(null);
 
-  const loadRemote = useCallback((showBlockingLoader = true): Promise<void> => {
-    if (!repository) return Promise.resolve();
-    if (remoteLoadRef.current) return remoteLoadRef.current;
-    if (showBlockingLoader) setStatus('loading');
-    const load = repository.list({ limit: 20 })
-      .then((page) => {
-        const mapped = mapSavedTripPageToSections(page.items);
-        hasRemoteSectionsRef.current = true;
-        setRemoteSections(mapped);
-        setStatus(page.items.length === 0 ? 'empty' : 'ready');
-      })
-      .catch(() => {
-        if (!hasRemoteSectionsRef.current) {
-          setRemoteSections([]);
-          setStatus('error');
-        }
-      })
-      .finally(() => {
-        remoteLoadRef.current = null;
-      });
-    remoteLoadRef.current = load;
-    return load;
-  }, [repository]);
+  const loadRemote = useCallback(
+    (showBlockingLoader = true): Promise<void> => {
+      if (!repository) return Promise.resolve();
+      if (remoteLoadRef.current) return remoteLoadRef.current;
+      if (showBlockingLoader) setStatus("loading");
+      const load = repository
+        .list({ limit: 20 })
+        .then((page) => {
+          const mapped = mapSavedTripPageToSections(page.items);
+          hasRemoteSectionsRef.current = true;
+          setRemoteSections(mapped);
+          setStatus(page.items.length === 0 ? "empty" : "ready");
+        })
+        .catch(() => {
+          if (!hasRemoteSectionsRef.current) {
+            setRemoteSections([]);
+            setStatus("error");
+          }
+        })
+        .finally(() => {
+          remoteLoadRef.current = null;
+        });
+      remoteLoadRef.current = load;
+      return load;
+    },
+    [repository],
+  );
 
   useEffect(() => {
     if (repository) {
-      const handle = setTimeout(() => { void loadRemote(true); }, 0);
+      const handle = setTimeout(() => {
+        void loadRemote(true);
+      }, 0);
       return () => clearTimeout(handle);
     }
   }, [repository, loadRemote]);
 
   useEffect(() => {
-    const unsubscribe = navigation?.addListener?.('focus', () => {
+    const unsubscribe = navigation?.addListener?.("focus", () => {
       if (repository) {
         void loadRemote(!hasRemoteSectionsRef.current);
       }
@@ -109,33 +124,44 @@ export function MyTripsScreen({
     if (fixtureMode) return getMockTripSections();
     return [];
   }, [customSections, fixtureMode, repository, remoteSections]);
-  const effectiveTripCoverRepository = useMemo<TripCoverImageRepository | undefined>(() => {
+  const effectiveTripCoverRepository = useMemo<
+    TripCoverImageRepository | undefined
+  >(() => {
     if (tripCoverRepository) return tripCoverRepository;
     if (!photoRepository) return undefined;
     return {
       getTripCover: async (request, signal) => {
         for (const googlePlaceId of request.googlePlaceIds.slice(0, 2)) {
           try {
-            const photo = await photoRepository.getPhoto({
-              googlePlaceId,
-              ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
-            }, signal);
-            if (photo.photoUri) return { uri: photo.photoUri, source: 'GOOGLE_PLACE' as const };
+            const photo = await photoRepository.getPhoto(
+              {
+                googlePlaceId,
+                ...(request.maxWidth ? { maxWidth: request.maxWidth } : {}),
+              },
+              signal,
+            );
+            if (photo.photoUri)
+              return { uri: photo.photoUri, source: "GOOGLE_PLACE" as const };
           } catch {
             // A cover is optional; continue to the next bounded candidate.
           }
         }
-        return { uri: null, source: 'PLACEHOLDER' as const };
+        return { uri: null, source: "PLACEHOLDER" as const };
       },
     };
   }, [photoRepository, tripCoverRepository]);
   const enrichedSections = useTripCoverPhotos(
     sections,
-    repository && !fixtureMode && !customSections ? effectiveTripCoverRepository : undefined,
+    repository && !fixtureMode && !customSections
+      ? effectiveTripCoverRepository
+      : undefined,
   );
 
   const isEmpty = useMemo(() => {
-    return enrichedSections.length === 0 || enrichedSections.every((sec) => sec.data.length === 0);
+    return (
+      enrichedSections.length === 0 ||
+      enrichedSections.every((sec) => sec.data.length === 0)
+    );
   }, [enrichedSections]);
 
   const handleTripPress = useCallback(
@@ -143,23 +169,23 @@ export function MyTripsScreen({
       if (onSelectTrip) {
         onSelectTrip(tripId);
       } else {
-        navigation.navigate('TripDetail', { tripId });
+        navigation.navigate("TripDetail", { tripId });
       }
     },
-    [onSelectTrip, navigation]
+    [onSelectTrip, navigation],
   );
 
   const handleCreateTrip = useCallback(() => {
     if (onCreateTrip) {
       onCreateTrip();
     } else {
-      navigation.navigate('Plan');
+      navigation.navigate("Plan");
     }
   }, [onCreateTrip, navigation]);
 
   const handleRetry = useCallback(() => {
     if (repository) void loadRemote(true);
-    else setStatus('ready');
+    else setStatus("ready");
   }, [repository, loadRemote]);
 
   const keyExtractor = useCallback((item: TripSummary) => item.id, []);
@@ -167,9 +193,7 @@ export function MyTripsScreen({
   const renderSectionHeader = useCallback(
     ({ section }: { section: TripSectionData }) => {
       const localizedSectionTitle =
-        section.type === 'upcoming'
-          ? t('trips.upcoming')
-          : t('trips.past');
+        section.type === "upcoming" ? t("trips.upcoming") : t("trips.past");
 
       return (
         <View
@@ -179,48 +203,55 @@ export function MyTripsScreen({
               backgroundColor: colors.background.surface,
               borderBottomColor: colors.border.default,
             },
-          ]}>
+          ]}
+        >
           <View style={styles.sectionHeaderTitleRow}>
             <MaterialIcons
-              color={section.type === 'upcoming' ? colors.brand.primary : colors.text.secondary}
+              color={
+                section.type === "upcoming"
+                  ? colors.brand.primary
+                  : colors.text.secondary
+              }
               name={section.iconName}
               size={20}
             />
-            <Text style={[styles.sectionHeaderText, { color: colors.text.primary }]}>
+            <Text
+              style={[styles.sectionHeaderText, { color: colors.text.primary }]}
+            >
               {localizedSectionTitle}
             </Text>
           </View>
         </View>
       );
     },
-    [colors, t]
+    [colors, t],
   );
 
   const renderItem = useCallback(
     ({ item, section }: { item: TripSummary; section: TripSectionData }) => {
-      if (section.type === 'upcoming') {
+      if (section.type === "upcoming") {
         return <TWTripCard onPress={handleTripPress} trip={item} />;
       }
       return <PastTripCard onPress={handleTripPress} trip={item} />;
     },
-    [handleTripPress]
+    [handleTripPress],
   );
 
   const listHeader = useMemo(() => {
     return (
       <View style={styles.screenHeadingWrap}>
         <Text style={[styles.screenTitle, { color: colors.text.primary }]}>
-          {t('trips.title')}
+          {t("trips.title")}
         </Text>
-        <AppText style={styles.screenSubtitle}>
-          {t('trips.subtitle')}
-        </AppText>
+        <AppText style={styles.screenSubtitle}>{t("trips.subtitle")}</AppText>
       </View>
     );
   }, [colors, t]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background.surface }]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background.surface }]}
+    >
       {/* 1. Top App Bar */}
       <View
         style={[
@@ -230,17 +261,19 @@ export function MyTripsScreen({
             borderBottomColor: colors.border.default,
             paddingTop: Math.max(insets.top, spacing.sm),
           },
-        ]}>
+        ]}
+      >
         <View style={styles.topBarLeft}>
           <Pressable
             accessibilityHint="Menu"
             accessibilityLabel="Menu"
             accessibilityRole="button"
-            style={styles.iconButton}>
+            style={styles.iconButton}
+          >
             <MaterialIcons color={colors.brand.primary} name="menu" size={24} />
           </Pressable>
           <Text style={[styles.brandTitle, { color: colors.brand.primary }]}>
-            {t('auth.welcome.brand')}
+            {t("auth.welcome.brand")}
           </Text>
         </View>
 
@@ -248,51 +281,63 @@ export function MyTripsScreen({
           accessibilityHint="Tìm kiếm chuyến đi"
           accessibilityLabel="Tìm kiếm"
           accessibilityRole="button"
-          style={styles.iconButton}>
+          style={styles.iconButton}
+        >
           <MaterialIcons color={colors.brand.primary} name="search" size={24} />
         </Pressable>
       </View>
 
       {/* 2. Main Content States */}
-      {status === 'loading' ? (
+      {status === "loading" ? (
         <View
           accessibilityLabel="Đang tải danh sách chuyến đi"
           accessibilityRole="progressbar"
-          style={styles.centerContainer}>
+          style={styles.centerContainer}
+        >
           <ActivityIndicator color={colors.brand.primary} size="large" />
         </View>
       ) : null}
 
-      {status === 'error' ? (
+      {status === "error" ? (
         <View accessibilityRole="alert" style={styles.centerContainer}>
-          <MaterialIcons color={colors.state.error} name="error-outline" size={40} />
+          <MaterialIcons
+            color={colors.state.error}
+            name="error-outline"
+            size={40}
+          />
           <Text style={[styles.errorTitle, { color: colors.text.primary }]}>
-            {t('trips.errorTitle')}
+            {t("trips.errorTitle")}
           </Text>
           <AppText style={styles.errorSubtitle}>
-            {t('trips.errorSubtitle')}
+            {t("trips.errorSubtitle")}
           </AppText>
           <Pressable
             accessibilityHint="Thử tải lại danh sách chuyến đi"
             accessibilityLabel="Thử lại"
             accessibilityRole="button"
             onPress={handleRetry}
-            style={[styles.retryButton, { backgroundColor: colors.brand.primary }]}>
-            <Text style={[styles.retryButtonText, { color: colors.text.inverse }]}>
-              {t('common.retry')}
+            style={[
+              styles.retryButton,
+              { backgroundColor: colors.brand.primary },
+            ]}
+          >
+            <Text
+              style={[styles.retryButtonText, { color: colors.text.inverse }]}
+            >
+              {t("common.retry")}
             </Text>
           </Pressable>
         </View>
       ) : null}
 
-      {(status === 'empty' || (status === 'ready' && isEmpty)) ? (
+      {status === "empty" || (status === "ready" && isEmpty) ? (
         <View style={styles.emptyContainer}>
           {listHeader}
           <TripsEmptyState onCreateTrip={handleCreateTrip} />
         </View>
       ) : null}
 
-      {status === 'ready' && !isEmpty ? (
+      {status === "ready" && !isEmpty ? (
         <SectionList
           ListHeaderComponent={listHeader}
           contentContainerStyle={styles.listContent}
@@ -306,7 +351,7 @@ export function MyTripsScreen({
       ) : null}
 
       {/* 3. Floating Action Button (FAB) */}
-      {status === 'ready' && !isEmpty ? (
+      {status === "ready" && !isEmpty ? (
         <Pressable
           accessibilityHint="Tạo chuyến đi mới"
           accessibilityLabel="Tạo chuyến đi"
@@ -316,10 +361,11 @@ export function MyTripsScreen({
             styles.fab,
             { backgroundColor: colors.brand.primary },
             pressed && styles.fabPressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.text.inverse} name="add" size={22} />
           <Text style={[styles.fabText, { color: colors.text.inverse }]}>
-            {t('trips.createTrip')}
+            {t("trips.createTrip")}
           </Text>
         </Pressable>
       ) : null}
@@ -332,17 +378,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topAppBar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 64,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
     zIndex: 10,
   },
   topBarLeft: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.md,
   },
   brandTitle: {
@@ -351,10 +397,10 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   iconButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 40,
   },
   screenHeadingWrap: {
@@ -377,8 +423,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   sectionHeaderTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.xs,
   },
   sectionHeaderText: {
@@ -394,10 +440,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   centerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     gap: spacing.sm,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: spacing.xl,
   },
   errorTitle: {
@@ -406,13 +452,13 @@ const styles = StyleSheet.create({
   },
   errorSubtitle: {
     fontSize: typography.bodySmall,
-    textAlign: 'center',
+    textAlign: "center",
   },
   retryButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 42,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xl,
   },
@@ -421,18 +467,18 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   fab: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     bottom: 90,
     elevation: 6,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     height: 48,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.xl,
-    position: 'absolute',
+    position: "absolute",
     right: spacing.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.18,
     shadowRadius: 10,

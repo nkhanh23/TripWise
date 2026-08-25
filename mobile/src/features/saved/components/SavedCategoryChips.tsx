@@ -1,18 +1,18 @@
-import { memo } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { CategoryOption, ExploreCategory } from '../../explore/types';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { CategoryOption, ExploreCategory } from "../../explore/types";
 
 export const SAVED_CATEGORIES: CategoryOption[] = [
-  { id: 'all', label: 'All', iconName: 'star' },
-  { id: 'attractions', label: 'Attractions', iconName: 'attractions' },
-  { id: 'restaurants', label: 'Food', iconName: 'restaurant' },
-  { id: 'coffee', label: 'Cafés', iconName: 'local-cafe' },
-  { id: 'shopping', label: 'Shopping', iconName: 'shopping-bag' },
-  { id: 'hotels', label: 'Hotels', iconName: 'hotel' },
+  { id: "all", label: "All", iconName: "star" },
+  { id: "attractions", label: "Attractions", iconName: "attractions" },
+  { id: "restaurants", label: "Food", iconName: "restaurant" },
+  { id: "coffee", label: "Cafés", iconName: "local-cafe" },
+  { id: "shopping", label: "Shopping", iconName: "shopping-bag" },
+  { id: "hotels", label: "Hotels", iconName: "hotel" },
 ];
 
 type Props = {
@@ -29,18 +29,18 @@ export const SavedCategoryChips = memo(function SavedCategoryChips({
 
   const getCategoryLabel = (catId: ExploreCategory) => {
     switch (catId) {
-      case 'all':
-        return t('savedPlaces.categories.all');
-      case 'attractions':
-        return t('savedPlaces.categories.attractions');
-      case 'restaurants':
-        return t('savedPlaces.categories.food');
-      case 'coffee':
-        return t('savedPlaces.categories.cafes');
-      case 'shopping':
-        return t('savedPlaces.categories.shopping');
-      case 'hotels':
-        return t('savedPlaces.categories.hotels');
+      case "all":
+        return t("savedPlaces.categories.all");
+      case "attractions":
+        return t("savedPlaces.categories.attractions");
+      case "restaurants":
+        return t("savedPlaces.categories.food");
+      case "coffee":
+        return t("savedPlaces.categories.cafes");
+      case "shopping":
+        return t("savedPlaces.categories.shopping");
+      case "hotels":
+        return t("savedPlaces.categories.hotels");
       default:
         return catId;
     }
@@ -77,7 +77,8 @@ export const SavedCategoryChips = memo(function SavedCategoryChips({
                 },
                 isSelected && styles.selectedChipShadow,
                 pressed && styles.pressed,
-              ]}>
+              ]}
+            >
               <Text
                 style={[
                   styles.chipText,
@@ -86,7 +87,8 @@ export const SavedCategoryChips = memo(function SavedCategoryChips({
                       ? colors.text.inverse
                       : colors.text.primary,
                   },
-                ]}>
+                ]}
+              >
                 {label}
               </Text>
             </Pressable>
@@ -106,18 +108,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   chip: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     minHeight: 38,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.sm,
   },
   selectedChipShadow: {
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,

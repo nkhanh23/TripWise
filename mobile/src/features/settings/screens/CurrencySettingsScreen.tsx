@@ -1,6 +1,6 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { memo, useMemo, useState } from 'react';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { memo, useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -8,18 +8,18 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import type { RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { SUPPORTED_CURRENCIES } from '../data/settingsStore';
-import { useSettings } from '../hooks/useSettings';
-import type { CurrencyCode } from '../types';
+import { useTranslation } from "../../../i18n";
+import type { RootStackParamList } from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { SUPPORTED_CURRENCIES } from "../data/settingsStore";
+import { useSettings } from "../hooks/useSettings";
+import type { CurrencyCode } from "../types";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'CurrencySettings'>;
+type Props = NativeStackScreenProps<RootStackParamList, "CurrencySettings">;
 
 export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
   navigation,
@@ -29,7 +29,7 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
   const { t } = useTranslation();
   const { currency: selectedCurrency, setCurrency } = useSettings();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCurrencies = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -38,18 +38,21 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
       (c) =>
         c.code.toLowerCase().includes(q) ||
         c.defaultName.toLowerCase().includes(q) ||
-        c.defaultCountry.toLowerCase().includes(q)
+        c.defaultCountry.toLowerCase().includes(q),
     );
   }, [searchQuery]);
 
   const suggestedCurrencies = useMemo(
     () => filteredCurrencies.filter((c) => c.isSuggested),
-    [filteredCurrencies]
+    [filteredCurrencies],
   );
 
   const allCurrencies = useMemo(
-    () => (searchQuery ? filteredCurrencies : filteredCurrencies.filter((c) => !c.isSuggested)),
-    [filteredCurrencies, searchQuery]
+    () =>
+      searchQuery
+        ? filteredCurrencies
+        : filteredCurrencies.filter((c) => !c.isSuggested),
+    [filteredCurrencies, searchQuery],
   );
 
   const handleSelect = (code: CurrencyCode) => {
@@ -64,19 +67,21 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
           backgroundColor: colors.background.canvas,
           paddingTop: insets.top,
         },
-      ]}>
+      ]}
+    >
       {/* Top App Bar */}
       <View
         style={[
           styles.topBar,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(19, 20, 24, 0.95)'
-                : 'rgba(252, 249, 248, 0.95)',
+              effectiveTheme === "dark"
+                ? "rgba(19, 20, 24, 0.95)"
+                : "rgba(252, 249, 248, 0.95)",
             borderBottomColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         <Pressable
           accessibilityHint="Go back to Settings"
           accessibilityLabel="Back"
@@ -87,12 +92,13 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
             styles.backButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                effectiveTheme === "dark"
+                  ? "rgba(30, 31, 36, 0.9)"
+                  : "rgba(255, 255, 255, 0.9)",
             },
             pressed && styles.pressed,
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.brand.primary}
             name="arrow-back"
@@ -101,7 +107,7 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
         </Pressable>
 
         <Text style={[styles.title, { color: colors.text.primary }]}>
-          {t('settings.currency.title')}
+          {t("settings.currency.title")}
         </Text>
 
         <View style={styles.spacer} />
@@ -113,18 +119,20 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
           { paddingBottom: insets.bottom + spacing.xxxl },
         ]}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         {/* Search Bar */}
         <View
           style={[
             styles.searchContainer,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(255, 255, 255, 0.06)'
+                effectiveTheme === "dark"
+                  ? "rgba(255, 255, 255, 0.06)"
                   : colors.background.surfaceVariant,
             },
-          ]}>
+          ]}
+        >
           <MaterialIcons
             color={colors.icon.muted}
             name="search"
@@ -132,11 +140,11 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
             style={styles.searchIcon}
           />
           <TextInput
-            accessibilityLabel={t('settings.currency.searchPlaceholder')}
+            accessibilityLabel={t("settings.currency.searchPlaceholder")}
             autoCapitalize="none"
             autoCorrect={false}
             onChangeText={setSearchQuery}
-            placeholder={t('settings.currency.searchPlaceholder')}
+            placeholder={t("settings.currency.searchPlaceholder")}
             placeholderTextColor={colors.text.muted}
             style={[styles.searchInput, { color: colors.text.primary }]}
             value={searchQuery}
@@ -146,7 +154,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
               accessibilityLabel="Clear search"
               accessibilityRole="button"
               hitSlop={8}
-              onPress={() => setSearchQuery('')}>
+              onPress={() => setSearchQuery("")}
+            >
               <MaterialIcons
                 color={colors.icon.muted}
                 name="cancel"
@@ -160,7 +169,7 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
         {!searchQuery && suggestedCurrencies.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: colors.text.muted }]}>
-              {t('settings.currency.suggested')}
+              {t("settings.currency.suggested")}
             </Text>
             <View style={styles.grid}>
               {suggestedCurrencies.map((item) => {
@@ -178,16 +187,17 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                       styles.suggestedCard,
                       {
                         backgroundColor: isSelected
-                          ? effectiveTheme === 'dark'
-                            ? 'rgba(0, 88, 188, 0.15)'
-                            : 'rgba(0, 88, 188, 0.06)'
+                          ? effectiveTheme === "dark"
+                            ? "rgba(0, 88, 188, 0.15)"
+                            : "rgba(0, 88, 188, 0.06)"
                           : colors.background.surface,
                         borderColor: isSelected
                           ? colors.brand.primary
                           : colors.border.subtle,
                       },
                       pressed && styles.pressed,
-                    ]}>
+                    ]}
+                  >
                     <View style={styles.suggestedCardLeft}>
                       <View
                         style={[
@@ -197,7 +207,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                               ? colors.brand.primaryContainer
                               : colors.background.surfaceVariant,
                           },
-                        ]}>
+                        ]}
+                      >
                         <Text
                           style={[
                             styles.currencyBadgeText,
@@ -206,7 +217,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                                 ? colors.brand.primary
                                 : colors.text.secondary,
                             },
-                          ]}>
+                          ]}
+                        >
                           {item.code}
                         </Text>
                       </View>
@@ -221,7 +233,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                                 ? typography.fontWeight.bold
                                 : typography.fontWeight.semibold,
                             },
-                          ]}>
+                          ]}
+                        >
                           {item.defaultName}
                         </Text>
                         <Text
@@ -229,7 +242,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                           style={[
                             styles.currencyCountry,
                             { color: colors.text.muted },
-                          ]}>
+                          ]}
+                        >
                           {item.defaultCountry}
                         </Text>
                       </View>
@@ -252,13 +266,15 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
         {/* All Currencies List */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text.muted }]}>
-            {searchQuery ? t('settings.currency.all') : t('settings.currency.all')}
+            {searchQuery
+              ? t("settings.currency.all")
+              : t("settings.currency.all")}
           </Text>
 
           {allCurrencies.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, { color: colors.text.muted }]}>
-                {t('settings.currency.noResults')}
+                {t("settings.currency.noResults")}
               </Text>
             </View>
           ) : (
@@ -269,7 +285,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                   backgroundColor: colors.background.surface,
                   borderColor: colors.border.subtle,
                 },
-              ]}>
+              ]}
+            >
               {allCurrencies.map((item, index) => {
                 const isSelected = selectedCurrency === item.code;
                 const isLast = index === allCurrencies.length - 1;
@@ -286,13 +303,14 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                         styles.listItem,
                         {
                           backgroundColor: isSelected
-                            ? effectiveTheme === 'dark'
-                              ? 'rgba(216, 228, 242, 0.08)'
-                              : 'rgba(0, 88, 188, 0.04)'
-                            : 'transparent',
+                            ? effectiveTheme === "dark"
+                              ? "rgba(216, 228, 242, 0.08)"
+                              : "rgba(0, 88, 188, 0.04)"
+                            : "transparent",
                         },
                         pressed && styles.pressed,
-                      ]}>
+                      ]}
+                    >
                       <View style={styles.listItemLeft}>
                         <View
                           style={[
@@ -302,7 +320,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                                 ? colors.brand.primaryContainer
                                 : colors.background.surfaceVariant,
                             },
-                          ]}>
+                          ]}
+                        >
                           <Text
                             style={[
                               styles.listBadgeText,
@@ -311,7 +330,8 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                                   ? colors.brand.primary
                                   : colors.text.secondary,
                               },
-                            ]}>
+                            ]}
+                          >
                             {item.code}
                           </Text>
                         </View>
@@ -325,14 +345,16 @@ export const CurrencySettingsScreen = memo(function CurrencySettingsScreen({
                                   ? typography.fontWeight.bold
                                   : typography.fontWeight.semibold,
                               },
-                            ]}>
+                            ]}
+                          >
                             {item.defaultName}
                           </Text>
                           <Text
                             style={[
                               styles.listItemCountry,
                               { color: colors.text.muted },
-                            ]}>
+                            ]}
+                          >
                             {item.defaultCountry}
                           </Text>
                         </View>
@@ -370,18 +392,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 56,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   backButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   title: {
@@ -397,9 +419,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
   },
   searchContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 48,
     marginBottom: spacing.xl,
     paddingHorizontal: spacing.md,
@@ -410,7 +432,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: typography.body,
-    height: '100%',
+    height: "100%",
     padding: 0,
   },
   section: {
@@ -422,30 +444,30 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.xs,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   grid: {
     gap: spacing.md,
   },
   suggestedCard: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: spacing.md,
   },
   suggestedCardLeft: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
   },
   currencyBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 40,
   },
   currencyBadgeText: {
@@ -465,26 +487,26 @@ const styles = StyleSheet.create({
   listCard: {
     borderRadius: radius.card,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   listItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     minHeight: 56,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
   listItemLeft: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.md,
   },
   listBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.sm,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 46,
   },
   listBadgeText: {
@@ -503,7 +525,7 @@ const styles = StyleSheet.create({
     marginLeft: 74,
   },
   emptyContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: spacing.xxl,
   },
   emptyText: {

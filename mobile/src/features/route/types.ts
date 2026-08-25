@@ -1,6 +1,6 @@
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-export type TransportMode = 'transit' | 'walking' | 'driving' | 'cycling';
+export type TransportMode = "transit" | "walking" | "driving" | "cycling";
 
 export type TransportOption = {
   mode: TransportMode;
@@ -36,4 +36,4 @@ export type MockRouteData = {
   };
 };
 
-export type RouteUIStatus = 'loading' | 'ready' | 'error' | 'unavailable';
+export type RouteUIStatus = "loading" | "ready" | "error" | "unavailable";

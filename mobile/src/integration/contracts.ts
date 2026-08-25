@@ -1,12 +1,14 @@
-export type Brand<Value, Name extends string> = Value & { readonly __brand: Name };
+export type Brand<Value, Name extends string> = Value & {
+  readonly __brand: Name;
+};
 
-export type UserId = Brand<string, 'UserId'>;
-export type TripId = Brand<string, 'TripId'>;
-export type ItineraryDayId = Brand<string, 'ItineraryDayId'>;
-export type ItineraryItemId = Brand<string, 'ItineraryItemId'>;
-export type GooglePlaceId = Brand<string, 'GooglePlaceId'>;
-export type SavedPlaceId = Brand<string, 'SavedPlaceId'>;
-export type FixtureId = Brand<string, 'FixtureId'>;
+export type UserId = Brand<string, "UserId">;
+export type TripId = Brand<string, "TripId">;
+export type ItineraryDayId = Brand<string, "ItineraryDayId">;
+export type ItineraryItemId = Brand<string, "ItineraryItemId">;
+export type GooglePlaceId = Brand<string, "GooglePlaceId">;
+export type SavedPlaceId = Brand<string, "SavedPlaceId">;
+export type FixtureId = Brand<string, "FixtureId">;
 
 export type AuthenticatedUser = {
   id: UserId;
@@ -88,12 +90,12 @@ export type GeneratedTrip = {
 export type GenerateTripSuccessEnvelope = { data: GeneratedTrip };
 
 export type GenerateTripErrorCode =
-  | 'INVALID_REQUEST'
-  | 'UNAUTHORIZED'
-  | 'AI_TIMEOUT'
-  | 'AI_UNAVAILABLE'
-  | 'AI_INVALID_RESPONSE'
-  | 'INTERNAL_ERROR';
+  | "INVALID_REQUEST"
+  | "UNAUTHORIZED"
+  | "AI_TIMEOUT"
+  | "AI_UNAVAILABLE"
+  | "AI_INVALID_RESPONSE"
+  | "INTERNAL_ERROR";
 
 export type SafeErrorEnvelope<Code extends string> = {
   error: { code: Code; message: string };
@@ -132,7 +134,8 @@ export type PersistTripCommand = {
   graph: TripGraphPayload;
 };
 
-export type PersistenceErrorCode = 'TW001' | 'TW002' | 'TW003' | 'TW004' | 'TW005';
+export type PersistenceErrorCode =
+  "TW001" | "TW002" | "TW003" | "TW004" | "TW005";
 
 export type SavedTripCursor = {
   createdAt: string;
@@ -174,13 +177,13 @@ export type SavedTripItemBase = {
 };
 
 export type UnresolvedSavedTripItem = SavedTripItemBase & {
-  resolution: 'UNRESOLVED';
+  resolution: "UNRESOLVED";
   latitude: null;
   longitude: null;
 };
 
 export type VerifiedSavedTripItem = SavedTripItemBase & {
-  resolution: 'VERIFIED';
+  resolution: "VERIFIED";
   googlePlaceId: GooglePlaceId;
   latitude: number;
   longitude: number;
@@ -216,44 +219,44 @@ export type ResolvePlaceRequest = { itineraryItemId: ItineraryItemId };
 
 export type ResolvePlaceResult = {
   itineraryItemId: ItineraryItemId;
-  resolution: 'VERIFIED' | 'VERIFIED_REFRESHED';
+  resolution: "VERIFIED" | "VERIFIED_REFRESHED";
   resolvedAt: string;
 };
 
 export type ResolvePlaceSuccessEnvelope = { data: ResolvePlaceResult };
 
 export type ResolvePlaceErrorCode =
-  | 'PLACE_INPUT_INVALID'
-  | 'PLACE_NOT_FOUND'
-  | 'PLACE_AMBIGUOUS'
-  | 'PLACE_PROVIDER_AUTH'
-  | 'PLACE_PROVIDER_RATE_LIMITED'
-  | 'PLACE_PROVIDER_UNAVAILABLE'
-  | 'PLACE_PERSISTENCE_FAILED'
-  | 'UNAUTHORIZED'
-  | 'INTERNAL_ERROR';
+  | "PLACE_INPUT_INVALID"
+  | "PLACE_NOT_FOUND"
+  | "PLACE_AMBIGUOUS"
+  | "PLACE_PROVIDER_AUTH"
+  | "PLACE_PROVIDER_RATE_LIMITED"
+  | "PLACE_PROVIDER_UNAVAILABLE"
+  | "PLACE_PERSISTENCE_FAILED"
+  | "UNAUTHORIZED"
+  | "INTERNAL_ERROR";
 
 export type Coordinate = { latitude: number; longitude: number };
 
 export type RouteRequest = {
-  profile: 'driving';
+  profile: "driving";
   coordinates: readonly Coordinate[];
 };
 
 export type OsrmRouteTransport = {
-  code: 'Ok';
+  code: "Ok";
   routes: {
     distance: number;
     duration: number;
     geometry: {
-      type: 'LineString';
+      type: "LineString";
       coordinates: [number, number][];
     };
   }[];
 };
 
 export type Route = {
-  profile: 'driving';
+  profile: "driving";
   distanceMeters: number;
   durationSeconds: number;
   geometry: Coordinate[];
@@ -306,19 +309,16 @@ export type PlacePhoto = {
 };
 
 export type PlacePhotoErrorCode =
-  | 'PHOTO_INPUT_INVALID'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'PHOTO_NOT_FOUND'
-  | 'PHOTO_PROVIDER_AUTH'
-  | 'PHOTO_PROVIDER_RATE_LIMITED'
-  | 'PHOTO_PROVIDER_UNAVAILABLE';
+  | "PHOTO_INPUT_INVALID"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "PHOTO_NOT_FOUND"
+  | "PHOTO_PROVIDER_AUTH"
+  | "PHOTO_PROVIDER_RATE_LIMITED"
+  | "PHOTO_PROVIDER_UNAVAILABLE";
 
 export type ImageSource =
-  | 'GOOGLE_PLACE'
-  | 'WIKIMEDIA_PLACE'
-  | 'DESTINATION_COVER'
-  | 'PLACEHOLDER';
+  "GOOGLE_PLACE" | "WIKIMEDIA_PLACE" | "DESTINATION_COVER" | "PLACEHOLDER";
 
 export type ImageAttribution = {
   displayName: string;
@@ -336,8 +336,8 @@ export type ResolvedImage = {
 };
 
 export type WikimediaImageRequest =
-  | { kind: 'PLACE'; googlePlaceId: string; maxWidth?: number }
-  | { kind: 'DESTINATION'; destination: string; maxWidth?: number };
+  | { kind: "PLACE"; googlePlaceId: string; maxWidth?: number }
+  | { kind: "DESTINATION"; destination: string; maxWidth?: number };
 
 export type PlaceImageRequest = GetPlacePhotoRequest;
 
@@ -383,9 +383,8 @@ export type SavePlaceCommand = {
   category?: string | null;
 };
 
-
-
-
-
-
-export type PlaceMetadata = { googlePlaceId: string; rating?: number; userRatingCount?: number; };
+export type PlaceMetadata = {
+  googlePlaceId: string;
+  rating?: number;
+  userRatingCount?: number;
+};

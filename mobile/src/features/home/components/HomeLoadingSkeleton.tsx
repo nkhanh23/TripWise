@@ -1,8 +1,8 @@
-import { memo, useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { memo, useEffect, useRef } from "react";
+import { Animated, StyleSheet, View } from "react-native";
 
-import { useTheme } from '../../../theme';
-import { radius, spacing } from '../../../theme/tokens';
+import { useTheme } from "../../../theme";
+import { radius, spacing } from "../../../theme/tokens";
 
 export const HomeLoadingSkeleton = memo(function HomeLoadingSkeleton() {
   const { colors } = useTheme();
@@ -21,7 +21,7 @@ export const HomeLoadingSkeleton = memo(function HomeLoadingSkeleton() {
           duration: 900,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     loop.start();
     return () => loop.stop();
@@ -33,7 +33,8 @@ export const HomeLoadingSkeleton = memo(function HomeLoadingSkeleton() {
     <View
       accessibilityLabel="Loading home screen"
       accessibilityRole="progressbar"
-      style={styles.container}>
+      style={styles.container}
+    >
       {/* 1. Greeting Skeleton */}
       <View style={styles.greetingSkeleton}>
         <Animated.View
@@ -139,24 +140,24 @@ const styles = StyleSheet.create({
   titleSkeleton: {
     borderRadius: radius.sm,
     height: 24,
-    width: '60%',
+    width: "60%",
   },
   subtitleSkeleton: {
     borderRadius: radius.sm,
     height: 16,
-    width: '40%',
+    width: "40%",
   },
   heroSkeleton: {
     borderRadius: radius.control,
     height: 180,
-    width: '100%',
+    width: "100%",
   },
   quickActionsSkeleton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   actionItemSkeleton: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     gap: spacing.xs,
   },
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     width: 140,
   },
   cardsRowSkeleton: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
   },
   cardSkeleton: {
@@ -188,6 +189,6 @@ const styles = StyleSheet.create({
   listItemSkeleton: {
     borderRadius: radius.control,
     height: 72,
-    width: '100%',
+    width: "100%",
   },
 });

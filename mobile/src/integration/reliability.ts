@@ -1,4 +1,4 @@
-import { IntegrationError, mapUnknownTransportError } from './errors';
+import { IntegrationError, mapUnknownTransportError } from "./errors";
 
 export type ReliabilityPolicy = {
   timeoutMs: number;
@@ -14,23 +14,30 @@ export const supabaseReadPolicy: ReliabilityPolicy = {
   retryTimeout: true,
 };
 
-export const authOperationPolicy: ReliabilityPolicy = { timeoutMs: 15_000, maximumAttempts: 1 };
+export const authOperationPolicy: ReliabilityPolicy = {
+  timeoutMs: 15_000,
+  maximumAttempts: 1,
+};
 
-export function raceWithAbort<T>(operation: Promise<T>, signal: AbortSignal): Promise<T> {
+export function raceWithAbort<T>(
+  operation: Promise<T>,
+  signal: AbortSignal,
+): Promise<T> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
-      reject(Object.assign(new Error('Cancelled'), { name: 'AbortError' }));
+      reject(Object.assign(new Error("Cancelled"), { name: "AbortError" }));
       return;
     }
-    const cancel = () => reject(Object.assign(new Error('Cancelled'), { name: 'AbortError' }));
-    signal.addEventListener('abort', cancel, { once: true });
+    const cancel = () =>
+      reject(Object.assign(new Error("Cancelled"), { name: "AbortError" }));
+    signal.addEventListener("abort", cancel, { once: true });
     operation.then(
       (value) => {
-        signal.removeEventListener('abort', cancel);
+        signal.removeEventListener("abort", cancel);
         resolve(value);
       },
       (error: unknown) => {
-        signal.removeEventListener('abort', cancel);
+        signal.removeEventListener("abort", cancel);
         reject(error);
       },
     );
@@ -65,19 +72,19 @@ function wait(milliseconds: number, signal?: AbortSignal): Promise<void> {
   if (milliseconds <= 0) return Promise.resolve();
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
-      reject(new IntegrationError('cancelled'));
+      reject(new IntegrationError("cancelled"));
       return;
     }
     const finish = () => {
-      signal?.removeEventListener('abort', cancel);
+      signal?.removeEventListener("abort", cancel);
       resolve();
     };
     const timeout = setTimeout(finish, milliseconds);
     const cancel = () => {
       clearTimeout(timeout);
-      reject(new IntegrationError('cancelled'));
+      reject(new IntegrationError("cancelled"));
     };
-    signal?.addEventListener('abort', cancel, { once: true });
+    signal?.addEventListener("abort", cancel, { once: true });
   });
 }
 
@@ -86,20 +93,24 @@ export async function executeWithReliability<T>(
   policy: ReliabilityPolicy,
   externalSignal?: AbortSignal,
 ): Promise<T> {
-  if (!Number.isInteger(policy.maximumAttempts) || policy.maximumAttempts < 1
-    || !Number.isFinite(policy.timeoutMs) || policy.timeoutMs <= 0) {
-    throw new IntegrationError('invalidRequest');
+  if (
+    !Number.isInteger(policy.maximumAttempts) ||
+    policy.maximumAttempts < 1 ||
+    !Number.isFinite(policy.timeoutMs) ||
+    policy.timeoutMs <= 0
+  ) {
+    throw new IntegrationError("invalidRequest");
   }
 
-  let lastError: IntegrationError = new IntegrationError('unknown');
+  let lastError: IntegrationError = new IntegrationError("unknown");
 
   for (let attempt = 1; attempt <= policy.maximumAttempts; attempt += 1) {
-    if (externalSignal?.aborted) throw new IntegrationError('cancelled');
+    if (externalSignal?.aborted) throw new IntegrationError("cancelled");
 
     const controller = new AbortController();
     let timedOut = false;
     const cancel = () => controller.abort();
-    externalSignal?.addEventListener('abort', cancel, { once: true });
+    externalSignal?.addEventListener("abort", cancel, { once: true });
     const timeout = setTimeout(() => {
       timedOut = true;
       controller.abort();
@@ -109,17 +120,18 @@ export async function executeWithReliability<T>(
       return await operation(controller.signal, attempt);
     } catch (rawError) {
       if (externalSignal?.aborted) {
-        throw new IntegrationError('cancelled');
+        throw new IntegrationError("cancelled");
       }
       lastError = timedOut
-        ? new IntegrationError('timeout', policy.retryTimeout === true)
+        ? new IntegrationError("timeout", policy.retryTimeout === true)
         : mapUnknownTransportError(rawError);
     } finally {
       clearTimeout(timeout);
-      externalSignal?.removeEventListener('abort', cancel);
+      externalSignal?.removeEventListener("abort", cancel);
     }
 
-    if (attempt >= policy.maximumAttempts || !lastError.retryable) throw lastError;
+    if (attempt >= policy.maximumAttempts || !lastError.retryable)
+      throw lastError;
     await wait(policy.retryDelayMs ?? 0, externalSignal);
   }
 

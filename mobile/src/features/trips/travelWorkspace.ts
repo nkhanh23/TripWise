@@ -14,20 +14,20 @@ export type DualCurrencyMoney = {
     destinationCurrency: CurrencyCode;
     quotedAt: string;
     provider: string;
-    freshness: 'fresh' | 'cached';
+    freshness: "fresh" | "cached";
   };
 };
 
-export type ActivityFlexibility = 'fixed' | 'flexible';
-export type ActivityPriority = 'must_do' | 'want_to_do' | 'optional';
+export type ActivityFlexibility = "fixed" | "flexible";
+export type ActivityPriority = "must_do" | "want_to_do" | "optional";
 export type ActivityKind =
-  | 'place'
-  | 'custom_activity'
-  | 'restaurant'
-  | 'transport'
-  | 'accommodation'
-  | 'reservation'
-  | 'note';
+  | "place"
+  | "custom_activity"
+  | "restaurant"
+  | "transport"
+  | "accommodation"
+  | "reservation"
+  | "note";
 
 export type TripContact = {
   name?: string;
@@ -39,7 +39,14 @@ export type TripContact = {
 };
 
 export type TripExternalLink = {
-  type: 'google_maps' | 'facebook' | 'instagram' | 'tiktok' | 'website' | 'booking' | 'other';
+  type:
+    | "google_maps"
+    | "facebook"
+    | "instagram"
+    | "tiktok"
+    | "website"
+    | "booking"
+    | "other";
   url: string;
   label?: string;
 };
@@ -51,7 +58,16 @@ export type ActualVisit = {
 };
 
 export type TransportDetails = {
-  mode: 'walk' | 'drive' | 'transit' | 'bus' | 'train' | 'flight' | 'motorbike' | 'ferry' | 'other';
+  mode:
+    | "walk"
+    | "drive"
+    | "transit"
+    | "bus"
+    | "train"
+    | "flight"
+    | "motorbike"
+    | "ferry"
+    | "other";
   originLabel?: string;
   destinationLabel?: string;
   operatorName?: string;
@@ -66,17 +82,17 @@ export type AccommodationDetails = {
 };
 
 export type ExpenseCategory =
-  | 'food'
-  | 'transport'
-  | 'accommodation'
-  | 'activity'
-  | 'shopping'
-  | 'ticket'
-  | 'personal'
-  | 'reservation'
-  | 'other';
+  | "food"
+  | "transport"
+  | "accommodation"
+  | "activity"
+  | "shopping"
+  | "ticket"
+  | "personal"
+  | "reservation"
+  | "other";
 
-export type ExpenseOrigin = 'planned' | 'actual' | 'unplanned';
+export type ExpenseOrigin = "planned" | "actual" | "unplanned";
 
 export type TripExpense = {
   id: string;
@@ -89,7 +105,7 @@ export type TripExpense = {
   spentAt?: string;
 };
 
-export type ExperienceVisibility = 'private' | 'unlisted' | 'public';
+export type ExperienceVisibility = "private" | "unlisted" | "public";
 export type ExperienceRating = 1 | 2 | 3 | 4 | 5;
 
 /**
@@ -125,11 +141,16 @@ export type TripExpenseSummary = {
   unplanned: Record<CurrencyCode, number>;
 };
 
-function addCurrencyAmount(target: Record<CurrencyCode, number>, money: Money): void {
+function addCurrencyAmount(
+  target: Record<CurrencyCode, number>,
+  money: Money,
+): void {
   target[money.currency] = (target[money.currency] ?? 0) + money.amount;
 }
 
-export function summarizeTripExpenses(expenses: readonly TripExpense[]): TripExpenseSummary {
+export function summarizeTripExpenses(
+  expenses: readonly TripExpense[],
+): TripExpenseSummary {
   const result: TripExpenseSummary = { planned: {}, actual: {}, unplanned: {} };
 
   for (const expense of expenses) {
@@ -151,16 +172,20 @@ export function createPrivateExperienceDraft(input: {
     tripId: input.tripId,
     itineraryItemId: input.itineraryItemId,
     googlePlaceId: input.googlePlaceId,
-    visibility: 'private',
+    visibility: "private",
     createdAt: input.now,
     updatedAt: input.now,
   };
 }
 
-export function isFlexibleActivity(value: { flexibility?: ActivityFlexibility }): boolean {
-  return value.flexibility === 'flexible';
+export function isFlexibleActivity(value: {
+  flexibility?: ActivityFlexibility;
+}): boolean {
+  return value.flexibility === "flexible";
 }
 
-export function isProtectedPriority(value: { priority?: ActivityPriority }): boolean {
-  return value.priority === 'must_do';
+export function isProtectedPriority(value: {
+  priority?: ActivityPriority;
+}): boolean {
+  return value.priority === "must_do";
 }

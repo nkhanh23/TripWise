@@ -1,6 +1,6 @@
-import type { Coordinate, RouteRequest, SavedTripDetail } from './contracts';
-import { IntegrationError } from './errors';
-import { validateRouteRequest } from './validation';
+import type { Coordinate, RouteRequest, SavedTripDetail } from "./contracts";
+import { IntegrationError } from "./errors";
+import { validateRouteRequest } from "./validation";
 
 /**
  * Builds the only route input accepted by the mobile OSRM boundary.
@@ -20,18 +20,21 @@ export function buildDrivingRouteRequest(
   for (const day of days) {
     const items = [...day.items].sort((a, b) => a.position - b.position);
     for (const item of items) {
-      if (item.resolution !== 'VERIFIED') continue;
+      if (item.resolution !== "VERIFIED") continue;
       coordinates.push({ latitude: item.latitude, longitude: item.longitude });
     }
   }
 
   if (coordinates.length < 2) {
-    throw new IntegrationError('invalidRequest');
+    throw new IntegrationError("invalidRequest");
   }
-  return validateRouteRequest({ profile: 'driving', coordinates });
+  return validateRouteRequest({ profile: "driving", coordinates });
 }
 
-export function hasVerifiedRouteStops(detail: SavedTripDetail, dayNumber?: number): boolean {
+export function hasVerifiedRouteStops(
+  detail: SavedTripDetail,
+  dayNumber?: number,
+): boolean {
   try {
     buildDrivingRouteRequest(detail, dayNumber);
     return true;

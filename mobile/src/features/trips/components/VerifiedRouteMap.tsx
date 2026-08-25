@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo, useEffect, useMemo, useRef } from "react";
+import { StyleSheet, View } from "react-native";
 
-import type { Route } from '../../../integration/contracts';
-import { useTheme } from '../../../theme';
-import type { TripMapMarkerItem } from '../types';
+import type { Route } from "../../../integration/contracts";
+import { useTheme } from "../../../theme";
+import type { TripMapMarkerItem } from "../types";
 
 let MapView: any = null;
 let Marker: any = null;
 let Polyline: any = null;
 try {
-  const Maps = require('react-native-maps');
+  const Maps = require("react-native-maps");
   MapView = Maps.default || Maps;
   Marker = Maps.Marker;
   Polyline = Maps.Polyline;
@@ -37,20 +37,28 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   const points = useMemo(
     () =>
       markers.flatMap((marker) =>
-        marker.verifiedCoordinate ? [marker.verifiedCoordinate] : []
+        marker.verifiedCoordinate ? [marker.verifiedCoordinate] : [],
       ),
-    [markers]
+    [markers],
   );
   const routePoints = useMemo(() => route?.geometry ?? points, [points, route]);
   const initialRegion = useMemo(() => {
-    const source = points.length ? points : [{ latitude: 13.7563, longitude: 100.5018 }];
+    const source = points.length
+      ? points
+      : [{ latitude: 13.7563, longitude: 100.5018 }];
     const latitudes = source.map((point) => point.latitude);
     const longitudes = source.map((point) => point.longitude);
     return {
       latitude: (Math.min(...latitudes) + Math.max(...latitudes)) / 2,
       longitude: (Math.min(...longitudes) + Math.max(...longitudes)) / 2,
-      latitudeDelta: Math.max(0.04, Math.max(...latitudes) - Math.min(...latitudes) + 0.04),
-      longitudeDelta: Math.max(0.04, Math.max(...longitudes) - Math.min(...longitudes) + 0.04),
+      latitudeDelta: Math.max(
+        0.04,
+        Math.max(...latitudes) - Math.min(...latitudes) + 0.04,
+      ),
+      longitudeDelta: Math.max(
+        0.04,
+        Math.max(...longitudes) - Math.min(...longitudes) + 0.04,
+      ),
     };
   }, [points]);
 
@@ -71,7 +79,8 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
         style={[
           styles.container,
           { backgroundColor: colors.background.surfaceVariant },
-        ]}>
+        ]}
+      >
         <View style={styles.fallbackCanvas}>
           <MaterialIcons color={colors.brand.primary} name="map" size={48} />
         </View>
@@ -81,19 +90,25 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
 
   return (
     <View style={styles.container}>
-      <MapView initialRegion={initialRegion} ref={mapRef} style={StyleSheet.absoluteFill}>
+      <MapView
+        initialRegion={initialRegion}
+        ref={mapRef}
+        style={StyleSheet.absoluteFill}
+      >
         {markers.map((marker) =>
           marker.verifiedCoordinate ? (
             <Marker
               coordinate={marker.verifiedCoordinate}
               key={marker.item.id}
               onPress={() => onSelectMarker(marker)}
-              title={`${marker.orderNumber}. ${marker.item.title}`}>
+              title={`${marker.orderNumber}. ${marker.item.title}`}
+            >
               <View
                 style={[
                   styles.badge,
                   { backgroundColor: colors.brand.primary },
-                ]}>
+                ]}
+              >
                 <MaterialIcons
                   color={colors.text.inverse}
                   name="location-on"
@@ -101,7 +116,7 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
                 />
               </View>
             </Marker>
-          ) : null
+          ) : null,
         )}
         {routePoints.length >= 2 ? (
           <Polyline
@@ -116,13 +131,13 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
 });
 
 const styles = StyleSheet.create({
-  container: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 },
+  container: { bottom: 0, left: 0, position: "absolute", right: 0, top: 0 },
   badge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 18,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 36,
   },
-  fallbackCanvas: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  fallbackCanvas: { alignItems: "center", flex: 1, justifyContent: "center" },
 });

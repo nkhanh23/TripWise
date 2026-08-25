@@ -1,30 +1,32 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { MockRouteData } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { MockRouteData } from "../types";
 
 type Props = {
   route: MockRouteData;
 };
 
-export const RouteSummaryCard = memo(function RouteSummaryCard({ route }: Props) {
+export const RouteSummaryCard = memo(function RouteSummaryCard({
+  route,
+}: Props) {
   const { colors, effectiveTheme } = useTheme();
 
   const getModeIconName = (): keyof typeof MaterialIcons.glyphMap => {
     switch (route.transportMode) {
-      case 'transit':
-        return 'train';
-      case 'driving':
-        return 'directions-car';
-      case 'cycling':
-        return 'directions-bike';
-      case 'walking':
+      case "transit":
+        return "train";
+      case "driving":
+        return "directions-car";
+      case "cycling":
+        return "directions-bike";
+      case "walking":
       default:
-        return 'directions-walk';
+        return "directions-walk";
     }
   };
 
@@ -36,7 +38,8 @@ export const RouteSummaryCard = memo(function RouteSummaryCard({ route }: Props)
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       {/* Top Header */}
       <View style={styles.headerRow}>
         <View style={styles.leftColumn}>
@@ -67,11 +70,14 @@ export const RouteSummaryCard = memo(function RouteSummaryCard({ route }: Props)
             styles.trafficRow,
             {
               backgroundColor:
-                effectiveTheme === 'dark' ? '#1A2E44' : '#F3F8FF',
+                effectiveTheme === "dark" ? "#1A2E44" : "#F3F8FF",
             },
-          ]}>
+          ]}
+        >
           <MaterialIcons color={colors.brand.primary} name="bolt" size={14} />
-          <AppText style={[styles.trafficText, { color: colors.brand.primary }]}>
+          <AppText
+            style={[styles.trafficText, { color: colors.brand.primary }]}
+          >
             {route.trafficLabel}
           </AppText>
         </View>
@@ -79,12 +85,17 @@ export const RouteSummaryCard = memo(function RouteSummaryCard({ route }: Props)
 
       {/* Mini Timeline Representation */}
       <View style={styles.timelineRow}>
-        <MaterialIcons color={colors.text.secondary} name="directions-walk" size={16} />
+        <MaterialIcons
+          color={colors.text.secondary}
+          name="directions-walk"
+          size={16}
+        />
         <View
           style={[
             styles.timelineTrack,
             { backgroundColor: colors.background.surfaceVariant },
-          ]}>
+          ]}
+        >
           <View
             style={[
               styles.timelineFill,
@@ -92,12 +103,17 @@ export const RouteSummaryCard = memo(function RouteSummaryCard({ route }: Props)
             ]}
           />
         </View>
-        <MaterialIcons color={colors.brand.primary} name={getModeIconName()} size={16} />
+        <MaterialIcons
+          color={colors.brand.primary}
+          name={getModeIconName()}
+          size={16}
+        />
         <View
           style={[
             styles.timelineTrack,
             { backgroundColor: colors.background.surfaceVariant },
-          ]}>
+          ]}
+        >
           <View
             style={[
               styles.timelineFill,
@@ -105,7 +121,11 @@ export const RouteSummaryCard = memo(function RouteSummaryCard({ route }: Props)
             ]}
           />
         </View>
-        <MaterialIcons color={colors.state.error} name="location-on" size={16} />
+        <MaterialIcons
+          color={colors.state.error}
+          name="location-on"
+          size={16}
+        />
       </View>
     </View>
   );
@@ -119,15 +139,15 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginVertical: spacing.xs,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
   },
   headerRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   leftColumn: {
     flex: 1,
@@ -135,7 +155,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   rightColumn: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     gap: 2,
   },
   durationText: {
@@ -154,9 +174,9 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   trafficRow: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.input,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     paddingHorizontal: spacing.sm,
     paddingVertical: 6,
@@ -166,8 +186,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   timelineRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.xs,
     marginTop: spacing.xs,
   },
@@ -175,10 +195,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     flex: 1,
     height: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   timelineFill: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
 });

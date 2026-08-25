@@ -1,29 +1,32 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTranslation } from '../../../i18n';
-import type { RootStackParamList } from '../../../navigation/types';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { TripMapCanvas } from '../components/TripMapCanvas';
-import { VerifiedRouteMap } from '../components/VerifiedRouteMap';
-import { TripMapDaySelector } from '../components/TripMapDaySelector';
-import { TripMapPlacePreview } from '../components/TripMapPlacePreview';
-import { getMockTripDetail } from '../data/mockTripDetail';
-import type { ItineraryItem, TripMapMarkerItem } from '../types';
-import { deriveTripMapMarkers, deriveVerifiedTripMapMarkers } from '../utils/tripMapUtils';
-import { supabase } from '../../../lib/supabase/client';
-import { SupabaseSavedTripsRepository } from '../../../integration/remote/supabaseTripRepositories';
-import { OsrmRouteRepository } from '../../../integration/remote/publicProviderRepositories';
-import { buildDrivingRouteRequest } from '../../../integration/routePlanning';
-import { mapSavedTripDetailToTripDetailData } from '../integrationMappers';
-import { asTripId, isUuid } from '../../../integration/validation';
-import type { Route, TripId } from '../../../integration/contracts';
+import { useTranslation } from "../../../i18n";
+import type { RootStackParamList } from "../../../navigation/types";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { TripMapCanvas } from "../components/TripMapCanvas";
+import { VerifiedRouteMap } from "../components/VerifiedRouteMap";
+import { TripMapDaySelector } from "../components/TripMapDaySelector";
+import { TripMapPlacePreview } from "../components/TripMapPlacePreview";
+import { getMockTripDetail } from "../data/mockTripDetail";
+import type { ItineraryItem, TripMapMarkerItem } from "../types";
+import {
+  deriveTripMapMarkers,
+  deriveVerifiedTripMapMarkers,
+} from "../utils/tripMapUtils";
+import { supabase } from "../../../lib/supabase/client";
+import { SupabaseSavedTripsRepository } from "../../../integration/remote/supabaseTripRepositories";
+import { OsrmRouteRepository } from "../../../integration/remote/publicProviderRepositories";
+import { buildDrivingRouteRequest } from "../../../integration/routePlanning";
+import { mapSavedTripDetailToTripDetailData } from "../integrationMappers";
+import { asTripId, isUuid } from "../../../integration/validation";
+import type { Route, TripId } from "../../../integration/contracts";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'TripMap'> & {
+type Props = NativeStackScreenProps<RootStackParamList, "TripMap"> & {
   fixtureMode?: boolean;
   customTripDetail?: ReturnType<typeof mapSavedTripDetailToTripDetailData>;
 };
@@ -42,10 +45,14 @@ export const TripMapScreen = memo(function TripMapScreen({
   const initialDayId = route.params?.initialDayId;
   const isRemoteTrip = Boolean(tripId && isUuid(tripId));
   const isFixture = Boolean(
-    fixtureMode || customTripDetail || (!isRemoteTrip && tripId?.startsWith('trip_'))
+    fixtureMode ||
+    customTripDetail ||
+    (!isRemoteTrip && tripId?.startsWith("trip_")),
   );
 
-  const [remoteTripData, setRemoteTripData] = useState<ReturnType<typeof mapSavedTripDetailToTripDetailData> | null>(null);
+  const [remoteTripData, setRemoteTripData] = useState<ReturnType<
+    typeof mapSavedTripDetailToTripDetailData
+  > | null>(null);
   const [routeResult, setRouteResult] = useState<Route | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
 
@@ -60,7 +67,8 @@ export const TripMapScreen = memo(function TripMapScreen({
       setRemoteTripData(null);
       return;
     }
-    void repository.getDetail(typedTripId, controller.signal)
+    void repository
+      .getDetail(typedTripId, controller.signal)
       .then((detail) => {
         if (!controller.signal.aborted && detail) {
           setRemoteTripData(mapSavedTripDetailToTripDetailData(detail));
@@ -76,24 +84,30 @@ export const TripMapScreen = memo(function TripMapScreen({
 
   const tripData = useMemo(() => {
     if (customTripDetail) return customTripDetail;
-    if (fixtureMode || (!isRemoteTrip && tripId?.startsWith('trip_'))) {
-      return getMockTripDetail(tripId ?? 'trip_bangkok');
+    if (fixtureMode || (!isRemoteTrip && tripId?.startsWith("trip_"))) {
+      return getMockTripDetail(tripId ?? "trip_bangkok");
     }
     if (isRemoteTrip) return remoteTripData;
     return null;
   }, [customTripDetail, fixtureMode, isRemoteTrip, remoteTripData, tripId]);
 
-  const [selectedDayId, setSelectedDayId] = useState<string | 'all'>(
-    initialDayId || 'all'
+  const [selectedDayId, setSelectedDayId] = useState<string | "all">(
+    initialDayId || "all",
   );
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
   // Synchronize selected day with available days
   useEffect(() => {
     if (!tripData?.days || tripData.days.length === 0) return;
-    if (selectedDayId !== 'all' && !tripData.days.some((day) => day.id === selectedDayId)) {
-      const matched = initialDayId && tripData.days.some((day) => day.id === initialDayId);
-      setSelectedDayId(matched ? initialDayId : (tripData.days[0]?.id ?? 'all'));
+    if (
+      selectedDayId !== "all" &&
+      !tripData.days.some((day) => day.id === selectedDayId)
+    ) {
+      const matched =
+        initialDayId && tripData.days.some((day) => day.id === initialDayId);
+      setSelectedDayId(
+        matched ? initialDayId : (tripData.days[0]?.id ?? "all"),
+      );
     }
   }, [tripData, selectedDayId, initialDayId]);
 
@@ -107,7 +121,7 @@ export const TripMapScreen = memo(function TripMapScreen({
   }, [isFixture, isRemoteTrip, tripData, selectedDayId]);
 
   useEffect(() => {
-    if (!tripData || selectedDayId === 'all') {
+    if (!tripData || selectedDayId === "all") {
       setRouteResult(null);
       return;
     }
@@ -117,7 +131,10 @@ export const TripMapScreen = memo(function TripMapScreen({
       return;
     }
     const verifiedItems = day.items.filter(
-      (item) => item.resolution === 'VERIFIED' && item.latitude !== undefined && item.longitude !== undefined
+      (item) =>
+        item.resolution === "VERIFIED" &&
+        item.latitude !== undefined &&
+        item.longitude !== undefined,
     );
     if (verifiedItems.length < 2) {
       setRouteResult(null);
@@ -136,20 +153,20 @@ export const TripMapScreen = memo(function TripMapScreen({
           endDate: tripData.endDate,
           estimatedBudget: null,
           currency: null,
-          createdAt: '',
-          updatedAt: '',
+          createdAt: "",
+          updatedAt: "",
           days: tripData.days.map((d) => ({
             id: d.id as never,
             dayNumber: d.dayNumber,
             date: d.date,
             summary: d.title,
             items: d.items
-              .filter((item) => item.resolution === 'VERIFIED')
+              .filter((item) => item.resolution === "VERIFIED")
               .map((item, index) => ({
                 id: item.id as never,
                 position: index + 1,
                 placeName: item.title,
-                resolution: 'VERIFIED',
+                resolution: "VERIFIED",
                 googlePlaceId: item.googlePlaceId as never,
                 latitude: item.latitude as number,
                 longitude: item.longitude as number,
@@ -157,7 +174,7 @@ export const TripMapScreen = memo(function TripMapScreen({
               })),
           })),
         },
-        day.dayNumber
+        day.dayNumber,
       );
       const repository = new OsrmRouteRepository();
       void repository
@@ -183,10 +200,14 @@ export const TripMapScreen = memo(function TripMapScreen({
     if (!selectedItemId) {
       return markerItems[0] || null;
     }
-    return markerItems.find((m) => m.item.id === selectedItemId) || markerItems[0] || null;
+    return (
+      markerItems.find((m) => m.item.id === selectedItemId) ||
+      markerItems[0] ||
+      null
+    );
   }, [markerItems, selectedItemId]);
 
-  const handleSelectDay = useCallback((dayId: string | 'all') => {
+  const handleSelectDay = useCallback((dayId: string | "all") => {
     setSelectedDayId(dayId);
     setSelectedItemId(null);
   }, []);
@@ -203,19 +224,22 @@ export const TripMapScreen = memo(function TripMapScreen({
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.navigate('MainTabs');
+      navigation.navigate("MainTabs");
     }
   }, [navigation]);
 
   const handlePressPreviewItem = useCallback(
     (item: ItineraryItem) => {
       if (item.placeId) {
-        navigation.navigate('PlaceDetail', { placeId: item.placeId });
+        navigation.navigate("PlaceDetail", { placeId: item.placeId });
       } else {
-        Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+        Alert.alert(
+          t("common.unavailableTitle"),
+          t("common.unavailableMessage"),
+        );
       }
     },
-    [navigation, t]
+    [navigation, t],
   );
 
   const handlePressDirections = useCallback(
@@ -224,35 +248,38 @@ export const TripMapScreen = memo(function TripMapScreen({
         .filter((marker) => marker.verifiedCoordinate)
         .map((marker) => marker.verifiedCoordinate!);
 
-      navigation.navigate('RoutePreview', {
+      navigation.navigate("RoutePreview", {
         destinationId: item.googlePlaceId ?? item.placeId ?? item.id,
         destinationName: item.title,
-        coordinates: verifiedCoordinates.length >= 2 ? verifiedCoordinates : undefined,
+        coordinates:
+          verifiedCoordinates.length >= 2 ? verifiedCoordinates : undefined,
       });
     },
-    [markerItems, navigation]
+    [markerItems, navigation],
   );
 
   const handleAddPlace = useCallback(() => {
-    const dayIdParam = selectedDayId === 'all' ? tripData?.days[0]?.id : selectedDayId;
+    const dayIdParam =
+      selectedDayId === "all" ? tripData?.days[0]?.id : selectedDayId;
     if (!isFixture) {
-      Alert.alert(t('common.unavailableTitle'), t('addPlace.unavailableSubtitle'));
+      Alert.alert(
+        t("common.unavailableTitle"),
+        t("addPlace.unavailableSubtitle"),
+      );
     } else if (tripId) {
-      navigation.navigate('AddPlace', {
+      navigation.navigate("AddPlace", {
         tripId,
         initialDayId: dayIdParam,
       });
     }
   }, [isFixture, navigation, tripId, selectedDayId, t, tripData]);
 
-  const isDark = effectiveTheme === 'dark';
+  const isDark = effectiveTheme === "dark";
 
   return (
     <View
-      style={[
-        styles.container,
-        { backgroundColor: colors.background.canvas },
-      ]}>
+      style={[styles.container, { backgroundColor: colors.background.canvas }]}
+    >
       {/* Map Canvas Background */}
       {isFixture && !isRemoteTrip ? (
         <TripMapCanvas
@@ -277,16 +304,17 @@ export const TripMapScreen = memo(function TripMapScreen({
           {
             paddingTop: Math.max(insets.top, spacing.sm),
             backgroundColor: isDark
-              ? 'rgba(19, 20, 24, 0.88)'
-              : 'rgba(252, 249, 248, 0.88)',
+              ? "rgba(19, 20, 24, 0.88)"
+              : "rgba(252, 249, 248, 0.88)",
             borderBottomColor: colors.border.subtle,
           },
-        ]}>
+        ]}
+      >
         <View style={styles.topRow}>
           {/* Back Button */}
           <Pressable
             accessibilityHint="Go back to trip details"
-            accessibilityLabel={t('tripMap.back')}
+            accessibilityLabel={t("tripMap.back")}
             accessibilityRole="button"
             hitSlop={8}
             onPress={handleBack}
@@ -297,7 +325,8 @@ export const TripMapScreen = memo(function TripMapScreen({
                 borderColor: colors.border.default,
               },
               pressed && styles.pressed,
-            ]}>
+            ]}
+          >
             <MaterialIcons
               color={colors.text.primary}
               name="arrow-back"
@@ -309,13 +338,11 @@ export const TripMapScreen = memo(function TripMapScreen({
           <View style={styles.titleContainer}>
             <Text
               numberOfLines={1}
-              style={[
-                styles.titleText,
-                { color: colors.text.primary },
-              ]}>
+              style={[styles.titleText, { color: colors.text.primary }]}
+            >
               {tripData?.destination
-                ? `${tripData.destination.split(',')[0]} ${t('tripMap.title')}`
-                : t('tripMap.title')}
+                ? `${tripData.destination.split(",")[0]} ${t("tripMap.title")}`
+                : t("tripMap.title")}
             </Text>
           </View>
 
@@ -342,47 +369,36 @@ export const TripMapScreen = memo(function TripMapScreen({
               backgroundColor: colors.background.surface,
               borderColor: colors.border.default,
             },
-          ]}>
-          <MaterialIcons
-            color={colors.text.muted}
-            name="map"
-            size={40}
-          />
-          <Text
-            style={[
-              styles.emptyTitle,
-              { color: colors.text.primary },
-            ]}>
-            {t('tripMap.noPlaces')}
+          ]}
+        >
+          <MaterialIcons color={colors.text.muted} name="map" size={40} />
+          <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
+            {t("tripMap.noPlaces")}
           </Text>
           <Text
-            style={[
-              styles.emptySubtitle,
-              { color: colors.text.secondary },
-            ]}>
-            {t('tripMap.noPlacesSubtitle')}
+            style={[styles.emptySubtitle, { color: colors.text.secondary }]}
+          >
+            {t("tripMap.noPlacesSubtitle")}
           </Text>
           <Pressable
             accessibilityHint="Add place to this day"
-            accessibilityLabel={t('tripMap.addPlace')}
+            accessibilityLabel={t("tripMap.addPlace")}
             accessibilityRole="button"
             onPress={handleAddPlace}
             style={({ pressed }) => [
               styles.addPlaceButton,
               { backgroundColor: colors.brand.primary },
               pressed && styles.pressed,
-            ]}>
-            <MaterialIcons
-              color={colors.text.inverse}
-              name="add"
-              size={18}
-            />
+            ]}
+          >
+            <MaterialIcons color={colors.text.inverse} name="add" size={18} />
             <Text
               style={[
                 styles.addPlaceButtonText,
                 { color: colors.text.inverse },
-              ]}>
-              {t('tripMap.addPlace')}
+              ]}
+            >
+              {t("tripMap.addPlace")}
             </Text>
           </Pressable>
         </View>
@@ -403,15 +419,15 @@ export const TripMapScreen = memo(function TripMapScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: 'relative',
+    position: "relative",
   },
   headerWrapper: {
     borderBottomWidth: 0.5,
     elevation: 4,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -419,22 +435,22 @@ const styles = StyleSheet.create({
     zIndex: 50,
   },
   topRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     height: 48,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: spacing.lg,
   },
   backButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 1,
     height: 38,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 38,
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     paddingHorizontal: spacing.sm,
   },
@@ -446,7 +462,7 @@ const styles = StyleSheet.create({
     width: 38,
   },
   emptyContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     borderWidth: 1,
     bottom: spacing.xxl,
@@ -454,9 +470,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     left: spacing.lg,
     padding: spacing.xl,
-    position: 'absolute',
+    position: "absolute",
     right: spacing.lg,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 8,
@@ -469,12 +485,12 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     fontSize: typography.bodySmall,
-    textAlign: 'center',
+    textAlign: "center",
   },
   addPlaceButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xl,

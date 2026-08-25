@@ -1,25 +1,29 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { RouteStep } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { RouteStep } from "../types";
 
 type Props = {
   step: RouteStep;
   isLast: boolean;
 };
 
-export const RouteStepItem = memo(function RouteStepItem({ step, isLast }: Props) {
+export const RouteStepItem = memo(function RouteStepItem({
+  step,
+  isLast,
+}: Props) {
   const { colors } = useTheme();
 
   return (
     <View
       accessibilityLabel={`${step.instruction}, ${step.distanceLabel}`}
       accessibilityRole="text"
-      style={styles.container}>
+      style={styles.container}
+    >
       {/* Left Timeline Column */}
       <View style={styles.timelineColumn}>
         <View
@@ -29,8 +33,13 @@ export const RouteStepItem = memo(function RouteStepItem({ step, isLast }: Props
               backgroundColor: colors.background.surfaceVariant,
               borderColor: colors.border.default,
             },
-          ]}>
-          <MaterialIcons color={colors.text.secondary} name={step.iconName} size={15} />
+          ]}
+        >
+          <MaterialIcons
+            color={colors.text.secondary}
+            name={step.iconName}
+            size={15}
+          />
         </View>
         {!isLast ? (
           <View
@@ -47,7 +56,8 @@ export const RouteStepItem = memo(function RouteStepItem({ step, isLast }: Props
         <View style={styles.titleRow}>
           <Text
             numberOfLines={2}
-            style={[styles.instructionText, { color: colors.text.primary }]}>
+            style={[styles.instructionText, { color: colors.text.primary }]}
+          >
             {step.instruction}
           </Text>
           {step.time ? (
@@ -63,7 +73,9 @@ export const RouteStepItem = memo(function RouteStepItem({ step, isLast }: Props
           </Text>
           {step.durationLabel ? (
             <>
-              <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
+              <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>
+                •
+              </Text>
               <Text style={[styles.metaText, { color: colors.text.secondary }]}>
                 Approx. {step.durationLabel}
               </Text>
@@ -83,26 +95,26 @@ export const RouteStepItem = memo(function RouteStepItem({ step, isLast }: Props
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     minHeight: 64,
   },
   timelineColumn: {
-    alignItems: 'center',
+    alignItems: "center",
     width: 28,
   },
   iconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 1,
     height: 28,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 28,
     zIndex: 2,
   },
   verticalLine: {
     bottom: -8,
-    position: 'absolute',
+    position: "absolute",
     top: 28,
     width: 2,
     zIndex: 1,
@@ -113,9 +125,9 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   titleRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   instructionText: {
     flex: 1,
@@ -128,8 +140,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
   },
   metaText: {

@@ -41,15 +41,16 @@ export const ProfileMenuSection = memo(function ProfileMenuSection({
           const isLast = index === items.length - 1;
 
           return (
-            <View key={item.id}>
+            <View key={item.id} style={item.disabled ? { opacity: 0.5 } : undefined}>
               <Pressable
                 accessibilityHint={`Navigate to ${item.label}`}
                 accessibilityLabel={item.label}
                 accessibilityRole="button"
+                disabled={item.disabled}
                 onPress={item.onPress}
                 style={({ pressed }) => [
                   styles.rowItem,
-                  pressed && styles.pressed,
+                  pressed && !item.disabled && styles.pressed,
                 ]}>
                 {/* Leading Circular Icon Container */}
                 <View

@@ -1,4 +1,4 @@
-import { ContractValidationError } from './validation';
+import { ContractValidationError } from "./validation";
 
 const idempotencyKeyPattern = /^[A-Za-z0-9._:-]{8,128}$/;
 
@@ -16,12 +16,13 @@ export class SaveIntent {
 
   constructor(private readonly idempotencyKey: string) {
     if (!idempotencyKeyPattern.test(idempotencyKey)) {
-      throw new ContractValidationError('idempotency key');
+      throw new ContractValidationError("idempotency key");
     }
   }
 
   key(): string {
-    if (!this.active) throw new ContractValidationError('completed save intent');
+    if (!this.active)
+      throw new ContractValidationError("completed save intent");
     return this.idempotencyKey;
   }
 
@@ -31,7 +32,9 @@ export class SaveIntent {
 }
 
 export class IdempotencyKeyFactory {
-  constructor(private readonly generateKey: OpaqueKeyGenerator = defaultOpaqueKey) {}
+  constructor(
+    private readonly generateKey: OpaqueKeyGenerator = defaultOpaqueKey,
+  ) {}
 
   createSaveIntent(): SaveIntent {
     return new SaveIntent(this.generateKey());

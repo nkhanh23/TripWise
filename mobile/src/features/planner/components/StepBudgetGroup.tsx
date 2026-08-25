@@ -1,11 +1,11 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import { mockBudgetOptions, mockGroupOptions } from '../data/mockWizardData';
-import type { BudgetTier, GroupType } from '../types';
+import { AppText } from "../../../components/AppText";
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
+import { mockBudgetOptions, mockGroupOptions } from "../data/mockWizardData";
+import type { BudgetTier, GroupType } from "../types";
 
 type Props = {
   selectedBudget: BudgetTier;
@@ -23,7 +23,8 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+    >
       <AppText style={styles.subtitle}>
         Set your spending comfort zone and who you are traveling with.
       </AppText>
@@ -47,14 +48,18 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
                   styles.budgetCard,
                   isSelected && styles.budgetCardSelected,
                   pressed && styles.pressed,
-                ]}>
+                ]}
+              >
                 <View
                   style={[
                     styles.budgetIconCircle,
                     isSelected && styles.budgetIconCircleSelected,
-                  ]}>
+                  ]}
+                >
                   <MaterialIcons
-                    color={isSelected ? colors.text.inverse : colors.brand.primary}
+                    color={
+                      isSelected ? colors.text.inverse : colors.brand.primary
+                    }
                     name={opt.iconName}
                     size={22}
                   />
@@ -100,14 +105,18 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
                   styles.groupCard,
                   isSelected && styles.groupCardSelected,
                   pressed && styles.pressed,
-                ]}>
+                ]}
+              >
                 <View
                   style={[
                     styles.groupIconCircle,
                     isSelected && styles.groupIconCircleSelected,
-                  ]}>
+                  ]}
+                >
                   <MaterialIcons
-                    color={isSelected ? colors.text.inverse : colors.brand.primary}
+                    color={
+                      isSelected ? colors.text.inverse : colors.brand.primary
+                    }
                     name={grp.iconName}
                     size={22}
                   />
@@ -116,7 +125,8 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
                   style={[
                     styles.groupLabel,
                     isSelected && styles.groupLabelSelected,
-                  ]}>
+                  ]}
+                >
                   {grp.label}
                 </Text>
                 <Text style={styles.groupSub}>{grp.travelerCountLabel}</Text>
@@ -154,31 +164,31 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   budgetCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
   budgetCardSelected: {
-    backgroundColor: '#F3F8FF',
+    backgroundColor: "#F3F8FF",
     borderColor: colors.brand.primary,
     borderWidth: 1.5,
   },
   budgetIconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#E8F1FC',
+    alignItems: "center",
+    backgroundColor: "#E8F1FC",
     borderRadius: radius.pill,
     height: 40,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 40,
   },
   budgetIconCircleSelected: {
@@ -189,9 +199,9 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   budgetTitleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   budgetLabel: {
     color: colors.text.primary,
@@ -209,37 +219,37 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   groupGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.md,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   groupCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
     gap: 4,
     paddingVertical: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
-    width: '47.5%',
+    width: "47.5%",
   },
   groupCardSelected: {
-    backgroundColor: '#F3F8FF',
+    backgroundColor: "#F3F8FF",
     borderColor: colors.brand.primary,
     borderWidth: 1.5,
   },
   groupIconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#F0EDED',
+    alignItems: "center",
+    backgroundColor: "#F0EDED",
     borderRadius: radius.pill,
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: 2,
     width: 44,
   },

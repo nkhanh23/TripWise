@@ -1,9 +1,9 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
+import type { ExplorePlace } from "../types";
 
 type Props = {
   place: ExplorePlace;
@@ -11,7 +11,11 @@ type Props = {
   onPress: (place: ExplorePlace) => void;
 };
 
-export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, onPress }: Props) {
+export const ExploreMarker = memo(function ExploreMarker({
+  place,
+  isSelected,
+  onPress,
+}: Props) {
   return (
     <View
       style={[
@@ -21,7 +25,8 @@ export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, on
           left: `${place.mapCoordinate.leftPercent}%`,
         },
         isSelected && styles.selectedZIndex,
-      ]}>
+      ]}
+    >
       {/* Selected Name Badge */}
       {isSelected ? (
         <View style={styles.nameBadge}>
@@ -38,16 +43,32 @@ export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, on
         accessibilityRole="button"
         accessibilityState={{ selected: isSelected }}
         onPress={() => onPress(place)}
-        style={({ pressed }) => [styles.touchTarget, pressed && styles.pressed]}>
+        style={({ pressed }) => [styles.touchTarget, pressed && styles.pressed]}
+      >
         {/* Pin Outer Bubble */}
-        <View style={[styles.pinOuter, isSelected ? styles.pinOuterSelected : styles.pinOuterDefault]}>
+        <View
+          style={[
+            styles.pinOuter,
+            isSelected ? styles.pinOuterSelected : styles.pinOuterDefault,
+          ]}
+        >
           {/* Inner Circle with Category Icon */}
-          <View style={[styles.pinInner, isSelected ? styles.pinInnerSelected : styles.pinInnerDefault]}>
+          <View
+            style={[
+              styles.pinInner,
+              isSelected ? styles.pinInnerSelected : styles.pinInnerDefault,
+            ]}
+          >
             <MaterialIcons color="#FFFFFF" name={place.iconName} size={14} />
           </View>
         </View>
         {/* Pin Arrow Point */}
-        <View style={[styles.pinPoint, isSelected ? styles.pinPointSelected : styles.pinPointDefault]} />
+        <View
+          style={[
+            styles.pinPoint,
+            isSelected ? styles.pinPointSelected : styles.pinPointDefault,
+          ]}
+        />
       </Pressable>
     </View>
   );
@@ -55,8 +76,8 @@ export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, on
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    position: 'absolute',
+    alignItems: "center",
+    position: "absolute",
     transform: [{ translateX: -20 }, { translateY: -40 }],
     zIndex: 10,
   },
@@ -70,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -81,26 +102,26 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   touchTarget: {
-    alignItems: 'center',
+    alignItems: "center",
     height: 44,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 44,
   },
   pinOuter: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderRadius: radius.pill,
     elevation: 3,
     height: 34,
-    justifyContent: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     width: 34,
   },
   pinOuterDefault: {
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
     borderWidth: 2,
   },
   pinOuterSelected: {
@@ -109,10 +130,10 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.15 }],
   },
   pinInner: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 24,
   },
   pinInnerDefault: {
@@ -122,9 +143,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand.red,
   },
   pinPoint: {
-    borderLeftColor: 'transparent',
+    borderLeftColor: "transparent",
     borderLeftWidth: 5,
-    borderRightColor: 'transparent',
+    borderRightColor: "transparent",
     borderRightWidth: 5,
     borderTopWidth: 6,
     height: 0,
@@ -132,7 +153,7 @@ const styles = StyleSheet.create({
     width: 0,
   },
   pinPointDefault: {
-    borderTopColor: '#FFFFFF',
+    borderTopColor: "#FFFFFF",
   },
   pinPointSelected: {
     borderTopColor: colors.brand.red,

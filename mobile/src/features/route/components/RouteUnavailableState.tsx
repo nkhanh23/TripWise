@@ -1,12 +1,12 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { TransportMode } from '../types';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { TransportMode } from "../types";
 
 type Props = {
   onSwitchTransport: (mode: TransportMode) => void;
@@ -29,19 +29,27 @@ export const RouteUnavailableState = memo(function RouteUnavailableState({
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       <View
         style={[
           styles.iconCircle,
-          { backgroundColor: effectiveTheme === 'dark' ? '#332914' : '#FFF4E5' },
-        ]}>
-        <MaterialIcons color={colors.brand.yellow} name="warning-amber" size={28} />
+          {
+            backgroundColor: effectiveTheme === "dark" ? "#332914" : "#FFF4E5",
+          },
+        ]}
+      >
+        <MaterialIcons
+          color={colors.brand.yellow}
+          name="warning-amber"
+          size={28}
+        />
       </View>
       <Text style={[styles.title, { color: colors.text.primary }]}>
-        {t('route.unavailableTitle')}
+        {t("route.unavailableTitle")}
       </Text>
       <AppText style={styles.subtitle}>
-        {t('route.unavailableSubtitle')}
+        {t("route.unavailableSubtitle")}
       </AppText>
 
       <View style={styles.buttonGroup}>
@@ -49,10 +57,16 @@ export const RouteUnavailableState = memo(function RouteUnavailableState({
           accessibilityHint="Chuyển sang lộ trình bằng phương tiện công cộng (Transit)"
           accessibilityLabel="Thử phương tiện Transit"
           accessibilityRole="button"
-          onPress={() => onSwitchTransport('transit')}
-          style={[styles.primaryButton, { backgroundColor: colors.brand.primary }]}>
-          <Text style={[styles.primaryButtonText, { color: colors.text.inverse }]}>
-            {t('route.tryTransit')}
+          onPress={() => onSwitchTransport("transit")}
+          style={[
+            styles.primaryButton,
+            { backgroundColor: colors.brand.primary },
+          ]}
+        >
+          <Text
+            style={[styles.primaryButtonText, { color: colors.text.inverse }]}
+          >
+            {t("route.tryTransit")}
           </Text>
         </Pressable>
 
@@ -64,9 +78,12 @@ export const RouteUnavailableState = memo(function RouteUnavailableState({
           style={[
             styles.secondaryButton,
             { backgroundColor: colors.background.surfaceVariant },
-          ]}>
-          <Text style={[styles.secondaryButtonText, { color: colors.text.primary }]}>
-            {t('common.back')}
+          ]}
+        >
+          <Text
+            style={[styles.secondaryButtonText, { color: colors.text.primary }]}
+          >
+            {t("common.back")}
           </Text>
         </Pressable>
       </View>
@@ -76,7 +93,7 @@ export const RouteUnavailableState = memo(function RouteUnavailableState({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
@@ -84,39 +101,39 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.lg,
     marginVertical: spacing.md,
     padding: spacing.xl,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
   },
   iconCircle: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 52,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: spacing.xs,
     width: 52,
   },
   title: {
     fontSize: typography.titleSmall,
     fontWeight: typography.fontWeight.bold,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: typography.bodySmall,
     lineHeight: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonGroup: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     marginTop: spacing.md,
   },
   primaryButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 42,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.lg,
   },
   primaryButtonText: {
@@ -124,10 +141,10 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   secondaryButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     height: 42,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: spacing.lg,
   },
   secondaryButtonText: {

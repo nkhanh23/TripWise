@@ -1,25 +1,25 @@
-import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCallback, useMemo, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useTheme } from '../../theme';
-import { spacing } from '../../theme/tokens';
-import { ExploreCategoryChips } from './components/ExploreCategoryChips';
-import { ExploreEmptyState } from './components/ExploreEmptyState';
-import { ExploreErrorState } from './components/ExploreErrorState';
-import { ExploreMapCanvas } from './components/ExploreMapCanvas';
-import { ExplorePlaceList } from './components/ExplorePlaceList';
-import { ExplorePlacePreview } from './components/ExplorePlacePreview';
-import { ExploreSearchBar } from './components/ExploreSearchBar';
-import { ExploreViewToggle } from './components/ExploreViewToggle';
-import { clusterPlaces } from './helpers/clustering';
+import { useTheme } from "../../theme";
+import { spacing } from "../../theme/tokens";
+import { ExploreCategoryChips } from "./components/ExploreCategoryChips";
+import { ExploreEmptyState } from "./components/ExploreEmptyState";
+import { ExploreErrorState } from "./components/ExploreErrorState";
+import { ExploreMapCanvas } from "./components/ExploreMapCanvas";
+import { ExplorePlaceList } from "./components/ExplorePlaceList";
+import { ExplorePlacePreview } from "./components/ExplorePlacePreview";
+import { ExploreSearchBar } from "./components/ExploreSearchBar";
+import { ExploreViewToggle } from "./components/ExploreViewToggle";
+import { clusterPlaces } from "./helpers/clustering";
 import type {
   ClusterMarkerModel,
   ExploreCategory,
   ExplorePlace,
   ExploreUIStatus,
   ExploreViewMode,
-} from './types';
+} from "./types";
 
 type Props = {
   initialStatus?: ExploreUIStatus;
@@ -29,9 +29,9 @@ type Props = {
 };
 
 export function ExploreScreen({
-  initialStatus = 'ready',
+  initialStatus = "ready",
   initialPlaces = [],
-  initialViewMode = 'map',
+  initialViewMode = "map",
   onNavigatePlaceDetail,
 }: Props) {
   const insets = useSafeAreaInsets();
@@ -39,8 +39,9 @@ export function ExploreScreen({
 
   const [status, setStatus] = useState<ExploreUIStatus>(initialStatus);
   const [viewMode, setViewMode] = useState<ExploreViewMode>(initialViewMode);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ExploreCategory>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ExploreCategory>("all");
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
 
   // Top header height calculation for List mode padding
@@ -52,10 +53,10 @@ export function ExploreScreen({
 
     return initialPlaces.filter((place) => {
       const matchesCategory =
-        selectedCategory === 'all' || place.category === selectedCategory;
+        selectedCategory === "all" || place.category === selectedCategory;
 
       const matchesSearch =
-        query === '' ||
+        query === "" ||
         place.name.toLowerCase().includes(query) ||
         place.address.toLowerCase().includes(query) ||
         place.categoryLabel.toLowerCase().includes(query);
@@ -90,7 +91,7 @@ export function ExploreScreen({
   }, []);
 
   const handleClearSearch = useCallback(() => {
-    setSearchQuery('');
+    setSearchQuery("");
   }, []);
 
   const handleSelectCategory = useCallback((category: ExploreCategory) => {
@@ -99,24 +100,26 @@ export function ExploreScreen({
   }, []);
 
   const handleResetFilters = useCallback(() => {
-    setSearchQuery('');
-    setSelectedCategory('all');
+    setSearchQuery("");
+    setSelectedCategory("all");
     setSelectedPlaceId(null);
-    setStatus('ready');
+    setStatus("ready");
   }, []);
 
   const handleRetry = useCallback(() => {
-    setStatus('ready');
+    setStatus("ready");
   }, []);
 
   const handleToggleViewMode = useCallback(() => {
-    setViewMode((prev) => (prev === 'map' ? 'list' : 'map'));
+    setViewMode((prev) => (prev === "map" ? "list" : "map"));
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background.canvas }]}
+    >
       {/* 1. Main View (Map Canvas or Virtualized List) */}
-      {viewMode === 'map' ? (
+      {viewMode === "map" ? (
         <ExploreMapCanvas
           markerItems={markerItems}
           onDismissSelection={handleDismissSelection}
@@ -134,7 +137,12 @@ export function ExploreScreen({
       )}
 
       {/* 2. Top Floating Controls (Search Bar & Category Chips) */}
-      <View style={[styles.topControls, { paddingTop: Math.max(insets.top, spacing.md) }]}>
+      <View
+        style={[
+          styles.topControls,
+          { paddingTop: Math.max(insets.top, spacing.md) },
+        ]}
+      >
         <ExploreSearchBar
           onClear={handleClearSearch}
           onSearchChange={setSearchQuery}
@@ -147,30 +155,37 @@ export function ExploreScreen({
       </View>
 
       {/* 3. Floating View Mode Toggle (Map / List) */}
-      {status === 'ready' && filteredPlaces.length > 0 ? (
-        <ExploreViewToggle onToggle={handleToggleViewMode} viewMode={viewMode} />
+      {status === "ready" && filteredPlaces.length > 0 ? (
+        <ExploreViewToggle
+          onToggle={handleToggleViewMode}
+          viewMode={viewMode}
+        />
       ) : null}
 
       {/* 4. Loading State */}
-      {status === 'loading' ? (
+      {status === "loading" ? (
         <View
           accessibilityLabel="Đang tải dữ liệu bản đồ"
           accessibilityRole="progressbar"
-          style={[styles.loadingOverlay, { backgroundColor: colors.overlay.scrim }]}>
+          style={[
+            styles.loadingOverlay,
+            { backgroundColor: colors.overlay.scrim },
+          ]}
+        >
           <ActivityIndicator color={colors.brand.primary} size="large" />
         </View>
       ) : null}
 
       {/* 5. Error State */}
-      {status === 'error' ? <ExploreErrorState onRetry={handleRetry} /> : null}
+      {status === "error" ? <ExploreErrorState onRetry={handleRetry} /> : null}
 
       {/* 6. Empty State when filter has no matches */}
-      {status === 'ready' && filteredPlaces.length === 0 ? (
+      {status === "ready" && filteredPlaces.length === 0 ? (
         <ExploreEmptyState onReset={handleResetFilters} />
       ) : null}
 
       {/* 7. Selected Place Bottom Preview Sheet */}
-      {status === 'ready' && selectedPlace ? (
+      {status === "ready" && selectedPlace ? (
         <ExplorePlacePreview
           onClose={handleDismissSelection}
           onPressDetail={onNavigatePlaceDetail}
@@ -188,17 +203,17 @@ const styles = StyleSheet.create({
   topControls: {
     gap: spacing.xs,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     zIndex: 20,
   },
   loadingOverlay: {
-    alignItems: 'center',
+    alignItems: "center",
     bottom: 0,
-    justifyContent: 'center',
+    justifyContent: "center",
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     zIndex: 50,

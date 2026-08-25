@@ -1,9 +1,13 @@
-import type { GenerateTripRequest, GeneratedTrip, TripGraphPayload } from '../../integration/contracts';
-import { IntegrationError } from '../../integration/errors';
-import { assertInclusiveDuration } from '../../integration/mappers';
-import { validateGenerateTripRequest } from '../../integration/validation';
-import { mockTravelStyles } from './data/mockWizardData';
-import type { CreateTripWizardState } from './types';
+import type {
+  GenerateTripRequest,
+  GeneratedTrip,
+  TripGraphPayload,
+} from "../../integration/contracts";
+import { IntegrationError } from "../../integration/errors";
+import { assertInclusiveDuration } from "../../integration/mappers";
+import { validateGenerateTripRequest } from "../../integration/validation";
+import { mockTravelStyles } from "./data/mockWizardData";
+import type { CreateTripWizardState } from "./types";
 
 export type PlannerGeneratedItem = {
   position: number;
@@ -13,7 +17,7 @@ export type PlannerGeneratedItem = {
   endTime?: string;
   note?: string;
   estimatedCost?: number;
-  resolution: 'UNRESOLVED';
+  resolution: "UNRESOLVED";
 };
 
 export type PlannerGeneratedPreview = {
@@ -22,15 +26,25 @@ export type PlannerGeneratedPreview = {
   startDate: string;
   endDate: string;
   summary?: string;
-  days: { dayNumber: number; date: string; summary?: string; items: PlannerGeneratedItem[] }[];
+  days: {
+    dayNumber: number;
+    date: string;
+    summary?: string;
+    items: PlannerGeneratedItem[];
+  }[];
 };
 
-export function mapWizardStateToGenerateTripRequest(state: CreateTripWizardState): GenerateTripRequest {
-  const destination = state.destination?.name ?? state.customDestinationName.trim();
+export function mapWizardStateToGenerateTripRequest(
+  state: CreateTripWizardState,
+): GenerateTripRequest {
+  const destination =
+    state.destination?.name ?? state.customDestinationName.trim();
   assertInclusiveDuration(state.startDate, state.endDate, state.durationDays);
   const preferences = state.selectedStyles.map((styleId) => {
-    const style = mockTravelStyles.find((candidate) => candidate.id === styleId);
-    if (!style) throw new IntegrationError('invalidRequest');
+    const style = mockTravelStyles.find(
+      (candidate) => candidate.id === styleId,
+    );
+    if (!style) throw new IntegrationError("invalidRequest");
     return style.label;
   });
   return validateGenerateTripRequest({
@@ -42,21 +56,32 @@ export function mapWizardStateToGenerateTripRequest(state: CreateTripWizardState
   });
 }
 
-export function mapGeneratedTripToPlannerPreview(generated: GeneratedTrip): PlannerGeneratedPreview {
+export function mapGeneratedTripToPlannerPreview(
+  generated: GeneratedTrip,
+): PlannerGeneratedPreview {
   return {
-    title: generated.title, destination: generated.destination, startDate: generated.startDate, endDate: generated.endDate,
+    title: generated.title,
+    destination: generated.destination,
+    startDate: generated.startDate,
+    endDate: generated.endDate,
     ...(generated.summary === undefined ? {} : { summary: generated.summary }),
     days: generated.days.map((day) => ({
-      dayNumber: day.dayNumber, date: day.date,
+      dayNumber: day.dayNumber,
+      date: day.date,
       ...(day.summary === undefined ? {} : { summary: day.summary }),
       items: day.items.map((item) => ({
-        position: item.position, placeName: item.placeName,
-        ...(item.placeQuery === undefined ? {} : { placeQuery: item.placeQuery }),
+        position: item.position,
+        placeName: item.placeName,
+        ...(item.placeQuery === undefined
+          ? {}
+          : { placeQuery: item.placeQuery }),
         ...(item.startTime === undefined ? {} : { startTime: item.startTime }),
         ...(item.endTime === undefined ? {} : { endTime: item.endTime }),
         ...(item.note === undefined ? {} : { note: item.note }),
-        ...(item.estimatedCost === undefined ? {} : { estimatedCost: item.estimatedCost }),
-        resolution: 'UNRESOLVED' as const,
+        ...(item.estimatedCost === undefined
+          ? {}
+          : { estimatedCost: item.estimatedCost }),
+        resolution: "UNRESOLVED" as const,
       })),
     })),
   };
@@ -67,7 +92,7 @@ export function mapPlannerPreviewToPersistenceGraph(
   userEnteredTitle?: string | null,
 ): TripGraphPayload {
   const title = userEnteredTitle?.trim() || preview.title.trim();
-  if (!title) throw new IntegrationError('invalidRequest');
+  if (!title) throw new IntegrationError("invalidRequest");
   return {
     title,
     destination: preview.destination,
@@ -80,7 +105,9 @@ export function mapPlannerPreviewToPersistenceGraph(
       items: day.items.map((item) => ({
         position: item.position,
         placeName: item.placeName,
-        ...(item.placeQuery === undefined ? {} : { placeQuery: item.placeQuery }),
+        ...(item.placeQuery === undefined
+          ? {}
+          : { placeQuery: item.placeQuery }),
         ...(item.startTime === undefined ? {} : { startTime: item.startTime }),
         ...(item.endTime === undefined ? {} : { endTime: item.endTime }),
         ...(item.note === undefined ? {} : { note: item.note }),

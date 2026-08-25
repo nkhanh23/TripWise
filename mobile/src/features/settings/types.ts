@@ -1,17 +1,10 @@
-import type { MaterialIcons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
+import type { MaterialIcons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
 
-export type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
+export type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
 
 export type CurrencyCode =
-  | 'USD'
-  | 'VND'
-  | 'THB'
-  | 'JPY'
-  | 'EUR'
-  | 'GBP'
-  | 'SGD'
-  | 'KRW';
+  "USD" | "VND" | "THB" | "JPY" | "EUR" | "GBP" | "SGD" | "KRW";
 
 export type CurrencyOption = {
   code: CurrencyCode;
@@ -23,7 +16,7 @@ export type CurrencyOption = {
   isSuggested?: boolean;
 };
 
-export type DistanceUnit = 'km' | 'mi';
+export type DistanceUnit = "km" | "mi";
 
 export type NotificationPreferences = {
   // App-local intent only. These values do not represent OS permission or scheduled notifications.

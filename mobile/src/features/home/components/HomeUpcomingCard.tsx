@@ -1,13 +1,13 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { UpcomingTripData } from '../types';
-import { ImageAttribution } from '../../images/components/ImageAttribution';
-import { getResolvedImageSource } from '../../images/resolvedImageSource';
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { UpcomingTripData } from "../types";
+import { ImageAttribution } from "../../images/components/ImageAttribution";
+import { getResolvedImageSource } from "../../images/resolvedImageSource";
 
 type Props = {
   trip: UpcomingTripData;
@@ -29,7 +29,8 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
           backgroundColor: colors.background.surface,
           borderColor: colors.border.default,
         },
-      ]}>
+      ]}
+    >
       {/* Cover Image */}
       <View style={styles.imageContainer}>
         {trip.imageUrl ? (
@@ -45,8 +46,13 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
             style={[
               styles.imagePlaceholder,
               { backgroundColor: colors.background.surfaceVariant },
-            ]}>
-            <MaterialIcons color={colors.brand.primary} name="landscape" size={48} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.brand.primary}
+              name="landscape"
+              size={48}
+            />
           </View>
         )}
 
@@ -59,12 +65,17 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
               styles.badge,
               {
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(30, 41, 59, 0.92)'
-                    : 'rgba(255, 255, 255, 0.92)',
+                  effectiveTheme === "dark"
+                    ? "rgba(30, 41, 59, 0.92)"
+                    : "rgba(255, 255, 255, 0.92)",
               },
-            ]}>
-            <MaterialIcons color={colors.state.error} name="schedule" size={14} />
+            ]}
+          >
+            <MaterialIcons
+              color={colors.state.error}
+              name="schedule"
+              size={14}
+            />
             <Text style={[styles.badgeText, { color: colors.text.primary }]}>
               {trip.badgeText}
             </Text>
@@ -74,12 +85,19 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
 
       {/* Content */}
       <View style={styles.content}>
-        <Text numberOfLines={1} style={[styles.title, { color: colors.text.primary }]}>
+        <Text
+          numberOfLines={1}
+          style={[styles.title, { color: colors.text.primary }]}
+        >
           {trip.title}
         </Text>
 
         <View style={styles.metaRow}>
-          <MaterialIcons color={colors.text.secondary} name="calendar-today" size={14} />
+          <MaterialIcons
+            color={colors.text.secondary}
+            name="calendar-today"
+            size={14}
+          />
           <Text style={[styles.dateText, { color: colors.text.secondary }]}>
             {trip.dateLabel}
           </Text>
@@ -87,19 +105,24 @@ export const HomeUpcomingCard = memo(function HomeUpcomingCard({
 
         {/* View Itinerary Button */}
         <Pressable
-          accessibilityHint={t('home.viewItinerary')}
-          accessibilityLabel={`${t('home.viewItinerary')}: ${trip.title}`}
+          accessibilityHint={t("home.viewItinerary")}
+          accessibilityLabel={`${t("home.viewItinerary")}: ${trip.title}`}
           accessibilityRole="button"
           onPress={() => onPressViewItinerary(trip.id)}
           style={({ pressed }) => [
             styles.button,
             { backgroundColor: colors.brand.primary },
             pressed && styles.buttonPressed,
-          ]}>
+          ]}
+        >
           <Text style={[styles.buttonText, { color: colors.text.inverse }]}>
-            {t('home.viewItinerary')}
+            {t("home.viewItinerary")}
           </Text>
-          <MaterialIcons color={colors.text.inverse} name="arrow-forward" size={18} />
+          <MaterialIcons
+            color={colors.text.inverse}
+            name="arrow-forward"
+            size={18}
+          />
         </Pressable>
       </View>
     </View>
@@ -111,36 +134,36 @@ const styles = StyleSheet.create({
     borderRadius: radius.control, // 16px matching Stitch rounded-xl
     borderWidth: 1,
     elevation: 3,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
   },
   imageContainer: {
     height: 136,
-    position: 'relative',
-    width: '100%',
+    position: "relative",
+    width: "100%",
   },
   image: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   imagePlaceholder: {
-    alignItems: 'center',
-    height: '100%',
-    justifyContent: 'center',
-    width: '100%',
+    alignItems: "center",
+    height: "100%",
+    justifyContent: "center",
+    width: "100%",
   },
   badge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.input,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    position: 'absolute',
+    position: "absolute",
     right: spacing.md,
     top: spacing.md,
   },
@@ -156,8 +179,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   metaRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginBottom: spacing.lg,
     marginTop: spacing.xs,
@@ -166,13 +189,13 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   button: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.xs,
     height: 46,
-    justifyContent: 'center',
-    width: '100%',
+    justifyContent: "center",
+    width: "100%",
   },
   buttonPressed: {
     opacity: 0.9,

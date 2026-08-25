@@ -1,9 +1,16 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { AppText } from "../../../components/AppText";
+import { colors, radius, spacing, typography } from "../../../theme/tokens";
 
 type Props = {
   startDate: string;
@@ -16,11 +23,11 @@ type Props = {
 };
 
 const QUICK_DURATIONS = [
-  { label: '3 days (Weekend)', days: 3 },
-  { label: '5 days', days: 5 },
-  { label: '7 days (1 Week)', days: 7 },
-  { label: '10 days', days: 10 },
-  { label: '14 days (2 Weeks)', days: 14 },
+  { label: "3 days (Weekend)", days: 3 },
+  { label: "5 days", days: 5 },
+  { label: "7 days (1 Week)", days: 7 },
+  { label: "10 days", days: 10 },
+  { label: "14 days (2 Weeks)", days: 14 },
 ];
 
 export const StepDates = memo(function StepDates({
@@ -36,7 +43,8 @@ export const StepDates = memo(function StepDates({
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+    >
       <AppText style={styles.subtitle}>
         Select your travel dates or pick a quick duration.
       </AppText>
@@ -95,7 +103,11 @@ export const StepDates = memo(function StepDates({
       {/* Error Alert */}
       {error ? (
         <View accessibilityRole="alert" style={styles.errorBanner}>
-          <MaterialIcons color={colors.brand.red} name="error-outline" size={16} />
+          <MaterialIcons
+            color={colors.brand.red}
+            name="error-outline"
+            size={16}
+          />
           <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : null}
@@ -118,9 +130,10 @@ export const StepDates = memo(function StepDates({
                   styles.quickChip,
                   isSelected && styles.quickChipSelected,
                   pressed && styles.pressed,
-                ]}>
+                ]}
+              >
                 <MaterialIcons
-                  color={isSelected ? '#FFFFFF' : colors.text.secondary}
+                  color={isSelected ? "#FFFFFF" : colors.text.secondary}
                   name="schedule"
                   size={14}
                 />
@@ -128,7 +141,8 @@ export const StepDates = memo(function StepDates({
                   style={[
                     styles.quickChipText,
                     isSelected && styles.quickChipTextSelected,
-                  ]}>
+                  ]}
+                >
                   {preset.label}
                 </Text>
               </Pressable>
@@ -140,7 +154,11 @@ export const StepDates = memo(function StepDates({
       {/* Duration Summary Card */}
       <View style={styles.summaryCard}>
         <View style={styles.summaryHeader}>
-          <MaterialIcons color={colors.brand.primary} name="event-available" size={20} />
+          <MaterialIcons
+            color={colors.brand.primary}
+            name="event-available"
+            size={20}
+          />
           <Text style={styles.summaryTitle}>Trip Duration</Text>
           <View style={styles.daysBadge}>
             <Text style={styles.daysBadgeText}>{durationDays} Days</Text>
@@ -150,12 +168,20 @@ export const StepDates = memo(function StepDates({
         <View style={styles.rangeRow}>
           <View style={styles.rangePoint}>
             <Text style={styles.rangePointLabel}>Departure</Text>
-            <Text style={styles.rangePointValue}>{startDate || 'Select date'}</Text>
+            <Text style={styles.rangePointValue}>
+              {startDate || "Select date"}
+            </Text>
           </View>
-          <MaterialIcons color={colors.text.muted} name="arrow-forward" size={18} />
+          <MaterialIcons
+            color={colors.text.muted}
+            name="arrow-forward"
+            size={18}
+          />
           <View style={styles.rangePoint}>
             <Text style={styles.rangePointLabel}>Return</Text>
-            <Text style={styles.rangePointValue}>{endDate || 'Select date'}</Text>
+            <Text style={styles.rangePointValue}>
+              {endDate || "Select date"}
+            </Text>
           </View>
         </View>
       </View>
@@ -176,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   dateInputsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.md,
     marginBottom: spacing.md,
   },
@@ -190,16 +216,16 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   inputWrapper: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 48,
     paddingHorizontal: spacing.sm,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -211,14 +237,14 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     flex: 1,
     fontSize: 13,
-    height: '100%',
+    height: "100%",
     paddingVertical: 0,
   },
   errorBanner: {
-    alignItems: 'center',
-    backgroundColor: '#FDE8E8',
+    alignItems: "center",
+    backgroundColor: "#FDE8E8",
     borderRadius: radius.input,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 6,
     marginBottom: spacing.md,
     paddingHorizontal: spacing.md,
@@ -239,17 +265,17 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   quickChipsWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing.xs,
   },
   quickChip: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderColor: colors.border,
     borderRadius: radius.pill,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
     paddingHorizontal: spacing.md,
     paddingVertical: 8,
@@ -264,10 +290,10 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   quickChipTextSelected: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
   },
   summaryCard: {
-    backgroundColor: '#F6F3F2',
+    backgroundColor: "#F6F3F2",
     borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
@@ -275,9 +301,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   summaryHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   summaryTitle: {
     color: colors.text.primary,
@@ -287,7 +313,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   daysBadge: {
-    backgroundColor: '#D8E2FF',
+    backgroundColor: "#D8E2FF",
     borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
@@ -298,14 +324,14 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   rangeRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
   rangePoint: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 2,
   },
   rangePointLabel: {

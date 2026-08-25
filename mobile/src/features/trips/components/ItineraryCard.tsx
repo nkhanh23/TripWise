@@ -1,14 +1,14 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { AppText } from '../../../components/AppText';
-import { useTranslation } from '../../../i18n';
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ItineraryItem } from '../types';
-import { ImageAttribution } from '../../images/components/ImageAttribution';
-import { getResolvedImageSource } from '../../images/resolvedImageSource';
+import { AppText } from "../../../components/AppText";
+import { useTranslation } from "../../../i18n";
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import type { ItineraryItem } from "../types";
+import { ImageAttribution } from "../../images/components/ImageAttribution";
+import { getResolvedImageSource } from "../../images/resolvedImageSource";
 
 type Props = {
   item: ItineraryItem;
@@ -17,7 +17,7 @@ type Props = {
   onPressItem?: (item: ItineraryItem) => void;
   onGetDirections?: (item: ItineraryItem) => void;
   onResolve?: (item: ItineraryItem) => void;
-  resolutionStatus?: 'UNRESOLVED_IDLE' | 'RESOLVING' | 'VERIFIED' | 'ERROR';
+  resolutionStatus?: "UNRESOLVED_IDLE" | "RESOLVING" | "VERIFIED" | "ERROR";
 };
 
 export const ItineraryCard = memo(function ItineraryCard({
@@ -27,27 +27,29 @@ export const ItineraryCard = memo(function ItineraryCard({
   onPressItem,
   onGetDirections,
   onResolve,
-  resolutionStatus = item.resolution === 'VERIFIED' ? 'VERIFIED' : 'UNRESOLVED_IDLE',
+  resolutionStatus = item.resolution === "VERIFIED"
+    ? "VERIFIED"
+    : "UNRESOLVED_IDLE",
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
 
   const getBadgeStyle = () => {
     switch (item.iconBgVariant) {
-      case 'tertiary':
+      case "tertiary":
         return {
-          bg: effectiveTheme === 'dark' ? '#5C1D1D' : '#FFDAD5',
-          iconColor: effectiveTheme === 'dark' ? '#FFDAD5' : '#930005',
+          bg: effectiveTheme === "dark" ? "#5C1D1D" : "#FFDAD5",
+          iconColor: effectiveTheme === "dark" ? "#FFDAD5" : "#930005",
         };
-      case 'secondary':
+      case "secondary":
         return {
-          bg: effectiveTheme === 'dark' ? '#1E354D' : '#D8E4F2',
-          iconColor: effectiveTheme === 'dark' ? '#D8E4F2' : '#5A6671',
+          bg: effectiveTheme === "dark" ? "#1E354D" : "#D8E4F2",
+          iconColor: effectiveTheme === "dark" ? "#D8E4F2" : "#5A6671",
         };
-      case 'primary':
+      case "primary":
       default:
         return {
-          bg: effectiveTheme === 'dark' ? '#1E3A5F' : '#D8E2FF',
+          bg: effectiveTheme === "dark" ? "#1E3A5F" : "#D8E2FF",
           iconColor: colors.brand.primary,
         };
     }
@@ -77,8 +79,12 @@ export const ItineraryCard = memo(function ItineraryCard({
               backgroundColor: colors.background.surface,
               borderColor: colors.border.default,
             },
-            isFirst && [styles.timelineNodeFirst, { borderColor: colors.brand.primary }],
-          ]}>
+            isFirst && [
+              styles.timelineNodeFirst,
+              { borderColor: colors.brand.primary },
+            ],
+          ]}
+        >
           {isFirst ? (
             <View
               style={[
@@ -92,9 +98,13 @@ export const ItineraryCard = memo(function ItineraryCard({
 
       <Pressable
         testID={`itinerary-item-${item.id}`}
-        accessibilityHint={`Xem chi tiết ${item.title}`}
-        accessibilityLabel={`${item.time} ${item.timePeriod || ''}, ${item.title}, ${item.subtitle || ''}`}
-        accessibilityRole="button"
+        accessibilityHint={
+          item.placeId && onPressItem ? `Xem chi tiết ${item.title}` : undefined
+        }
+        accessibilityLabel={`${item.time} ${item.timePeriod || ""}, ${item.title}, ${item.subtitle || ""}`}
+        accessibilityRole={item.placeId && onPressItem ? "button" : "none"}
+        accessibilityState={{ disabled: !item.placeId || !onPressItem }}
+        disabled={!item.placeId || !onPressItem}
         onPress={() => onPressItem?.(item)}
         style={({ pressed }) => [
           styles.card,
@@ -102,11 +112,14 @@ export const ItineraryCard = memo(function ItineraryCard({
             backgroundColor: colors.background.surface,
             borderColor: colors.border.default,
           },
-          pressed && styles.cardPressed,
-        ]}>
+          pressed && item.placeId && onPressItem && styles.cardPressed,
+        ]}
+      >
         {/* Time Column */}
         <View style={styles.timeColumn}>
-          <Text style={[styles.timeText, { color: colors.text.primary }]}>{item.time}</Text>
+          <Text style={[styles.timeText, { color: colors.text.primary }]}>
+            {item.time}
+          </Text>
           {item.timePeriod ? (
             <Text style={[styles.periodText, { color: colors.text.muted }]}>
               {item.timePeriod}
@@ -121,7 +134,8 @@ export const ItineraryCard = memo(function ItineraryCard({
             <View style={styles.titleTextWrap}>
               <Text
                 numberOfLines={1}
-                style={[styles.itemTitle, { color: colors.text.primary }]}>
+                style={[styles.itemTitle, { color: colors.text.primary }]}
+              >
                 {item.title}
               </Text>
               {item.subtitle ? (
@@ -137,7 +151,8 @@ export const ItineraryCard = memo(function ItineraryCard({
               accessibilityLabel={`Lộ trình tới ${item.title}`}
               accessibilityRole="button"
               onPress={() => onGetDirections?.(item)}
-              style={[styles.categoryBadge, { backgroundColor: badgeStyle.bg }]}>
+              style={[styles.categoryBadge, { backgroundColor: badgeStyle.bg }]}
+            >
               <MaterialIcons
                 color={badgeStyle.iconColor}
                 name={item.iconName}
@@ -151,7 +166,10 @@ export const ItineraryCard = memo(function ItineraryCard({
             <View style={styles.imageWrap}>
               <Image
                 accessible={false}
-                source={getResolvedImageSource(item.imageUrl, item.resolvedImage)}
+                source={getResolvedImageSource(
+                  item.imageUrl,
+                  item.resolvedImage,
+                )}
                 style={styles.cardImage}
               />
               <ImageAttribution attribution={item.resolvedImage?.attribution} />
@@ -166,23 +184,49 @@ export const ItineraryCard = memo(function ItineraryCard({
               accessibilityRole="button"
               hitSlop={8}
               onPress={() => onGetDirections?.(item)}
-              style={styles.directionsRow}>
-              <MaterialIcons color={colors.brand.primary} name="directions" size={16} />
-              <Text style={[styles.directionsText, { color: colors.brand.primary }]}>
+              style={styles.directionsRow}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name="directions"
+                size={16}
+              />
+              <Text
+                style={[styles.directionsText, { color: colors.brand.primary }]}
+              >
                 {item.directionsLabel}
               </Text>
             </Pressable>
           ) : null}
-          {item.resolution !== 'VERIFIED' && onResolve ? (
+          {item.resolution !== "VERIFIED" && onResolve ? (
             <Pressable
-              accessibilityLabel={resolutionStatus === 'RESOLVING' ? t('trips.resolvingPlace') : t('trips.resolvePlace')}
+              accessibilityLabel={
+                resolutionStatus === "RESOLVING"
+                  ? t("trips.resolvingPlace")
+                  : t("trips.resolvePlace")
+              }
               accessibilityRole="button"
-              disabled={resolutionStatus === 'RESOLVING'}
+              disabled={resolutionStatus === "RESOLVING"}
               onPress={() => onResolve(item)}
-              style={styles.resolveRow}>
-              <MaterialIcons color={colors.brand.primary} name={resolutionStatus === 'RESOLVING' ? 'hourglass-top' : 'verified'} size={16} />
-              <Text style={[styles.directionsText, { color: colors.brand.primary }]}>
-                {resolutionStatus === 'RESOLVING' ? t('trips.resolvingPlace') : resolutionStatus === 'ERROR' ? t('trips.retryResolve') : t('trips.resolvePlace')}
+              style={styles.resolveRow}
+            >
+              <MaterialIcons
+                color={colors.brand.primary}
+                name={
+                  resolutionStatus === "RESOLVING"
+                    ? "hourglass-top"
+                    : "verified"
+                }
+                size={16}
+              />
+              <Text
+                style={[styles.directionsText, { color: colors.brand.primary }]}
+              >
+                {resolutionStatus === "RESOLVING"
+                  ? t("trips.resolvingPlace")
+                  : resolutionStatus === "ERROR"
+                    ? t("trips.retryResolve")
+                    : t("trips.resolvePlace")}
               </Text>
             </Pressable>
           ) : null}
@@ -194,26 +238,26 @@ export const ItineraryCard = memo(function ItineraryCard({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: spacing.md,
-    position: 'relative',
+    position: "relative",
   },
   timelineColumn: {
-    alignItems: 'center',
+    alignItems: "center",
     width: 28,
   },
   timelineLine: {
     bottom: -spacing.md,
-    position: 'absolute',
+    position: "absolute",
     top: 20,
     width: 2,
   },
   timelineNode: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.pill,
     borderWidth: 2,
     height: 16,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: 14,
     width: 16,
     zIndex: 2,
@@ -229,11 +273,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     elevation: 2,
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing.sm,
     marginLeft: 6,
     padding: spacing.md,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -243,7 +287,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }],
   },
   timeColumn: {
-    alignItems: 'center',
+    alignItems: "center",
     minWidth: 44,
     paddingTop: 2,
   },
@@ -260,9 +304,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   titleRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   titleTextWrap: {
     flex: 1,
@@ -278,27 +322,27 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   categoryBadge: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: radius.card,
     height: 32,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 32,
   },
   imageWrap: {
     borderRadius: radius.input,
     height: 96,
     marginTop: 4,
-    overflow: 'hidden',
-    width: '100%',
+    overflow: "hidden",
+    width: "100%",
   },
   cardImage: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   directionsRow: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
+    alignItems: "center",
+    alignSelf: "flex-start",
+    flexDirection: "row",
     gap: 4,
     marginTop: 4,
   },
@@ -307,8 +351,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.semibold,
   },
   resolveRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: spacing.xs,
     marginTop: spacing.sm,
   },

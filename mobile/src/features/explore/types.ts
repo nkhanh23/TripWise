@@ -1,14 +1,9 @@
-import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export type ExploreCategory =
-  | 'all'
-  | 'attractions'
-  | 'restaurants'
-  | 'hotels'
-  | 'coffee'
-  | 'shopping';
+  "all" | "attractions" | "restaurants" | "hotels" | "coffee" | "shopping";
 
-export type ExploreViewMode = 'map' | 'list';
+export type ExploreViewMode = "map" | "list";
 
 export type CategoryOption = {
   id: ExploreCategory;
@@ -35,13 +30,13 @@ export type ExplorePlace = {
 };
 
 export type SinglePlaceMarker = {
-  type: 'place';
+  type: "place";
   id: string;
   place: ExplorePlace;
 };
 
 export type ClusterMarkerModel = {
-  type: 'cluster';
+  type: "cluster";
   id: string;
   count: number;
   places: ExplorePlace[];
@@ -53,4 +48,4 @@ export type ClusterMarkerModel = {
 
 export type ExploreMarkerItem = SinglePlaceMarker | ClusterMarkerModel;
 
-export type ExploreUIStatus = 'loading' | 'ready' | 'error' | 'empty';
+export type ExploreUIStatus = "loading" | "ready" | "error" | "empty";

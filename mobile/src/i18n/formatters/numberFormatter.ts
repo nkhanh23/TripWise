@@ -1,14 +1,19 @@
-import type { AppLocale } from '../types';
+import type { AppLocale } from "../types";
 
-export function formatNumber(num: number, locale: AppLocale = 'en'): string {
+export function formatNumber(num: number, locale: AppLocale = "en"): string {
   try {
-    return new Intl.NumberFormat(locale === 'vi' ? 'vi-VN' : 'en-US').format(num);
+    return new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US").format(
+      num,
+    );
   } catch {
     return num.toLocaleString();
   }
 }
 
-export function formatDistance(meters: number, locale: AppLocale = 'en'): string {
+export function formatDistance(
+  meters: number,
+  locale: AppLocale = "en",
+): string {
   if (meters < 1000) {
     return `${Math.round(meters)} m`;
   }

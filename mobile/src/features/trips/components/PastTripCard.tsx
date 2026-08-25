@@ -1,19 +1,22 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { memo } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from '../../../theme';
-import { radius, spacing, typography } from '../../../theme/tokens';
-import { ImageAttribution } from '../../images/components/ImageAttribution';
-import { getResolvedImageSource } from '../../images/resolvedImageSource';
-import type { TripSummary } from '../types';
+import { useTheme } from "../../../theme";
+import { radius, spacing, typography } from "../../../theme/tokens";
+import { ImageAttribution } from "../../images/components/ImageAttribution";
+import { getResolvedImageSource } from "../../images/resolvedImageSource";
+import type { TripSummary } from "../types";
 
 type Props = {
   trip: TripSummary;
   onPress: (tripId: string) => void;
 };
 
-export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props) {
+export const PastTripCard = memo(function PastTripCard({
+  trip,
+  onPress,
+}: Props) {
   const { colors } = useTheme();
 
   return (
@@ -29,7 +32,8 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
           borderColor: colors.border.default,
         },
         pressed && styles.pressed,
-      ]}>
+      ]}
+    >
       {trip.coverImageUrl ? (
         <View style={styles.coverContainer}>
           <Image
@@ -45,13 +49,18 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
       {/* Title */}
       <Text
         numberOfLines={1}
-        style={[styles.titleText, { color: colors.text.primary }]}>
+        style={[styles.titleText, { color: colors.text.primary }]}
+      >
         {trip.title}
       </Text>
 
       {/* Date metadata */}
       <View style={styles.dateRow}>
-        <MaterialIcons color={colors.text.secondary} name="event-available" size={14} />
+        <MaterialIcons
+          color={colors.text.secondary}
+          name="event-available"
+          size={14}
+        />
         <Text style={[styles.dateText, { color: colors.text.secondary }]}>
           {trip.dateLabel}
         </Text>
@@ -59,12 +68,10 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
 
       {/* Footer link */}
       <View
-        style={[
-          styles.footerRow,
-          { borderTopColor: colors.border.subtle },
-        ]}>
+        style={[styles.footerRow, { borderTopColor: colors.border.subtle }]}
+      >
         <Text style={[styles.actionText, { color: colors.text.secondary }]}>
-          {trip.actionLabel ?? 'Review Photos'}
+          {trip.actionLabel ?? "Review Photos"}
         </Text>
       </View>
     </Pressable>
@@ -73,7 +80,7 @@ export const PastTripCard = memo(function PastTripCard({ trip, onPress }: Props)
 
 const styles = StyleSheet.create({
   coverContainer: {
-    position: 'relative',
+    position: "relative",
   },
   card: {
     borderRadius: radius.input, // 8px matching Stitch rounded-lg
@@ -86,15 +93,15 @@ const styles = StyleSheet.create({
     borderRadius: radius.input,
     height: 80,
     marginBottom: spacing.xs,
-    width: '100%',
+    width: "100%",
   },
   titleText: {
     fontSize: typography.body,
     fontWeight: typography.fontWeight.bold,
   },
   dateRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: 4,
     marginBottom: spacing.xs,
   },
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   footerRow: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     borderTopWidth: 1,
     paddingTop: spacing.xs,
   },
