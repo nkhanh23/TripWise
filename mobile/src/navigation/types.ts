@@ -1,3 +1,5 @@
+import type { TripDetailData } from "../features/trips/types";
+
 export type MainTabParamList = {
   Home: undefined;
   Explore: undefined;
@@ -36,6 +38,7 @@ export type RootStackParamList = {
   TripMap: {
     tripId: string;
     initialDayId?: string;
+    tripSnapshot?: TripDetailData;
   };
   SavedPlaces?: undefined;
   EditProfile?: undefined;

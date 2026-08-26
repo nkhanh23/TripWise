@@ -13,7 +13,11 @@ import { VerifiedRouteMap } from "../components/VerifiedRouteMap";
 import { TripMapDaySelector } from "../components/TripMapDaySelector";
 import { TripMapPlacePreview } from "../components/TripMapPlacePreview";
 import { getMockTripDetail } from "../data/mockTripDetail";
-import type { ItineraryItem, TripMapMarkerItem } from "../types";
+import type {
+  ItineraryItem,
+  TripDetailData,
+  TripMapMarkerItem,
+} from "../types";
 import {
   deriveTripMapMarkers,
   deriveVerifiedTripMapMarkers,
@@ -31,6 +35,30 @@ type Props = NativeStackScreenProps<RootStackParamList, "TripMap"> & {
   customTripDetail?: ReturnType<typeof mapSavedTripDetailToTripDetailData>;
 };
 
+function isMatchingTripSnapshot(
+  snapshot: unknown,
+  tripId: string | undefined,
+): snapshot is TripDetailData {
+  if (!snapshot || typeof snapshot !== "object" || !tripId) return false;
+  const candidate = snapshot as Partial<TripDetailData>;
+  return (
+    candidate.id === tripId &&
+    typeof candidate.title === "string" &&
+    typeof candidate.destination === "string" &&
+    typeof candidate.startDate === "string" &&
+    typeof candidate.endDate === "string" &&
+    typeof candidate.dateLabel === "string" &&
+    typeof candidate.durationDays === "number" &&
+    typeof candidate.heroImageUrl === "string" &&
+    typeof candidate.budgetSpent === "string" &&
+    typeof candidate.budgetTotal === "string" &&
+    typeof candidate.budgetPercent === "number" &&
+    Array.isArray(candidate.travelers) &&
+    typeof candidate.savedPlacesCount === "number" &&
+    Array.isArray(candidate.days)
+  );
+}
+
 export const TripMapScreen = memo(function TripMapScreen({
   navigation,
   route,
@@ -44,20 +72,26 @@ export const TripMapScreen = memo(function TripMapScreen({
   const tripId = route.params?.tripId;
   const initialDayId = route.params?.initialDayId;
   const isRemoteTrip = Boolean(tripId && isUuid(tripId));
+  const tripSnapshot = isMatchingTripSnapshot(
+    route.params?.tripSnapshot,
+    tripId,
+  )
+    ? route.params.tripSnapshot
+    : null;
   const isFixture = Boolean(
     fixtureMode ||
     customTripDetail ||
     (!isRemoteTrip && tripId?.startsWith("trip_")),
   );
 
-  const [remoteTripData, setRemoteTripData] = useState<ReturnType<
-    typeof mapSavedTripDetailToTripDetailData
-  > | null>(null);
+  const [remoteTripData, setRemoteTripData] = useState<TripDetailData | null>(
+    null,
+  );
   const [routeResult, setRouteResult] = useState<Route | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
 
   useEffect(() => {
-    if (!isRemoteTrip || isFixture || !tripId) return;
+    if (!isRemoteTrip || isFixture || !tripId || tripSnapshot) return;
     const controller = new AbortController();
     const repository = new SupabaseSavedTripsRepository(supabase);
     let typedTripId: TripId;
@@ -80,16 +114,24 @@ export const TripMapScreen = memo(function TripMapScreen({
         }
       });
     return () => controller.abort();
-  }, [isFixture, isRemoteTrip, tripId]);
+  }, [isFixture, isRemoteTrip, tripId, tripSnapshot]);
 
   const tripData = useMemo(() => {
     if (customTripDetail) return customTripDetail;
     if (fixtureMode || (!isRemoteTrip && tripId?.startsWith("trip_"))) {
       return getMockTripDetail(tripId ?? "trip_bangkok");
     }
+    if (tripSnapshot) return tripSnapshot;
     if (isRemoteTrip) return remoteTripData;
     return null;
-  }, [customTripDetail, fixtureMode, isRemoteTrip, remoteTripData, tripId]);
+  }, [
+    customTripDetail,
+    fixtureMode,
+    isRemoteTrip,
+    remoteTripData,
+    tripId,
+    tripSnapshot,
+  ]);
 
   const [selectedDayId, setSelectedDayId] = useState<string | "all">(
     initialDayId || "all",

@@ -443,11 +443,24 @@ export function TripDetailScreen({
 
   const handleViewMap = useCallback(() => {
     if (!tripId) return;
-    navigation.navigate("TripMap", {
+    const tripSnapshot =
+      isRemoteTrip && tripData?.id === tripId ? tripData : undefined;
+    const params = {
       tripId,
       initialDayId: activeDay?.id ?? effectiveSelectedDayId,
-    });
-  }, [navigation, tripId, activeDay, effectiveSelectedDayId]);
+    };
+    navigation.navigate(
+      "TripMap",
+      tripSnapshot ? { ...params, tripSnapshot } : params,
+    );
+  }, [
+    activeDay,
+    effectiveSelectedDayId,
+    isRemoteTrip,
+    navigation,
+    tripData,
+    tripId,
+  ]);
 
   const handleRetry = useCallback(() => {
     if (isRemoteTrip) {

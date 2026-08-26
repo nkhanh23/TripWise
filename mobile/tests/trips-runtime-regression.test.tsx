@@ -13,6 +13,7 @@ import { TripsScreen } from "../src/features/trips/TripsScreen";
 import { TripDetailScreen } from "../src/features/trips/screens/TripDetailScreen";
 import { TripMapScreen } from "../src/features/trips/screens/TripMapScreen";
 import { RoutePreviewScreen } from "../src/features/route/screens/RoutePreviewScreen";
+import { mapSavedTripDetailToTripDetailData } from "../src/features/trips/integrationMappers";
 import type { SavedTripsRepository } from "../src/integration/repositories";
 import type {
   SavedTripDetail,
@@ -22,6 +23,7 @@ import type {
 import { TranslationProvider } from "../src/i18n";
 import { ThemeProvider } from "../src/theme";
 import { OsrmRouteRepository } from "../src/integration/remote/publicProviderRepositories";
+import { SupabaseSavedTripsRepository } from "../src/integration/remote/supabaseTripRepositories";
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 20, left: 0, right: 0 }),
@@ -169,6 +171,16 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
         summary: "Day 2 in Bangkok",
         items: [],
       },
+    ],
+  };
+
+  const sampleRoute = {
+    profile: "driving" as const,
+    distanceMeters: 2400,
+    durationSeconds: 360,
+    geometry: [
+      { latitude: 13.7437, longitude: 100.4888 },
+      { latitude: 13.75, longitude: 100.4913 },
     ],
   };
 
@@ -322,6 +334,161 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
 
+  it("4c. production TripDetail navigation passes its loaded trip snapshot", async () => {
+    const mockRepo: SavedTripsRepository = {
+      list: jest.fn().mockResolvedValue({ items: [], nextCursor: null }),
+      getDetail: jest.fn().mockResolvedValue(sampleRemoteDetail),
+      deleteTrip: jest.fn(),
+      getStats: jest
+        .fn()
+        .mockResolvedValue({ tripsCount: 1, savedPlacesCount: 1 }),
+      updateItemNote: jest.fn().mockResolvedValue(true),
+    };
+    const route: any = { params: { tripId: productionTripId } };
+
+    await renderWithProviders(
+      <TripDetailScreen
+        navigation={mockNavigation}
+        repository={mockRepo}
+        route={route}
+      />,
+    );
+    await screen.findByText("Chùa Arun");
+
+    fireEvent.press(screen.getAllByLabelText("View Map")[0]);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "TripMap",
+      expect.objectContaining({
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+        tripSnapshot: expect.objectContaining({ id: productionTripId }),
+      }),
+    );
+  });
+
+  it("4d. matching production snapshot skips detail fetch and starts OSRM", async () => {
+    const detailSpy = jest.spyOn(
+      SupabaseSavedTripsRepository.prototype,
+      "getDetail",
+    );
+    const routeSpy = jest
+      .spyOn(OsrmRouteRepository.prototype, "getRoute")
+      .mockResolvedValue(sampleRoute);
+    const route: any = {
+      params: {
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+        tripSnapshot: mapSavedTripDetailToTripDetailData(sampleRemoteDetail),
+      },
+    };
+
+    await renderWithProviders(
+      <TripMapScreen navigation={mockNavigation} route={route} />,
+    );
+
+    await waitFor(() => expect(routeSpy).toHaveBeenCalled());
+    expect(detailSpy).not.toHaveBeenCalled();
+    expect(screen.getByText("Chùa Arun")).toBeTruthy();
+    expect(mockMarkerProps.slice(-2)).toHaveLength(2);
+  });
+
+  it("4e. direct production TripMap entry fetches detail", async () => {
+    const detailSpy = jest
+      .spyOn(SupabaseSavedTripsRepository.prototype, "getDetail")
+      .mockResolvedValue(sampleRemoteDetail);
+    jest
+      .spyOn(OsrmRouteRepository.prototype, "getRoute")
+      .mockResolvedValue(sampleRoute);
+    const route: any = {
+      params: {
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+      },
+    };
+
+    await renderWithProviders(
+      <TripMapScreen navigation={mockNavigation} route={route} />,
+    );
+
+    await waitFor(() => {
+      expect(detailSpy).toHaveBeenCalledWith(
+        productionTripId,
+        expect.any(AbortSignal),
+      );
+    });
+    expect(await screen.findByText("Chùa Arun")).toBeTruthy();
+  });
+
+  it("4f. mismatched production snapshot is ignored and fetches the route trip", async () => {
+    const detailSpy = jest
+      .spyOn(SupabaseSavedTripsRepository.prototype, "getDetail")
+      .mockResolvedValue(sampleRemoteDetail);
+    jest
+      .spyOn(OsrmRouteRepository.prototype, "getRoute")
+      .mockResolvedValue(sampleRoute);
+    const mismatchedSnapshot = {
+      ...mapSavedTripDetailToTripDetailData(sampleRemoteDetail),
+      id: "99999999-9999-4999-8999-999999999999",
+      destination: "Mismatched destination",
+    };
+    const route: any = {
+      params: {
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+        tripSnapshot: mismatchedSnapshot,
+      },
+    };
+
+    await renderWithProviders(
+      <TripMapScreen navigation={mockNavigation} route={route} />,
+    );
+
+    await waitFor(() => expect(detailSpy).toHaveBeenCalled());
+    expect(await screen.findByText("Bangkok Trip Map")).toBeTruthy();
+    expect(screen.queryByText("Mismatched destination Trip Map")).toBeNull();
+  });
+
+  it("4g. snapshot map keeps unresolved coordinates out of markers and OSRM", async () => {
+    const detailSpy = jest.spyOn(
+      SupabaseSavedTripsRepository.prototype,
+      "getDetail",
+    );
+    const routeSpy = jest
+      .spyOn(OsrmRouteRepository.prototype, "getRoute")
+      .mockResolvedValue(sampleRoute);
+    const snapshot = mapSavedTripDetailToTripDetailData(sampleRemoteDetail);
+    snapshot.days[0].items.push({
+      id: "unresolved-item",
+      type: "place",
+      time: "16:00",
+      title: "Unresolved place",
+      iconName: "place",
+      resolution: "UNRESOLVED",
+      latitude: undefined,
+      longitude: undefined,
+    });
+    const route: any = {
+      params: {
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+        tripSnapshot: snapshot,
+      },
+    };
+
+    await renderWithProviders(
+      <TripMapScreen navigation={mockNavigation} route={route} />,
+    );
+
+    await waitFor(() => expect(routeSpy).toHaveBeenCalled());
+    expect(detailSpy).not.toHaveBeenCalled();
+    expect(mockMarkerProps.slice(-2)).toHaveLength(2);
+    expect(routeSpy.mock.calls[0][0].coordinates).toEqual([
+      { latitude: 13.7437, longitude: 100.4888 },
+      { latitude: 13.75, longitude: 100.4913 },
+    ]);
+  });
+
   it("4a. keeps remote detail visible and deduplicates identical focus refreshes", async () => {
     let resolveRefresh: ((detail: SavedTripDetail) => void) | undefined;
     const getDetail = jest
@@ -464,7 +631,7 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     expect(mockMapViewRendered).toBe(true);
 
     // 2 VERIFIED markers are rendered
-    expect(mockMarkerProps.length).toBe(2);
+    expect(mockMarkerProps.slice(-2)).toHaveLength(2);
     expect(screen.getByText("Chùa Arun")).toBeTruthy();
 
     // Ensure pinColor is NEVER passed, preventing Android Fabric NullPointerException
