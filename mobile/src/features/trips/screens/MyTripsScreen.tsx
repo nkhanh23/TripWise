@@ -164,15 +164,27 @@ export function MyTripsScreen({
     );
   }, [enrichedSections]);
 
+  const tripsById = useMemo(() => {
+    return new Map(
+      enrichedSections.flatMap((section) =>
+        section.data.map((trip) => [trip.id, trip] as const),
+      ),
+    );
+  }, [enrichedSections]);
+
   const handleTripPress = useCallback(
     (tripId: string) => {
       if (onSelectTrip) {
         onSelectTrip(tripId);
       } else {
-        navigation.navigate("TripDetail", { tripId });
+        const tripSummary = tripsById.get(tripId);
+        navigation.navigate(
+          "TripDetail",
+          tripSummary ? { tripId, tripSummary } : { tripId },
+        );
       }
     },
-    [onSelectTrip, navigation],
+    [onSelectTrip, navigation, tripsById],
   );
 
   const handleCreateTrip = useCallback(() => {

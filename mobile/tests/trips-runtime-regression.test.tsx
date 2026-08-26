@@ -28,6 +28,7 @@ import { SupabaseSavedTripsRepository } from "../src/integration/remote/supabase
 import type { RootStackParamList } from "../src/navigation/types";
 import { VerifiedRouteMap } from "../src/features/trips/components/VerifiedRouteMap";
 import type { TripMapMarkerItem } from "../src/features/trips/types";
+import type { TripSummary } from "../src/features/trips/types";
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 20, left: 0, right: 0 }),
@@ -137,6 +138,17 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     return { key: "TripMap-test", name: "TripMap", params };
   }
 
+  type TripDetailRoute = NativeStackScreenProps<
+    RootStackParamList,
+    "TripDetail"
+  >["route"];
+
+  function createTripDetailRoute(
+    params: RootStackParamList["TripDetail"],
+  ): TripDetailRoute {
+    return { key: "TripDetail-test", name: "TripDetail", params };
+  }
+
   function createVerifiedMapMarker(
     id: string,
     latitude: number,
@@ -220,6 +232,16 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
         items: [],
       },
     ],
+  };
+
+  const sampleTripSummary: TripSummary = {
+    id: productionTripId,
+    title: "Bangkok Explorer",
+    destination: "Bangkok, Thailand",
+    startDate: "2026-08-25",
+    endDate: "2026-08-26",
+    dateLabel: "2026-08-25 - 2026-08-26",
+    status: "upcoming",
   };
 
   const sampleRoute = {
@@ -380,6 +402,91 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
 
     // Flush any pending promises to prevent act warnings from leaking
     await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+
+  it("4a. matching production summary renders a shell while detail loads once", async () => {
+    let resolveDetail: ((detail: SavedTripDetail) => void) | undefined;
+    const getDetail = jest.fn(
+      () =>
+        new Promise<SavedTripDetail>((resolve) => {
+          resolveDetail = resolve;
+        }),
+    );
+    const mockRepo: SavedTripsRepository = {
+      list: jest.fn().mockResolvedValue({ items: [], nextCursor: null }),
+      getDetail,
+      deleteTrip: jest.fn(),
+      getStats: jest
+        .fn()
+        .mockResolvedValue({ tripsCount: 1, savedPlacesCount: 1 }),
+      updateItemNote: jest.fn().mockResolvedValue(true),
+    };
+
+    await renderWithProviders(
+      <TripDetailScreen
+        navigation={mockNavigation}
+        repository={mockRepo}
+        route={createTripDetailRoute({
+          tripId: productionTripId,
+          tripSummary: sampleTripSummary,
+        })}
+      />,
+    );
+
+    await waitFor(() => expect(getDetail).toHaveBeenCalledTimes(1));
+    expect(screen.getByText("Bangkok Explorer")).toBeTruthy();
+    expect(screen.getByText("Bangkok, Thailand")).toBeTruthy();
+    expect(screen.getByText("2026-08-25 - 2026-08-26")).toBeTruthy();
+    expect(screen.queryByText("Chùa Arun")).toBeNull();
+
+    await act(async () => {
+      resolveDetail?.(sampleRemoteDetail);
+    });
+    expect(await screen.findByText("Chùa Arun")).toBeTruthy();
+    expect(getDetail).toHaveBeenCalledTimes(1);
+  });
+
+  it("4b. mismatched production summary is ignored and fetches the requested detail", async () => {
+    let resolveDetail: ((detail: SavedTripDetail) => void) | undefined;
+    const getDetail = jest.fn(
+      () =>
+        new Promise<SavedTripDetail>((resolve) => {
+          resolveDetail = resolve;
+        }),
+    );
+    const mockRepo: SavedTripsRepository = {
+      list: jest.fn().mockResolvedValue({ items: [], nextCursor: null }),
+      getDetail,
+      deleteTrip: jest.fn(),
+      getStats: jest
+        .fn()
+        .mockResolvedValue({ tripsCount: 1, savedPlacesCount: 1 }),
+      updateItemNote: jest.fn().mockResolvedValue(true),
+    };
+
+    await renderWithProviders(
+      <TripDetailScreen
+        navigation={mockNavigation}
+        repository={mockRepo}
+        route={createTripDetailRoute({
+          tripId: productionTripId,
+          tripSummary: {
+            ...sampleTripSummary,
+            id: "99999999-9999-4999-8999-999999999999",
+            destination: "Mismatched destination",
+          },
+        })}
+      />,
+    );
+
+    await waitFor(() => expect(getDetail).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText("Mismatched destination")).toBeNull();
+
+    await act(async () => {
+      resolveDetail?.(sampleRemoteDetail);
+    });
+    expect(await screen.findByText("Chùa Arun")).toBeTruthy();
+    expect(getDetail).toHaveBeenCalledTimes(1);
   });
 
   it("4c. production TripDetail navigation passes its loaded trip snapshot", async () => {

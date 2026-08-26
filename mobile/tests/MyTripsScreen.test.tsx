@@ -158,6 +158,28 @@ describe("MyTripsScreen", () => {
     expect(onSelectTripMock).toHaveBeenCalledWith("trip_kyoto");
   });
 
+  it("passes the loaded production trip summary when navigating to Trip Detail", async () => {
+    const user = userEvent.setup();
+    const { repository } = createSavedTripsRepository();
+
+    await render(<MyTripsScreen repository={repository} />);
+    await user.press(
+      await screen.findByLabelText(
+        "Bangkok Explorer, Bangkok, Thailand, 2027-01-10 - 2027-01-11",
+      ),
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("TripDetail", {
+      tripId: remoteTrip.id,
+      tripSummary: expect.objectContaining({
+        id: remoteTrip.id,
+        title: "Bangkok Explorer",
+        destination: "Bangkok, Thailand",
+        dateLabel: "2027-01-10 - 2027-01-11",
+      }),
+    });
+  });
+
   it("handles past trip card selection", async () => {
     const user = userEvent.setup();
     const onSelectTripMock = jest.fn();

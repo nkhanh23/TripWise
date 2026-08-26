@@ -53,6 +53,7 @@ import type {
   ItineraryItem,
   TripDetailData,
   TripDetailUIStatus,
+  TripSummary,
 } from "../types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "TripDetail"> & {
@@ -94,6 +95,10 @@ export function TripDetailScreen({
 
   const tripId = route?.params?.tripId;
   const isRemoteTrip = Boolean(tripId && isUuid(tripId));
+  const tripSummary: TripSummary | undefined =
+    isRemoteTrip && route.params?.tripSummary?.id === tripId
+      ? route.params.tripSummary
+      : undefined;
   const isFixture = Boolean(
     fixtureMode ||
     customTripDetail ||
@@ -557,12 +562,37 @@ export function TripDetailScreen({
           { backgroundColor: colors.background.canvas },
         ]}
       >
-        <TripDetailTopBar onBack={handleBack} topInset={insets.top} />
+        <TripDetailTopBar
+          onBack={handleBack}
+          title={tripSummary?.title}
+          topInset={insets.top}
+        />
         <View
           accessibilityLabel={t("common.loading")}
           accessibilityRole="progressbar"
-          style={styles.centerContainer}
+          style={
+            tripSummary
+              ? styles.summaryLoadingContainer
+              : styles.centerContainer
+          }
         >
+          {tripSummary ? (
+            <View style={styles.summaryLoadingContent}>
+              <Text
+                style={[styles.summaryDestination, { color: colors.text.primary }]}
+              >
+                {tripSummary.destination}
+              </Text>
+              <Text
+                style={[
+                  styles.summaryDateLabel,
+                  { color: colors.text.secondary },
+                ]}
+              >
+                {tripSummary.dateLabel}
+              </Text>
+            </View>
+          ) : null}
           <ActivityIndicator color={colors.brand.primary} size="large" />
         </View>
       </View>
@@ -736,6 +766,26 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     justifyContent: "center",
     padding: spacing.xl,
+  },
+  summaryLoadingContainer: {
+    alignItems: "center",
+    flex: 1,
+    gap: spacing.lg,
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  summaryLoadingContent: {
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  summaryDestination: {
+    fontSize: typography.titleSmall,
+    fontWeight: typography.fontWeight.semibold,
+    textAlign: "center",
+  },
+  summaryDateLabel: {
+    fontSize: typography.bodySmall,
+    textAlign: "center",
   },
   errorTitle: {
     fontSize: typography.titleSmall,

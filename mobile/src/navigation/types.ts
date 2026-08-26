@@ -1,4 +1,4 @@
-import type { TripDetailData } from "../features/trips/types";
+import type { TripDetailData, TripSummary } from "../features/trips/types";
 
 export type MainTabParamList = {
   Home: undefined;
@@ -30,6 +30,7 @@ export type RootStackParamList = {
   };
   TripDetail: {
     tripId: string;
+    tripSummary?: TripSummary;
   };
   AddPlace: {
     tripId: string;
