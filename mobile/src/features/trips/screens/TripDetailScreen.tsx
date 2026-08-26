@@ -449,6 +449,12 @@ export function TripDetailScreen({
       tripId,
       initialDayId: activeDay?.id ?? effectiveSelectedDayId,
     };
+    if (__DEV__) {
+      console.info("[TripWisePerf] TRIP_MAP_NAV_START", {
+        selectedDayId: params.initialDayId,
+        timestamp: performance.now(),
+      });
+    }
     navigation.navigate(
       "TripMap",
       tripSnapshot ? { ...params, tripSnapshot } : params,

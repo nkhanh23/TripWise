@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -78,6 +78,18 @@ export const TripMapScreen = memo(function TripMapScreen({
   )
     ? route.params.tripSnapshot
     : null;
+  const perfLoggedRef = useRef(false);
+  if (__DEV__ && !perfLoggedRef.current) {
+    perfLoggedRef.current = true;
+    console.info("[TripWisePerf] TRIP_MAP_RENDER", {
+      timestamp: performance.now(),
+    });
+    if (tripSnapshot) {
+      console.info("[TripWisePerf] TRIP_MAP_SNAPSHOT_READY", {
+        timestamp: performance.now(),
+      });
+    }
+  }
   const isFixture = Boolean(
     fixtureMode ||
     customTripDetail ||
@@ -219,12 +231,29 @@ export const TripMapScreen = memo(function TripMapScreen({
         day.dayNumber,
       );
       const repository = new OsrmRouteRepository();
+      if (__DEV__) {
+        console.info("[TripWisePerf] TRIP_MAP_OSRM_START", {
+          timestamp: performance.now(),
+        });
+      }
       void repository
         .getRoute(request, controller.signal)
         .then((result) => {
+          if (__DEV__) {
+            console.info("[TripWisePerf] TRIP_MAP_OSRM_END", {
+              outcome: "success",
+              timestamp: performance.now(),
+            });
+          }
           if (!controller.signal.aborted) setRouteResult(result);
         })
         .catch(() => {
+          if (__DEV__) {
+            console.info("[TripWisePerf] TRIP_MAP_OSRM_END", {
+              outcome: "error",
+              timestamp: performance.now(),
+            });
+          }
           if (!controller.signal.aborted) setRouteResult(null);
         })
         .finally(() => {

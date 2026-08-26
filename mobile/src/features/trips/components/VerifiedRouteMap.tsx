@@ -26,6 +26,18 @@ type Props = {
   onSelectMarker: (marker: TripMapMarkerItem) => void;
 };
 
+function logPerf(
+  event: string,
+  metadata: Record<string, number | string> = {},
+) {
+  if (__DEV__) {
+    console.info(`[TripWisePerf] ${event}`, {
+      ...metadata,
+      timestamp: performance.now(),
+    });
+  }
+}
+
 export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   markers,
   route,
@@ -34,6 +46,10 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
 }: Props) {
   const { colors } = useTheme();
   const mapRef = useRef<any>(null);
+  const fitSequenceRef = useRef(0);
+  const routeSourceRef = useRef<"markers" | "osrm">("markers");
+  routeSourceRef.current = route?.geometry ? "osrm" : "markers";
+  logPerf("VERIFIED_MAP_RENDER");
   const points = useMemo(
     () =>
       markers.flatMap((marker) =>
@@ -65,6 +81,11 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   useEffect(() => {
     if (!MapView || points.length === 0) return;
     const timer = setTimeout(() => {
+      const fitSequence = ++fitSequenceRef.current;
+      logPerf("MAP_FIT_START", {
+        fitSequence,
+        routeSource: routeSourceRef.current,
+      });
       mapRef.current?.fitToCoordinates(routePoints, {
         edgePadding: { top: 160, right: 48, bottom: 240, left: 48 },
         animated: true,
@@ -92,6 +113,13 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
     <View style={styles.container}>
       <MapView
         initialRegion={initialRegion}
+        onLayout={() => logPerf("MAP_LAYOUT")}
+        onMapReady={() => logPerf("MAP_READY")}
+        onRegionChangeComplete={() =>
+          logPerf("MAP_REGION_SETTLED", {
+            fitSequence: fitSequenceRef.current,
+          })
+        }
         ref={mapRef}
         style={StyleSheet.absoluteFill}
       >
