@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react-native";
 import React from "react";
 import { Alert } from "react-native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MyTripsScreen } from "../src/features/trips/screens/MyTripsScreen";
 import { TripsScreen } from "../src/features/trips/TripsScreen";
 import { TripDetailScreen } from "../src/features/trips/screens/TripDetailScreen";
@@ -24,6 +25,9 @@ import { TranslationProvider } from "../src/i18n";
 import { ThemeProvider } from "../src/theme";
 import { OsrmRouteRepository } from "../src/integration/remote/publicProviderRepositories";
 import { SupabaseSavedTripsRepository } from "../src/integration/remote/supabaseTripRepositories";
+import type { RootStackParamList } from "../src/navigation/types";
+import { VerifiedRouteMap } from "../src/features/trips/components/VerifiedRouteMap";
+import type { TripMapMarkerItem } from "../src/features/trips/types";
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 20, left: 0, right: 0 }),
@@ -50,6 +54,7 @@ let mockMapViewRendered = false;
 let mockPolylineProps: any = null;
 let mockMarkerProps: any[] = [];
 const mockFitToCoordinates = jest.fn();
+const mockAnimateToRegion = jest.fn();
 
 jest.mock("react-native-maps", () => {
   const React = require("react");
@@ -57,6 +62,7 @@ jest.mock("react-native-maps", () => {
   const MockMapView = React.forwardRef((props: any, ref: any) => {
     mockMapViewRendered = true;
     React.useImperativeHandle(ref, () => ({
+      animateToRegion: mockAnimateToRegion,
       fitToCoordinates: mockFitToCoordinates,
     }));
     return React.createElement(View, {
@@ -100,6 +106,7 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     mockMapViewRendered = false;
     mockPolylineProps = null;
     mockMarkerProps = [];
+    mockAnimateToRegion.mockClear();
     mockFitToCoordinates.mockClear();
   });
 
@@ -107,12 +114,51 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     cleanup();
   });
 
-  async function renderWithProviders(ui: React.ReactElement) {
-    return await render(
+  function withProviders(ui: React.ReactElement) {
+    return (
       <ThemeProvider initialPreference="light">
         <TranslationProvider initialLocale="en">{ui}</TranslationProvider>
-      </ThemeProvider>,
+      </ThemeProvider>
     );
+  }
+
+  async function renderWithProviders(ui: React.ReactElement) {
+    return await render(withProviders(ui));
+  }
+
+  type TripMapRoute = NativeStackScreenProps<
+    RootStackParamList,
+    "TripMap"
+  >["route"];
+
+  function createTripMapRoute(
+    params: RootStackParamList["TripMap"],
+  ): TripMapRoute {
+    return { key: "TripMap-test", name: "TripMap", params };
+  }
+
+  function createVerifiedMapMarker(
+    id: string,
+    latitude: number,
+    longitude: number,
+    orderNumber: number,
+  ): TripMapMarkerItem {
+    return {
+      item: {
+        id,
+        type: "place",
+        time: "09:00",
+        title: id,
+        iconName: "place",
+        resolution: "VERIFIED",
+        latitude,
+        longitude,
+      },
+      dayNumber: 1,
+      orderNumber,
+      coordinate: { topPercent: 0, leftPercent: 0 },
+      verifiedCoordinate: { latitude, longitude },
+    };
   }
 
   const productionTripId = "d26a5d6c-d54b-45b5-bcbd-5402bfc5a387" as TripId;
@@ -499,13 +545,11 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     const routeSpy = jest
       .spyOn(OsrmRouteRepository.prototype, "getRoute")
       .mockReturnValue(pendingRoute);
-    const route: any = {
-      params: {
+    const route = createTripMapRoute({
         tripId: productionTripId,
         initialDayId: sampleRemoteDetail.days[0].id,
         tripSnapshot: mapSavedTripDetailToTripDetailData(sampleRemoteDetail),
-      },
-    };
+    });
 
     await renderWithProviders(
       <TripMapScreen navigation={mockNavigation} route={route} />,
@@ -540,13 +584,11 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     jest
       .spyOn(OsrmRouteRepository.prototype, "getRoute")
       .mockRejectedValue(new Error("network unavailable"));
-    const route: any = {
-      params: {
+    const route = createTripMapRoute({
         tripId: productionTripId,
         initialDayId: sampleRemoteDetail.days[0].id,
         tripSnapshot: mapSavedTripDetailToTripDetailData(sampleRemoteDetail),
-      },
-    };
+    });
 
     await renderWithProviders(
       <TripMapScreen navigation={mockNavigation} route={route} />,
@@ -559,6 +601,163 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     expect(mockMapViewRendered).toBe(true);
     expect(mockMarkerProps.slice(-2)).toHaveLength(2);
     expect(mockFitToCoordinates).not.toHaveBeenCalled();
+  });
+
+  it("4j. a later one-marker set deliberately updates the camera without OSRM", async () => {
+    const initialMarkers = [
+      createVerifiedMapMarker("day-a-1", 13.7437, 100.4888, 1),
+      createVerifiedMapMarker("day-a-2", 13.75, 100.4913, 2),
+    ];
+    const nextMarkers = [
+      createVerifiedMapMarker("day-b-1", 18.7061, 105.6304, 1),
+    ];
+    const onSelectMarker = jest.fn();
+    const view = await renderWithProviders(
+      <VerifiedRouteMap
+        markers={initialMarkers}
+        onSelectMarker={onSelectMarker}
+        route={null}
+        selectedItemId={null}
+      />,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockAnimateToRegion).not.toHaveBeenCalled();
+    expect(mockFitToCoordinates).not.toHaveBeenCalled();
+
+    await view.rerender(
+      withProviders(
+        <VerifiedRouteMap
+          markers={nextMarkers}
+          onSelectMarker={onSelectMarker}
+          route={null}
+          selectedItemId={null}
+        />,
+      ),
+    );
+
+    await waitFor(() => expect(mockAnimateToRegion).toHaveBeenCalledTimes(1));
+    expect(mockAnimateToRegion).toHaveBeenCalledWith(
+      {
+        latitude: 18.7061,
+        longitude: 105.6304,
+        latitudeDelta: 0.04,
+        longitudeDelta: 0.06,
+      },
+      250,
+    );
+    expect(mockFitToCoordinates).not.toHaveBeenCalled();
+  });
+
+  it("4k. a later multi-marker set fits once without a repeated loop", async () => {
+    const initialMarkers = [
+      createVerifiedMapMarker("day-a-1", 13.7437, 100.4888, 1),
+    ];
+    const nextMarkers = [
+      createVerifiedMapMarker("day-b-1", 18.7061, 105.6304, 1),
+      createVerifiedMapMarker("day-b-2", 18.6796, 105.6813, 2),
+    ];
+    const onSelectMarker = jest.fn();
+    const view = await renderWithProviders(
+      <VerifiedRouteMap
+        markers={initialMarkers}
+        onSelectMarker={onSelectMarker}
+        route={null}
+        selectedItemId={null}
+      />,
+    );
+
+    await view.rerender(
+      withProviders(
+        <VerifiedRouteMap
+          markers={nextMarkers}
+          onSelectMarker={onSelectMarker}
+          route={null}
+          selectedItemId={null}
+        />,
+      ),
+    );
+
+    await waitFor(() => expect(mockFitToCoordinates).toHaveBeenCalledTimes(1));
+    expect(mockFitToCoordinates).toHaveBeenCalledWith(
+      nextMarkers.map((marker) => marker.verifiedCoordinate),
+      expect.objectContaining({ animated: true }),
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockFitToCoordinates).toHaveBeenCalledTimes(1);
+    expect(mockAnimateToRegion).not.toHaveBeenCalled();
+  });
+
+  it("4l. switching to no verified markers makes no invalid camera call", async () => {
+    const initialMarkers = [
+      createVerifiedMapMarker("day-a-1", 13.7437, 100.4888, 1),
+      createVerifiedMapMarker("day-a-2", 13.75, 100.4913, 2),
+    ];
+    const onSelectMarker = jest.fn();
+    const view = await renderWithProviders(
+      <VerifiedRouteMap
+        markers={initialMarkers}
+        onSelectMarker={onSelectMarker}
+        route={null}
+        selectedItemId={null}
+      />,
+    );
+
+    await view.rerender(
+      withProviders(
+        <VerifiedRouteMap
+          markers={[]}
+          onSelectMarker={onSelectMarker}
+          route={null}
+          selectedItemId={null}
+        />,
+      ),
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockMapViewRendered).toBe(true);
+    expect(mockAnimateToRegion).not.toHaveBeenCalled();
+    expect(mockFitToCoordinates).not.toHaveBeenCalled();
+  });
+
+  it("4m. identical marker and route geometry rerenders do not add fits", async () => {
+    const initialMarkers = [
+      createVerifiedMapMarker("day-a-1", 13.7437, 100.4888, 1),
+      createVerifiedMapMarker("day-a-2", 13.75, 100.4913, 2),
+    ];
+    const onSelectMarker = jest.fn();
+    const view = await renderWithProviders(
+      <VerifiedRouteMap
+        markers={initialMarkers}
+        onSelectMarker={onSelectMarker}
+        route={sampleRoute}
+        selectedItemId={null}
+      />,
+    );
+
+    await waitFor(() => expect(mockFitToCoordinates).toHaveBeenCalledTimes(1));
+    await view.rerender(
+      withProviders(
+        <VerifiedRouteMap
+          markers={initialMarkers.map((marker) => ({ ...marker }))}
+          onSelectMarker={onSelectMarker}
+          route={{ ...sampleRoute, geometry: [...sampleRoute.geometry] }}
+          selectedItemId={null}
+        />,
+      ),
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockFitToCoordinates).toHaveBeenCalledTimes(1);
+    expect(mockAnimateToRegion).not.toHaveBeenCalled();
   });
 
   it("4a. keeps remote detail visible and deduplicates identical focus refreshes", async () => {

@@ -47,8 +47,6 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   const { colors } = useTheme();
   const mapRef = useRef<any>(null);
   const fitSequenceRef = useRef(0);
-  const routeSourceRef = useRef<"markers" | "osrm">("markers");
-  routeSourceRef.current = route?.geometry ? "osrm" : "markers";
   logPerf("VERIFIED_MAP_RENDER");
   const points = useMemo(
     () =>
@@ -59,6 +57,22 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   );
   const routePoints = useMemo(() => route?.geometry ?? points, [points, route]);
   const hasOsrmRoute = Boolean(route?.geometry?.length);
+  const markerSignature = useMemo(
+    () =>
+      points
+        .map((point) => `${point.latitude},${point.longitude}`)
+        .join("|"),
+    [points],
+  );
+  const routeSignature = useMemo(
+    () =>
+      route?.geometry
+        .map((point) => `${point.latitude},${point.longitude}`)
+        .join("|") ?? "",
+    [route],
+  );
+  const previousMarkerSignatureRef = useRef(markerSignature);
+  const previousRouteSignatureRef = useRef<string | null>(null);
   const initialRegion = useMemo(() => {
     const source = points.length
       ? points
@@ -80,12 +94,48 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   }, [points]);
 
   useEffect(() => {
-    if (!MapView || points.length === 0 || !hasOsrmRoute) return;
+    if (previousMarkerSignatureRef.current === markerSignature) return;
+    previousMarkerSignatureRef.current = markerSignature;
+    if (!MapView || points.length === 0) return;
+
     const timer = setTimeout(() => {
       const fitSequence = ++fitSequenceRef.current;
       logPerf("MAP_FIT_START", {
         fitSequence,
-        routeSource: routeSourceRef.current,
+        routeSource: "markers",
+      });
+      if (points.length === 1) {
+        mapRef.current?.animateToRegion(
+          {
+            ...points[0],
+            latitudeDelta: 0.04,
+            longitudeDelta: 0.06,
+          },
+          250,
+        );
+      } else {
+        mapRef.current?.fitToCoordinates(points, {
+          edgePadding: { top: 160, right: 48, bottom: 240, left: 48 },
+          animated: true,
+        });
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [markerSignature, points]);
+
+  useEffect(() => {
+    if (!hasOsrmRoute) {
+      previousRouteSignatureRef.current = null;
+      return;
+    }
+    if (previousRouteSignatureRef.current === routeSignature) return;
+    previousRouteSignatureRef.current = routeSignature;
+
+    const timer = setTimeout(() => {
+      const fitSequence = ++fitSequenceRef.current;
+      logPerf("MAP_FIT_START", {
+        fitSequence,
+        routeSource: "osrm",
       });
       mapRef.current?.fitToCoordinates(routePoints, {
         edgePadding: { top: 160, right: 48, bottom: 240, left: 48 },
@@ -93,7 +143,7 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
       });
     }, 0);
     return () => clearTimeout(timer);
-  }, [hasOsrmRoute, routePoints, points.length]);
+  }, [hasOsrmRoute, routePoints, routeSignature]);
 
   if (!MapView) {
     return (
