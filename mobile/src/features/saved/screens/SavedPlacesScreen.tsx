@@ -64,6 +64,8 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
 
   const {
     savedPlaces,
+    ratings,
+    resolvedImages,
     status,
     handleUnsave,
     handleUndo,
@@ -159,9 +161,11 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
         onPress={handleNavigatePlaceDetail}
         onToggleSave={handleUnsave}
         place={item}
+        rating={ratings[item.googlePlaceId] ?? item.rating}
+        resolvedImage={resolvedImages[item.googlePlaceId] ?? item.resolvedImage}
       />
     ),
-    [handleNavigatePlaceDetail, handleUnsave],
+    [handleNavigatePlaceDetail, handleUnsave, ratings, resolvedImages],
   );
 
   return (
@@ -274,6 +278,7 @@ export const SavedPlacesScreen = memo(function SavedPlacesScreen({
             { paddingBottom: insets.bottom + spacing.xxxl },
           ]}
           data={filteredPlaces}
+          extraData={{ ratings, resolvedImages }}
           keyExtractor={keyExtractor}
           ListEmptyComponent={
             isFilteredEmpty ? (

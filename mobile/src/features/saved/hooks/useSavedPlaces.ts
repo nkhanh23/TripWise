@@ -129,7 +129,7 @@ export function useSavedPlaces({
   const activeController = useRef<AbortController | null>(null);
 
   const loadMetadataBounded = useCallback(
-    async (places: SavedPlace[], signal: AbortSignal) => {
+    async (places: (SavedPlace | SavedPlaceUIItem)[], signal: AbortSignal) => {
       if (!effectiveMetadataRepository) return;
       const pending = places.filter((place) => {
         const key = place.googlePlaceId;
@@ -148,8 +148,9 @@ export function useSavedPlaces({
 
       const flushMetadata = () => {
         if (Object.keys(metadataBatch).length > 0) {
+          const batchToApply = metadataBatch;
           setRatings((current) => {
-            const next = { ...current, ...metadataBatch };
+            const next = { ...current, ...batchToApply };
             ratingsRef.current = next;
             return next;
           });
@@ -207,7 +208,7 @@ export function useSavedPlaces({
   );
 
   const loadImagesBounded = useCallback(
-    async (places: SavedPlace[], signal: AbortSignal) => {
+    async (places: (SavedPlace | SavedPlaceUIItem)[], signal: AbortSignal) => {
       if (!effectivePlaceImageRepository) return;
       let nextIndex = 0;
 
@@ -216,7 +217,8 @@ export function useSavedPlaces({
 
       const flushImages = () => {
         if (Object.keys(imageBatch).length > 0) {
-          setResolvedImages((current) => ({ ...current, ...imageBatch }));
+          const batchToApply = imageBatch;
+          setResolvedImages((current) => ({ ...current, ...batchToApply }));
           imageBatch = {};
         }
         batchTimeout = null;
@@ -368,15 +370,25 @@ export function useSavedPlaces({
   const activePlaces =
     normalizedCustomPlaces ?? (isFixture ? fixturePlaces : remotePlaces);
 
+  const computedStatus = normalizedCustomPlaces
+    ? normalizedCustomPlaces.length > 0
+      ? "ready"
+      : "empty"
+    : status;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    if (activePlaces.length > 0 && computedStatus === "ready") {
+      loadImagesBounded(activePlaces, controller.signal);
+      loadMetadataBounded(activePlaces, controller.signal);
+    }
+    return () => {
+      controller.abort();
+    };
+  }, [activePlaces, computedStatus, loadImagesBounded, loadMetadataBounded]);
+
   // Combine items with cached photo URLs
-  const itemsWithRichData: SavedPlaceUIItem[] = useMemo(() => {
-    return activePlaces.map((item) => ({
-      ...item,
-      imageUrl: resolvedImages[item.googlePlaceId]?.uri ?? item.imageUrl,
-      resolvedImage: resolvedImages[item.googlePlaceId] ?? item.resolvedImage,
-      rating: ratings[item.googlePlaceId] ?? item.rating,
-    }));
-  }, [activePlaces, ratings, resolvedImages]);
+  // The component receives ratings and resolvedImages separately to avoid recreating the array.
 
   const handleUnsave = useCallback(
     async (idOrGooglePlaceId: string) => {
@@ -465,12 +477,10 @@ export function useSavedPlaces({
   );
 
   return {
-    savedPlaces: itemsWithRichData,
-    status: normalizedCustomPlaces
-      ? normalizedCustomPlaces.length > 0
-        ? "ready"
-        : "empty"
-      : status,
+    savedPlaces: activePlaces,
+    ratings,
+    resolvedImages,
+    status: computedStatus,
     handleUnsave,
     handleToggleSave,
     handleUndo,

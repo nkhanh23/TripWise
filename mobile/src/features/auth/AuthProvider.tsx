@@ -14,6 +14,7 @@ import type {
   AuthenticatedSession,
   AuthenticatedUser,
   ProfileUpdate,
+  UserId,
 } from "../../integration/contracts";
 import type { IntegrationErrorCode } from "../../integration/errors";
 import type {
@@ -63,6 +64,8 @@ export function AuthProvider({
 }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>(initialState);
   const mountedRef = useRef(true);
+  const activeUserIdRef = useRef<UserId | null>(null);
+  const appliedUserIdRef = useRef<UserId | null>(null);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -72,8 +75,10 @@ export function AuthProvider({
   }, []);
 
   const applyUser = useCallback(
-    async (user: AuthenticatedUser | null) => {
+    (user: AuthenticatedUser | null) => {
       if (!user) {
+        activeUserIdRef.current = null;
+        appliedUserIdRef.current = null;
         if (mountedRef.current) {
           setState({
             status: "signedOut",
@@ -83,8 +88,15 @@ export function AuthProvider({
             profileError: null,
           });
         }
-        return;
+        return Promise.resolve();
       }
+
+      const currentUserId = user.id;
+      if (appliedUserIdRef.current === currentUserId) {
+        return Promise.resolve();
+      }
+      activeUserIdRef.current = currentUserId;
+      appliedUserIdRef.current = currentUserId;
 
       if (mountedRef.current) {
         setState({
@@ -96,26 +108,30 @@ export function AuthProvider({
         });
       }
 
-      try {
-        const profile = await profileRepository.getOwnProfile(user.id);
-        if (mountedRef.current) {
-          setState((prev) => ({
-            ...prev,
-            profile: profile ?? null,
-            profileStatus: profile ? "ready" : "absent",
-            profileError: null,
-          }));
-        }
-      } catch (err: unknown) {
-        const code = (err as { code?: IntegrationErrorCode })?.code;
-        if (mountedRef.current) {
-          setState((prev) => ({
-            ...prev,
-            profileStatus: "error",
-            profileError: code ?? "unknown",
-          }));
-        }
-      }
+      void profileRepository
+        .getOwnProfile(currentUserId)
+        .then((profile) => {
+          if (mountedRef.current && activeUserIdRef.current === currentUserId) {
+            setState((prev) => ({
+              ...prev,
+              profile: profile ?? null,
+              profileStatus: profile ? "ready" : "absent",
+              profileError: null,
+            }));
+          }
+        })
+        .catch((err: unknown) => {
+          const code = (err as { code?: IntegrationErrorCode })?.code;
+          if (mountedRef.current && activeUserIdRef.current === currentUserId) {
+            setState((prev) => ({
+              ...prev,
+              profileStatus: "error",
+              profileError: code ?? "unknown",
+            }));
+          }
+        });
+
+      return Promise.resolve();
     },
     [profileRepository],
   );
@@ -180,14 +196,15 @@ export function AuthProvider({
   );
 
   const refreshProfile = useCallback(async () => {
-    const current = state;
-    if (current.status !== "signedIn" || !current.user) return;
+    const currentUserId = activeUserIdRef.current;
+    if (!currentUserId) return;
+
     if (mountedRef.current) {
       setState((prev) => ({ ...prev, profileStatus: "loading" }));
     }
     try {
-      const profile = await profileRepository.getOwnProfile(current.user.id);
-      if (mountedRef.current) {
+      const profile = await profileRepository.getOwnProfile(currentUserId);
+      if (mountedRef.current && activeUserIdRef.current === currentUserId) {
         setState((prev) => ({
           ...prev,
           profile: profile ?? null,
@@ -197,7 +214,7 @@ export function AuthProvider({
       }
     } catch (err: unknown) {
       const code = (err as { code?: IntegrationErrorCode })?.code;
-      if (mountedRef.current) {
+      if (mountedRef.current && activeUserIdRef.current === currentUserId) {
         setState((prev) => ({
           ...prev,
           profileStatus: "error",
@@ -205,18 +222,18 @@ export function AuthProvider({
         }));
       }
     }
-  }, [profileRepository, state]);
+  }, [profileRepository]);
 
   const updateProfile = useCallback(
     async (update: ProfileUpdate) => {
-      const current = state;
-      if (current.status !== "signedIn" || !current.user)
-        throw new Error("Not signed in");
+      const currentUserId = activeUserIdRef.current;
+      if (!currentUserId) throw new Error("Not signed in");
+
       const profile = await profileRepository.updateOwnProfile(
-        current.user.id,
+        currentUserId,
         update,
       );
-      if (mountedRef.current) {
+      if (mountedRef.current && activeUserIdRef.current === currentUserId) {
         setState((prev) => ({
           ...prev,
           profile,
@@ -225,7 +242,7 @@ export function AuthProvider({
         }));
       }
     },
-    [profileRepository, state],
+    [profileRepository],
   );
 
   const value = useMemo<AuthContextValue>(

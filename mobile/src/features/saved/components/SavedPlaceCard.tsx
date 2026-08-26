@@ -22,6 +22,8 @@ type CardPlaceItem = {
 type Props = {
   place: CardPlaceItem;
   isSaved?: boolean;
+  rating?: number;
+  resolvedImage?: ResolvedImage;
   onPress: (placeId: string) => void;
   onToggleSave: (placeId: string) => void;
 };
@@ -29,6 +31,8 @@ type Props = {
 export const SavedPlaceCard = memo(function SavedPlaceCard({
   place,
   isSaved = true,
+  rating = place.rating,
+  resolvedImage = place.resolvedImage,
   onPress,
   onToggleSave,
 }: Props) {
@@ -56,17 +60,20 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
     >
       {/* 1. Image Container with Badges */}
       <View style={styles.imageContainer}>
-        {place.imageUrl ? (
+        {(resolvedImage?.uri ?? place.imageUrl) ? (() => {
+          const displayUri = (resolvedImage?.uri ?? place.imageUrl) as string;
+          return (
           <Image
             accessibilityLabel={place.name}
             accessibilityRole="image"
-            source={getResolvedImageSource(place.imageUrl, place.resolvedImage)}
+            source={getResolvedImageSource(displayUri, resolvedImage)}
             style={[
               styles.image,
               { backgroundColor: colors.background.surfaceVariant },
             ]}
           />
-        ) : (
+          );
+        })() : (
           <View
             style={[
               styles.imagePlaceholder,
@@ -135,7 +142,7 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
           </Text>
         </View>
 
-        <ImageAttribution attribution={place.resolvedImage?.attribution} />
+        <ImageAttribution attribution={resolvedImage?.attribution} />
       </View>
 
       {/* 2. Info Area */}
@@ -147,7 +154,7 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
           >
             {place.name}
           </Text>
-          {place.rating !== undefined && place.rating !== null ? (
+          {rating !== undefined && rating !== null ? (
             <View style={styles.ratingRow}>
               <MaterialIcons
                 color={colors.brand.yellow}
@@ -165,7 +172,7 @@ export const SavedPlaceCard = memo(function SavedPlaceCard({
                   },
                 ]}
               >
-                {place.rating.toFixed(1)}
+                {rating.toFixed(1)}
               </Text>
             </View>
           ) : null}

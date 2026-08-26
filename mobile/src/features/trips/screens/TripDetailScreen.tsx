@@ -656,6 +656,7 @@ export function TripDetailScreen({
       <FlatList
         contentContainerStyle={styles.listContent}
         data={itemsData}
+        extraData={itemImages}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           <TripEmptyDayState
@@ -668,16 +669,14 @@ export function TripDetailScreen({
           const image = item.googlePlaceId
             ? itemImages[item.googlePlaceId]
             : undefined;
-          const displayItem = image?.uri
-            ? { ...item, imageUrl: image.uri, resolvedImage: image }
-            : item;
 
           return (
             <View style={styles.itemWrapper}>
               <ItineraryCard
                 isFirst={index === 0}
                 isLast={index === itemsData.length - 1}
-                item={displayItem}
+                item={item}
+                resolvedImage={image}
                 onGetDirections={handleGetDirections}
                 onPressItem={isFixture ? handlePressItem : undefined}
                 onResolve={handleResolveItem}

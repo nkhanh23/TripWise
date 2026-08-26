@@ -7,11 +7,13 @@ import { useTranslation } from "../../../i18n";
 import { useTheme } from "../../../theme";
 import { radius, spacing, typography } from "../../../theme/tokens";
 import type { ItineraryItem } from "../types";
+import type { ResolvedImage } from "../../../integration/contracts";
 import { ImageAttribution } from "../../images/components/ImageAttribution";
 import { getResolvedImageSource } from "../../images/resolvedImageSource";
 
 type Props = {
   item: ItineraryItem;
+  resolvedImage?: ResolvedImage;
   isFirst?: boolean;
   isLast?: boolean;
   onPressItem?: (item: ItineraryItem) => void;
@@ -22,6 +24,7 @@ type Props = {
 
 export const ItineraryCard = memo(function ItineraryCard({
   item,
+  resolvedImage = item.resolvedImage,
   isFirst = false,
   isLast = false,
   onPressItem,
@@ -162,19 +165,22 @@ export const ItineraryCard = memo(function ItineraryCard({
           </View>
 
           {/* Optional Card Image */}
-          {item.imageUrl ? (
+          {(resolvedImage?.uri ?? item.imageUrl) ? (() => {
+            const displayUri = (resolvedImage?.uri ?? item.imageUrl) as string;
+            return (
             <View style={styles.imageWrap}>
               <Image
                 accessible={false}
                 source={getResolvedImageSource(
-                  item.imageUrl,
-                  item.resolvedImage,
+                  displayUri,
+                  resolvedImage,
                 )}
                 style={styles.cardImage}
               />
-              <ImageAttribution attribution={item.resolvedImage?.attribution} />
+              <ImageAttribution attribution={resolvedImage?.attribution} />
             </View>
-          ) : null}
+          );
+          })() : null}
 
           {/* Optional Get Directions CTA matching Stitch */}
           {item.directionsLabel ? (

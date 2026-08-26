@@ -34,9 +34,21 @@ export class SupabaseWikimediaImageRepository
         ? body.googlePlaceId
         : body.destination.toLocaleLowerCase();
     const cacheKey = `${body.kind}_${identity}_${body.maxWidth ?? 800}`;
+
+    // Clean expired items lazily on every request
+    for (const [key, val] of SupabaseWikimediaImageRepository.memoryCache.entries()) {
+      if (Date.now() - val.cachedAt >= cacheTtlMilliseconds) {
+        SupabaseWikimediaImageRepository.memoryCache.delete(key);
+      }
+    }
+
     const cached = SupabaseWikimediaImageRepository.memoryCache.get(cacheKey);
-    if (cached && Date.now() - cached.cachedAt < cacheTtlMilliseconds)
+    if (cached && Date.now() - cached.cachedAt < cacheTtlMilliseconds) {
+      // Refresh insertion order (LRU)
+      SupabaseWikimediaImageRepository.memoryCache.delete(cacheKey);
+      SupabaseWikimediaImageRepository.memoryCache.set(cacheKey, cached);
       return cached.image;
+    }
 
     return executeWithReliability(
       async (attemptSignal) => {
@@ -52,6 +64,14 @@ export class SupabaseWikimediaImageRepository
           throw mapWikimediaImageError(payload ?? error);
         }
         const image = parseWikimediaImageSuccess(data).data;
+
+        if (SupabaseWikimediaImageRepository.memoryCache.size >= 200) {
+          const firstKey = SupabaseWikimediaImageRepository.memoryCache.keys().next().value;
+          if (firstKey) {
+            SupabaseWikimediaImageRepository.memoryCache.delete(firstKey);
+          }
+        }
+
         SupabaseWikimediaImageRepository.memoryCache.set(cacheKey, {
           image,
           cachedAt: Date.now(),

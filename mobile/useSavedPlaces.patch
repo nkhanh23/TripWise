@@ -1,0 +1,76 @@
+--- a/src/features/saved/hooks/useSavedPlaces.ts
++++ b/src/features/saved/hooks/useSavedPlaces.ts
+@@ -149,11 +149,12 @@
+ 
+       const flushMetadata = () => {
+         if (Object.keys(metadataBatch).length > 0) {
++          const batchToApply = metadataBatch;
++          metadataBatch = {};
+           setRatings((current) => {
+-            const next = { ...current, ...metadataBatch };
++            const next = { ...current, ...batchToApply };
+             ratingsRef.current = next;
+             return next;
+           });
+-          metadataBatch = {};
+         }
+         batchTimeout = null;
+       };
+@@ -218,8 +219,9 @@
+ 
+       const flushImages = () => {
+         if (Object.keys(imageBatch).length > 0) {
+-          setResolvedImages((current) => ({ ...current, ...imageBatch }));
++          const batchToApply = imageBatch;
+           imageBatch = {};
++          setResolvedImages((current) => ({ ...current, ...batchToApply }));
+         }
+         batchTimeout = null;
+       };
+@@ -367,14 +369,18 @@
+   const activePlaces =
+     normalizedCustomPlaces ?? (isFixture ? fixturePlaces : remotePlaces);
+ 
++  const computedStatus = normalizedCustomPlaces
++    ? normalizedCustomPlaces.length > 0
++      ? "ready"
++      : "empty"
++    : status;
++
+   useEffect(() => {
+     const controller = new AbortController();
+-    if (activePlaces.length > 0 && status === "ready") {
++    if (activePlaces.length > 0 && computedStatus === "ready") {
+       loadImagesBounded(activePlaces, controller.signal);
+       loadMetadataBounded(activePlaces, controller.signal);
+     }
+     return () => {
+       controller.abort();
+     };
+-  }, [activePlaces, status, loadImagesBounded, loadMetadataBounded]);
++  }, [activePlaces, computedStatus, loadImagesBounded, loadMetadataBounded]);
+ 
+   // Combine items with cached photo URLs
+-  const itemsWithRichData: SavedPlaceUIItem[] = useMemo(() => {
+-    return activePlaces.map((item) => ({
+-      ...item,
+-      imageUrl: resolvedImages[item.googlePlaceId]?.uri ?? item.imageUrl,
+-      resolvedImage: resolvedImages[item.googlePlaceId] ?? item.resolvedImage,
+-      rating: ratings[item.googlePlaceId] ?? item.rating,
+-    }));
+-  }, [activePlaces, ratings, resolvedImages]);
++  // The component receives ratings and resolvedImages separately to avoid recreating the array.
+ 
+   const handleUnsave = useCallback(
+     async (idOrGooglePlaceId: string) => {
+@@ -461,7 +459,9 @@
+   );
+ 
+   return {
+-    savedPlaces: itemsWithRichData,
++    savedPlaces: activePlaces,
++    ratings,
++    resolvedImages,
+     status: normalizedCustomPlaces
+       ? normalizedCustomPlaces.length > 0
+         ? "ready"
