@@ -49,6 +49,7 @@ jest.mock("@react-navigation/native", () => {
 let mockMapViewRendered = false;
 let mockPolylineProps: any = null;
 let mockMarkerProps: any[] = [];
+const mockFitToCoordinates = jest.fn();
 
 jest.mock("react-native-maps", () => {
   const React = require("react");
@@ -56,7 +57,7 @@ jest.mock("react-native-maps", () => {
   const MockMapView = React.forwardRef((props: any, ref: any) => {
     mockMapViewRendered = true;
     React.useImperativeHandle(ref, () => ({
-      fitToCoordinates: jest.fn(),
+      fitToCoordinates: mockFitToCoordinates,
     }));
     return React.createElement(View, {
       ...props,
@@ -99,6 +100,7 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
     mockMapViewRendered = false;
     mockPolylineProps = null;
     mockMarkerProps = [];
+    mockFitToCoordinates.mockClear();
   });
 
   afterEach(() => {
@@ -487,6 +489,76 @@ describe("Trips & Map Production Runtime Regression Tests", () => {
       { latitude: 13.7437, longitude: 100.4888 },
       { latitude: 13.75, longitude: 100.4913 },
     ]);
+  });
+
+  it("4h. map relies on marker initialRegion until a successful OSRM route arrives", async () => {
+    let resolveRoute: ((value: typeof sampleRoute) => void) | undefined;
+    const pendingRoute = new Promise<typeof sampleRoute>((resolve) => {
+      resolveRoute = resolve;
+    });
+    const routeSpy = jest
+      .spyOn(OsrmRouteRepository.prototype, "getRoute")
+      .mockReturnValue(pendingRoute);
+    const route: any = {
+      params: {
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+        tripSnapshot: mapSavedTripDetailToTripDetailData(sampleRemoteDetail),
+      },
+    };
+
+    await renderWithProviders(
+      <TripMapScreen navigation={mockNavigation} route={route} />,
+    );
+
+    await waitFor(() => expect(routeSpy).toHaveBeenCalled());
+    const mapProps = screen.getByTestId("verified-native-map-view").props;
+    expect(mapProps.initialRegion).toMatchObject({
+      latitude: expect.any(Number),
+      longitude: expect.any(Number),
+    });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockFitToCoordinates).not.toHaveBeenCalled();
+
+    await act(async () => {
+      resolveRoute?.(sampleRoute);
+    });
+    await waitFor(() => expect(mockFitToCoordinates).toHaveBeenCalledTimes(1));
+    expect(mockFitToCoordinates).toHaveBeenLastCalledWith(
+      sampleRoute.geometry,
+      expect.objectContaining({ animated: true }),
+    );
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockFitToCoordinates).toHaveBeenCalledTimes(1);
+  });
+
+  it("4i. OSRM failure leaves the marker map visible without a fit loop", async () => {
+    jest
+      .spyOn(OsrmRouteRepository.prototype, "getRoute")
+      .mockRejectedValue(new Error("network unavailable"));
+    const route: any = {
+      params: {
+        tripId: productionTripId,
+        initialDayId: sampleRemoteDetail.days[0].id,
+        tripSnapshot: mapSavedTripDetailToTripDetailData(sampleRemoteDetail),
+      },
+    };
+
+    await renderWithProviders(
+      <TripMapScreen navigation={mockNavigation} route={route} />,
+    );
+
+    expect(await screen.findByText("Chùa Arun")).toBeTruthy();
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(mockMapViewRendered).toBe(true);
+    expect(mockMarkerProps.slice(-2)).toHaveLength(2);
+    expect(mockFitToCoordinates).not.toHaveBeenCalled();
   });
 
   it("4a. keeps remote detail visible and deduplicates identical focus refreshes", async () => {

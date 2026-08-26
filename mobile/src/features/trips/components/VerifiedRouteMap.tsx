@@ -58,6 +58,7 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
     [markers],
   );
   const routePoints = useMemo(() => route?.geometry ?? points, [points, route]);
+  const hasOsrmRoute = Boolean(route?.geometry?.length);
   const initialRegion = useMemo(() => {
     const source = points.length
       ? points
@@ -79,7 +80,7 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
   }, [points]);
 
   useEffect(() => {
-    if (!MapView || points.length === 0) return;
+    if (!MapView || points.length === 0 || !hasOsrmRoute) return;
     const timer = setTimeout(() => {
       const fitSequence = ++fitSequenceRef.current;
       logPerf("MAP_FIT_START", {
@@ -92,7 +93,7 @@ export const VerifiedRouteMap = memo(function VerifiedRouteMap({
       });
     }, 0);
     return () => clearTimeout(timer);
-  }, [routePoints, points.length]);
+  }, [hasOsrmRoute, routePoints, points.length]);
 
   if (!MapView) {
     return (
