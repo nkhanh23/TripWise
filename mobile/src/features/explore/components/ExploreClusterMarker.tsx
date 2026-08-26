@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, typography } from '../../../theme/tokens';
 import type { ClusterMarkerModel } from '../types';
+import { mapCoordinateToFixturePercent } from '../utils/exploreMapUtils';
 
 type Props = {
   cluster: ClusterMarkerModel;
@@ -10,13 +11,14 @@ type Props = {
 };
 
 export const ExploreClusterMarker = memo(function ExploreClusterMarker({ cluster, onPress }: Props) {
+  const position = mapCoordinateToFixturePercent(cluster.coordinate);
   return (
     <View
       style={[
         styles.container,
         {
-          top: `${cluster.mapCoordinate.topPercent}%`,
-          left: `${cluster.mapCoordinate.leftPercent}%`,
+          top: `${position.topPercent}%`,
+          left: `${position.leftPercent}%`,
         },
       ]}>
       <Pressable

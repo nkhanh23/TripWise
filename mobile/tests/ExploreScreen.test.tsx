@@ -263,10 +263,10 @@ describe('ExploreScreen', () => {
     expect(alert).toHaveBeenLastCalledWith('Action unavailable', 'This action is not available yet.');
   });
 
-  it('shows an empty production canvas without fixture places', async () => {
+  it('does not silently restore fixture places when no dependency is supplied', async () => {
     await render(<ExploreScreen />);
 
-    expect(screen.getByText('No places found')).toBeTruthy();
+    expect(screen.getByLabelText('Đang tải dữ liệu bản đồ')).toBeTruthy();
     expect(screen.queryByLabelText('Wat Arun')).toBeNull();
     expect(screen.queryByLabelText('The Grand Palace')).toBeNull();
     expect(screen.queryByLabelText('Blue Whale Cafe')).toBeNull();

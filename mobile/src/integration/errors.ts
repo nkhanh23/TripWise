@@ -1,4 +1,4 @@
-import type { GenerateTripErrorCode, PersistenceErrorCode, ResolvePlaceErrorCode } from './contracts';
+import type { ExplorePlacesErrorCode, GenerateTripErrorCode, PersistenceErrorCode, ResolvePlaceErrorCode } from './contracts';
 import { ContractValidationError, isRecord } from './validation';
 
 export type IntegrationErrorCode =
@@ -70,6 +70,11 @@ const resolvePlaceCodes: readonly ResolvePlaceErrorCode[] = [
   'UNAUTHORIZED', 'INTERNAL_ERROR',
 ];
 
+const explorePlacesCodes: readonly ExplorePlacesErrorCode[] = [
+  'EXPLORE_INPUT_INVALID', 'EXPLORE_PROVIDER_AUTH', 'EXPLORE_PROVIDER_RATE_LIMITED',
+  'EXPLORE_PROVIDER_UNAVAILABLE', 'EXPLORE_PROVIDER_INVALID_RESPONSE', 'UNAUTHORIZED', 'INTERNAL_ERROR',
+];
+
 function safeEnvelopeCode(value: unknown): string | null {
   if (!isRecord(value) || !isRecord(value.error) || typeof value.error.code !== 'string') return null;
   return value.error.code;
@@ -114,6 +119,20 @@ export function mapResolvePlaceError(value: unknown): IntegrationError {
     case 'UNAUTHORIZED': return new IntegrationError('unauthorized');
     case 'INTERNAL_ERROR': return new IntegrationError('unknown');
     default: return new IntegrationError('unknown');
+  }
+}
+
+export function mapExplorePlacesError(value: unknown): IntegrationError {
+  const code = safeEnvelopeCode(value);
+  if (!explorePlacesCodes.includes(code as ExplorePlacesErrorCode)) return mapUnknownTransportError(value);
+  switch (code as ExplorePlacesErrorCode) {
+    case 'EXPLORE_INPUT_INVALID': return new IntegrationError('invalidRequest');
+    case 'EXPLORE_PROVIDER_AUTH': return new IntegrationError('providerUnavailable');
+    case 'EXPLORE_PROVIDER_RATE_LIMITED': return new IntegrationError('rateLimited');
+    case 'EXPLORE_PROVIDER_UNAVAILABLE': return new IntegrationError('providerUnavailable', true);
+    case 'EXPLORE_PROVIDER_INVALID_RESPONSE': return new IntegrationError('invalidResponse');
+    case 'UNAUTHORIZED': return new IntegrationError('unauthorized');
+    case 'INTERNAL_ERROR': return new IntegrationError('unknown');
   }
 }
 

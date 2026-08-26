@@ -11,14 +11,18 @@ import { SavedPlacesScreen } from '../features/saved';
 import { TripsScreen } from '../features/trips/TripsScreen';
 import { useTranslation } from '../i18n';
 import { useTheme } from '../theme';
+import { supabase } from '../lib/supabase/client';
+import { SupabaseExplorePlacesRepository } from '../integration/remote/supabaseExplorePlacesRepository';
 import type { MainTabParamList, RootStackParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+const explorePlacesRepository = new SupabaseExplorePlacesRepository(supabase);
 
 function ExploreTabScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <ExploreScreen
+      repository={explorePlacesRepository}
       onNavigatePlaceDetail={(placeId) => navigation.navigate('PlaceDetail', { placeId })}
     />
   );

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTranslation } from '../../../i18n';
 import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import { mapFixturePlaceToCoordinate } from '../utils/exploreMapUtils';
-import type { ClusterMarkerModel, ExploreMarkerItem, ExplorePlace } from '../types';
+import type { ClusterMarkerModel, ExploreMapPlace, ExploreMarkerItem } from '../types';
 import { ExploreClusterMarker } from './ExploreClusterMarker';
 import { ExploreMarker } from './ExploreMarker';
 
@@ -27,12 +26,20 @@ try {
 type Props = {
   markerItems: ExploreMarkerItem[];
   selectedPlaceId: string | null;
-  onSelectPlace: (place: ExplorePlace) => void;
+  onSelectPlace: (place: ExploreMapPlace) => void;
   onSelectCluster?: (cluster: ClusterMarkerModel) => void;
   onDismissSelection: () => void;
+  onRegionChangeComplete?: (region: ExploreMapRegion) => void;
 };
 
-const INITIAL_REGION = {
+export type ExploreMapRegion = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+};
+
+export const INITIAL_EXPLORE_REGION: ExploreMapRegion = {
   latitude: 13.76,
   longitude: 100.52,
   latitudeDelta: 0.14,
@@ -56,7 +63,7 @@ function MarkerPin({
   selected,
 }: {
   onPress: () => void;
-  place: ExplorePlace;
+  place: ExploreMapPlace;
   selected: boolean;
 }) {
   return (
@@ -96,16 +103,14 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
   onSelectPlace,
   onSelectCluster,
   onDismissSelection,
+  onRegionChangeComplete,
 }: Props) {
   const { t } = useTranslation();
-  const mapRef = useRef<any>(null);
-  const [readyMapKey, setReadyMapKey] = useState<string | null>(null);
-  const [layoutMapKey, setLayoutMapKey] = useState<string | null>(null);
   const markerCoordinates = useMemo(
     () =>
       markerItems.map((item) => ({
         item,
-        coordinate: mapFixturePlaceToCoordinate(item.type === 'place' ? item.place : item.places[0]),
+        coordinate: item.type === 'place' ? item.place.coordinate : item.coordinate,
       })),
     [markerItems]
   );
@@ -113,54 +118,15 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
     () => markerCoordinates.filter(({ coordinate }) => isValidCoordinate(coordinate)),
     [markerCoordinates]
   );
-  const mapInstanceKey = useMemo(
-    () =>
-      validMarkerCoordinates
-        .map(({ item }) => (item.type === 'place' ? item.place.id : item.id))
-        .join('|') || 'empty',
-    [validMarkerCoordinates]
-  );
-
   useEffect(() => {
     if (__DEV__) {
       console.info('[ExploreMapCanvas] marker diagnostics', {
         renderedMarkers: validMarkerCoordinates.length,
         validCoordinates: validMarkerCoordinates.length,
-        visiblePlaces: markerItems.length,
+        visiblePlaces: markerItems.reduce((count, item) => count + (item.type === 'place' ? 1 : item.count), 0),
       });
     }
-  }, [markerItems.length, validMarkerCoordinates.length]);
-
-  useEffect(() => {
-    if (
-      !MapView ||
-      validMarkerCoordinates.length === 0 ||
-      readyMapKey !== mapInstanceKey ||
-      layoutMapKey !== mapInstanceKey
-    ) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      const coordinates = validMarkerCoordinates.map(({ coordinate }) => coordinate);
-      if (coordinates.length === 1) {
-        mapRef.current?.animateToRegion(
-          {
-            ...coordinates[0],
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.06,
-          },
-          250
-        );
-      } else {
-        mapRef.current?.fitToCoordinates(coordinates, {
-          edgePadding: { top: 330, right: 32, bottom: 220, left: 32 },
-          animated: true,
-        });
-      }
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [layoutMapKey, mapInstanceKey, readyMapKey, validMarkerCoordinates]);
+  }, [markerItems, validMarkerCoordinates.length]);
 
   if (!MapView || !Marker) {
     return (
@@ -199,12 +165,11 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
       <MapView
         accessibilityHint={t('explore.mapA11yHint')}
         accessibilityLabel={t('explore.mapA11yLabel')}
-        initialRegion={INITIAL_REGION}
-        key={mapInstanceKey}
-        onLayout={() => setLayoutMapKey(mapInstanceKey)}
-        onMapReady={() => setReadyMapKey(mapInstanceKey)}
+        initialRegion={INITIAL_EXPLORE_REGION}
+        onLayout={() => { if (__DEV__) console.info('[ExploreMapCanvas] layout ready'); }}
+        onMapReady={() => { if (__DEV__) console.info('[ExploreMapCanvas] map ready'); }}
+        onRegionChangeComplete={onRegionChangeComplete}
         provider={PROVIDER_GOOGLE}
-        ref={mapRef}
         pitchEnabled={false}
         rotateEnabled={false}
         scrollEnabled

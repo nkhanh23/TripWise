@@ -1,15 +1,12 @@
 import type { CategoryOption, ExploreCategory, ExplorePlace } from '../types';
+import { mapFixturePercentToCoordinate } from '../utils/exploreMapUtils';
+export { exploreCategories } from './categories';
 
-export const exploreCategories: CategoryOption[] = [
-  { id: 'all', label: 'All', iconName: 'star' },
-  { id: 'attractions', label: 'Attractions', iconName: 'attractions' },
-  { id: 'restaurants', label: 'Restaurants', iconName: 'restaurant' },
-  { id: 'hotels', label: 'Hotels', iconName: 'hotel' },
-  { id: 'coffee', label: 'Coffee', iconName: 'local-cafe' },
-  { id: 'shopping', label: 'Shopping', iconName: 'shopping-bag' },
-];
+type ExploreFixture = Omit<ExplorePlace, 'coordinate' | 'fixtureMapCoordinate'> & {
+  mapCoordinate: { topPercent: number; leftPercent: number };
+};
 
-export const mockExplorePlaces: ExplorePlace[] = [
+const mockExplorePlaceFixtures: ExploreFixture[] = [
   {
     id: 'place_wat_arun',
     name: 'Wat Arun',
@@ -145,6 +142,12 @@ export const mockExplorePlaces: ExplorePlace[] = [
   },
 ];
 
+export const mockExplorePlaces: ExplorePlace[] = mockExplorePlaceFixtures.map((place) => ({
+  ...place,
+  coordinate: mapFixturePercentToCoordinate(place.mapCoordinate),
+  fixtureMapCoordinate: place.mapCoordinate,
+}));
+
 export function generateLargeMockExplorePlaces(count = 50): ExplorePlace[] {
   const categories: ExploreCategory[] = [
     'attractions',
@@ -188,10 +191,14 @@ export function generateLargeMockExplorePlaces(count = 50): ExplorePlace[] {
       openStatus: basePlace.openStatus,
       description: `${basePlace.description} (Item #${i} for scalability testing)`,
       imageUrl: basePlace.imageUrl,
-      mapCoordinate: {
-        topPercent: (basePlace.mapCoordinate.topPercent + (i * 3) % 40) % 90 + 5,
-        leftPercent: (basePlace.mapCoordinate.leftPercent + (i * 5) % 40) % 90 + 5,
+      fixtureMapCoordinate: {
+        topPercent: ((basePlace.fixtureMapCoordinate?.topPercent ?? 50) + (i * 3) % 40) % 90 + 5,
+        leftPercent: ((basePlace.fixtureMapCoordinate?.leftPercent ?? 50) + (i * 5) % 40) % 90 + 5,
       },
+      coordinate: mapFixturePercentToCoordinate({
+        topPercent: ((basePlace.fixtureMapCoordinate?.topPercent ?? 50) + (i * 3) % 40) % 90 + 5,
+        leftPercent: ((basePlace.fixtureMapCoordinate?.leftPercent ?? 50) + (i * 5) % 40) % 90 + 5,
+      }),
       iconName: isBase ? basePlace.iconName : iconNames[category],
     });
   }

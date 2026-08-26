@@ -3,22 +3,26 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import type { ExploreMapPlace } from '../types';
+import { mapCoordinateToFixturePercent } from '../utils/exploreMapUtils';
 
 type Props = {
-  place: ExplorePlace;
+  place: ExploreMapPlace;
   isSelected: boolean;
-  onPress: (place: ExplorePlace) => void;
+  onPress: (place: ExploreMapPlace) => void;
 };
 
 export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, onPress }: Props) {
+  const position = 'fixtureMapCoordinate' in place
+    ? place.fixtureMapCoordinate
+    : mapCoordinateToFixturePercent(place.coordinate);
   return (
     <View
       style={[
         styles.container,
         {
-          top: `${place.mapCoordinate.topPercent}%`,
-          left: `${place.mapCoordinate.leftPercent}%`,
+          top: `${position.topPercent}%`,
+          left: `${position.leftPercent}%`,
         },
         isSelected && styles.selectedZIndex,
       ]}>

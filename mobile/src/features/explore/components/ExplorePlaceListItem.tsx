@@ -5,12 +5,12 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppText } from '../../../components/AppText';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import type { ExploreMapPlace } from '../types';
 
 type Props = {
-  place: ExplorePlace;
+  place: ExploreMapPlace;
   isSelected: boolean;
-  onSelect: (place: ExplorePlace) => void;
+  onSelect: (place: ExploreMapPlace) => void;
 };
 
 export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
@@ -23,7 +23,7 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
   return (
     <Pressable
       accessibilityHint={`Xem chi tiết địa điểm ${place.name}`}
-      accessibilityLabel={`${place.name}, ${place.categoryLabel}, đánh giá ${place.rating} sao`}
+      accessibilityLabel={`${place.name}, ${place.categoryLabel}${place.rating === undefined ? '' : `, đánh giá ${place.rating} sao`}`}
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
       onPress={() => onSelect(place)}
@@ -43,15 +43,13 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
         pressed && styles.cardPressed,
       ]}>
       {/* Thumbnail */}
-      <Image
-        accessibilityLabel={place.name}
-        accessibilityRole="image"
-        source={{ uri: place.imageUrl }}
-        style={[
-          styles.thumbnail,
-          { backgroundColor: colors.background.surfaceVariant },
-        ]}
-      />
+      {place.imageUrl ? (
+        <Image accessibilityLabel={place.name} accessibilityRole="image" source={{ uri: place.imageUrl }} style={[styles.thumbnail, { backgroundColor: colors.background.surfaceVariant }]} />
+      ) : (
+        <View accessibilityLabel="No place image available" style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.background.surfaceVariant }]}>
+          <MaterialIcons color={colors.text.muted} name="place" size={28} />
+        </View>
+      )}
 
       {/* Place Details */}
       <View style={styles.detailsColumn}>
@@ -66,30 +64,30 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
           </Text>
         </View>
 
-        <View style={styles.metaRow}>
+        {place.rating !== undefined ? <View style={styles.metaRow}>
           <MaterialIcons color={colors.brand.yellow} name="star" size={13} />
           <Text style={[styles.ratingText, { color: colors.text.primary }]}>
             {place.rating}
           </Text>
-          <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
+          {place.reviewCount !== undefined ? <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
             ({place.reviewCount.toLocaleString()})
-          </Text>
-        </View>
+          </Text> : null}
+        </View> : null}
 
-        <View style={styles.addressRow}>
+        {place.address ? <View style={styles.addressRow}>
           <MaterialIcons color={colors.text.secondary} name="location-on" size={13} />
           <Text
             numberOfLines={1}
             style={[styles.addressText, { color: colors.text.secondary }]}>
             {place.address}
           </Text>
-        </View>
+        </View> : null}
 
-        <AppText
+        {place.openStatus ? <AppText
           numberOfLines={1}
           style={[styles.openStatusText, { color: colors.state.success }]}>
           {place.openStatus}
-        </AppText>
+        </AppText> : null}
       </View>
     </Pressable>
   );
@@ -122,6 +120,7 @@ const styles = StyleSheet.create({
     height: 76,
     width: 80,
   },
+  thumbnailPlaceholder: { alignItems: 'center', justifyContent: 'center' },
   detailsColumn: {
     flex: 1,
     gap: 3,

@@ -6,10 +6,10 @@ import { AppText } from '../../../components/AppText';
 import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import type { ExploreMapPlace } from '../types';
 
 type Props = {
-  place: ExplorePlace;
+  place: ExploreMapPlace;
   onClose: () => void;
   onPressDetail?: (placeId: string) => void;
 };
@@ -49,14 +49,16 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
             {place.name}
           </Text>
           <View style={styles.metaRow}>
-            <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
-            <Text style={[styles.ratingText, { color: colors.text.primary }]}>
-              {place.rating}
-            </Text>
-            <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
-              ({place.reviewCount.toLocaleString()}+ reviews)
-            </Text>
-            <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
+            {place.rating !== undefined ? <>
+              <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
+              <Text style={[styles.ratingText, { color: colors.text.primary }]}>{place.rating}</Text>
+              {place.reviewCount !== undefined ? (
+                <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
+                  ({place.reviewCount.toLocaleString()} reviews)
+                </Text>
+              ) : null}
+              <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
+            </> : null}
             <Text style={[styles.categoryBadge, { color: colors.brand.primary }]}>
               {place.categoryLabel}
             </Text>
@@ -86,25 +88,26 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
         accessibilityRole="button"
         onPress={() => onPressDetail?.(place.id)}
         style={styles.contentRow}>
-        <Image
-          accessibilityLabel={place.name}
-          accessibilityRole="image"
-          source={{ uri: place.imageUrl }}
-          style={styles.thumbnail}
-        />
+        {place.imageUrl ? (
+          <Image accessibilityLabel={place.name} accessibilityRole="image" source={{ uri: place.imageUrl }} style={styles.thumbnail} />
+        ) : (
+          <View accessibilityLabel="No place image available" style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.background.surfaceVariant }]}>
+            <MaterialIcons color={colors.text.muted} name="place" size={26} />
+          </View>
+        )}
         <View style={styles.pillsColumn}>
-          <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
+          {place.address ? <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
             <MaterialIcons color={colors.text.secondary} name="location-on" size={14} />
             <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
               {place.address}
             </Text>
-          </View>
-          <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
+          </View> : null}
+          {place.openStatus ? <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
             <MaterialIcons color={colors.text.secondary} name="schedule" size={14} />
             <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
               {place.openStatus}
             </Text>
-          </View>
+          </View> : null}
         </View>
       </Pressable>
 
@@ -180,11 +183,11 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
       </View>
 
       {/* Description Snippet */}
-      <View style={styles.descriptionSection}>
+      {place.description ? <View style={styles.descriptionSection}>
         <AppText numberOfLines={2} style={styles.descriptionText}>
           {place.description}
         </AppText>
-      </View>
+      </View> : null}
     </View>
   );
 });
@@ -270,6 +273,7 @@ const styles = StyleSheet.create({
     height: 64,
     width: 80,
   },
+  thumbnailPlaceholder: { alignItems: 'center', justifyContent: 'center' },
   pillsColumn: {
     flex: 1,
     gap: 6,

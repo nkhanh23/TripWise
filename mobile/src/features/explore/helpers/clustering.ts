@@ -1,12 +1,12 @@
-import type { ExploreMarkerItem, ExplorePlace, SinglePlaceMarker } from '../types';
+import type { ExploreMapPlace, ExploreMarkerItem, SinglePlaceMarker } from '../types';
 
 /**
  * Deterministic spatial grouping of places into clusters or single markers
- * based on normalized map coordinate proximity (% distances).
+ * based on real coordinate proximity.
  */
 export function clusterPlaces(
-  places: ExplorePlace[],
-  thresholdPercent = 8
+  places: ExploreMapPlace[],
+  thresholdKilometers = 1.5
 ): ExploreMarkerItem[] {
   // If list is small, render individual markers directly
   if (places.length <= 12) {
@@ -21,26 +21,25 @@ export function clusterPlaces(
 
   const clusters: {
     id: string;
-    places: ExplorePlace[];
-    totalTop: number;
-    totalLeft: number;
+    places: ExploreMapPlace[];
+    totalLatitude: number;
+    totalLongitude: number;
   }[] = [];
 
   for (const place of places) {
     let assigned = false;
 
     for (const cluster of clusters) {
-      const avgTop = cluster.totalTop / cluster.places.length;
-      const avgLeft = cluster.totalLeft / cluster.places.length;
+      const avgLatitude = cluster.totalLatitude / cluster.places.length;
+      const avgLongitude = cluster.totalLongitude / cluster.places.length;
+      const dLatitude = (place.coordinate.latitude - avgLatitude) * 111;
+      const dLongitude = (place.coordinate.longitude - avgLongitude) * 111 * Math.cos(avgLatitude * Math.PI / 180);
+      const dist = Math.sqrt(dLatitude * dLatitude + dLongitude * dLongitude);
 
-      const dTop = place.mapCoordinate.topPercent - avgTop;
-      const dLeft = place.mapCoordinate.leftPercent - avgLeft;
-      const dist = Math.sqrt(dTop * dTop + dLeft * dLeft);
-
-      if (dist <= thresholdPercent) {
+      if (dist <= thresholdKilometers) {
         cluster.places.push(place);
-        cluster.totalTop += place.mapCoordinate.topPercent;
-        cluster.totalLeft += place.mapCoordinate.leftPercent;
+        cluster.totalLatitude += place.coordinate.latitude;
+        cluster.totalLongitude += place.coordinate.longitude;
         assigned = true;
         break;
       }
@@ -50,8 +49,8 @@ export function clusterPlaces(
       clusters.push({
         id: `cluster_${place.id}`,
         places: [place],
-        totalTop: place.mapCoordinate.topPercent,
-        totalLeft: place.mapCoordinate.leftPercent,
+        totalLatitude: place.coordinate.latitude,
+        totalLongitude: place.coordinate.longitude,
       });
     }
   }
@@ -66,17 +65,14 @@ export function clusterPlaces(
       };
     }
 
-    const avgTop = Math.round(c.totalTop / c.places.length);
-    const avgLeft = Math.round(c.totalLeft / c.places.length);
-
     return {
       type: 'cluster',
       id: c.id,
       count: c.places.length,
       places: c.places,
-      mapCoordinate: {
-        topPercent: avgTop,
-        leftPercent: avgLeft,
+      coordinate: {
+        latitude: c.totalLatitude / c.places.length,
+        longitude: c.totalLongitude / c.places.length,
       },
     };
   });

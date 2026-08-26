@@ -1,5 +1,3 @@
-import type { ExplorePlace } from '../types';
-
 export type ExploreMapCoordinate = {
   latitude: number;
   longitude: number;
@@ -15,13 +13,20 @@ const VIEWPORT = {
   east: 100.62,
 };
 
-export function mapFixturePlaceToCoordinate(place: ExplorePlace): ExploreMapCoordinate {
-  const left = Math.min(100, Math.max(0, place.mapCoordinate.leftPercent)) / 100;
-  const top = Math.min(100, Math.max(0, place.mapCoordinate.topPercent)) / 100;
+export function mapFixturePercentToCoordinate(mapCoordinate: { topPercent: number; leftPercent: number }): ExploreMapCoordinate {
+  const left = Math.min(100, Math.max(0, mapCoordinate.leftPercent)) / 100;
+  const top = Math.min(100, Math.max(0, mapCoordinate.topPercent)) / 100;
 
   return {
     latitude: VIEWPORT.north - (VIEWPORT.north - VIEWPORT.south) * top,
     longitude: VIEWPORT.west + (VIEWPORT.east - VIEWPORT.west) * left,
+  };
+}
+
+export function mapCoordinateToFixturePercent(coordinate: ExploreMapCoordinate) {
+  return {
+    topPercent: Math.min(95, Math.max(5, ((VIEWPORT.north - coordinate.latitude) / (VIEWPORT.north - VIEWPORT.south)) * 100)),
+    leftPercent: Math.min(95, Math.max(5, ((coordinate.longitude - VIEWPORT.west) / (VIEWPORT.east - VIEWPORT.west)) * 100)),
   };
 }
 

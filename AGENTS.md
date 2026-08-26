@@ -16,15 +16,11 @@ Trước khi tạo hoặc sửa bất kỳ file nào, AI phải đọc và hiể
 4. `TASKS.md`
 5. Tài liệu dự án AI Smart Travel Planner được đính kèm trong workspace
 6. Task cụ thể mà người dùng giao ở lượt hiện tại
-7. Roadmap và handoff đúng ownership theo bảng sau; `PHASES.md` chỉ là index:
-   - Backend task: `PHASES_BE.md` + `HANDOFF_BE.md`
-   - React Native Mobile Frontend task: `PHASES_FE.md` + `HANDOFF_FE.md`
-   - FE ↔ BE Integration task: `PHASES_BE.md` + `PHASES_FE.md` + `PHASES_INTEGRATION.md` và cả ba handoff tương ứng
-8. Toàn bộ các file `.md` trong thư mục `docs/` liên quan trực tiếp đến task. `docs/08-project-roadmap/phases.md` là historical/deprecated reference, không phải active roadmap.
-8a. `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — bắt buộc đọc trước mọi task liên quan: place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
-8b. `PHASES_FE.md`, `HANDOFF_FE.md`, `docs/05-engineering/react-native-coding-rules.md`, `docs/09-ui-design/stitch-to-react-native-mapping-report.md` và các tài liệu liên quan trong `docs/09-ui-design/` — Đối với mọi task React Native/mobile UI, agent BẮT BUỘC phải đọc roadmap FE root, active Stitch mapping và các file chuẩn trước khi sửa code. `mobile/PHASES.md` chỉ là compatibility pointer. Agent chỉ được làm đúng FE phase/subtask active và tuyệt đối không thực hiện backend/API integration nếu người dùng chưa kích hoạt roadmap integration riêng. Các Stitch-to-Flutter mapping chỉ là historical reference.
-9. Source code liên quan trực tiếp đến task hiện tại
-10. Test code liên quan trực tiếp đến task hiện tại
+7. Toàn bộ các file `.md` trong thư mục `docs/` liên quan trực tiếp đến task. `docs/08-project-roadmap/phases.md` là historical/deprecated reference, không phải active roadmap.
+8. `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — bắt buộc đọc trước mọi task liên quan: place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
+9. `docs/05-engineering/react-native-coding-rules.md`, `docs/09-ui-design/stitch-to-react-native-mapping-report.md` và các tài liệu liên quan trong `docs/09-ui-design/` — Đối với mọi task React Native/mobile UI, agent BẮT BUỘC phải đọc active Stitch mapping và các file chuẩn trước khi sửa code. Tuyệt đối không thực hiện backend/API integration nếu người dùng chưa yêu cầu. Các Stitch-to-Flutter mapping chỉ là historical reference.
+10. Source code liên quan trực tiếp đến task hiện tại
+11. Test code liên quan trực tiếp đến task hiện tại
 
 Nếu chưa đọc đủ ngữ cảnh, không được tự suy đoán để code.
 
@@ -184,18 +180,6 @@ Sau mỗi task, AI phải báo theo đúng format:
 
 Tóm tắt ngắn gọn đã làm gì.
 
-### Phase completed
-
-Phase nào trong roadmap đã được thực hiện.
-
-### Roadmap context
-
-Ghi rõ:
-
-- Phase trước là gì
-- Phase hiện tại là gì
-- Phase sau là gì
-
 ### Files changed
 
 Liệt kê file đã tạo/sửa/xóa.
@@ -259,31 +243,9 @@ Không dùng `flutter analyze`, `flutter test`, Dart hoặc `pubspec.yaml` để
 
 ---
 
-## 13. Quy tắc roadmap phase
 
-Trước mỗi task, AI phải chọn roadmap theo ownership:
 
-- Backend: `PHASES_BE.md` và `HANDOFF_BE.md`.
-- React Native Mobile Frontend: `PHASES_FE.md` và `HANDOFF_FE.md`.
-- Integration: `PHASES_BE.md`, `PHASES_FE.md`, `PHASES_INTEGRATION.md` và cả ba handoff.
-
-`PHASES.md` chỉ là index. `TASKS.md` và `docs/08-project-roadmap/phases.md` là compatibility/historical records, không dùng để tự chọn active task.
-
-AI phải:
-
-- Xác định phase hiện tại được yêu cầu
-- Xác định phase trước và phase sau
-- Chỉ thực hiện đúng phase được yêu cầu
-- Không tự ý làm phase trước
-- Không tự ý làm phase sau
-- Không gộp nhiều phase trong một lần
-- Nếu phase hiện tại phụ thuộc vào phase trước nhưng code chưa có, phải báo lại trước khi sửa lớn
-
-AI chỉ được tick `[x]` trong roadmap khi người dùng yêu cầu hoặc khi task yêu cầu cập nhật roadmap.
-
----
-
-## 14. Quy tắc reread context
+## 13. Quy tắc reread context
 
 AI không được dựa vào trí nhớ từ lần chạy trước.
 
@@ -293,9 +255,6 @@ Trước khi sửa code, AI phải đọc lại:
 - `README.md`
 - `DECISIONS.md` nếu có
 - `TASKS.md` nếu có
-- `PHASES.md` và roadmap/handoff đúng ownership (`PHASES_BE.md`/`HANDOFF_BE.md`, `PHASES_FE.md`/`HANDOFF_FE.md`, hoặc bộ Integration)
-- `docs/08-project-roadmap/phases.md` chỉ khi cần tra cứu lịch sử; không coi là active source of truth
-- `docs/08-project-roadmap/place-data-enrichment-roadmap.md` — ưu tiên đọc nếu task liên quan place data, POI import, Geofabrik, Overpass, moderation/backfill, Explore placeType, Admin review place, data enrichment
 - toàn bộ file `.md` trong `docs/`
 - `backend/README.md`
 - `backend/pom.xml`
@@ -309,7 +268,7 @@ Nếu chưa đọc đủ ngữ cảnh, AI không được tự suy đoán để 
 
 ---
 
-## 15. Quy tắc Maven và Git hygiene
+## 14. Quy tắc Maven và Git hygiene
 
 Dự án backend dùng Maven + Maven Wrapper.
 
@@ -348,7 +307,7 @@ cd backend
 ./mvnw test
 ```
 
-## 16. Quy tắc thiết kế cho hệ thống nhiều người dùng / hàng triệu người dùng
+## 15. Quy tắc thiết kế cho hệ thống nhiều người dùng / hàng triệu người dùng
 
 AI phải luôn thiết kế và code theo giả định dự án có thể mở rộng lên hàng triệu người dùng.
 
@@ -381,6 +340,72 @@ Bắt buộc tuân thủ:
 - Nếu giải pháp scale tốt cần thay đổi kiến trúc lớn, AI phải báo trade-off và hỏi trước khi triển khai.
 - Không mặc định dùng microservices để scale. Dự án vẫn ưu tiên Modular Monolith cho MVP/trung hạn.
 
-```
+## 16. Quy tắc sử dụng Taste Design Skill và Stitch UI Design
 
-```
+Taste Design Skill (`.agents/skills/taste-design/SKILL.md` và `.agents/skills/taste-design/resources/DESIGN.md`) là **design quality layer**, không phải visual source of truth thay thế. Bắt buộc tuân thủ các quy tắc sau:
+
+### A. Phạm vi bắt buộc (UI/UX Design / Redesign / Stitch Generation)
+Agent **BẮT BUỘC** phải đọc Taste Design skill trước khi thiết kế nếu task thuộc các intent:
+- Thiết kế UI/UX mới hoặc redesign screen/state.
+- Cải thiện visual hierarchy, UX flow, animation/micro-interaction.
+- Tạo candidate design, tạo screen/state mới trong Google Stitch, hoặc tạo prompt cho Stitch.
+- User cung cấp screenshot/UI hiện tại và yêu cầu tạo giao diện mới.
+- User yêu cầu "design", "redesign", "tạo giao diện", "cải thiện UI/UX" hoặc tương đương.
+Khi Stitch MCP khả dụng, agent phải đọc current Stitch project/screens/states cần thiết trước khi tạo candidate.
+
+### B. Phạm vi ưu tiên (Approved Stitch Screen Implementation)
+Nếu task chỉ là implement một Stitch screen/state đã được user duyệt:
+- Current approved Stitch screen/state vẫn là **visual source of truth**.
+- `taste-design` KHÔNG được tự redesign screen.
+- Không thay typography, layout, color hierarchy, component identity hoặc navigation theo sở thích riêng chỉ vì Taste đề xuất khác.
+- Taste skill chỉ có thể dùng như quality guard (anti-generic details, interaction polish, accessibility, animation intent, implementation quality) khi không xung đột với Stitch contract.
+- **Quy tắc vàng:** Approved current Stitch screen wins nếu có xung đột với Taste.
+
+### C. Phạm vi không bắt buộc (Non-Design React Native Tasks)
+Không bắt buộc load `taste-design` cho mọi React Native task. Ví dụ không tự động dùng Taste cho:
+- Backend/data integration, repository/hook work, auth/session, RLS/security.
+- Performance debugging, production data wiring, tests, navigation logic.
+- Bug fix không thay đổi visual design.
+Không để `taste-design` mở rộng scope của một engineering task thành redesign.
+
+### D. Design Authority Order (Thứ tự ưu tiên thiết kế)
+1. Current user-approved Google Stitch production screen/state.
+2. TripWise product behavior and architecture contracts.
+3. TripWise React Native theme / localization / accessibility contracts.
+4. taste-design skill.
+5. Agent personal preference.
+
+### E. Mobile Override Rule (React Native / Android Target)
+TripWise là dự án Native Mobile (React Native + TypeScript + Expo, Android target, iOS compatible). Agent phải chuyển đổi generic web rules của Taste sang native-mobile semantics:
+- Dùng React Native Flexbox/Yoga thay vì ép CSS Grid.
+- Không dùng web `vh/dvh` requirements.
+- Không phụ thuộc hover.
+- Không áp desktop navigation conventions.
+- Touch target tối thiểu 44x44 pt/dp.
+- Tôn trọng Android/iOS safe areas, keyboard và gesture areas.
+- Tôn trọng EN/VI text expansion và Light/Dark/System.
+- Không ép mọi button full-width, không ép perpetual animation lên mọi component.
+- Không thêm GPU/battery-heavy animation chỉ để "premium".
+- Ưu tiên `transform`/`opacity` khi animation.
+- Map gestures/usability luôn ưu tiên decorative motion.
+- Accessibility và Reduce Motion phải được bảo vệ.
+
+### F. Default Taste Intensity (Guideline)
+Khi user không cung cấp aesthetic direction cụ thể, áp dụng mức cân bằng mobile-product:
+- Creativity: ~7
+- Density: ~5
+- Variance: ~6
+- Motion Intent: ~5–6
+(User intent luôn thắng default này; không dùng default để override Stitch screen đã approved).
+
+### G. Stitch MCP Write Capability Rule
+Nếu task yêu cầu tạo design trong Stitch:
+1. Kiểm tra Stitch MCP capabilities trước.
+2. Nếu MCP có write capability: tạo candidate trong current TripWise project; không tự tạo project mới; không âm thầm thay thế production screen; candidate phải có identity rõ ràng.
+3. Nếu MCP chỉ read-only: KHÔNG sửa React Native để "thay thế"; trả về prompt hoàn chỉnh cho user paste vào Stitch; STOP design execution.
+
+### H. Real Data / Mock Data Rule
+**No fake/mock production data.** Taste/design work không được đưa fake production data chỉ để UI đẹp. Representative placeholder content chỉ được dùng trong candidate design khi cần trình bày visual structure, không được tạo fake ratings, trip stats, uptime, metrics v.v.
+
+### I. Existing Contracts to Protect
+Không thay đổi/làm yếu: RN+Expo stack, Navigation, Android target, Stitch visual source, theme/l10n/a11y architecture, auth/session/RLS, performance optimizations, No fake data rule, phase/architecture ownership.

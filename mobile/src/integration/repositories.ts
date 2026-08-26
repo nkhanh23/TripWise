@@ -27,6 +27,8 @@ import type {
   SavePlaceCommand,
   SavedPlace,
   SavedPlacesPage,
+  ExplorePlacesRequest,
+  ExploreDiscoveredPlace,
 } from './contracts';
 
 export type SignUpResult = {
@@ -67,6 +69,10 @@ export interface SavedTripsRepository {
 
 export interface PlaceResolutionRepository {
   resolve(request: ResolvePlaceRequest, signal?: AbortSignal): Promise<ResolvePlaceResult>;
+}
+
+export interface ExplorePlacesRepository {
+  discover(request: ExplorePlacesRequest, signal?: AbortSignal): Promise<ExploreDiscoveredPlace[]>;
 }
 
 export interface RouteRepository {

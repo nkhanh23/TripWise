@@ -31,6 +31,9 @@ import type {
   SavedPlaceTransport,
   ResolvedImage,
   WikimediaImageRequest,
+  ExplorePlacesRequest,
+  ExplorePlacesSuccessEnvelope,
+  ExploreCategory,
 } from './contracts';
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -55,6 +58,61 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 function hasOnlyKeys(value: Record<string, unknown>, allowed: readonly string[]): boolean {
   const allowedKeys = new Set(allowed);
   return Object.keys(value).every((key) => allowedKeys.has(key));
+}
+
+const exploreCategories: readonly ExploreCategory[] = [
+  'all', 'attractions', 'restaurants', 'hotels', 'coffee', 'shopping',
+];
+
+export function validateExplorePlacesRequest(value: unknown): ExplorePlacesRequest {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['center', 'radiusMeters', 'category', 'limit'])
+    || !isRecord(value.center) || !hasOnlyKeys(value.center, ['latitude', 'longitude'])
+    || finiteNumber(value.center.latitude, -90, 90) === null
+    || finiteNumber(value.center.longitude, -180, 180) === null
+    || !Number.isFinite(value.radiusMeters) || (value.radiusMeters as number) < 100
+    || (value.radiusMeters as number) > 5_000
+    || typeof value.category !== 'string'
+    || !exploreCategories.includes(value.category as ExploreCategory)
+    || (value.limit !== undefined
+      && (!Number.isInteger(value.limit) || (value.limit as number) < 1 || (value.limit as number) > 12))) {
+    throw new ContractValidationError('explore-places request');
+  }
+  return value as ExplorePlacesRequest;
+}
+
+export function parseExplorePlacesSuccess(value: unknown): ExplorePlacesSuccessEnvelope {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['data']) || !isRecord(value.data)
+    || !hasOnlyKeys(value.data, ['places']) || !Array.isArray(value.data.places)
+    || value.data.places.length > 12) {
+    throw new ContractValidationError('explore-places response');
+  }
+  const places = value.data.places.map((place) => {
+    if (!isRecord(place)
+      || !hasOnlyKeys(place, ['googlePlaceId', 'name', 'latitude', 'longitude', 'category', 'categoryLabel', 'formattedAddress', 'rating', 'userRatingCount'])
+      || typeof place.googlePlaceId !== 'string' || !/^[A-Za-z0-9_-]{10,200}$/.test(place.googlePlaceId)
+      || requiredString(place.name, 200) === null
+      || finiteNumber(place.latitude, -90, 90) === null
+      || finiteNumber(place.longitude, -180, 180) === null
+      || typeof place.category !== 'string' || place.category === 'all'
+      || !exploreCategories.includes(place.category as ExploreCategory)
+      || requiredString(place.categoryLabel, 80) === null
+      || (place.formattedAddress !== undefined && optionalString(place.formattedAddress, 500) === null)
+      || (place.rating !== undefined && finiteNumber(place.rating, 0, 5) === null)
+      || (place.userRatingCount !== undefined && nonNegativeInteger(place.userRatingCount) === null)) {
+      throw new ContractValidationError('explore place');
+    }
+    return {
+      googlePlaceId: asGooglePlaceId(place.googlePlaceId),
+      name: (place.name as string).trim(),
+      coordinate: { latitude: place.latitude as number, longitude: place.longitude as number },
+      category: place.category as Exclude<ExploreCategory, 'all'>,
+      categoryLabel: (place.categoryLabel as string).trim(),
+      ...(place.formattedAddress === undefined ? {} : { address: (place.formattedAddress as string).trim() }),
+      ...(place.rating === undefined ? {} : { rating: place.rating as number }),
+      ...(place.userRatingCount === undefined ? {} : { userRatingCount: place.userRatingCount as number }),
+    };
+  });
+  return { data: { places } };
 }
 
 function requiredString(value: unknown, maximumLength: number): string | null {

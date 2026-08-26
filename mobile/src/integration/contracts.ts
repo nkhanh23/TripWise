@@ -235,6 +235,43 @@ export type ResolvePlaceErrorCode =
 
 export type Coordinate = { latitude: number; longitude: number };
 
+export type ExploreCategory =
+  | 'all'
+  | 'attractions'
+  | 'restaurants'
+  | 'hotels'
+  | 'coffee'
+  | 'shopping';
+
+export type ExplorePlacesRequest = {
+  center: Coordinate;
+  radiusMeters: number;
+  category: ExploreCategory;
+  limit?: number;
+};
+
+export type ExploreDiscoveredPlace = {
+  googlePlaceId: GooglePlaceId;
+  name: string;
+  coordinate: Coordinate;
+  category: Exclude<ExploreCategory, 'all'>;
+  categoryLabel: string;
+  address?: string;
+  rating?: number;
+  userRatingCount?: number;
+};
+
+export type ExplorePlacesSuccessEnvelope = { data: { places: ExploreDiscoveredPlace[] } };
+
+export type ExplorePlacesErrorCode =
+  | 'EXPLORE_INPUT_INVALID'
+  | 'EXPLORE_PROVIDER_AUTH'
+  | 'EXPLORE_PROVIDER_RATE_LIMITED'
+  | 'EXPLORE_PROVIDER_UNAVAILABLE'
+  | 'EXPLORE_PROVIDER_INVALID_RESPONSE'
+  | 'UNAUTHORIZED'
+  | 'INTERNAL_ERROR';
+
 export type RouteRequest = {
   profile: 'driving';
   coordinates: readonly Coordinate[];

@@ -5,7 +5,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
-import { exploreCategories } from '../data/mockPlaces';
+import { exploreCategories } from '../data/categories';
 import type { CategoryOption, ExploreCategory } from '../types';
 
 type Props = {

@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../theme';
 import { spacing } from '../../theme/tokens';
+import type { ExplorePlacesRepository } from '../../integration/repositories';
 import { ExploreCategoryChips } from './components/ExploreCategoryChips';
 import { ExploreEmptyState } from './components/ExploreEmptyState';
 import { ExploreErrorState } from './components/ExploreErrorState';
@@ -13,9 +14,11 @@ import { ExplorePlacePreview } from './components/ExplorePlacePreview';
 import { ExploreSearchBar } from './components/ExploreSearchBar';
 import { ExploreViewToggle } from './components/ExploreViewToggle';
 import { clusterPlaces } from './helpers/clustering';
+import { useExploreDiscovery } from './hooks/useExploreDiscovery';
 import type {
   ClusterMarkerModel,
   ExploreCategory,
+  ExploreMapPlace,
   ExplorePlace,
   ExploreUIStatus,
   ExploreViewMode,
@@ -26,22 +29,26 @@ type Props = {
   initialPlaces?: ExplorePlace[];
   initialViewMode?: ExploreViewMode;
   onNavigatePlaceDetail?: (placeId: string) => void;
+  repository?: ExplorePlacesRepository;
 };
 
 export function ExploreScreen({
   initialStatus = 'ready',
-  initialPlaces = [],
+  initialPlaces,
   initialViewMode = 'map',
   onNavigatePlaceDetail,
+  repository,
 }: Props) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
-  const [status, setStatus] = useState<ExploreUIStatus>(initialStatus);
   const [viewMode, setViewMode] = useState<ExploreViewMode>(initialViewMode);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ExploreCategory>('all');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const {
+    places, status, category: selectedCategory, setCategory: setSelectedCategory,
+    onRegionChangeComplete, retry,
+  } = useExploreDiscovery(repository, initialPlaces, initialStatus);
 
   // Top header height calculation for List mode padding
   const topControlsHeight = Math.max(insets.top, spacing.md) + 50 + 46;
@@ -50,19 +57,19 @@ export function ExploreScreen({
   const filteredPlaces = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
-    return initialPlaces.filter((place) => {
+    return places.filter((place) => {
       const matchesCategory =
         selectedCategory === 'all' || place.category === selectedCategory;
 
       const matchesSearch =
         query === '' ||
         place.name.toLowerCase().includes(query) ||
-        place.address.toLowerCase().includes(query) ||
+        (place.address?.toLowerCase().includes(query) ?? false) ||
         place.categoryLabel.toLowerCase().includes(query);
 
       return matchesCategory && matchesSearch;
     });
-  }, [initialPlaces, selectedCategory, searchQuery]);
+  }, [places, selectedCategory, searchQuery]);
 
   // Generate marker models (single place and clusters) for map canvas
   const markerItems = useMemo(() => {
@@ -75,7 +82,7 @@ export function ExploreScreen({
     return filteredPlaces.find((p) => p.id === selectedPlaceId) ?? null;
   }, [filteredPlaces, selectedPlaceId]);
 
-  const handleSelectPlace = useCallback((place: ExplorePlace) => {
+  const handleSelectPlace = useCallback((place: ExploreMapPlace) => {
     setSelectedPlaceId(place.id);
   }, []);
 
@@ -96,18 +103,17 @@ export function ExploreScreen({
   const handleSelectCategory = useCallback((category: ExploreCategory) => {
     setSelectedCategory(category);
     setSelectedPlaceId(null);
-  }, []);
+  }, [setSelectedCategory]);
 
   const handleResetFilters = useCallback(() => {
     setSearchQuery('');
     setSelectedCategory('all');
     setSelectedPlaceId(null);
-    setStatus('ready');
-  }, []);
+  }, [setSelectedCategory]);
 
   const handleRetry = useCallback(() => {
-    setStatus('ready');
-  }, []);
+    retry();
+  }, [retry]);
 
   const handleToggleViewMode = useCallback(() => {
     setViewMode((prev) => (prev === 'map' ? 'list' : 'map'));
@@ -122,6 +128,7 @@ export function ExploreScreen({
           onDismissSelection={handleDismissSelection}
           onSelectCluster={handleSelectCluster}
           onSelectPlace={handleSelectPlace}
+          onRegionChangeComplete={onRegionChangeComplete}
           selectedPlaceId={selectedPlaceId}
         />
       ) : (

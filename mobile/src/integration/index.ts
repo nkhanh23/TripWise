@@ -9,6 +9,7 @@ export * from './routePlanning';
 export * from './validation';
 export * from './remote/publicProviderRepositories';
 export * from './remote/supabaseAuthRepository';
+export * from './remote/supabaseExplorePlacesRepository';
 export * from './remote/supabasePlaceResolutionRepository';
 export * from './remote/supabaseProfileRepository';
 export * from './remote/supabaseTripRepositories';

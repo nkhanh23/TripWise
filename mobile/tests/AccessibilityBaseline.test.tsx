@@ -172,7 +172,7 @@ describe('Accessibility Baseline Audit (FE-P19-T001)', () => {
         id: 'c1',
         type: 'cluster' as const,
         count: 5,
-        mapCoordinate: { topPercent: 20, leftPercent: 30 },
+        coordinate: mockExplorePlaces[0].coordinate,
         places: mockExplorePlaces.slice(0, 5),
       };
       const onPressMock = jest.fn();

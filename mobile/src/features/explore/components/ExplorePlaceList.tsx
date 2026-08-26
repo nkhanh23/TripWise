@@ -2,13 +2,13 @@ import { memo, useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
 import { spacing } from '../../../theme/tokens';
-import type { ExplorePlace } from '../types';
+import type { ExploreMapPlace } from '../types';
 import { ExplorePlaceListItem } from './ExplorePlaceListItem';
 
 type Props = {
-  places: ExplorePlace[];
+  places: ExploreMapPlace[];
   selectedPlaceId: string | null;
-  onSelectPlace: (place: ExplorePlace) => void;
+  onSelectPlace: (place: ExploreMapPlace) => void;
   topPadding: number;
 };
 
@@ -18,10 +18,10 @@ export const ExplorePlaceList = memo(function ExplorePlaceList({
   onSelectPlace,
   topPadding,
 }: Props) {
-  const keyExtractor = useCallback((item: ExplorePlace) => item.id, []);
+  const keyExtractor = useCallback((item: ExploreMapPlace) => item.id, []);
 
   const renderItem = useCallback(
-    ({ item }: { item: ExplorePlace }) => (
+    ({ item }: { item: ExploreMapPlace }) => (
       <ExplorePlaceListItem
         isSelected={item.id === selectedPlaceId}
         onSelect={onSelectPlace}
