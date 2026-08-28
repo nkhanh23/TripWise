@@ -11,8 +11,6 @@ import type {
 // destination suggestions for the wizard, not live provider search results.
 // The historical `mock*` export names remain for compatibility with existing UI.
 
-export const mockPopularDestinations: DestinationOption[] = [];
-
 export const mockTravelStyles: TravelStyleOption[] = [
   {
     id: 'culture',

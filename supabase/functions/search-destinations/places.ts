@@ -2,7 +2,7 @@ import { SearchDestinationsError } from './errors.ts';
 import type { DestinationResult } from './types.ts';
 
 const endpoint = 'https://places.googleapis.com/v1/places:searchText';
-const fieldMask = 'places.id,places.displayName,places.location,places.formattedAddress,places.primaryType,places.types';
+const fieldMask = 'places.id,places.displayName,places.location,places.formattedAddress';
 const defaultTimeoutMilliseconds = 8_000;
 
 type GooglePlace = {
@@ -10,8 +10,6 @@ type GooglePlace = {
   displayName?: { text?: unknown };
   location?: { latitude?: unknown; longitude?: unknown };
   formattedAddress?: unknown;
-  primaryType?: unknown;
-  types?: unknown;
 };
 
 type GoogleResponse = { places?: unknown };
@@ -63,7 +61,8 @@ export async function searchGooglePlaces(
         const name = typeof place.displayName?.text === 'string' ? place.displayName.text.trim() : '';
         const latitude = place.location?.latitude;
         const longitude = place.location?.longitude;
-        if (!id || !name || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
+        if (!id || !name || typeof latitude !== 'number' || !Number.isFinite(latitude) || latitude < -90 || latitude > 90
+          || typeof longitude !== 'number' || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) return null;
         return {
           googlePlaceId: id,
           name,
@@ -71,7 +70,7 @@ export async function searchGooglePlaces(
           latitude,
           longitude,
         };
-      }).filter((v): v is DestinationResult => v !== null);
+      }).filter((v): v is DestinationResult => v !== null).slice(0, 10);
 
   } catch (error) {
     if (error instanceof SearchDestinationsError) throw error;

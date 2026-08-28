@@ -1,56 +1,79 @@
-import { useEffect, useRef, useState } from 'react';
-import type { DestinationOption } from './types';
-import type { DestinationSearchRepository } from '../../integration/repositories/DestinationSearchRepository';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-export function useDestinationSearch(repository: DestinationSearchRepository, initialQuery: string = '') {
+import type { DestinationSearchRepository } from '../../integration/repositories/DestinationSearchRepository';
+import type { DestinationOption } from './types';
+
+const successfulSearches = new WeakMap<DestinationSearchRepository, Map<string, DestinationOption[]>>();
+const maximumCachedQueries = 20;
+
+function cacheFor(repository: DestinationSearchRepository): Map<string, DestinationOption[]> {
+  let cache = successfulSearches.get(repository);
+  if (!cache) {
+    cache = new Map();
+    successfulSearches.set(repository, cache);
+  }
+  return cache;
+}
+
+export function useDestinationSearch(repository: DestinationSearchRepository, initialQuery = '') {
   const [query, setQuery] = useState(initialQuery);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [results, setResults] = useState<DestinationOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const lastQueryRef = useRef<string>('');
+  const activeSequenceRef = useRef(0);
+  const desiredQueryRef = useRef(initialQuery.trim());
 
   useEffect(() => {
     const trimmed = query.trim();
-    if (trimmed.length < 2) {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-        abortControllerRef.current = null;
-      }
-      const t = setTimeout(() => {
-        setResults([]);
-        setLoading(false);
-        setError(null);
-      }, 0);
-      return () => clearTimeout(t);
-    }
-
-    if (trimmed === lastQueryRef.current) return;
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+    if (desiredQueryRef.current !== trimmed) {
+      desiredQueryRef.current = trimmed;
+      activeSequenceRef.current += 1;
+      abortControllerRef.current?.abort();
       abortControllerRef.current = null;
     }
 
+    if (trimmed.length < 2) {
+      setResults([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    const cached = cacheFor(repository).get(trimmed);
+    if (cached) {
+      setResults(cached);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    const sequence = activeSequenceRef.current;
     const timeout = setTimeout(async () => {
       const controller = new AbortController();
       abortControllerRef.current = controller;
-      
       setLoading(true);
       setError(null);
-      lastQueryRef.current = trimmed;
 
       try {
         const mapped = await repository.search(trimmed, controller.signal);
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || activeSequenceRef.current !== sequence || desiredQueryRef.current !== trimmed) return;
+        const cache = cacheFor(repository);
+        if (cache.size >= maximumCachedQueries) {
+          const oldestQuery = cache.keys().next().value as string | undefined;
+          if (oldestQuery !== undefined) cache.delete(oldestQuery);
+        }
+        cache.set(trimmed, mapped);
         setResults(mapped);
-      } catch (err: any) {
-        if (controller.signal.aborted || err.name === 'AbortError') return;
+      } catch (caught: unknown) {
+        if (controller.signal.aborted || (caught instanceof Error && caught.name === 'AbortError')) return;
+        if (activeSequenceRef.current !== sequence || desiredQueryRef.current !== trimmed) return;
         setError('Failed to search destinations. Please try again.');
         setResults([]);
-        lastQueryRef.current = ''; // allow retry
       } finally {
         if (abortControllerRef.current === controller) {
+          abortControllerRef.current = null;
           setLoading(false);
         }
       }
@@ -58,13 +81,13 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
 
     return () => {
       clearTimeout(timeout);
-      if (abortControllerRef.current) {
+      if (abortControllerRef.current && activeSequenceRef.current === sequence) {
         abortControllerRef.current.abort();
         abortControllerRef.current = null;
       }
     };
-  }, [query, repository]);
+  }, [query, repository, retryNonce]);
 
-  return { query, setQuery, results, loading, error };
+  const retry = useCallback(() => setRetryNonce((value) => value + 1), []);
+  return { query, setQuery, results, loading, error, retry };
 }
-

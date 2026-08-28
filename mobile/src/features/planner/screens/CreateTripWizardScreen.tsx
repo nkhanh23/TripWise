@@ -27,10 +27,7 @@ import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
 import { useTripGeneration } from '../generation';
 import { useTripPersistence } from '../persistence';
-import {
-  initialWizardState,
-  mockPopularDestinations,
-} from '../data/mockWizardData';
+import { initialWizardState } from '../data/mockWizardData';
 import type {
   BudgetTier,
   CreateTripWizardState,
@@ -58,7 +55,8 @@ export function CreateTripWizardScreen({
   generationRepository,
   destinationSearchRepository,
 }: Props) {
-  const destRepo = destinationSearchRepository || new SupabaseDestinationSearchRepository();
+  const defaultDestinationRepository = useMemo(() => new SupabaseDestinationSearchRepository(), []);
+  const destRepo = destinationSearchRepository ?? defaultDestinationRepository;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors, effectiveTheme } = useTheme();
@@ -278,6 +276,7 @@ export function CreateTripWizardScreen({
     }
   }, [
     currentStep,
+    destRepo,
     handleChangeCustomName,
     handleChangeEndDate,
     handleChangeStartDate,

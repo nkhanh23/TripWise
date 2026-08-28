@@ -38,7 +38,7 @@ liveTest('authenticated generate-trip validates, maps, and makes zero trip write
 
     const repository = new SupabaseTripGenerationRepository(client);
     const generated = await repository.generate(mapWizardStateToGenerateTripRequest({
-      destination: { id: 'smoke-bangkok', name: 'Bangkok', country: 'Thailand', imageUrl: '' },
+      destination: { id: 'smoke-bangkok', name: 'Bangkok', formattedAddress: 'Thailand', imageUrl: '' },
       customDestinationName: 'Bangkok', startDate: '2026-09-10', endDate: '2026-09-11', durationDays: 2,
       selectedStyles: ['culture', 'food'], pace: 'moderate', budget: 'moderate', groupType: 'couple', tripTitle: 'Smoke title',
     }));

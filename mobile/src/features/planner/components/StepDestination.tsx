@@ -112,6 +112,7 @@ export const StepDestination = memo(function StepDestination({
 
           return (
             <Pressable
+              accessibilityLabel={dest.name + `, ` + dest.formattedAddress}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
               key={dest.id}
@@ -135,7 +136,7 @@ export const StepDestination = memo(function StepDestination({
                     />
                   ) : null}
                 </View>
-                <Text style={[styles.cardCountry, { color: themeColors.text.secondary }]}>{dest.country}</Text>
+                <Text style={[styles.cardCountry, { color: themeColors.text.secondary }]}>{dest.formattedAddress}</Text>
               </View>
             </Pressable>
           );

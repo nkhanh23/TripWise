@@ -1,7 +1,7 @@
 import { SearchDestinationsError } from './errors.ts';
-import type { SearchDestinationsRequest, DestinationResult } from './types.ts';
+import type { DestinationResult, SearchDestinationsRequest } from './types.ts';
 
-const maximumBodyBytes = 16_384;
+export const maximumBodyBytes = 16_384;
 const responseHeaders = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
 
 export type SearchDestinationsDependencies = {
@@ -10,48 +10,62 @@ export type SearchDestinationsDependencies = {
 };
 
 function errorResponse(error: SearchDestinationsError): Response {
-  return new Response(JSON.stringify({ error: { code: error.code, message: error.message } }), { status: error.status, headers: responseHeaders });
+  return new Response(JSON.stringify({ error: { code: error.code, message: error.message } }), {
+    status: error.status,
+    headers: responseHeaders,
+  });
+}
+
+function isValidDestinationResult(value: unknown): value is DestinationResult {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const result = value as Record<string, unknown>;
+  return typeof result.googlePlaceId === 'string' && result.googlePlaceId.trim().length > 0
+    && typeof result.name === 'string' && result.name.trim().length > 0
+    && typeof result.formattedAddress === 'string'
+    && typeof result.latitude === 'number' && Number.isFinite(result.latitude) && result.latitude >= -90 && result.latitude <= 90
+    && typeof result.longitude === 'number' && Number.isFinite(result.longitude) && result.longitude >= -180 && result.longitude <= 180;
 }
 
 export async function handleSearchDestinations(request: Request, dependencies: SearchDestinationsDependencies): Promise<Response> {
-  if (request.method !== 'POST') return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Only POST', 405));
+  if (request.method !== 'POST') return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Only POST requests are supported.', 405));
 
+  const authenticated = await dependencies.authenticate(request).catch(() => false);
+  if (!authenticated) return errorResponse(new SearchDestinationsError('UNAUTHORIZED', 'Authentication is required.', 401));
+
+  const declaredLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > maximumBodyBytes) {
+    return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Request body is too large.', 413));
+  }
+
+  const rawBody = await request.text().catch(() => null);
+  if (rawBody === null) return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Request body could not be read.', 400));
+  if (new TextEncoder().encode(rawBody).byteLength > maximumBodyBytes) {
+    return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Request body is too large.', 413));
+  }
+
+  let payload: unknown;
   try {
-    const authenticated = await dependencies.authenticate(request);
-    if (!authenticated) return errorResponse(new SearchDestinationsError('UNAUTHORIZED', 'Auth required', 401));
+    payload = JSON.parse(rawBody);
   } catch {
-    return errorResponse(new SearchDestinationsError('UNAUTHORIZED', 'Auth required', 401));
+    return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Request body must be valid JSON.', 400));
+  }
+  if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
+    return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Request body must be an object.', 400));
+  }
+  if (Object.keys(payload).length !== 1 || !Object.prototype.hasOwnProperty.call(payload, 'query')) {
+    return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Request body must contain only query.', 400));
+  }
+  const query = (payload as SearchDestinationsRequest).query;
+  if (typeof query !== 'string' || query.trim().length < 2 || query.trim().length > 100) {
+    return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Query must contain between 2 and 100 characters.', 400));
   }
 
   try {
-    const contentLength = Number(request.headers.get('content-length') || '0');
-    if (contentLength > maximumBodyBytes) {
-      return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Payload too large', 413));
-    }
-    
-    const rawBody = await request.text();
-    if (new TextEncoder().encode(rawBody).length > maximumBodyBytes) {
-      return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Payload too large', 413));
-    }
-    
-    const payload = JSON.parse(rawbody) as SearchDestinationsRequest;
-    if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
-      return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Invalid body', 400));
-    }
-    if (typeof payload.query !== 'string' || payload.query.trim().length < 2 || payload.query.trim().length > 100) {
-      return errorResponse(new SearchDestinationsError('INVALID_REQUEST', 'Invalid query', 400));
-    }
-    
-    const results = await dependencies.search(payload.query.trim(), request.signal);
-    const validResults = results.filter(r => 
-        r && typeof r.googlePlaceId === 'string' &&
-        typeof r.name === 'string' &&
-        typeof r.latitude === 'number' && !isNaN(r.latitude) && r.latitude >= -90 && r.latitude <= 90 &&
-        typeof r.longitude === 'number' && !isNaN(r.longitude) && r.longitude >= -180 && r.longitude <= 180i
-    );
+    const results = await dependencies.search(query.trim(), request.signal);
+    const validResults = Array.isArray(results) ? results.filter(isValidDestinationResult).slice(0, 10) : [];
     return new Response(JSON.stringify({ data: validResults }), { status: 200, headers: responseHeaders });
   } catch (error) {
     if (error instanceof SearchDestinationsError) return errorResponse(error);
-    return errorResponse(new SearchDestinationsError('INTERNAL_ERROR', 'Failed', 500));
+    return errorResponse(new SearchDestinationsError('INTERNAL_ERROR', 'Destination search failed.', 500));
   }
 }

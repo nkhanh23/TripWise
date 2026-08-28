@@ -3,7 +3,9 @@ import type MaterialIcons from '@expo/vector-icons/MaterialIcons';
 export type DestinationOption = {
   id: string;
   name: string;
-  country: string;
+  formattedAddress: string;
+  latitude?: number;
+  longitude?: number;
   imageUrl: string;
   tag?: string;
   popular?: boolean;

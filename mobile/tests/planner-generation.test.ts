@@ -11,7 +11,7 @@ describe('planner generation mapping', () => {
   it('maps every supported wizard intent without inventing numeric budget or traveler values', () => {
     const request = mapWizardStateToGenerateTripRequest({
       ...initialWizardState,
-      destination: { id: '1', name: 'Bangkok', country: 'Thailand', imageUrl: '' },
+      destination: { id: '1', name: 'Bangkok', formattedAddress: 'Thailand', imageUrl: '' },
       startDate: '2026-10-15',
       endDate: '2026-10-20',
       durationDays: 6,
@@ -32,8 +32,8 @@ describe('planner generation mapping', () => {
   });
 
   it('rejects inconsistent inclusive duration and unsupported style values before transport', () => {
-    expect(() => mapWizardStateToGenerateTripRequest({ ...initialWizardState, destination: { id: '1', name: 'Bangkok', country: 'Thailand', imageUrl: '' }, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 5 })).toThrow();
-    expect(() => mapWizardStateToGenerateTripRequest({ ...initialWizardState, destination: { id: '1', name: 'Bangkok', country: 'Thailand', imageUrl: '' }, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 6, selectedStyles: ['unsupported'] }))
+    expect(() => mapWizardStateToGenerateTripRequest({ ...initialWizardState, destination: { id: '1', name: 'Bangkok', formattedAddress: 'Thailand', imageUrl: '' }, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 5 })).toThrow();
+    expect(() => mapWizardStateToGenerateTripRequest({ ...initialWizardState, destination: { id: '1', name: 'Bangkok', formattedAddress: 'Thailand', imageUrl: '' }, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 6, selectedStyles: ['unsupported'] }))
       .toThrow(IntegrationError);
   });
 

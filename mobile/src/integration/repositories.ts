@@ -123,3 +123,7 @@ export interface SavedPlacesRepository {
 
 
 export interface PlaceMetadataRepository { getMetadata(googlePlaceId: string, signal?: AbortSignal): Promise<import('./contracts').PlaceMetadata>; }
+
+export interface DestinationSearchRepository {
+  search(query: string, signal?: AbortSignal): Promise<import('../features/planner/types').DestinationOption[]>;
+}

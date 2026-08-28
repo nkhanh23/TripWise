@@ -26,7 +26,7 @@ type Props = {
 
 export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: Props) {
   const destName = state.destination?.name || state.customDestinationName || 'Destination';
-  const destCountry = state.destination?.country || '';
+  const formattedAddress = state.destination?.formattedAddress || '';
   const heroImage = state.destination?.imageUrl || null;
 
   const selectedStylesData = mockTravelStyles.filter((s) =>
@@ -84,7 +84,7 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
             <MaterialIcons color="#FFFFFF" name="location-on" size={14} />
             <Text style={styles.heroBadgeText}>
               {destName}
-              {destCountry ? `, ${destCountry}` : ''}
+              {formattedAddress ? `, ${formattedAddress}` : ''}
             </Text>
           </View>
 
