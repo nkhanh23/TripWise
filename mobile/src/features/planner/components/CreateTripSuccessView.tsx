@@ -28,7 +28,7 @@ export const CreateTripSuccessView = memo(function CreateTripSuccessView({
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
-  const destName = preview.destination || state.destination?.name || state.customDestinationName || 'Bangkok';
+  const destName = preview.destination || state.destination?.name || state.customDestinationName || 'Destination';
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background.canvas }]}>

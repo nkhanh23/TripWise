@@ -11,80 +11,7 @@ import type {
 // destination suggestions for the wizard, not live provider search results.
 // The historical `mock*` export names remain for compatibility with existing UI.
 
-export const mockPopularDestinations: DestinationOption[] = [
-  {
-    id: 'dest_bangkok',
-    name: 'Bangkok',
-    country: 'Thailand',
-    imageUrl:
-      'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80',
-    tag: 'Top Pick',
-    popular: true,
-  },
-  {
-    id: 'dest_tokyo',
-    name: 'Tokyo',
-    country: 'Japan',
-    imageUrl:
-      'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80',
-    tag: 'Trending',
-    popular: true,
-  },
-  {
-    id: 'dest_danang',
-    name: 'Da Nang',
-    country: 'Vietnam',
-    imageUrl:
-      'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80',
-    tag: 'Beach & Culture',
-    popular: true,
-  },
-  {
-    id: 'dest_paris',
-    name: 'Paris',
-    country: 'France',
-    imageUrl:
-      'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80',
-    tag: 'Romantic',
-    popular: true,
-  },
-  {
-    id: 'dest_bali',
-    name: 'Bali',
-    country: 'Indonesia',
-    imageUrl:
-      'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80',
-    tag: 'Nature & Relax',
-    popular: true,
-  },
-  {
-    id: 'dest_seoul',
-    name: 'Seoul',
-    country: 'South Korea',
-    imageUrl:
-      'https://images.unsplash.com/photo-1538485399081-7191377e8241?auto=format&fit=crop&w=600&q=80',
-    tag: 'Food & Shopping',
-    popular: true,
-  },
-  {
-    id: 'dest_london',
-    name: 'London',
-    country: 'United Kingdom',
-    imageUrl:
-      'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80',
-    tag: 'Historic',
-    popular: true,
-  },
-  {
-    id: 'dest_singapore',
-    name: 'Singapore',
-    country: 'Singapore',
-    imageUrl:
-      'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=600&q=80',
-    tag: 'City Explorer',
-    popular: true,
-  },
-];
+export const mockPopularDestinations: DestinationOption[] = [];
 
 export const mockTravelStyles: TravelStyleOption[] = [
   {
@@ -216,14 +143,14 @@ export const mockGroupOptions: GroupOption[] = [
 ];
 
 export const initialWizardState: CreateTripWizardState = {
-  destination: mockPopularDestinations[0],
-  customDestinationName: 'Bangkok',
-  startDate: '2026-10-15',
-  endDate: '2026-10-20',
-  durationDays: 6,
+  destination: null,
+  customDestinationName: '',
+  startDate: '',
+  endDate: '',
+  durationDays: 0,
   selectedStyles: ['culture', 'food'],
   pace: 'moderate',
   budget: 'moderate',
   groupType: 'couple',
-  tripTitle: 'Bangkok Exploration 2026',
+  tripTitle: '',
 };

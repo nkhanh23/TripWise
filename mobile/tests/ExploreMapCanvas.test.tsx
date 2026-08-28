@@ -1,5 +1,6 @@
 // @ts-ignore
 import React from 'react';
+// @ts-expect-error react-test-renderer does not ship declarations in this workspace.
 import TestRenderer, { act } from 'react-test-renderer';
 import { StyleSheet } from 'react-native';
 
@@ -76,7 +77,7 @@ describe('ExploreMapCanvas real native wiring', () => {
 
   function findMarkerByCoordinate(renderer: TestRenderer.ReactTestRenderer, coordinate: { latitude: number; longitude: number }) {
     return renderer.root.find(
-      (node) =>
+      (node: TestRenderer.ReactTestInstance) =>
         isHostView(node) &&
         node.props.testID === 'map-marker' &&
         node.props.coordinate?.latitude === coordinate.latitude &&
@@ -149,14 +150,14 @@ describe('ExploreMapCanvas real native wiring', () => {
     });
 
     const hintMarkers = renderer.root.findAll(
-      (node) =>
+      (node: TestRenderer.ReactTestInstance) =>
         isHostView(node) &&
         node.props.testID === 'map-marker' &&
         node.props.accessible === false
     );
 
     expect(hintMarkers).toHaveLength(8);
-    hintMarkers.forEach((marker) => {
+    hintMarkers.forEach((marker: TestRenderer.ReactTestInstance) => {
       expect(marker.props.onPress).toBeUndefined();
       expect(marker.props.accessible).toBe(false);
       expect(marker.props.accessibilityElementsHidden).toBe(true);
@@ -247,10 +248,10 @@ describe('ExploreMapCanvas real native wiring', () => {
     expect(marker.props.onPress).toBeUndefined();
 
     const clusterCircle = renderer.root.find(
-      (node) =>
+      (node: TestRenderer.ReactTestInstance) =>
         isHostView(node) &&
         flattenStyle(node.props.style)?.opacity === 0.45 &&
-        node.findAll((child) => child.type === 'Text' && child.props.children === 2).length > 0
+        node.findAll((child: TestRenderer.ReactTestInstance) => child.type === 'Text' && child.props.children === 2).length > 0
     );
     expect(flattenStyle(clusterCircle.props.style)?.opacity).toBe(0.45);
     expect(onSelectCluster).toHaveBeenCalledTimes(0);

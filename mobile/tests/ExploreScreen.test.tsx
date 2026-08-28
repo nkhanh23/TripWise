@@ -236,17 +236,28 @@ describe('ExploreScreen', () => {
 
   it('renders error state and recovers on retry', async () => {
     const user = userEvent.setup();
-    await render(<ExploreScreen initialPlaces={mockExplorePlaces} initialStatus="error" />);
+    const discover = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('network'))
+      .mockResolvedValueOnce([
+        {
+          googlePlaceId: 'ChIJretry12345',
+          name: 'Wat Arun',
+          coordinate: { latitude: 13.7437, longitude: 100.4888 },
+          category: 'attractions',
+          categoryLabel: 'Attraction',
+        },
+      ]);
+    await render(<ExploreScreen repository={{ discover }} />);
 
-    expect(screen.getByText('Unable to load map')).toBeTruthy();
-    expect(screen.getByText('Retry')).toBeTruthy();
+    await waitFor(() => expect(screen.getByText('Unable to load map')).toBeTruthy());
+    expect(screen.queryByLabelText('Wat Arun')).toBeNull();
 
     await user.press(screen.getByText('Retry'));
 
-    await waitFor(() => {
-      expect(screen.queryByText('Unable to load map')).toBeNull();
-    });
-    expect(screen.getByLabelText('Wat Arun')).toBeTruthy();
+    await waitFor(() => expect(screen.getByLabelText('Wat Arun')).toBeTruthy());
+    expect(screen.queryByText('Unable to load map')).toBeNull();
+    expect(discover).toHaveBeenCalledTimes(2);
   });
 
   it('gives immediate unavailable feedback for preview actions without production contracts', async () => {

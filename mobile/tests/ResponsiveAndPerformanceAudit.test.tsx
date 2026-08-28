@@ -262,7 +262,7 @@ describe('Responsive & Android Performance Audit (FE-P17-T001)', () => {
   describe('5. Android Keyboard & Scrolling Architecture Audit', () => {
     it('provides keyboard-handled scrolling in CreateTripWizardScreen Step 1 & Step 5', async () => {
       await renderWithProviders(<CreateTripWizardScreen initialStep={1} />);
-      expect(screen.getByPlaceholderText('Search city, e.g. Bangkok, Tokyo...')).toBeTruthy();
+      expect(screen.getByPlaceholderText('Search city, e.g. Singapore, Tokyo...')).toBeTruthy();
     });
 
     it('provides keyboard-handled scrolling in HelpSupportScreen', async () => {

@@ -20,6 +20,8 @@ import { CreateTripSuccessView } from '../components/CreateTripSuccessView';
 import { StepBudgetGroup } from '../components/StepBudgetGroup';
 import { StepDates } from '../components/StepDates';
 import { StepDestination } from '../components/StepDestination';
+import { SupabaseDestinationSearchRepository } from '../../../integration/remote/SupabaseDestinationSearchRepository';
+import type { DestinationSearchRepository } from '../../../integration/repositories/DestinationSearchRepository';
 import { StepPreferences } from '../components/StepPreferences';
 import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
@@ -45,6 +47,7 @@ type Props = {
   onComplete?: (state: CreateTripWizardState) => void;
   onCancel?: () => void;
   generationRepository?: TripGenerationRepository;
+  destinationSearchRepository?: DestinationSearchRepository;
 };
 
 export function CreateTripWizardScreen({
@@ -53,7 +56,9 @@ export function CreateTripWizardScreen({
   onComplete,
   onCancel,
   generationRepository,
+  destinationSearchRepository,
 }: Props) {
+  const destRepo = destinationSearchRepository || new SupabaseDestinationSearchRepository();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors, effectiveTheme } = useTheme();
@@ -89,17 +94,12 @@ export function CreateTripWizardScreen({
   }, []);
 
   const handleChangeCustomName = useCallback((name: string) => {
-    setWizardState((prev) => {
-      const match = mockPopularDestinations.find(
-        (d) => d.name.toLowerCase() === name.trim().toLowerCase()
-      );
-      return {
-        ...prev,
-        customDestinationName: name,
-        destination: match || null,
-        tripTitle: `${name || 'Trip'} Adventure`,
-      };
-    });
+    setWizardState((prev) => ({
+      ...prev,
+      customDestinationName: name,
+      destination: null,
+      tripTitle: `${name || 'Trip'} Adventure`,
+    }));
     setStepError(null);
   }, []);
 
@@ -233,6 +233,7 @@ export function CreateTripWizardScreen({
             onChangeCustomName={handleChangeCustomName}
             onSelectDestination={handleSelectDestination}
             selectedDestination={wizardState.destination}
+            repository={destRepo}
           />
         );
       case 2:

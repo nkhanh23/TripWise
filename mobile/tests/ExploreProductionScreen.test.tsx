@@ -130,16 +130,39 @@ async function flushMicrotasks() {
 }
 
 async function advanceTimers(ms: number) {
-  await act(async () => {
+  await act(() => {
     jest.advanceTimersByTime(ms);
+  });
+  await flushMicrotasks();
+}
+
+async function resolveDeferred<T>(deferred: Deferred<T>, value: T) {
+  await act(async () => {
+    deferred.resolve(value);
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+}
+
+async function rejectDeferred<T>(deferred: Deferred<T>, reason?: unknown) {
+  await act(async () => {
+    deferred.reject(reason);
+    await Promise.resolve();
+    await Promise.resolve();
   });
 }
 
 describe('production Explore discovery', () => {
   afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-    jest.useRealTimers();
+    try {
+      cleanup();
+    } finally {
+      try {
+        jest.useRealTimers();
+      } finally {
+        jest.clearAllMocks();
+      }
+    }
   });
 
   it('1. shows true initial loading before the first provider result resolves', async () => {
@@ -150,6 +173,9 @@ describe('production Explore discovery', () => {
 
     expect(view.getByLabelText('Đang tải dữ liệu bản đồ')).toBeTruthy();
     expect(repo.discover).toHaveBeenCalledTimes(1);
+
+    await resolveDeferred(initialRequest, [attraction]);
+    await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
   });
 
   it('2. renders real initial success from the repository', async () => {
@@ -166,9 +192,9 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={repo} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    fireEvent.changeText(view.getByLabelText('Tìm kiếm địa điểm'), 'Real');
+    await fireEvent.changeText(view.getByLabelText('Tìm kiếm địa điểm'), 'Real');
     await waitFor(() => expect(view.queryByText('Wat Arun')).toBeNull());
-    fireEvent.changeText(view.getByLabelText('Tìm kiếm địa điểm'), '');
+    await fireEvent.changeText(view.getByLabelText('Tìm kiếm địa điểm'), '');
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
     expect(repo.discover).toHaveBeenCalledTimes(1);
   });
@@ -178,7 +204,7 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={repo} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    fireEvent.press(view.getByText('Start moving'));
+    await fireEvent.press(view.getByText('Start moving'));
 
     await waitFor(() => expect(view.getByTestId('mock-map-status').props.children).toBe('moving'));
     expect(view.getByText('Wat Arun')).toBeTruthy();
@@ -195,8 +221,8 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan A'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    await fireEvent.press(view.getByText('Pan A'));
 
     await advanceTimers(399);
     expect(discover).toHaveBeenCalledTimes(1);
@@ -205,7 +231,7 @@ describe('production Explore discovery', () => {
     expect(discover).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
-    settleRequest.resolve([restaurant]);
+    await resolveDeferred(settleRequest, [restaurant]);
     await waitFor(() => expect(view.getByText('Real Restaurant')).toBeTruthy());
   });
 
@@ -220,30 +246,27 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan A'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    await fireEvent.press(view.getByText('Pan A'));
 
     await advanceTimers(400);
     expect(discover).toHaveBeenCalledTimes(2);
 
-    fireEvent.press(view.getByText('Pan B'));
+    await fireEvent.press(view.getByText('Pan B'));
 
     await advanceTimers(100);
     expect(discover).toHaveBeenCalledTimes(2);
 
-    jest.useRealTimers();
-    viewportARequest.resolve([staleViewportA]);
-    await flushMicrotasks();
+    await resolveDeferred(viewportARequest, [staleViewportA]);
 
     expect(view.queryByText('Stale Viewport A')).toBeNull();
     expect(view.getByText('Wat Arun')).toBeTruthy();
 
-    jest.useFakeTimers();
     await advanceTimers(300);
     expect(discover).toHaveBeenCalledTimes(3);
 
     jest.useRealTimers();
-    viewportBRequest.resolve([restaurant]);
+    await resolveDeferred(viewportBRequest, [restaurant]);
     await waitFor(() => expect(view.getByText('Real Restaurant')).toBeTruthy());
     expect(view.queryByText('Wat Arun')).toBeNull();
   });
@@ -256,19 +279,20 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan A'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    await fireEvent.press(view.getByText('Pan A'));
 
     await advanceTimers(400);
     jest.useRealTimers();
     await waitFor(() => expect(view.getByText('Real Restaurant')).toBeTruthy());
     expect(discover).toHaveBeenCalledTimes(2);
 
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan A Again'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    await fireEvent.press(view.getByText('Pan A Again'));
 
     await advanceTimers(500);
     expect(discover).toHaveBeenCalledTimes(2);
+    jest.useRealTimers();
   });
 
   it('8. cancels pending B and avoids an unnecessary request when returning to authoritative A', async () => {
@@ -276,14 +300,19 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={repo} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan B'));
-    fireEvent.press(view.getByText('Return Initial'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+
+    await fireEvent.press(view.getByText('Pan B'));
+    await flushMicrotasks();
+
+    await fireEvent.press(view.getByText('Return Initial'));
+    await flushMicrotasks();
 
     await advanceTimers(500);
 
     expect(repo.discover).toHaveBeenCalledTimes(1);
     expect(view.getByText('Wat Arun')).toBeTruthy();
+    jest.useRealTimers();
   });
 
   it('9. category change issues exactly one request, keeps stale markers dimmed without a loading wheel, and replaces them only with fresh authoritative results', async () => {
@@ -295,14 +324,14 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    fireEvent.press(view.getByText('Restaurants'));
+    await fireEvent.press(view.getByLabelText('Restaurants'));
 
-    expect(discover).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(discover).toHaveBeenCalledTimes(2));
     expect(view.queryByLabelText('Đang tải dữ liệu bản đồ')).toBeNull();
     expect(view.getByTestId('mock-markers-dimmed').props.children).toBe('dimmed');
     expect(view.getByText('Wat Arun')).toBeTruthy();
 
-    categoryRequest.resolve([restaurant]);
+    await resolveDeferred(categoryRequest, [restaurant]);
     await waitFor(() => expect(view.getByText('Real Restaurant')).toBeTruthy());
 
     expect(view.queryByText('Wat Arun')).toBeNull();
@@ -318,14 +347,14 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan A'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    await fireEvent.press(view.getByText('Pan A'));
 
     await advanceTimers(400);
     expect(discover).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
-    backgroundRefresh.reject(new Error('network'));
+    await rejectDeferred(backgroundRefresh, new Error('network'));
     await waitFor(() => expect(view.getByLabelText('Thử lại tải dữ liệu bản đồ')).toBeTruthy());
 
     expect(view.getByText('Wat Arun')).toBeTruthy();
@@ -340,7 +369,7 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Unable to load map')).toBeTruthy());
-    fireEvent.press(view.getByText('Retry'));
+    await fireEvent.press(view.getByText('Retry'));
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
     expect(discover).toHaveBeenCalledTimes(2);
   });
@@ -354,8 +383,8 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={{ discover }} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    jest.useFakeTimers();
-    fireEvent.press(view.getByText('Pan A'));
+    jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+    await fireEvent.press(view.getByText('Pan A'));
 
     await advanceTimers(400);
 
@@ -364,7 +393,7 @@ describe('production Explore discovery', () => {
     expect(view.getByText('Wat Arun')).toBeTruthy();
 
     jest.useRealTimers();
-    refreshRequest.resolve([restaurant]);
+    await resolveDeferred(refreshRequest, [restaurant]);
     await waitFor(() => expect(view.getByText('Real Restaurant')).toBeTruthy());
   });
 });

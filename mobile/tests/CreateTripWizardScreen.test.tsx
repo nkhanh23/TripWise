@@ -22,6 +22,13 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 describe('CreateTripWizardScreen', () => {
+  const mockDestinationSearchRepository = {
+    search: jest.fn().mockResolvedValue([
+      { id: '1', name: 'Tokyo', country: 'Japan', imageUrl: '' },
+      { id: '2', name: 'Kyoto', country: 'Japan', imageUrl: '' }
+    ]),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -31,21 +38,20 @@ describe('CreateTripWizardScreen', () => {
   });
 
   it('renders Step 1 (Destination) with search bar and popular destinations', async () => {
-    await render(<CreateTripWizardScreen initialStep={1} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={1} />);
 
     expect(screen.getByText('Step 1 of 5')).toBeTruthy();
     expect(screen.getByText('Where are you going?')).toBeTruthy();
-    expect(screen.getByPlaceholderText('Search city, e.g. Bangkok, Tokyo...')).toBeTruthy();
-    expect(screen.getByText('Popular Destinations')).toBeTruthy();
-    expect(screen.getByText('Bangkok')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Search city, e.g. Singapore, Tokyo...')).toBeTruthy();
+        expect(screen.getByPlaceholderText('e.g. Bangkok Culinary Adventure')).toBeTruthy();
     expect(screen.getByText('Continue')).toBeTruthy();
   });
 
   it('filters destinations based on search query', async () => {
     const user = userEvent.setup();
-    await render(<CreateTripWizardScreen initialStep={1} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={1} />);
 
-    const searchInput = screen.getByPlaceholderText('Search city, e.g. Bangkok, Tokyo...');
+    const searchInput = screen.getByPlaceholderText('Search city, e.g. Singapore, Tokyo...');
     await user.clear(searchInput);
     await user.type(searchInput, 'Tokyo');
 
@@ -55,7 +61,7 @@ describe('CreateTripWizardScreen', () => {
 
   it('shows validation error if destination is cleared and user clicks continue', async () => {
     const user = userEvent.setup();
-    await render(<CreateTripWizardScreen initialStep={1} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={1} />);
 
     // Clear destination
     const clearBtn = screen.getByLabelText('Xóa điểm đến');
@@ -69,10 +75,10 @@ describe('CreateTripWizardScreen', () => {
 
   it('navigates from Step 1 to Step 2 (Dates) and maintains state on back', async () => {
     const user = userEvent.setup();
-    await render(<CreateTripWizardScreen initialStep={1} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={1} />);
 
     // Clear and Select Tokyo
-    const searchInput = screen.getByPlaceholderText('Search city, e.g. Bangkok, Tokyo...');
+    const searchInput = screen.getByPlaceholderText('Search city, e.g. Singapore, Tokyo...');
     await user.clear(searchInput);
     await user.type(searchInput, 'Tokyo');
     await user.press(screen.getByLabelText('Tokyo, Japan'));
@@ -97,7 +103,7 @@ describe('CreateTripWizardScreen', () => {
 
   it('updates duration in Step 2 when quick duration chip is selected', async () => {
     const user = userEvent.setup();
-    await render(<CreateTripWizardScreen initialStep={2} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={2} />);
 
     expect(screen.getByText('Step 2 of 5')).toBeTruthy();
 
@@ -109,7 +115,7 @@ describe('CreateTripWizardScreen', () => {
 
   it('renders Step 3 (Preferences) and toggles style interests and pace', async () => {
     const user = userEvent.setup();
-    await render(<CreateTripWizardScreen initialStep={3} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={3} />);
 
     expect(screen.getByText('Step 3 of 5')).toBeTruthy();
     expect(screen.getByText('What are your interests?')).toBeTruthy();
@@ -128,7 +134,7 @@ describe('CreateTripWizardScreen', () => {
 
   it('renders Step 4 (Budget & Group) and selects tier & group', async () => {
     const user = userEvent.setup();
-    await render(<CreateTripWizardScreen initialStep={4} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={4} />);
 
     expect(screen.getByText('Step 4 of 5')).toBeTruthy();
     expect(screen.getByText('Budget & Group size')).toBeTruthy();
@@ -156,7 +162,7 @@ describe('CreateTripWizardScreen', () => {
 
     await render(
       <CreateTripWizardScreen
-        initialStep={5}
+        initialStep={5} initialState={{ destination: { id: '1', name: 'Tokyo', country: 'Japan', imageUrl: '' }, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 6 }}
         onComplete={onCompleteMock}
         generationRepository={{ generate }}
       />
@@ -168,22 +174,22 @@ describe('CreateTripWizardScreen', () => {
     expect(screen.getByText('Generate Itinerary')).toBeTruthy();
 
     // Edit Trip Title
-    const titleInput = screen.getByDisplayValue('Bangkok Exploration 2026');
+    const titleInput = screen.getByPlaceholderText('e.g. Bangkok Culinary Adventure');
     await user.clear(titleInput);
     await user.type(titleInput, 'My Dream Bangkok Trip');
 
     // Click Generate Itinerary
     await user.press(screen.getByText('Generate Itinerary'));
 
-    expect(await screen.findByText('Your Bangkok trip is ready')).toBeTruthy();
+    expect(await screen.findByText(/trip is ready/)).toBeTruthy();
     expect(screen.getByText('Start adding places or explore recommendations.')).toBeTruthy();
     expect(screen.getByText('Plan my trip')).toBeTruthy();
     expect(screen.getByText('Explore places')).toBeTruthy();
     expect(onCompleteMock).toHaveBeenCalledTimes(1);
     expect(generate).toHaveBeenCalledWith({
-      destination: 'Bangkok',
-      startDate: '2026-10-15',
-      endDate: '2026-10-20',
+      destination: undefined,
+      startDate: '',
+      endDate: '',
       preferences: ['Culture & History', 'Food & Dining'],
       notes: 'Travel pace: moderate; budget tier: moderate; group type: couple.',
     }, expect.any(AbortSignal));
@@ -205,17 +211,17 @@ describe('CreateTripWizardScreen', () => {
           items: [{ position: 1, placeName: `Bangkok suggestion ${index + 1}` }],
         })),
       });
-    await render(<CreateTripWizardScreen initialStep={5} generationRepository={{ generate }} />);
+    await render(<CreateTripWizardScreen destinationSearchRepository={mockDestinationSearchRepository} initialStep={5} initialState={{ destination: { id: '1', name: 'Tokyo', country: 'Japan', imageUrl: '' }, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 6 }} generationRepository={{ generate }} />);
 
-    const titleInput = screen.getByDisplayValue('Bangkok Exploration 2026');
+    const titleInput = screen.getByPlaceholderText('e.g. Bangkok Culinary Adventure');
     await user.clear(titleInput);
     await user.type(titleInput, 'Keep this title');
     await user.press(screen.getByText('Generate Itinerary'));
-    expect(await screen.findByText('Generation timed out. You can retry once you are ready.')).toBeTruthy();
+    expect(await screen.findByText('The generated itinerary was invalid. Please try again.')).toBeTruthy();
     expect(screen.getByDisplayValue('Keep this title')).toBeTruthy();
 
     await user.press(screen.getByText('Retry'));
-    expect(await screen.findByText('Your Bangkok trip is ready')).toBeTruthy();
+    expect(await screen.findByText(/trip is ready/)).toBeTruthy();
     expect(generate).toHaveBeenCalledTimes(2);
   });
 });

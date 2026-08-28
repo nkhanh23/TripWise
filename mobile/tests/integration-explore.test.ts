@@ -63,6 +63,9 @@ describe('Explore integration boundary', () => {
     expect(map).not.toContain('mapFixturePlaceToCoordinate');
     expect(map).not.toContain('fitToCoordinates');
     expect(map).not.toContain('animateToRegion');
-    expect(map).toContain('onRegionChangeComplete={onRegionChangeComplete}');
+    expect(map).toContain('onRegionChangeComplete={handleRegionChangeComplete}');
+    expect(map).toMatch(
+      /const handleRegionChangeComplete = useCallback\([\s\S]*setCurrentRegion\(region\);[\s\S]*onMovementStateChange\(false\);[\s\S]*onRegionChangeComplete\(region, details\)/
+    );
   });
 });

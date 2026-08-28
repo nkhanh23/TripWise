@@ -1,20 +1,13 @@
-﻿import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useMemo, useState } from 'react';
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-
-import { AppText } from '../../../components/AppText';
-import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import React, { memo } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '../../../theme';
-import { mockPopularDestinations } from '../data/mockWizardData';
+import { colors, spacing, typography, radius } from '../../../theme/tokens';
+import { AppText } from '../../../components/AppText';
 import type { DestinationOption } from '../types';
+import { useDestinationSearch } from '../destinationSearch';
+
+import type { DestinationSearchRepository } from '../../../integration/repositories/DestinationSearchRepository';
 
 type Props = {
   selectedDestination: DestinationOption | null;
@@ -22,6 +15,7 @@ type Props = {
   onSelectDestination: (destination: DestinationOption) => void;
   onChangeCustomName: (name: string) => void;
   error?: string | null;
+  repository: DestinationSearchRepository;
 };
 
 export const StepDestination = memo(function StepDestination({
@@ -30,32 +24,23 @@ export const StepDestination = memo(function StepDestination({
   onSelectDestination,
   onChangeCustomName,
   error,
+  repository,
 }: Props) {
-  const { colors, effectiveTheme } = useTheme();
-  
-  const [searchQuery, setSearchQuery] = useState(customDestinationName || '');
-
-  const filteredDestinations = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return mockPopularDestinations;
-    }
-    const q = searchQuery.toLowerCase();
-    return mockPopularDestinations.filter(
-      (d) =>
-        d.name.toLowerCase().includes(q) ||
-        d.country.toLowerCase().includes(q)
-    );
-  }, [searchQuery]);
+  const { colors: themeColors, effectiveTheme } = useTheme();
+  const { query, setQuery, results, loading, error: searchError } = useDestinationSearch(repository, customDestinationName);
 
   const handleSearchChange = (text: string) => {
-    setSearchQuery(text);
+    setQuery(text);
     onChangeCustomName(text);
   };
 
   const handleSelect = (dest: DestinationOption) => {
-    setSearchQuery(dest.name);
+    setQuery(dest.name);
+    onChangeCustomName(dest.name);
     onSelectDestination(dest);
   };
+
+  const displayError = error || searchError;
 
   return (
     <ScrollView
@@ -63,108 +48,94 @@ export const StepDestination = memo(function StepDestination({
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       {/* Subtitle description */}
-      <AppText style={[styles.subtitle, { color: colors.text.secondary }]}>
+      <AppText style={[styles.subtitle, { color: themeColors.text.secondary }]}>
         Choose your dream destination or type any city to explore.
       </AppText>
 
       {/* Search Bar Input */}
       <View style={styles.searchContainer}>
-        <View style={[styles.searchBar, { backgroundColor: colors.background.canvas, borderColor: colors.border.default }]}>
+        <View style={[styles.searchBar, { backgroundColor: themeColors.background.canvas, borderColor: themeColors.border.default }]}>
           <MaterialIcons
-            color={colors.brand.primary}
+            color={themeColors.brand.primary}
             name="location-on"
             size={20}
             style={styles.searchIcon}
           />
           <TextInput
-            accessibilityHint="Nháº­p tÃªn thÃ nh phá»‘ hoáº·c quá»‘c gia báº¡n muá»‘n tá»›i"
-            accessibilityLabel="Äiá»ƒm Ä‘áº¿n du lá»‹ch"
+            accessibilityLabel="Destination"
             autoCapitalize="words"
             autoCorrect={false}
             onChangeText={handleSearchChange}
-            placeholder="Search city, e.g. Bangkok, Tokyo..."
-            placeholderTextColor={colors.text.muted}
+            placeholder="Search city, e.g. Singapore, Tokyo..."
+            placeholderTextColor={themeColors.text.muted}
             returnKeyType="done"
-            style={[styles.input, { color: colors.text.primary }]}
-            value={searchQuery}
+            style={[styles.input, { color: themeColors.text.primary }]}
+            value={query}
           />
-          {searchQuery.length > 0 ? (
+          {query.length > 0 ? (
             <Pressable
-              accessibilityHint="XÃ³a tÃ¬m kiáº¿m Ä‘iá»ƒm Ä‘áº¿n"
-              accessibilityLabel="XÃ³a Ä‘iá»ƒm Ä‘áº¿n"
+              accessibilityLabel="Clear destination"
               accessibilityRole="button"
               hitSlop={8}
               onPress={() => handleSearchChange('')}
               style={styles.clearButton}>
-              <MaterialIcons color={colors.text.muted} name="close" size={16} />
+              <MaterialIcons color={themeColors.text.muted} name="close" size={16} />
             </Pressable>
           ) : null}
         </View>
       </View>
 
       {/* Error Alert */}
-      {error ? (
+      {displayError ? (
         <View accessibilityRole="alert" style={styles.errorBanner}>
-          <MaterialIcons color={colors.brand.red} name="error-outline" size={16} />
-          <Text style={styles.errorText}>{error}</Text>
+          <MaterialIcons color={themeColors.brand.red} name="error-outline" size={16} />
+          <Text style={styles.errorText}>{displayError}</Text>
         </View>
       ) : null}
 
       {/* Section Heading */}
       <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Popular Destinations</Text>
-        <Text style={[styles.sectionCount, { color: colors.text.muted }]}>
-          {filteredDestinations.length} available
+        <Text style={[styles.sectionTitle, { color: themeColors.text.primary }]}>Search Results</Text>
+        <Text style={[styles.sectionCount, { color: themeColors.text.muted }]}>
+          {loading ? 'Searching...' : `${results.length} available`}
         </Text>
       </View>
 
+      {loading && (
+        <ActivityIndicator size="small" color={themeColors.brand.primary} style={{ marginTop: 20 }} />
+      )}
+
       {/* Destination Cards Grid */}
       <View style={styles.grid}>
-        {filteredDestinations.map((dest) => {
-          const isSelected =
-            selectedDestination?.id === dest.id ||
-            searchQuery.trim().toLowerCase() === dest.name.toLowerCase();
+          {!loading && results.map((dest: DestinationOption) => {
+          const isSelected = selectedDestination?.id === dest.id;
 
           return (
             <Pressable
-              accessibilityHint={`Chá»n Ä‘iá»ƒm Ä‘áº¿n ${dest.name}, ${dest.country}`}
-              accessibilityLabel={`${dest.name}, ${dest.country}`}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
               key={dest.id}
               onPress={() => handleSelect(dest)}
               style={({ pressed }) => [
                 styles.card,
-                { backgroundColor: colors.background.canvas, borderColor: colors.border.default },
-                isSelected && [styles.cardSelected, { borderColor: colors.brand.primary, backgroundColor: effectiveTheme === 'dark' ? 'rgba(77, 150, 255, 0.1)' : '#F3F8FF' }],
+                { backgroundColor: themeColors.background.canvas, borderColor: themeColors.border.default },
+                isSelected && [styles.cardSelected, { borderColor: themeColors.brand.primary, backgroundColor: effectiveTheme === 'dark' ? 'rgba(77, 150, 255, 0.1)' : '#F3F8FF' }],
                 pressed && styles.cardPressed,
               ]}>
-              <Image
-                accessibilityLabel={dest.name}
-                accessibilityRole="image"
-                source={{ uri: dest.imageUrl }}
-                style={styles.cardImage}
-              />
-              {dest.tag ? (
-                <View style={styles.tagBadge}>
-                  <Text style={styles.tagBadgeText}>{dest.tag}</Text>
-                </View>
-              ) : null}
-
               <View style={styles.cardInfo}>
                 <View style={styles.cardTitleRow}>
-                  <Text numberOfLines={1} style={[styles.cardName, { color: colors.text.primary }]}>
+                  <Text numberOfLines={1} style={[styles.cardName, { color: themeColors.text.primary }]}>
                     {dest.name}
                   </Text>
                   {isSelected ? (
                     <MaterialIcons
-                      color={colors.brand.primary}
+                      color={themeColors.brand.primary}
                       name="check-circle"
                       size={18}
                     />
                   ) : null}
                 </View>
-                <Text style={[styles.cardCountry, { color: colors.text.secondary }]}>{dest.country}</Text>
+                <Text style={[styles.cardCountry, { color: themeColors.text.secondary }]}>{dest.country}</Text>
               </View>
             </Pressable>
           );
@@ -181,7 +152,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xs,
   },
   subtitle: {
-    color: colors.text.secondary,
     fontSize: typography.bodySmall,
     lineHeight: 20,
     marginBottom: spacing.md,
@@ -191,8 +161,6 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: colors.border,
     borderRadius: radius.pill,
     borderWidth: 1,
     elevation: 2,
@@ -208,7 +176,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   input: {
-    color: colors.text.primary,
     flex: 1,
     fontSize: typography.body,
     height: '100%',
@@ -232,7 +199,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   errorText: {
-    color: colors.brand.red,
     fontSize: typography.bodySmall,
     fontWeight: typography.fontWeight.semibold,
   },
@@ -243,23 +209,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   sectionTitle: {
-    color: colors.text.primary,
     fontSize: typography.body,
     fontWeight: typography.fontWeight.bold,
   },
   sectionCount: {
-    color: colors.text.muted,
     fontSize: 12,
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: spacing.md,
-    justifyContent: 'space-between',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderColor: colors.border,
     borderRadius: radius.card,
     borderWidth: 1,
     elevation: 2,
@@ -268,35 +228,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
-    width: '47.5%',
+    width: '100%',
   },
   cardSelected: {
-    borderColor: colors.brand.primary,
     borderWidth: 2,
-    backgroundColor: '#F3F8FF',
   },
   cardPressed: {
     opacity: 0.88,
     transform: [{ scale: 0.98 }],
-  },
-  cardImage: {
-    backgroundColor: colors.background.surfaceVariant,
-    height: 100,
-    width: '100%',
-  },
-  tagBadge: {
-    backgroundColor: 'rgba(28, 27, 27, 0.8)',
-    borderRadius: radius.pill,
-    left: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    position: 'absolute',
-    top: 8,
-  },
-  tagBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: typography.fontWeight.bold,
   },
   cardInfo: {
     gap: 2,
@@ -308,15 +247,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardName: {
-    color: colors.text.primary,
     flex: 1,
     fontSize: 14,
     fontWeight: typography.fontWeight.bold,
   },
   cardCountry: {
-    color: colors.text.secondary,
     fontSize: 12,
   },
 });
-
-

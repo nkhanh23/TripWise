@@ -27,9 +27,7 @@ type Props = {
 export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: Props) {
   const destName = state.destination?.name || state.customDestinationName || 'Destination';
   const destCountry = state.destination?.country || '';
-  const heroImage =
-    state.destination?.imageUrl ||
-    'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=600&q=80';
+  const heroImage = state.destination?.imageUrl || null;
 
   const selectedStylesData = mockTravelStyles.filter((s) =>
     state.selectedStyles.includes(s.id)
@@ -71,12 +69,16 @@ export const StepSummary = memo(function StepSummary({ state, onChangeTitle }: P
 
       {/* Hero Destination Banner */}
       <View style={styles.heroCard}>
-        <Image
-          accessibilityLabel={destName}
-          accessibilityRole="image"
-          source={{ uri: heroImage }}
-          style={styles.heroImage}
-        />
+        {heroImage ? (
+          <Image
+            accessibilityLabel={destName}
+            accessibilityRole="image"
+            source={{ uri: heroImage }}
+            style={styles.heroImage}
+          />
+        ) : (
+          <View style={[styles.heroImage, { backgroundColor: '#E2E8F0' }]} />
+        )}
         <View style={styles.heroOverlay}>
           <View style={styles.heroBadge}>
             <MaterialIcons color="#FFFFFF" name="location-on" size={14} />
