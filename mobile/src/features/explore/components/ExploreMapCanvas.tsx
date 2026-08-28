@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useEffect, useMemo, useCallback, useState } from 'react';
+import { ExploreMotionHint } from './ExploreMotionHint';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTranslation } from '../../../i18n';
 import { colors, radius, spacing, typography } from '../../../theme/tokens';
-import type { ClusterMarkerModel, ExploreMapPlace, ExploreMarkerItem } from '../types';
+import type { ClusterMarkerModel, ExploreMapPlace, ExploreMarkerItem, ExploreUIStatus } from '../types';
 import { ExploreClusterMarker } from './ExploreClusterMarker';
 import { ExploreMarker } from './ExploreMarker';
 
@@ -13,7 +14,7 @@ let MapView: any = null;
 let Marker: any = null;
 let PROVIDER_GOOGLE: any = undefined;
 try {
-  if (Platform.OS !== 'web' && !process.env.JEST_WORKER_ID) {
+  if (Platform.OS !== 'web') {
     const Maps = require('react-native-maps');
     MapView = Maps.default || Maps;
     Marker = Maps.Marker;
@@ -24,12 +25,15 @@ try {
 }
 
 type Props = {
+  markersDimmed: boolean;
+  status: ExploreUIStatus;
   markerItems: ExploreMarkerItem[];
   selectedPlaceId: string | null;
+  onMovementStateChange: (moving: boolean) => void;
   onSelectPlace: (place: ExploreMapPlace) => void;
   onSelectCluster?: (cluster: ClusterMarkerModel) => void;
   onDismissSelection: () => void;
-  onRegionChangeComplete?: (region: ExploreMapRegion) => void;
+  onRegionChangeComplete?: (region: ExploreMapRegion, details?: ExploreRegionChangeDetails) => void;
 };
 
 export type ExploreMapRegion = {
@@ -61,10 +65,12 @@ function MarkerPin({
   onPress,
   place,
   selected,
+  dimmed,
 }: {
   onPress: () => void;
   place: ExploreMapPlace;
   selected: boolean;
+  dimmed: boolean;
 }) {
   return (
     <Pressable
@@ -89,15 +95,18 @@ function MarkerPin({
   );
 }
 
-function ClusterPin({ cluster }: { cluster: ClusterMarkerModel }) {
+function ClusterPin({ cluster, dimmed }: { cluster: ClusterMarkerModel; dimmed: boolean; }) {
   return (
-    <View style={styles.clusterCircle}>
+    <View style={[styles.clusterCircle, dimmed && { opacity: 0.5 }]}>
       <Text style={styles.countText}>{cluster.count}</Text>
     </View>
   );
 }
 
 export const ExploreMapCanvas = memo(function ExploreMapCanvas({
+  status,
+  markersDimmed,
+  onMovementStateChange,
   markerItems,
   selectedPlaceId,
   onSelectPlace,
@@ -114,6 +123,26 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
       })),
     [markerItems]
   );
+    const [currentRegion, setCurrentRegion] = useState<ExploreMapRegion>(INITIAL_EXPLORE_REGION);
+  
+  const handlePanDrag = useCallback(() => {
+    onMovementStateChange(true);
+  }, [onMovementStateChange]);
+
+  const handleRegionChangeComplete = useCallback(
+    (region: ExploreMapRegion, details?: ExploreRegionChangeDetails) => {
+      setCurrentRegion(region);
+      onMovementStateChange(false);
+      if (onRegionChangeComplete) onRegionChangeComplete(region, details);
+    },
+    [onMovementStateChange, onRegionChangeComplete]
+  );
+
+  const hints = useMemo(() => {
+    if (status !== 'moving') return [];
+    return buildExplorationHints(currentRegion);
+  }, [status, currentRegion]);
+
   const validMarkerCoordinates = useMemo(
     () => markerCoordinates.filter(({ coordinate }) => isValidCoordinate(coordinate)),
     [markerCoordinates]
@@ -168,7 +197,8 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
         initialRegion={INITIAL_EXPLORE_REGION}
         onLayout={() => { if (__DEV__) console.info('[ExploreMapCanvas] layout ready'); }}
         onMapReady={() => { if (__DEV__) console.info('[ExploreMapCanvas] map ready'); }}
-        onRegionChangeComplete={onRegionChangeComplete}
+        onPanDrag={handlePanDrag}
+        onRegionChangeComplete={handleRegionChangeComplete}
         provider={PROVIDER_GOOGLE}
         pitchEnabled={false}
         rotateEnabled={false}
@@ -176,6 +206,15 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
         style={StyleSheet.absoluteFill}
         zoomControlEnabled
         zoomEnabled>
+        {hints.map((hint) => (
+          <Marker
+            coordinate={hint.coordinate}
+            key={hint.id}
+            tracksViewChanges={false}
+          >
+            <ExploreMotionHint opacity={hint.opacity} scale={hint.scale} />
+          </Marker>
+        ))}
         {validMarkerCoordinates.map(({ item, coordinate }) =>
           item.type === 'place' ? (
             <Marker
@@ -188,6 +227,7 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
                 onPress={() => onSelectPlace(item.place)}
                 place={item.place}
                 selected={item.place.id === selectedPlaceId}
+                dimmed={markersDimmed || (selectedPlaceId !== null && item.place.id !== selectedPlaceId)}
               />
             </Marker>
           ) : (
@@ -199,7 +239,7 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
                 onSelectCluster ? onSelectCluster(item) : onSelectPlace(item.places[0])
               }
               tracksViewChanges={false}>
-              <ClusterPin cluster={item} />
+              <ClusterPin cluster={item} dimmed={markersDimmed || (selectedPlaceId !== null && item.places.every((p) => p.id !== selectedPlaceId))} />
             </Marker>
           )
         )}
@@ -278,3 +318,17 @@ const styles = StyleSheet.create({
   },
   countText: { color: colors.text.inverse, fontSize: typography.bodySmall, fontWeight: typography.fontWeight.bold },
 });
+
+export function buildExplorationHints(region: ExploreMapRegion) {
+  return [
+    { id: 'hint-1', coordinate: { latitude: region.latitude + 0.01, longitude: region.longitude + 0.01 }, opacity: 0.8, scale: 1 },
+    { id: 'hint-2', coordinate: { latitude: region.latitude - 0.01, longitude: region.longitude - 0.01 }, opacity: 0.8, scale: 1 },
+    { id: 'hint-3', coordinate: { latitude: region.latitude + 0.01, longitude: region.longitude - 0.01 }, opacity: 0.8, scale: 1 },
+    { id: 'hint-4', coordinate: { latitude: region.latitude - 0.01, longitude: region.longitude + 0.01 }, opacity: 0.8, scale: 1 },
+    { id: 'hint-5', coordinate: { latitude: region.latitude + 0.02, longitude: region.longitude }, opacity: 0.8, scale: 1 },
+    { id: 'hint-6', coordinate: { latitude: region.latitude - 0.02, longitude: region.longitude }, opacity: 0.8, scale: 1 },
+    { id: 'hint-7', coordinate: { latitude: region.latitude, longitude: region.longitude + 0.02 }, opacity: 0.8, scale: 1 },
+    { id: 'hint-8', coordinate: { latitude: region.latitude, longitude: region.longitude - 0.02 }, opacity: 0.8, scale: 1 },
+  ];
+}
+export type ExploreRegionChangeDetails = { isGesture?: boolean };

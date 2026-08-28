@@ -1,0 +1,262 @@
+Created At: 2026-08-27T13:33:34+07:00
+Completed At: 2026-08-27T13:33:34+07:00
+
+The command exited with code 0.
+Output:
+<truncated 194 lines>
+      return;
+    }
+    if (!hintsVisible) return;
+    releaseTimerRef.current = setTimeout(() => {
+      setHintsVisible(false);
+      releaseTimerRef.current = null;
+    }, HINT_RELEASE_MS);
+    return () => {
+      if (releaseTimerRef.current) {
+        clearTimeout(releaseTimerRef.current);
+        releaseTimerRef.current = null;
+      }
+    };
+  }, [hintsVisible, status]);
+
+  useEffect(
+    () => () => {
+      if (releaseTimerRef.current) clearTimeout(releaseTimerRef.current);
+    },
+    []
+  );
+
+  const handleRegionChange = (region: ExploreMapRegion) => {
+    const now = Date.now();
+    if (!isMovingRef.current) {
+      isMovingRef.current = true;
+      onMovementStateChange?.(true);
+      setHintsVisible(true);
+      setHintRegion(region);
+      lastHintUpdateRef.current = now;
+      return;
+    }
+    if (now - lastHintUpdateRef.current >= HINT_REGION_THROTTLE_MS) {
+      setHintRegion(region);
+      lastHintUpdateRef.current = now;
+    }
+  };
+
+  const handleRegionChangeComplete = (region: ExploreMapRegion, details?: ExploreRegionChangeDetails) => {
+    setHintRegion(region);
+    lastHintUpdateRef.current = Date.now();
+    if (isMovingRef.current) {
+      isMovingRef.current = false;
+      onMovementStateChange?.(false);
+      setHintsVisible(true);
+    }
+    onRegionChangeComplete?.(region, details);
+  };
+
+  if (!MapView || !Marker) {
+    return (
+      <View style={styles.canvasContainer}>
+        <Pressable
+          accessibilityHint={t('explore.mapA11yHint')}
+          accessibilityLabel={t('explore.mapA11yLabel')}
+          accessibilityRole="image"
+          onPress={onDismissSelection}
+          style={styles.fallbackSurface}
+        />
+        {shouldShowHints
+          ? hints.map((hint) => {
+              const position = mapCoordinateToFixturePercent(hint.coordinate);
+              return (
+                <View
+                  accessibilityElementsHidden
+                  accessible={false}
+                  importantForAccessibility="no-hide-descendants"
+                  key={hint.id}
+                  pointerEvents="none"
+                  style={[
+                    styles.fallbackHint,
+                    {
+                      top: `${position.topPercent}%`,
+                      left: `${position.leftPercent}%`,
+                    },
+                  ]}>
+                  <ExploreMotionHint opacity={hint.opacity} scale={hint.scale} />
+                </View>
+              );
+            })
+          : null}
+        {markerItems.map((item) =>
+          item.type === 'place' ? (
+            <View key={item.place.id} style={markersDimmed ? styles.dimmedMarker : undefined}>
+              <ExploreMarker
+                isSelected={item.place.id === selectedPlaceId}
+                onPress={onSelectPlace}
+                place={item.place}
+              />
+            </View>
+          ) : (
+            <View key={item.id} style={markersDimmed ? styles.dimmedMarker : undefined}>
+              <ExploreClusterMarker
+                cluster={item}
+                onPress={(cluster) =>
+                  onSelectCluster ? onSelectCluster(cluster) : onSelectPlace(cluster.places[0])
+                }
+              />
+            </View>
+          )
+        )}
+      </View>
+    );
+  }
+
+  const NativeMapView = MapView as React.ComponentType<Record<string, unknown>>;
+  const NativeMarker = Marker as React.ComponentType<Record<string, unknown>>;
+
+  return (
+    <View style={styles.canvasContainer}>
+      <NativeMapView
+        accessibilityHint={t('explore.mapA11yHint')}
+        accessibilityLabel={t('explore.mapA11yLabel')}
+        initialRegion={INITIAL_EXPLORE_REGION}
+        onLayout={() => {
+          if (__DEV__) console.info('[ExploreMapCanvas] layout ready');
+        }}
+        onMapReady={() => {
+          if (__DEV__) console.info('[ExploreMapCanvas] map ready');
+        }}
+        onRegionChange={handleRegionChange}
+        onRegionChangeComplete={handleRegionChangeComplete}
+        pitchEnabled={false}
+        provider={PROVIDER_GOOGLE}
+        rotateEnabled={false}
+        scrollEnabled
+        style={StyleSheet.absoluteFill}
+        zoomControlEnabled
+        zoomEnabled>
+        {shouldShowHints
+          ? hints.map((hint) => (
+              <NativeMarker
+                calloutEnabled={false}
+                coordinate={hint.coordinate}
+                key={hint.id}
+                tracksViewChanges={false}>
+                <ExploreMotionHint opacity={hint.opacity} scale={hint.scale} />
+              </NativeMarker>
+            ))
+          : null}
+        {validMarkerCoordinates.map(({ item, coordinate }) =>
+          item.type === 'place' ? (
+            <NativeMarker
+              calloutEnabled={false}
+              coordinate={coordinate}
+              key={item.place.id}
+              onPress={markersDimmed ? undefined : () => onSelectPlace(item.place)}
+              tracksViewChanges={item.place.id === selectedPlaceId}>
+              <MarkerPin
+                dimmed={markersDimmed}
+                onPress={markersDimmed ? onDismissSelection : () => onSelectPlace(item.place)}
+                place={item.place}
+                selected={item.place.id === selectedPlaceId}
+              />
+            </NativeMarker>
+          ) : (
+            <NativeMarker
+              calloutEnabled={false}
+              coordinate={coordinate}
+              key={item.id}
+              onPress={
+                markersDimmed
+                  ? undefined
+                  : () => (onSelectCluster ? onSelectCluster(item) : onSelectPlace(item.places[0]))
+              }
+              tracksViewChanges={false}>
+              <ClusterPin cluster={item} dimmed={markersDimmed} />
+            </NativeMarker>
+          )
+        )}
+      </NativeMapView>
+    </View>
+  );
+});
+
+const styles = StyleSheet.create({
+  canvasContainer: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  fallbackSurface: {
+    backgroundColor: '#F3F2EE',
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  fallbackHint: {
+    position: 'absolute',
+    transform: [{ translateX: -12 }, { translateY: -12 }],
+    zIndex: 5,
+  },
+  nativeMarkerWrap: {
+    alignItems: 'center',
+  },
+  dimmedMarker: {
+    opacity: 0.42,
+  },
+  nameBadge: {
+    backgroundColor: colors.brand.primary,
+    borderRadius: radius.input,
+    elevation: 4,
+    marginBottom: 4,
+    maxWidth: 180,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  nameBadgeText: {
+    color: colors.text.inverse,
+    fontSize: 12,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  pinOuter: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: radius.pill,
+    elevation: 3,
+    height: 34,
+    justifyContent: 'center',
+    width: 34,
+  },
+  pinOuterDefault: { borderColor: '#FFFFFF', borderWidth: 2 },
+  pinOuterSelected: { borderColor: colors.brand.red, borderWidth: 2.5, transform: [{ scale: 1.15 }] },
+  pinInner: { alignItems: 'center', borderRadius: radius.pill, height: 24, justifyContent: 'center', width: 24 },
+  pinInnerDefault: { backgroundColor: colors.brand.primary },
+  pinInnerSelected: { backgroundColor: colors.brand.red },
+  pinPoint: {
+    borderLeftColor: 'transparent',
+    borderLeftWidth: 5,
+    borderRightColor: 'transparent',
+    borderRightWidth: 5,
+    borderTopWidth: 6,
+    height: 0,
+    marginTop: -2,
+    width: 0,
+  },
+  pinPointDefault: { borderTopColor: '#FFFFFF' },
+  pinPointSelected: { borderTopColor: colors.brand.red },
+  clusterCircle: {
+    alignItems: 'center',
+    backgroundColor: colors.brand.primary,
+    borderColor: '#FFFFFF',
+    borderRadius: radius.pill,
+    borderWidth: 2.5,
+    elevation: 4,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
+  },
+  countText: { color: colors.text.inverse, fontSize: typography.bodySmall, fontWeight: typography.fontWeight.bold },
+});
+

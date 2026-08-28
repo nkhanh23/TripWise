@@ -59,4 +59,4 @@ export type ClusterMarkerModel = {
 
 export type ExploreMarkerItem = SinglePlaceMarker | ClusterMarkerModel;
 
-export type ExploreUIStatus = 'loading' | 'ready' | 'error' | 'empty';
+export type ExploreUIStatus = 'loading' | 'initial-loading' | 'ready' | 'moving' | 'refreshing' | 'error';

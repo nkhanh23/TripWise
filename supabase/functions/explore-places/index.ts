@@ -7,5 +7,9 @@ Deno.serve((request) => handleExplorePlaces(request, {
     const { data, error } = await createSupabaseContext(incoming, { auth: 'user' });
     return !error && typeof data?.userClaims?.id === 'string' ? data.userClaims.id : null;
   },
-  discover: discoverGooglePlaces,
+  discover: (discoveryRequest, signal) => discoverGooglePlaces(
+    discoveryRequest,
+    fetch,
+    { signal },
+  ),
 }));

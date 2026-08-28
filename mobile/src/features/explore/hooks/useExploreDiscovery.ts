@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { ExploreDiscoveredPlace } from '../../../integration/contracts';
 import type { ExplorePlacesRepository } from '../../../integration/repositories';
-import type { ExploreMapRegion } from '../components/ExploreMapCanvas';
+import type { ExploreMapRegion, ExploreRegionChangeDetails } from '../components/ExploreMapCanvas';
 import { INITIAL_EXPLORE_REGION } from '../components/ExploreMapCanvas';
 import type { DiscoveredExplorePlace, ExploreCategory, ExploreMapPlace, ExplorePlace, ExploreUIStatus } from '../types';
 
@@ -10,8 +10,16 @@ const DEBOUNCE_MS = 400;
 const MAX_RADIUS_METERS = 5_000;
 
 const icons: Record<Exclude<ExploreCategory, 'all'>, ExploreMapPlace['iconName']> = {
-  attractions: 'attractions', restaurants: 'restaurant', hotels: 'hotel', coffee: 'local-cafe', shopping: 'shopping-bag',
+  attractions: 'attractions',
+  restaurants: 'restaurant',
+  hotels: 'hotel',
+  coffee: 'local-cafe',
+  shopping: 'shopping-bag',
 };
+
+function normalizeInitialStatus(initialStatus: ExploreUIStatus): ExploreUIStatus {
+  return initialStatus === 'loading' ? 'initial-loading' : initialStatus;
+}
 
 function toExplorePlace(place: ExploreDiscoveredPlace): DiscoveredExplorePlace {
   return {
@@ -30,8 +38,8 @@ function toExplorePlace(place: ExploreDiscoveredPlace): DiscoveredExplorePlace {
 
 function requestFor(region: ExploreMapRegion, category: ExploreCategory) {
   const latitudeMeters = Math.abs(region.latitudeDelta) * 111_000 / 2;
-  const longitudeMeters = Math.abs(region.longitudeDelta) * 111_000
-    * Math.cos(region.latitude * Math.PI / 180) / 2;
+  const longitudeMeters =
+    Math.abs(region.longitudeDelta) * 111_000 * Math.cos(region.latitude * Math.PI / 180) / 2;
   const radiusMeters = Math.max(100, Math.min(MAX_RADIUS_METERS, Math.hypot(latitudeMeters, longitudeMeters)));
   return {
     center: { latitude: region.latitude, longitude: region.longitude },
@@ -41,77 +49,154 @@ function requestFor(region: ExploreMapRegion, category: ExploreCategory) {
   } as const;
 }
 
+function requestKey(region: ExploreMapRegion, category: ExploreCategory) {
+  const request = requestFor(region, category);
+  const radiusBucket = Math.round(request.radiusMeters / 50) * 50;
+  return `${request.center.latitude.toFixed(4)}:${request.center.longitude.toFixed(4)}:${radiusBucket}:${category}`;
+}
+
+function hasEquivalentCenter(left: ExploreMapRegion, right: ExploreMapRegion) {
+  return Math.abs(left.latitude - right.latitude) < 0.0001 && Math.abs(left.longitude - right.longitude) < 0.0001;
+}
+
 export function useExploreDiscovery(
   repository: ExplorePlacesRepository | undefined,
   fixturePlaces: ExplorePlace[] | undefined,
   initialStatus: ExploreUIStatus,
 ) {
   const fixtureMode = repository === undefined && fixturePlaces !== undefined;
-  const [places, setPlaces] = useState<ExploreMapPlace[]>(fixturePlaces ?? []);
-  const [status, setStatus] = useState<ExploreUIStatus>(fixtureMode ? initialStatus : 'loading');
+  const normalizedInitialStatus = normalizeInitialStatus(initialStatus);
+  const initialPlaces = fixturePlaces ?? [];
+  const [places, setPlaces] = useState<ExploreMapPlace[]>(initialPlaces);
+  const [status, setStatus] = useState<ExploreUIStatus>(
+    fixtureMode ? normalizedInitialStatus : 'initial-loading'
+  );
   const [category, setCategoryState] = useState<ExploreCategory>('all');
+  const [confirmedCategory, setConfirmedCategory] = useState<ExploreCategory>('all');
+  const [hasBackgroundError, setHasBackgroundError] = useState(false);
   const regionRef = useRef<ExploreMapRegion>(INITIAL_EXPLORE_REGION);
   const [retryKey, setRetryKey] = useState(0);
   const sequence = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastRequestKeyRef = useRef<string | null>(null);
+  const forceNextLoadRef = useRef(false);
+  const initialSettlePendingRef = useRef(true);
+  const placesRef = useRef<ExploreMapPlace[]>(initialPlaces);
 
-  const load = useCallback(async (nextRegion: ExploreMapRegion, nextCategory: ExploreCategory) => {
-    if (!repository) return;
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    const requestSequence = ++sequence.current;
-    setPlaces([]);
-    setStatus('loading');
-    if (__DEV__) console.info('[ExploreDiscovery] request', { category: nextCategory, limit: 12 });
-    try {
-      const result = await repository.discover(requestFor(nextRegion, nextCategory), controller.signal);
-      if (controller.signal.aborted || requestSequence !== sequence.current) return;
-      setPlaces(result.map(toExplorePlace));
-      setStatus('ready');
-      if (__DEV__) console.info('[ExploreDiscovery] success', { category: nextCategory, places: result.length });
-    } catch {
-      if (controller.signal.aborted || requestSequence !== sequence.current) return;
-      setPlaces([]);
-      setStatus('error');
-    }
-  }, [repository]);
+  useEffect(() => {
+    placesRef.current = places;
+  }, [places]);
+
+  const load = useCallback(
+    async (nextRegion: ExploreMapRegion, nextCategory: ExploreCategory, force = false) => {
+      if (!repository) return;
+      const nextRequestKey = requestKey(nextRegion, nextCategory);
+      if (!force && lastRequestKeyRef.current === nextRequestKey) return;
+      lastRequestKeyRef.current = nextRequestKey;
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const requestSequence = ++sequence.current;
+      setHasBackgroundError(false);
+      setStatus(placesRef.current.length > 0 ? 'refreshing' : 'initial-loading');
+      if (__DEV__) console.info('[ExploreDiscovery] request', { category: nextCategory, limit: 12 });
+      try {
+        const result = await repository.discover(requestFor(nextRegion, nextCategory), controller.signal);
+        if (controller.signal.aborted || requestSequence !== sequence.current) return;
+        const nextPlaces = result.map(toExplorePlace);
+        placesRef.current = nextPlaces;
+        setPlaces(nextPlaces);
+        setConfirmedCategory(nextCategory);
+        setStatus('ready');
+        if (__DEV__) console.info('[ExploreDiscovery] success', { category: nextCategory, places: result.length });
+      } catch {
+        if (controller.signal.aborted || requestSequence !== sequence.current) return;
+        if (placesRef.current.length > 0) {
+          setHasBackgroundError(true);
+          setStatus('ready');
+          return;
+        }
+        setStatus('error');
+      }
+    },
+    [repository]
+  );
 
   useEffect(() => {
     if (!repository) return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    void load(regionRef.current, category);
+    const force = forceNextLoadRef.current;
+    forceNextLoadRef.current = false;
+    void load(regionRef.current, category, force);
     return () => abortRef.current?.abort();
   }, [category, load, repository, retryKey]);
 
-  useEffect(() => () => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    abortRef.current?.abort();
-    sequence.current += 1;
-  }, []);
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      abortRef.current?.abort();
+      sequence.current += 1;
+    },
+    []
+  );
 
-  const setCategory = useCallback((next: ExploreCategory) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    abortRef.current?.abort();
-    setPlaces([]);
-    setStatus('loading');
-    setCategoryState(next);
-  }, []);
+  const setCategory = useCallback(
+    (next: ExploreCategory) => {
+      if (next === category) return;
+      if (fixtureMode) {
+        setCategoryState(next);
+        setConfirmedCategory(next);
+        return;
+      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      abortRef.current?.abort();
+      setHasBackgroundError(false);
+      setStatus(placesRef.current.length > 0 ? 'refreshing' : 'initial-loading');
+      setCategoryState(next);
+    },
+    [category, fixtureMode]
+  );
 
-  const onRegionChangeComplete = useCallback((nextRegion: ExploreMapRegion) => {
-    if (!repository || !Number.isFinite(nextRegion.latitude) || !Number.isFinite(nextRegion.longitude)) return;
-    regionRef.current = nextRegion;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    abortRef.current?.abort();
-    const capturedCategory = category;
-    debounceRef.current = setTimeout(() => void load(nextRegion, capturedCategory), DEBOUNCE_MS);
-  }, [category, load, repository]);
+  const onRegionChangeComplete = useCallback(
+    (nextRegion: ExploreMapRegion, details?: ExploreRegionChangeDetails) => {
+      if (!repository || !Number.isFinite(nextRegion.latitude) || !Number.isFinite(nextRegion.longitude)) return;
+      regionRef.current = nextRegion;
+      if (initialSettlePendingRef.current) {
+        initialSettlePendingRef.current = false;
+        if (hasEquivalentCenter(nextRegion, INITIAL_EXPLORE_REGION) && details?.isGesture !== true) return;
+      }
+      if (lastRequestKeyRef.current === requestKey(nextRegion, category)) return;
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      abortRef.current?.abort();
+      sequence.current += 1;
+      lastRequestKeyRef.current = null;
+      const capturedCategory = category;
+      debounceRef.current = setTimeout(() => void load(nextRegion, capturedCategory), DEBOUNCE_MS);
+    },
+    [category, load, repository]
+  );
 
   const retry = useCallback(() => {
-    if (fixtureMode) setStatus('ready');
-    else setRetryKey((value) => value + 1);
+    if (fixtureMode) {
+      setStatus('ready');
+      setHasBackgroundError(false);
+      return;
+    }
+    forceNextLoadRef.current = true;
+    setHasBackgroundError(false);
+    setRetryKey((value) => value + 1);
   }, [fixtureMode]);
 
-  return { places, status, category, setCategory, onRegionChangeComplete, retry };
+  return {
+    places,
+    status,
+    category,
+    confirmedCategory,
+    hasBackgroundError,
+    setCategory,
+    onRegionChangeComplete,
+    retry,
+  };
 }
+

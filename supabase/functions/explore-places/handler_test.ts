@@ -11,8 +11,14 @@ const deps = (overrides: Partial<ExplorePlacesDependencies> = {}): ExplorePlaces
 
 Deno.test('authenticated request invokes bounded discovery', async () => {
   let receivedLimit = 0;
-  const response = await handleExplorePlaces(request(), deps({ discover: (value) => { receivedLimit = value.limit ?? 0; return Promise.resolve([]); } }));
+  let receivedSignal: AbortSignal | undefined;
+  const response = await handleExplorePlaces(request(), deps({ discover: (value, signal) => {
+    receivedLimit = value.limit ?? 0;
+    receivedSignal = signal;
+    return Promise.resolve([]);
+  } }));
   assertEquals(response.status, 200); assertEquals(receivedLimit, 12);
+  assertEquals(receivedSignal instanceof AbortSignal, true);
 });
 
 Deno.test('anonymous request is rejected before discovery', async () => {

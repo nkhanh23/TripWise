@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, Pressable } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../theme';
-import { spacing } from '../../theme/tokens';
+import { spacing, radius, colors } from '../../theme/tokens';
 import type { ExplorePlacesRepository } from '../../integration/repositories';
 import { ExploreCategoryChips } from './components/ExploreCategoryChips';
 import { ExploreEmptyState } from './components/ExploreEmptyState';
@@ -45,10 +46,25 @@ export function ExploreScreen({
   const [viewMode, setViewMode] = useState<ExploreViewMode>(initialViewMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [isMapMoving, setIsMapMoving] = useState(false);
   const {
-    places, status, category: selectedCategory, setCategory: setSelectedCategory,
-    onRegionChangeComplete, retry,
+    places,
+    status: networkStatus,
+    category: selectedCategory,
+    confirmedCategory,
+    hasBackgroundError,
+    setCategory: setSelectedCategory,
+    onRegionChangeComplete,
+    retry,
   } = useExploreDiscovery(repository, initialPlaces, initialStatus);
+
+  const normalizedStatus = normalizeStatus(networkStatus);
+  const effectiveStatus: ExploreUIStatus = isMapMoving ? 'moving' : normalizedStatus;
+  const hasUsablePlaces = places.length > 0;
+  const showBlockingError = normalizedStatus === 'error' && !hasUsablePlaces;
+  const showConfirmedCategory = normalizedStatus === 'refreshing' || hasBackgroundError;
+  const displayCategory = showConfirmedCategory ? confirmedCategory : selectedCategory;
+  const markersDimmed = confirmedCategory !== selectedCategory && (normalizedStatus === 'refreshing' || hasBackgroundError);
 
   // Top header height calculation for List mode padding
   const topControlsHeight = Math.max(insets.top, spacing.md) + 50 + 46;
@@ -59,7 +75,7 @@ export function ExploreScreen({
 
     return places.filter((place) => {
       const matchesCategory =
-        selectedCategory === 'all' || place.category === selectedCategory;
+        displayCategory === 'all' || place.category === displayCategory;
 
       const matchesSearch =
         query === '' ||
@@ -125,11 +141,14 @@ export function ExploreScreen({
       {viewMode === 'map' ? (
         <ExploreMapCanvas
           markerItems={markerItems}
+          markersDimmed={markersDimmed}
           onDismissSelection={handleDismissSelection}
+          onMovementStateChange={setIsMapMoving}
           onSelectCluster={handleSelectCluster}
           onSelectPlace={handleSelectPlace}
           onRegionChangeComplete={onRegionChangeComplete}
           selectedPlaceId={selectedPlaceId}
+          status={effectiveStatus}
         />
       ) : (
         <ExplorePlaceList
@@ -154,12 +173,12 @@ export function ExploreScreen({
       </View>
 
       {/* 3. Floating View Mode Toggle (Map / List) */}
-      {status === 'ready' && filteredPlaces.length > 0 ? (
+      {normalizedStatus === 'ready' && filteredPlaces.length > 0 ? (
         <ExploreViewToggle onToggle={handleToggleViewMode} viewMode={viewMode} />
       ) : null}
 
       {/* 4. Loading State */}
-      {status === 'loading' ? (
+      {normalizedStatus === 'initial-loading' ? (
         <View
           accessibilityLabel="Đang tải dữ liệu bản đồ"
           accessibilityRole="progressbar"
@@ -169,15 +188,34 @@ export function ExploreScreen({
       ) : null}
 
       {/* 5. Error State */}
-      {status === 'error' ? <ExploreErrorState onRetry={handleRetry} /> : null}
+      {showBlockingError ? <ExploreErrorState onRetry={handleRetry} /> : null}
+
+      {hasBackgroundError && hasUsablePlaces ? (
+        <View style={styles.backgroundErrorWrap}>
+          <Pressable
+            accessibilityHint="Thử tải lại dữ liệu địa điểm"
+            accessibilityLabel="Thử lại tải dữ liệu bản đồ"
+            accessibilityRole="button"
+            onPress={handleRetry}
+            style={[
+              styles.backgroundErrorButton,
+              {
+                backgroundColor: colors.background.surface,
+                borderColor: colors.border.default,
+              },
+            ]}>
+            <MaterialIcons color={colors.state.error} name="refresh" size={18} />
+          </Pressable>
+        </View>
+      ) : null}
 
       {/* 6. Empty State when filter has no matches */}
-      {status === 'ready' && filteredPlaces.length === 0 ? (
+      {normalizedStatus === 'ready' && filteredPlaces.length === 0 && !hasBackgroundError ? (
         <ExploreEmptyState onReset={handleResetFilters} />
       ) : null}
 
       {/* 7. Selected Place Bottom Preview Sheet */}
-      {status === 'ready' && selectedPlace ? (
+      {normalizedStatus === 'ready' && selectedPlace ? (
         <ExplorePlacePreview
           onClose={handleDismissSelection}
           onPressDetail={onNavigatePlaceDetail}
@@ -200,6 +238,38 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 20,
   },
+  refreshIndicatorWrap: {
+    alignItems: 'center',
+    position: 'absolute',
+    right: spacing.lg,
+    top: spacing.xl * 4,
+    zIndex: 25,
+  },
+  refreshIndicator: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    elevation: 3,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
+  },
+  backgroundErrorWrap: {
+    alignItems: 'center',
+    position: 'absolute',
+    right: spacing.lg,
+    top: spacing.xl * 4,
+    zIndex: 26,
+  },
+  backgroundErrorButton: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    elevation: 3,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
+  },
   loadingOverlay: {
     alignItems: 'center',
     bottom: 0,
@@ -211,3 +281,9 @@ const styles = StyleSheet.create({
     zIndex: 50,
   },
 });
+
+
+function normalizeStatus(status: ExploreUIStatus): ExploreUIStatus {
+  if (status === 'moving') return 'ready';
+  return status;
+}

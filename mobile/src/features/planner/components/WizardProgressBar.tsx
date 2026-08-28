@@ -1,8 +1,9 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+﻿import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { useTheme } from '../../../theme';
 import type { WizardStepNumber } from '../types';
 
 type Props = {
@@ -26,34 +27,51 @@ export const WizardProgressBar = memo(function WizardProgressBar({
   onBack,
   onCancel,
 }: Props) {
+  const { colors, effectiveTheme } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background.surface }]}>
       {/* Top Controls Row */}
       <View style={styles.topRow}>
         <Pressable
-          accessibilityHint="Quay lại bước trước"
-          accessibilityLabel="Quay lại bước trước"
+          accessibilityHint="Go back"
+          accessibilityLabel="Back"
           accessibilityRole="button"
           hitSlop={8}
           onPress={onBack}
-          style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}>
+          style={({ pressed }) => [
+            styles.iconButton,
+            { backgroundColor: colors.background.surfaceVariant },
+            pressed && styles.pressed,
+          ]}>
           <MaterialIcons color={colors.text.primary} name="arrow-back" size={20} />
         </Pressable>
 
-        <View style={styles.stepBadge}>
-          <Text style={styles.stepBadgeText}>
+        <View
+          style={[
+            styles.stepBadge,
+            {
+              backgroundColor:
+                effectiveTheme === 'dark' ? 'rgba(216, 228, 242, 0.15)' : '#D8E2FF',
+            },
+          ]}>
+          <Text style={[styles.stepBadgeText, { color: colors.brand.primary }]}>
             Step {currentStep} of {totalSteps}
           </Text>
         </View>
 
         {onCancel ? (
           <Pressable
-            accessibilityHint="Hủy và thoát trình tạo chuyến đi"
-            accessibilityLabel="Đóng trình tạo chuyến đi"
+            accessibilityHint="Exit wizard"
+            accessibilityLabel="Close"
             accessibilityRole="button"
             hitSlop={8}
             onPress={onCancel}
-            style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}>
+            style={({ pressed }) => [
+              styles.iconButton,
+              { backgroundColor: colors.background.surfaceVariant },
+              pressed && styles.pressed,
+            ]}>
             <MaterialIcons color={colors.text.secondary} name="close" size={20} />
           </Pressable>
         ) : (
@@ -73,8 +91,9 @@ export const WizardProgressBar = memo(function WizardProgressBar({
               key={stepNum}
               style={[
                 styles.barSegment,
-                isCompleted && styles.barSegmentCompleted,
-                isCurrent && styles.barSegmentCurrent,
+                { backgroundColor: colors.border.default },
+                isCompleted && { backgroundColor: colors.brand.primary },
+                isCurrent && { backgroundColor: colors.brand.primary },
               ]}
             />
           );
@@ -82,14 +101,15 @@ export const WizardProgressBar = memo(function WizardProgressBar({
       </View>
 
       {/* Title */}
-      <Text style={styles.stepTitle}>{STEP_TITLES[currentStep]}</Text>
+      <Text style={[styles.stepTitle, { color: colors.text.primary }]}>
+        {STEP_TITLES[currentStep]}
+      </Text>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.background.surface,
     gap: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xs,
@@ -102,20 +122,17 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     alignItems: 'center',
-    backgroundColor: colors.background.surfaceVariant,
     borderRadius: radius.pill,
     height: 36,
     justifyContent: 'center',
     width: 36,
   },
   stepBadge: {
-    backgroundColor: '#D8E2FF',
     borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: 4,
   },
   stepBadgeText: {
-    color: colors.brand.primary,
     fontSize: 12,
     fontWeight: typography.fontWeight.bold,
   },
@@ -129,19 +146,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   barSegment: {
-    backgroundColor: colors.outlineVariant,
     borderRadius: radius.pill,
     flex: 1,
     height: '100%',
   },
-  barSegmentCompleted: {
-    backgroundColor: colors.brand.primary,
-  },
-  barSegmentCurrent: {
-    backgroundColor: colors.brand.primary,
-  },
   stepTitle: {
-    color: colors.text.primary,
     fontSize: typography.titleSmall,
     fontWeight: typography.fontWeight.bold,
     marginTop: spacing.xs,
@@ -151,3 +160,4 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
 });
+

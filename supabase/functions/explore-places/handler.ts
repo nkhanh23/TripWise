@@ -4,7 +4,7 @@ import type { ExplorePlaceResult, ExplorePlacesRequest } from './types.ts';
 
 export type ExplorePlacesDependencies = {
   authenticate(request: Request): Promise<string | null>;
-  discover(request: ExplorePlacesRequest): Promise<ExplorePlaceResult[]>;
+  discover(request: ExplorePlacesRequest, signal?: AbortSignal): Promise<ExplorePlaceResult[]>;
 };
 
 const headers = { 'content-type': 'application/json', 'cache-control': 'no-store' };
@@ -18,7 +18,7 @@ export async function handleExplorePlaces(request: Request, deps: ExplorePlacesD
     let body: unknown;
     try { body = await request.json(); } catch { throw new ExplorePlacesError('EXPLORE_INPUT_INVALID', 'Invalid request.', 400); }
     const parsed = parseExplorePlacesRequest(body);
-    const places = await deps.discover(parsed);
+    const places = await deps.discover(parsed, request.signal);
     return new Response(JSON.stringify({ data: { places } }), { status: 200, headers });
   } catch (error) {
     const safe = error instanceof ExplorePlacesError

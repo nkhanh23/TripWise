@@ -41,36 +41,36 @@ export const lightPalette: ThemePalette = {
 
 export const darkPalette: ThemePalette = {
   background: {
-    canvas: '#121316',
-    surface: '#1E1F24',
-    surfaceVariant: '#2A2C33',
+    canvas: '#131313',
+    surface: '#20201F',
+    surfaceVariant: '#2A2A2A',
   },
   text: {
-    primary: '#F2F2F5',
-    secondary: '#B5BAC7',
-    muted: '#7E8494',
-    inverse: '#121316',
+    primary: '#E5E2E1',
+    secondary: '#C1C6D7',
+    muted: '#8B90A0',
+    inverse: '#131313',
   },
   brand: {
-    primary: '#4D96FF',
-    primaryContainer: '#0058BC',
-    red: '#FF6B6B',
+    primary: '#ADC6FF',
+    primaryContainer: '#4B8EFF',
+    red: '#FFB4AA',
     yellow: '#FFD166',
     lime: '#C4F668',
   },
   border: {
-    default: '#383B45',
+    default: '#414755',
     subtle: 'rgba(255, 255, 255, 0.12)',
   },
   icon: {
-    primary: '#4D96FF',
-    secondary: '#B5BAC7',
-    muted: '#7E8494',
+    primary: '#ADC6FF',
+    secondary: '#C1C6D7',
+    muted: '#8B90A0',
   },
   state: {
     success: '#4CAF50',
     warning: '#FFA726',
-    error: '#FF6B6B',
+    error: '#FFB4AB',
   },
   overlay: {
     scrim: 'rgba(0, 0, 0, 0.75)',

@@ -1,0 +1,195 @@
+Created At: 2026-08-27T13:33:41+07:00
+Completed At: 2026-08-27T13:33:42+07:00
+
+The command exited with code 0.
+Output:
+<truncated 167 lines>
+    expect(screen.queryByLabelText('�?ang t�i d�_ li�u b�n �`�"')).toBeNull();
+    expect(screen.getByLabelText('�?ang lA�m m�>i d�_ li�u b�n �`�"')).toBeTruthy();
+
+    await act(async () => {
+      resolveRefresh([restaurant]);
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(screen.getByText('Real Restaurant')).toBeTruthy());
+  });
+
+  it('makes zero repository calls while moving and one call after the settled debounce', async () => {
+    const discover = jest.fn().mockResolvedValue([attraction]);
+    await render(<ExploreScreen repository={{ discover }} />);
+
+    await waitFor(() => expect(discover).toHaveBeenCalledTimes(1));
+    fireEvent.press(screen.getByLabelText('Move start'));
+    fireEvent.press(screen.getByLabelText('Move continue'));
+    await advanceDebounce(500);
+    expect(discover).toHaveBeenCalledTimes(1);
+
+    fireEvent.press(screen.getByLabelText('Pan A'));
+    await advanceDebounce(399);
+    expect(discover).toHaveBeenCalledTimes(1);
+    await advanceDebounce(1);
+    expect(discover).toHaveBeenCalledTimes(2);
+  });
+
+  it('replaces confirmed results after a successful refresh and ignores a stale response', async () => {
+    let resolveOld!: (value: ExploreDiscoveredPlace[]) => void;
+    const oldRequest = new Promise<ExploreDiscoveredPlace[]>((resolve) => {
+      resolveOld = resolve;
+    });
+    const discover = jest
+      .fn()
+      .mockResolvedValueOnce([attraction])
+      .mockImplementationOnce(() => oldRequest)
+      .mockResolvedValueOnce([restaurant]);
+
+    await render(<ExploreScreen repository={{ discover }} />);
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+
+    fireEvent.press(screen.getByLabelText('Pan A'));
+    await advanceDebounce();
+    expect(discover).toHaveBeenCalledTimes(2);
+
+    fireEvent.press(screen.getByLabelText('Pan B'));
+    await advanceDebounce();
+    expect(discover).toHaveBeenCalledTimes(3);
+
+    await waitFor(() => expect(screen.getByText('Real Restaurant')).toBeTruthy());
+    await act(async () => {
+      resolveOld([attraction]);
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(screen.queryByText('Wat Arun')).toBeNull());
+  });
+
+  it('does not duplicate requests for the initial settle or repeated identical regions', async () => {
+    const discover = jest
+      .fn()
+      .mockResolvedValueOnce([attraction])
+      .mockResolvedValueOnce([restaurant]);
+
+    await render(<ExploreScreen repository={{ discover }} />);
+    await waitFor(() => expect(discover).toHaveBeenCalledTimes(1));
+
+    fireEvent.press(screen.getByLabelText('Initial settle'));
+    await advanceDebounce(450);
+    expect(discover).toHaveBeenCalledTimes(1);
+
+    fireEvent.press(screen.getByLabelText('Pan A'));
+    await advanceDebounce(400);
+    await waitFor(() => expect(discover).toHaveBeenCalledTimes(2));
+
+    fireEvent.press(screen.getByLabelText('Pan A'));
+    await advanceDebounce(450);
+    expect(discover).toHaveBeenCalledTimes(2);
+  });
+
+  it('loads each selected category with exactly one request and dims stale markers instead of blocking', async () => {
+    const repo = repository((request) =>
+      Promise.resolve(request.category === 'restaurants' ? [restaurant] : [attraction, restaurant])
+    );
+
+    await render(<ExploreScreen repository={repo} />);
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+
+    fireEvent.press(screen.getByLabelText('Restaurants'));
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+    expect(screen.getByTestId('markers-dimmed').props.children).toBe('true');
+    expect(screen.queryByLabelText('�?ang t�i d�_ li�u b�n �`�"')).toBeNull();
+
+    await waitFor(() =>
+      expect(repo.discover).toHaveBeenLastCalledWith(
+        expect.objectContaining({ category: 'restaurants', limit: 12 }),
+        expect.anything()
+      )
+    );
+    expect(repo.discover).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(screen.getByText('Real Restaurant')).toBeTruthy());
+    await waitFor(() => expect(screen.queryByText('Wat Arun')).toBeNull());
+  });
+
+  it('keeps local search fully local with zero provider calls', async () => {
+    const discover = jest.fn().mockResolvedValue([attraction, restaurant]);
+    await render(<ExploreScreen repository={{ discover }} />);
+
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+    fireEvent.changeText(screen.getByPlaceholderText('Search Tokyo, Bangkok...'), 'Real');
+    fireEvent.changeText(screen.getByPlaceholderText('Search Tokyo, Bangkok...'), '');
+    expect(discover).toHaveBeenCalledTimes(1);
+  });
+
+  it('preserves confirmed places on background failure and exposes a subtle retry affordance', async () => {
+    const discover = jest
+      .fn()
+      .mockResolvedValueOnce([attraction])
+      .mockRejectedValueOnce(new Error('network'));
+
+    await render(<ExploreScreen repository={{ discover }} />);
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+
+    fireEvent.press(screen.getByLabelText('Pan A'));
+    await advanceDebounce();
+    await waitFor(() => expect(discover).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+    expect(screen.queryByText('Unable to load map')).toBeNull();
+    expect(screen.getByLabelText('Th�- l�i t�i d�_ li�u b�n �`�"')).toBeTruthy();
+  });
+
+  it('shows the initial error state when no usable data exists and retry still works', async () => {
+    const discover = jest.fn().mockRejectedValueOnce(new Error('network')).mockResolvedValueOnce([]);
+    await render(<ExploreScreen repository={{ discover }} />);
+
+    await waitFor(() => expect(screen.getByText('Unable to load map')).toBeTruthy());
+    fireEvent.press(screen.getByText('Retry'));
+    await waitFor(() => expect(screen.getByText('No places found')).toBeTruthy());
+    expect(discover).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not suppress a first same-center user zoom when native gesture metadata is available', async () => {
+    const discover = jest.fn().mockResolvedValue([attraction]);
+    await render(<ExploreScreen repository={{ discover }} />);
+
+    await waitFor(() => expect(discover).toHaveBeenCalledTimes(1));
+    fireEvent.press(screen.getByLabelText('Initial user zoom'));
+    await advanceDebounce();
+    expect(discover).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps exploration hints presentation-only with no fake POI semantics', () => {
+    const hints = buildExplorationHints({
+      latitude: 13.76,
+      longitude: 100.52,
+      latitudeDelta: 0.14,
+      longitudeDelta: 0.22,
+    });
+
+    expect(hints).toHaveLength(8);
+    expect(Object.keys(hints[0]).sort()).toEqual(['coordinate', 'id', 'opacity', 'scale']);
+    expect(hints[0]).not.toHaveProperty('name');
+    expect(hints[0]).not.toHaveProperty('googlePlaceId');
+    expect(hints[0]).not.toHaveProperty('category');
+  });
+
+  it('renders motion hints as non-interactive and accessibility-hidden visuals', async () => {
+    await render(<ExploreMotionHint opacity={0.3} scale={0.8} />);
+    const hint = screen.getByTestId('explore-motion-hint');
+
+    expect(hint.props.accessible).toBe(false);
+    expect(hint.props.accessibilityElementsHidden).toBe(true);
+    expect(hint.props.importantForAccessibility).toBe('no-hide-descendants');
+    expect(hint.props.pointerEvents).toBe('none');
+  });
+
+  it('passes movement state into the map without triggering repository work from continuous movement callbacks', async () => {
+    const discover = jest.fn().mockResolvedValue([attraction]);
+    await render(<ExploreScreen repository={{ discover }} />);
+
+    await waitFor(() => expect(screen.getByText('Wat Arun')).toBeTruthy());
+    fireEvent.press(screen.getByLabelText('Move start'));
+    await waitFor(() => expect(screen.getByTestId('map-status').props.children).toBe('moving'));
+    expect(discover).toHaveBeenCalledTimes(1);
+  });
+});
+
+

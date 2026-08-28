@@ -1,3 +1,4 @@
+﻿import { TouchableOpacity } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -36,14 +37,12 @@ export function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarActiveTintColor: colors.brand.primary,
         tabBarInactiveTintColor: colors.text.muted,
+        tabBarButton: (props) => <TouchableOpacity {...props} activeOpacity={0.6} />,
         tabBarItemStyle: {
           paddingVertical: 2,
-        },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: '500',
         },
         tabBarStyle: {
           backgroundColor: colors.background.surface,
@@ -55,7 +54,7 @@ export function MainTabs() {
         name="Home"
         options={{
           title: t('navigation.tabs.home'),
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <MaterialIcons color={color} name="home" size={size ?? 24} />
           ),
         }}
@@ -65,7 +64,7 @@ export function MainTabs() {
         name="Explore"
         options={{
           title: t('navigation.tabs.explore'),
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <MaterialIcons color={color} name="explore" size={size ?? 24} />
           ),
         }}
@@ -75,8 +74,8 @@ export function MainTabs() {
         name="Plan"
         options={{
           title: t('navigation.tabs.plan'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons color={color} name="add-circle-outline" size={size ?? 24} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialIcons color={color} name={focused ? "add-circle" : "add-circle-outline"} size={size ?? 24} />
           ),
         }}
       />
@@ -85,7 +84,7 @@ export function MainTabs() {
         name="Trips"
         options={{
           title: t('navigation.tabs.trips'),
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <MaterialIcons color={color} name="map" size={size ?? 24} />
           ),
         }}
@@ -95,8 +94,8 @@ export function MainTabs() {
         name="Saved"
         options={{
           title: t('navigation.tabs.saved'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons color={color} name="bookmark" size={size ?? 24} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialIcons color={color} name={focused ? "bookmark" : "bookmark-border"} size={size ?? 24} />
           ),
         }}
       />
@@ -105,11 +104,12 @@ export function MainTabs() {
         name="Profile"
         options={{
           title: t('navigation.tabs.profile'),
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons color={color} name="person" size={size ?? 24} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialIcons color={color} name={focused ? "person" : "person-outline"} size={size ?? 24} />
           ),
         }}
       />
     </Tab.Navigator>
   );
 }
+

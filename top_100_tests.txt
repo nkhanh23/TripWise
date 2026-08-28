@@ -1,0 +1,106 @@
+Created At: 2026-08-27T13:36:24+07:00
+Completed At: 2026-08-27T13:36:25+07:00
+
+The command exited with code 0.
+Output:
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+
+import type { ExploreDiscoveredPlace, ExplorePlacesRequest } from '../src/integration/contracts';
+import type { ExplorePlacesRepository } from '../src/integration/repositories';
+import { ExploreMotionHint } from '../src/features/explore/components/ExploreMotionHint';
+
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 44, bottom: 0, left: 0, right: 0 }),
+}));
+
+jest.mock('../src/features/explore/components/ExploreMapCanvas', () => {
+  const actual = jest.requireActual('../src/features/explore/components/ExploreMapCanvas');
+  return {
+    ...actual,
+    ExploreMapCanvas: ({
+      markerItems,
+      markersDimmed,
+      onMovementStateChange,
+      onRegionChangeComplete,
+      status,
+    }: any) => {
+      const { Pressable: MockPressable, Text: MockText, View: MockView } = require('react-native');
+      const hintCount =
+        status === 'moving' || status === 'refreshing'
+          ? actual.buildExplorationHints(actual.INITIAL_EXPLORE_REGION).length
+          : 0;
+      return (
+        <MockView accessibilityLabel="Production Explore Map">
+          <MockText testID="map-status">{status}</MockText>
+          <MockText testID="markers-dimmed">{String(Boolean(markersDimmed))}</MockText>
+          <MockText testID="hint-count">{String(hintCount)}</MockText>
+          {markerItems.flatMap((item: any) =>
+            item.type === 'place' ? [<MockText key={item.place.id}>{item.place.name}</MockText>] : []
+          )}
+          <MockPressable
+            accessibilityLabel="Initial settle"
+            onPress={() =>
+              onRegionChangeComplete?.(
+                { latitude: 13.76, longitude: 100.52, latitudeDelta: 0.02, longitudeDelta: 0.02 },
+                { isGesture: false }
+              )
+            }
+          />
+          <MockPressable
+            accessibilityLabel="Initial user zoom"
+            onPress={() =>
+              onRegionChangeComplete?.(
+                { latitude: 13.76, longitude: 100.52, latitudeDelta: 0.02, longitudeDelta: 0.02 },
+                { isGesture: true }
+              )
+            }
+          />
+          <MockPressable accessibilityLabel="Move start" onPress={() => onMovementStateChange?.(true)} />
+          <MockPressable accessibilityLabel="Move continue" onPress={() => onMovementStateChange?.(true)} />
+          <MockPressable
+            accessibilityLabel="Pan A"
+            onPress={() => {
+              onMovementStateChange?.(false);
+              onRegionChangeComplete?.({ latitude: 13.7, longitude: 100.5, latitudeDelta: 0.04, longitudeDelta: 0.04 });
+            }}
+          />
+          <MockPressable
+            accessibilityLabel="Pan B"
+            onPress={() => {
+              onMovementStateChange?.(false);
+              onRegionChangeComplete?.({ latitude: 13.8, longitude: 100.6, latitudeDelta: 0.04, longitudeDelta: 0.04 });
+            }}
+          />
+        </MockView>
+      );
+    },
+  };
+});
+
+import { buildExplorationHints } from '../src/features/explore/components/ExploreMapCanvas';
+import { ExploreScreen } from '../src/features/explore/ExploreScreen';
+
+const attraction: ExploreDiscoveredPlace = {
+  googlePlaceId: 'ChIJrealAttraction123' as never,
+  name: 'Wat Arun',
+  coordinate: { latitude: 13.7437, longitude: 100.4888 },
+  category: 'attractions',
+  categoryLabel: 'Attraction',
+  address: 'Bangkok',
+  rating: 4.8,
+  userRatingCount: 120,
+};
+
+const restaurant: ExploreDiscoveredPlace = {
+  googlePlaceId: 'ChIJrealRestaurant678' as never,
+  name: 'Real Restaurant',
+  coordinate: { latitude: 13.75, longitude: 100.5 },
+  category: 'restaurants',
+  categoryLabel: 'Restaurant',
+};
+
+function repository(
+  implementation: (request: ExplorePlacesRequest, signal?: AbortSignal) => Promise<ExploreDiscoveredPlace[]>
+): ExplorePlacesRepository {
+  return { discover: jest.fn(implementation) };
+

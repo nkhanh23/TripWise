@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+﻿import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
@@ -28,7 +28,7 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
   const iconBg =
     effectiveTheme === 'dark'
       ? 'rgba(216, 228, 242, 0.12)'
-      : colors.brand.primaryContainer;
+      : 'rgba(0, 88, 188, 0.12)';
 
   return (
     <View>
@@ -124,3 +124,4 @@ const styles = StyleSheet.create({
     marginLeft: 56,
   },
 });
+

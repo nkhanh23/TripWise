@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+﻿import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo, useMemo, useState } from 'react';
 import {
   Image,
@@ -12,6 +12,7 @@ import {
 
 import { AppText } from '../../../components/AppText';
 import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { useTheme } from '../../../theme';
 import { mockPopularDestinations } from '../data/mockWizardData';
 import type { DestinationOption } from '../types';
 
@@ -30,6 +31,8 @@ export const StepDestination = memo(function StepDestination({
   onChangeCustomName,
   error,
 }: Props) {
+  const { colors, effectiveTheme } = useTheme();
+  
   const [searchQuery, setSearchQuery] = useState(customDestinationName || '');
 
   const filteredDestinations = useMemo(() => {
@@ -60,13 +63,13 @@ export const StepDestination = memo(function StepDestination({
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       {/* Subtitle description */}
-      <AppText style={styles.subtitle}>
+      <AppText style={[styles.subtitle, { color: colors.text.secondary }]}>
         Choose your dream destination or type any city to explore.
       </AppText>
 
       {/* Search Bar Input */}
       <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
+        <View style={[styles.searchBar, { backgroundColor: colors.background.canvas, borderColor: colors.border.default }]}>
           <MaterialIcons
             color={colors.brand.primary}
             name="location-on"
@@ -74,21 +77,21 @@ export const StepDestination = memo(function StepDestination({
             style={styles.searchIcon}
           />
           <TextInput
-            accessibilityHint="Nhập tên thành phố hoặc quốc gia bạn muốn tới"
-            accessibilityLabel="Điểm đến du lịch"
+            accessibilityHint="Nháº­p tÃªn thÃ nh phá»‘ hoáº·c quá»‘c gia báº¡n muá»‘n tá»›i"
+            accessibilityLabel="Äiá»ƒm Ä‘áº¿n du lá»‹ch"
             autoCapitalize="words"
             autoCorrect={false}
             onChangeText={handleSearchChange}
             placeholder="Search city, e.g. Bangkok, Tokyo..."
             placeholderTextColor={colors.text.muted}
             returnKeyType="done"
-            style={styles.input}
+            style={[styles.input, { color: colors.text.primary }]}
             value={searchQuery}
           />
           {searchQuery.length > 0 ? (
             <Pressable
-              accessibilityHint="Xóa tìm kiếm điểm đến"
-              accessibilityLabel="Xóa điểm đến"
+              accessibilityHint="XÃ³a tÃ¬m kiáº¿m Ä‘iá»ƒm Ä‘áº¿n"
+              accessibilityLabel="XÃ³a Ä‘iá»ƒm Ä‘áº¿n"
               accessibilityRole="button"
               hitSlop={8}
               onPress={() => handleSearchChange('')}
@@ -109,8 +112,8 @@ export const StepDestination = memo(function StepDestination({
 
       {/* Section Heading */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Popular Destinations</Text>
-        <Text style={styles.sectionCount}>
+        <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>Popular Destinations</Text>
+        <Text style={[styles.sectionCount, { color: colors.text.muted }]}>
           {filteredDestinations.length} available
         </Text>
       </View>
@@ -124,7 +127,7 @@ export const StepDestination = memo(function StepDestination({
 
           return (
             <Pressable
-              accessibilityHint={`Chọn điểm đến ${dest.name}, ${dest.country}`}
+              accessibilityHint={`Chá»n Ä‘iá»ƒm Ä‘áº¿n ${dest.name}, ${dest.country}`}
               accessibilityLabel={`${dest.name}, ${dest.country}`}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
@@ -132,7 +135,8 @@ export const StepDestination = memo(function StepDestination({
               onPress={() => handleSelect(dest)}
               style={({ pressed }) => [
                 styles.card,
-                isSelected && styles.cardSelected,
+                { backgroundColor: colors.background.canvas, borderColor: colors.border.default },
+                isSelected && [styles.cardSelected, { borderColor: colors.brand.primary, backgroundColor: effectiveTheme === 'dark' ? 'rgba(77, 150, 255, 0.1)' : '#F3F8FF' }],
                 pressed && styles.cardPressed,
               ]}>
               <Image
@@ -149,7 +153,7 @@ export const StepDestination = memo(function StepDestination({
 
               <View style={styles.cardInfo}>
                 <View style={styles.cardTitleRow}>
-                  <Text numberOfLines={1} style={styles.cardName}>
+                  <Text numberOfLines={1} style={[styles.cardName, { color: colors.text.primary }]}>
                     {dest.name}
                   </Text>
                   {isSelected ? (
@@ -160,7 +164,7 @@ export const StepDestination = memo(function StepDestination({
                     />
                   ) : null}
                 </View>
-                <Text style={styles.cardCountry}>{dest.country}</Text>
+                <Text style={[styles.cardCountry, { color: colors.text.secondary }]}>{dest.country}</Text>
               </View>
             </Pressable>
           );
@@ -314,3 +318,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+

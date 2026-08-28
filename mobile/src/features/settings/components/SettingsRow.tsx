@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+﻿import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -37,7 +37,7 @@ export const SettingsRow = memo(function SettingsRow({
       : 'rgba(255, 218, 214, 0.5)'
     : effectiveTheme === 'dark'
       ? 'rgba(216, 228, 242, 0.12)'
-      : colors.brand.primaryContainer;
+      : 'rgba(0, 88, 188, 0.12)';
 
   return (
     <View>
@@ -145,3 +145,4 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 });
+
