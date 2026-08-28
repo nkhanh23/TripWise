@@ -1,14 +1,14 @@
 // @ts-ignore
-import TestRenderer, { act } from 'react-test-renderer';
 import React from 'react';
-import { View } from 'react-native';
+import TestRenderer, { act } from 'react-test-renderer';
+import { StyleSheet } from 'react-native';
 
 jest.mock('@expo/vector-icons/MaterialIcons', () => {
   const React = require('react');
   const { Text } = require('react-native');
   return {
     __esModule: true,
-    default: (props: any) => <Text {...props}>{props.name}</Text>
+    default: (props: any) => <Text {...props}>{props.name}</Text>,
   };
 });
 
@@ -17,102 +17,242 @@ jest.mock('@expo/vector-icons', () => {
   const { Text } = require('react-native');
   return {
     __esModule: true,
-    MaterialIcons: (props: any) => <Text {...props}>{props.name}</Text>
+    MaterialIcons: (props: any) => <Text {...props}>{props.name}</Text>,
   };
 });
 
 jest.mock('react-native-maps', () => {
   const React = require('react');
   const { View } = require('react-native');
-  const MockMapView = (props: any) => {
-    return <View testID="map-view" {...props}>{props.children}</View>;
-  };
+  const MockMapView = (props: any) => <View testID="map-view" {...props}>{props.children}</View>;
   MockMapView.Marker = (props: any) => <View testID="map-marker" {...props}>{props.children}</View>;
   MockMapView.PROVIDER_GOOGLE = 'google';
-  return { __esModule: true, default: MockMapView, Marker: MockMapView.Marker, PROVIDER_GOOGLE: 'google' };
+  return {
+    __esModule: true,
+    default: MockMapView,
+    Marker: MockMapView.Marker,
+    PROVIDER_GOOGLE: 'google',
+  };
 });
 
-import { ExploreMapCanvas } from '../src/features/explore/components/ExploreMapCanvas';
+import {
+  ExploreMapCanvas,
+  INITIAL_EXPLORE_REGION,
+  type ExploreMapRegion,
+} from '../src/features/explore/components/ExploreMapCanvas';
 
-describe('ExploreMapCanvas Real Native Wiring', () => {
+describe('ExploreMapCanvas real native wiring', () => {
   const mockPlace = {
-    id: 'p1', googlePlaceId: 'g1', name: 'Real Place', category: 'attractions' as const,
-    categoryLabel: 'Attraction', iconName: 'attractions' as const, coordinate: { latitude: 1, longitude: 1 },
+    id: 'p1',
+    googlePlaceId: 'g1',
+    name: 'Real Place',
+    category: 'attractions' as const,
+    categoryLabel: 'Attraction',
+    iconName: 'attractions' as const,
+    coordinate: { latitude: 1, longitude: 1 },
+  };
+  const otherPlace = {
+    ...mockPlace,
+    id: 'p2',
+    googlePlaceId: 'g2',
+    name: 'Cluster Child',
+    coordinate: { latitude: 1.0005, longitude: 1.0005 },
+  };
+  const cluster = {
+    type: 'cluster' as const,
+    id: 'cluster-1',
+    count: 2,
+    coordinate: { latitude: 5, longitude: 5 },
+    places: [mockPlace, otherPlace],
   };
 
-  it('B: Real movement wiring - onPanDrag and onRegionChangeComplete', () => {
+  function flattenStyle(style: unknown) {
+    return StyleSheet.flatten(style as any);
+  }
+
+  function isHostView(node: TestRenderer.ReactTestInstance) {
+    return typeof node.type === 'string' && node.type === 'View';
+  }
+
+  function findMarkerByCoordinate(renderer: TestRenderer.ReactTestRenderer, coordinate: { latitude: number; longitude: number }) {
+    return renderer.root.find(
+      (node) =>
+        isHostView(node) &&
+        node.props.testID === 'map-marker' &&
+        node.props.coordinate?.latitude === coordinate.latitude &&
+        node.props.coordinate?.longitude === coordinate.longitude
+    );
+  }
+
+  it('1. uses onRegionChange for zoom/pan movement start without churning repeated true updates, then settles onRegionChangeComplete', () => {
     const onMovementStateChange = jest.fn();
     const onRegionChangeComplete = jest.fn();
-    
-    let renderer: any;
+    const zoomRegion: ExploreMapRegion = {
+      latitude: 2,
+      longitude: 2,
+      latitudeDelta: 0.08,
+      longitudeDelta: 0.08,
+    };
+
+    let renderer!: TestRenderer.ReactTestRenderer;
     act(() => {
       renderer = TestRenderer.create(
-        <ExploreMapCanvas status="ready" markersDimmed={false} markerItems={[]} selectedPlaceId={null} onMovementStateChange={onMovementStateChange} onSelectPlace={jest.fn()} onDismissSelection={jest.fn()} onRegionChangeComplete={onRegionChangeComplete} />
+        <ExploreMapCanvas
+          markerItems={[]}
+          markersDimmed={false}
+          onDismissSelection={jest.fn()}
+          onMovementStateChange={onMovementStateChange}
+          onRegionChangeComplete={onRegionChangeComplete}
+          onSelectPlace={jest.fn()}
+          selectedPlaceId={null}
+          status="ready"
+        />
       );
     });
 
     const map = renderer.root.findByProps({ testID: 'map-view' });
-    act(() => { map.props.onPanDrag(); });
+
+    act(() => {
+      map.props.onRegionChange(zoomRegion);
+      map.props.onPanDrag();
+    });
+    expect(onMovementStateChange).toHaveBeenCalledTimes(1);
     expect(onMovementStateChange).toHaveBeenCalledWith(true);
 
-    const newRegion = { latitude: 2, longitude: 2, latitudeDelta: 0.1, longitudeDelta: 0.1 };
-    act(() => { map.props.onRegionChangeComplete(newRegion, { isGesture: true }); });
-    expect(onMovementStateChange).toHaveBeenCalledWith(false);
-    expect(onRegionChangeComplete).toHaveBeenCalledWith(newRegion, { isGesture: true });
+    act(() => {
+      map.props.onRegionChangeComplete(zoomRegion, { isGesture: true });
+    });
+    expect(onMovementStateChange).toHaveBeenLastCalledWith(false);
+    expect(onRegionChangeComplete).toHaveBeenCalledWith(zoomRegion, { isGesture: true });
+
+    act(() => {
+      map.props.onRegionChange(INITIAL_EXPLORE_REGION);
+    });
+    expect(onMovementStateChange).toHaveBeenCalledTimes(3);
+    expect(onMovementStateChange).toHaveBeenLastCalledWith(true);
   });
 
-  it('C: Real hint rendering in moving state', () => {
-    let renderer: any;
+  it('2. renders hint markers as presentation-only native markers with hidden accessibility and tracksViewChanges disabled', () => {
+    let renderer!: TestRenderer.ReactTestRenderer;
     act(() => {
       renderer = TestRenderer.create(
-        <ExploreMapCanvas status="ready" markersDimmed={false} markerItems={[]} selectedPlaceId={null} onMovementStateChange={jest.fn()} onSelectPlace={jest.fn()} onDismissSelection={jest.fn()} />
+        <ExploreMapCanvas
+          markerItems={[]}
+          markersDimmed={false}
+          onDismissSelection={jest.fn()}
+          onMovementStateChange={jest.fn()}
+          onSelectPlace={jest.fn()}
+          selectedPlaceId={null}
+          status="moving"
+        />
       );
     });
 
-    expect(renderer.root.findAllByProps({ testID: 'explore-motion-hint' })).toHaveLength(0);
+    const hintMarkers = renderer.root.findAll(
+      (node) =>
+        isHostView(node) &&
+        node.props.testID === 'map-marker' &&
+        node.props.accessible === false
+    );
 
-    act(() => {
-      renderer.update(
-        <ExploreMapCanvas status="moving" markersDimmed={false} markerItems={[]} selectedPlaceId={null} onMovementStateChange={jest.fn()} onSelectPlace={jest.fn()} onDismissSelection={jest.fn()} />
-      );
+    expect(hintMarkers).toHaveLength(8);
+    hintMarkers.forEach((marker) => {
+      expect(marker.props.onPress).toBeUndefined();
+      expect(marker.props.accessible).toBe(false);
+      expect(marker.props.accessibilityElementsHidden).toBe(true);
+      expect(marker.props.importantForAccessibility).toBe('no-hide-descendants');
+      expect(marker.props.tracksViewChanges).toBe(false);
     });
-
-    const hints = renderer.root.findAllByProps({ testID: 'explore-motion-hint' });
-    expect(hints.length).toBeGreaterThan(0); 
-    
-    const hint = hints[0];
-    expect(hint.props.accessible).toBe(false);
-    expect(hint.props.accessibilityElementsHidden).toBe(true);
-    expect(hint.props.pointerEvents).toBe('none');
   });
 
-  it('D: Real marker dim/noninteractive', () => {
+  it('3. keeps a fresh place marker interactive at the native marker boundary and without dimmed opacity', () => {
     const onSelectPlace = jest.fn();
-    let renderer: any;
+    let renderer!: TestRenderer.ReactTestRenderer;
+
     act(() => {
       renderer = TestRenderer.create(
-        <ExploreMapCanvas status="ready" markersDimmed={false} markerItems={[{ id: 'm1', type: 'place', place: mockPlace }]} selectedPlaceId={null} onMovementStateChange={jest.fn()} onSelectPlace={onSelectPlace} onDismissSelection={jest.fn()} />
+        <ExploreMapCanvas
+          markerItems={[{ id: 'm1', place: mockPlace, type: 'place' as const }]}
+          markersDimmed={false}
+          onDismissSelection={jest.fn()}
+          onMovementStateChange={jest.fn()}
+          onSelectPlace={onSelectPlace}
+          selectedPlaceId={null}
+          status="ready"
+        />
       );
     });
 
-    const marker = renderer.root.findByProps({ place: mockPlace });
-    expect(marker.props.dimmed).toBe(false);
-    
-    act(() => { marker.props.onPress(); });
+    const marker = findMarkerByCoordinate(renderer, mockPlace.coordinate);
+    expect(typeof marker.props.onPress).toBe('function');
+
+    act(() => {
+      marker.props.onPress();
+    });
     expect(onSelectPlace).toHaveBeenCalledTimes(1);
 
+    const pressable = renderer.root.findByProps({ accessibilityLabel: 'Real Place' });
+    expect(pressable.props.disabled).toBe(false);
+    expect(flattenStyle(pressable.props.style)?.opacity).toBeUndefined();
+  });
+
+  it('4. disables stale place markers at the native marker boundary and visibly dims the rendered pin wrapper', () => {
+    const onSelectPlace = jest.fn();
+    let renderer!: TestRenderer.ReactTestRenderer;
+
     act(() => {
-      renderer.update(
-        <ExploreMapCanvas status="refreshing" markersDimmed={true} markerItems={[{ id: 'm1', type: 'place', place: mockPlace }]} selectedPlaceId={null} onMovementStateChange={jest.fn()} onSelectPlace={onSelectPlace} onDismissSelection={jest.fn()} />
+      renderer = TestRenderer.create(
+        <ExploreMapCanvas
+          markerItems={[{ id: 'm1', place: mockPlace, type: 'place' as const }]}
+          markersDimmed
+          onDismissSelection={jest.fn()}
+          onMovementStateChange={jest.fn()}
+          onSelectPlace={onSelectPlace}
+          selectedPlaceId={null}
+          status="refreshing"
+        />
       );
     });
 
-    const dimmedMarker = renderer.root.findByProps({ place: mockPlace });
-    expect(dimmedMarker.props.dimmed).toBe(true);
-    
+    const marker = findMarkerByCoordinate(renderer, mockPlace.coordinate);
+    expect(marker.props.onPress).toBeUndefined();
+
+    const pressable = renderer.root.findByProps({ accessibilityLabel: 'Real Place' });
+    expect(pressable.props.disabled).toBe(true);
+    expect(pressable.props.onPress).toBeUndefined();
+    expect(flattenStyle(pressable.props.style)?.opacity).toBe(0.45);
+    expect(onSelectPlace).toHaveBeenCalledTimes(0);
+  });
+
+  it('5. disables stale clusters at the native marker boundary and visibly dims the cluster presentation', () => {
+    const onSelectCluster = jest.fn();
+    let renderer!: TestRenderer.ReactTestRenderer;
+
     act(() => {
-      if (!dimmedMarker.props.dimmed && dimmedMarker.props.onPress) dimmedMarker.props.onPress();
+      renderer = TestRenderer.create(
+        <ExploreMapCanvas
+          markerItems={[cluster]}
+          markersDimmed
+          onDismissSelection={jest.fn()}
+          onMovementStateChange={jest.fn()}
+          onSelectCluster={onSelectCluster}
+          onSelectPlace={jest.fn()}
+          selectedPlaceId={null}
+          status="refreshing"
+        />
+      );
     });
-    expect(onSelectPlace).toHaveBeenCalledTimes(1); 
+
+    const marker = findMarkerByCoordinate(renderer, cluster.coordinate);
+    expect(marker.props.onPress).toBeUndefined();
+
+    const clusterCircle = renderer.root.find(
+      (node) =>
+        isHostView(node) &&
+        flattenStyle(node.props.style)?.opacity === 0.45 &&
+        node.findAll((child) => child.type === 'Text' && child.props.children === 2).length > 0
+    );
+    expect(flattenStyle(clusterCircle.props.style)?.opacity).toBe(0.45);
+    expect(onSelectCluster).toHaveBeenCalledTimes(0);
   });
 });

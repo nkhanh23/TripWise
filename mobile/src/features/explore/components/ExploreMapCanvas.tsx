@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { memo, useEffect, useMemo, useCallback, useState } from 'react';
-import { ExploreMotionHint } from './ExploreMotionHint';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTranslation } from '../../../i18n';
@@ -9,6 +8,7 @@ import { colors, radius, spacing, typography } from '../../../theme/tokens';
 import type { ClusterMarkerModel, ExploreMapPlace, ExploreMarkerItem, ExploreUIStatus } from '../types';
 import { ExploreClusterMarker } from './ExploreClusterMarker';
 import { ExploreMarker } from './ExploreMarker';
+import { ExploreMotionHint } from './ExploreMotionHint';
 
 let MapView: any = null;
 let Marker: any = null;
@@ -43,6 +43,8 @@ export type ExploreMapRegion = {
   longitudeDelta: number;
 };
 
+export type ExploreRegionChangeDetails = { isGesture?: boolean };
+
 export const INITIAL_EXPLORE_REGION: ExploreMapRegion = {
   latitude: 13.76,
   longitude: 100.52,
@@ -67,17 +69,24 @@ function MarkerPin({
   selected,
   dimmed,
 }: {
-  onPress: () => void;
+  onPress?: () => void;
   place: ExploreMapPlace;
   selected: boolean;
   dimmed: boolean;
 }) {
+  const isInteractive = onPress !== undefined;
+
   return (
     <Pressable
       accessibilityLabel={place.name}
-      accessibilityRole="button"
+      accessibilityRole={isInteractive ? 'button' : undefined}
+      accessibilityState={{
+        disabled: !isInteractive,
+        selected,
+      }}
+      disabled={!isInteractive}
       onPress={onPress}
-      style={styles.nativeMarkerWrap}>
+      style={[styles.nativeMarkerWrap, dimmed && styles.dimmedMarkerWrap]}>
       {selected ? (
         <View style={styles.nameBadge}>
           <Text numberOfLines={1} style={styles.nameBadgeText}>
@@ -95,9 +104,9 @@ function MarkerPin({
   );
 }
 
-function ClusterPin({ cluster, dimmed }: { cluster: ClusterMarkerModel; dimmed: boolean; }) {
+function ClusterPin({ cluster, dimmed }: { cluster: ClusterMarkerModel; dimmed: boolean }) {
   return (
-    <View style={[styles.clusterCircle, dimmed && { opacity: 0.5 }]}>
+    <View style={[styles.clusterCircle, dimmed && styles.dimmedClusterCircle]}>
       <Text style={styles.countText}>{cluster.count}</Text>
     </View>
   );
@@ -115,6 +124,7 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
   onRegionChangeComplete,
 }: Props) {
   const { t } = useTranslation();
+  const movingRef = useRef(false);
   const markerCoordinates = useMemo(
     () =>
       markerItems.map((item) => ({
@@ -123,15 +133,26 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
       })),
     [markerItems]
   );
-    const [currentRegion, setCurrentRegion] = useState<ExploreMapRegion>(INITIAL_EXPLORE_REGION);
-  
-  const handlePanDrag = useCallback(() => {
+  const [currentRegion, setCurrentRegion] = useState<ExploreMapRegion>(INITIAL_EXPLORE_REGION);
+
+  const handleMovementStart = useCallback(() => {
+    if (movingRef.current) return;
+    movingRef.current = true;
     onMovementStateChange(true);
   }, [onMovementStateChange]);
+
+  const handlePanDrag = useCallback(() => {
+    handleMovementStart();
+  }, [handleMovementStart]);
+
+  const handleRegionChange = useCallback(() => {
+    handleMovementStart();
+  }, [handleMovementStart]);
 
   const handleRegionChangeComplete = useCallback(
     (region: ExploreMapRegion, details?: ExploreRegionChangeDetails) => {
       setCurrentRegion(region);
+      movingRef.current = false;
       onMovementStateChange(false);
       if (onRegionChangeComplete) onRegionChangeComplete(region, details);
     },
@@ -141,12 +162,13 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
   const hints = useMemo(() => {
     if (status !== 'moving') return [];
     return buildExplorationHints(currentRegion);
-  }, [status, currentRegion]);
+  }, [currentRegion, status]);
 
   const validMarkerCoordinates = useMemo(
     () => markerCoordinates.filter(({ coordinate }) => isValidCoordinate(coordinate)),
     [markerCoordinates]
   );
+
   useEffect(() => {
     if (__DEV__) {
       console.info('[ExploreMapCanvas] marker diagnostics', {
@@ -170,17 +192,24 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
         {markerItems.map((item) =>
           item.type === 'place' ? (
             <ExploreMarker
+              dimmed={markersDimmed || (selectedPlaceId !== null && item.place.id !== selectedPlaceId)}
+              disabled={markersDimmed}
               isSelected={item.place.id === selectedPlaceId}
               key={item.place.id}
-              onPress={onSelectPlace}
+              onPress={markersDimmed ? undefined : onSelectPlace}
               place={item.place}
             />
           ) : (
             <ExploreClusterMarker
               cluster={item}
+              dimmed={markersDimmed || (selectedPlaceId !== null && item.places.every((place) => place.id !== selectedPlaceId))}
+              disabled={markersDimmed}
               key={item.id}
-              onPress={(cluster) =>
-                onSelectCluster ? onSelectCluster(cluster) : onSelectPlace(cluster.places[0])
+              onPress={
+                markersDimmed
+                  ? undefined
+                  : (cluster) =>
+                      onSelectCluster ? onSelectCluster(cluster) : onSelectPlace(cluster.places[0])
               }
             />
           )
@@ -195,12 +224,17 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
         accessibilityHint={t('explore.mapA11yHint')}
         accessibilityLabel={t('explore.mapA11yLabel')}
         initialRegion={INITIAL_EXPLORE_REGION}
-        onLayout={() => { if (__DEV__) console.info('[ExploreMapCanvas] layout ready'); }}
-        onMapReady={() => { if (__DEV__) console.info('[ExploreMapCanvas] map ready'); }}
+        onLayout={() => {
+          if (__DEV__) console.info('[ExploreMapCanvas] layout ready');
+        }}
+        onMapReady={() => {
+          if (__DEV__) console.info('[ExploreMapCanvas] map ready');
+        }}
         onPanDrag={handlePanDrag}
+        onRegionChange={handleRegionChange}
         onRegionChangeComplete={handleRegionChangeComplete}
-        provider={PROVIDER_GOOGLE}
         pitchEnabled={false}
+        provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
         scrollEnabled
         style={StyleSheet.absoluteFill}
@@ -208,10 +242,13 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
         zoomEnabled>
         {hints.map((hint) => (
           <Marker
+            accessibilityElementsHidden
+            accessible={false}
+            calloutEnabled={false}
             coordinate={hint.coordinate}
+            importantForAccessibility="no-hide-descendants"
             key={hint.id}
-            tracksViewChanges={false}
-          >
+            tracksViewChanges={false}>
             <ExploreMotionHint opacity={hint.opacity} scale={hint.scale} />
           </Marker>
         ))}
@@ -221,13 +258,13 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
               calloutEnabled={false}
               coordinate={coordinate}
               key={item.place.id}
-              onPress={() => onSelectPlace(item.place)}
+              onPress={markersDimmed ? undefined : () => onSelectPlace(item.place)}
               tracksViewChanges={item.place.id === selectedPlaceId}>
               <MarkerPin
-                onPress={() => onSelectPlace(item.place)}
+                dimmed={markersDimmed || (selectedPlaceId !== null && item.place.id !== selectedPlaceId)}
+                onPress={markersDimmed ? undefined : () => onSelectPlace(item.place)}
                 place={item.place}
                 selected={item.place.id === selectedPlaceId}
-                dimmed={markersDimmed || (selectedPlaceId !== null && item.place.id !== selectedPlaceId)}
               />
             </Marker>
           ) : (
@@ -235,11 +272,17 @@ export const ExploreMapCanvas = memo(function ExploreMapCanvas({
               calloutEnabled={false}
               coordinate={coordinate}
               key={item.id}
-              onPress={() =>
-                onSelectCluster ? onSelectCluster(item) : onSelectPlace(item.places[0])
+              onPress={
+                markersDimmed
+                  ? undefined
+                  : () =>
+                      onSelectCluster ? onSelectCluster(item) : onSelectPlace(item.places[0])
               }
               tracksViewChanges={false}>
-              <ClusterPin cluster={item} dimmed={markersDimmed || (selectedPlaceId !== null && item.places.every((p) => p.id !== selectedPlaceId))} />
+              <ClusterPin
+                cluster={item}
+                dimmed={markersDimmed || (selectedPlaceId !== null && item.places.every((place) => place.id !== selectedPlaceId))}
+              />
             </Marker>
           )
         )}
@@ -264,7 +307,13 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  nativeMarkerWrap: { alignItems: 'center' },
+  nativeMarkerWrap: {
+    alignItems: 'center',
+  },
+  dimmedMarkerWrap: {
+    opacity: 0.45,
+    transform: [{ scale: 0.96 }],
+  },
   nameBadge: {
     backgroundColor: colors.brand.primary,
     borderRadius: radius.input,
@@ -288,11 +337,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 34,
   },
-  pinOuterDefault: { borderColor: '#FFFFFF', borderWidth: 2 },
-  pinOuterSelected: { borderColor: colors.brand.red, borderWidth: 2.5, transform: [{ scale: 1.15 }] },
-  pinInner: { alignItems: 'center', borderRadius: radius.pill, height: 24, justifyContent: 'center', width: 24 },
-  pinInnerDefault: { backgroundColor: colors.brand.primary },
-  pinInnerSelected: { backgroundColor: colors.brand.red },
+  pinOuterDefault: {
+    borderColor: '#FFFFFF',
+    borderWidth: 2,
+  },
+  pinOuterSelected: {
+    borderColor: colors.brand.red,
+    borderWidth: 2.5,
+    transform: [{ scale: 1.15 }],
+  },
+  pinInner: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    height: 24,
+    justifyContent: 'center',
+    width: 24,
+  },
+  pinInnerDefault: {
+    backgroundColor: colors.brand.primary,
+  },
+  pinInnerSelected: {
+    backgroundColor: colors.brand.red,
+  },
   pinPoint: {
     borderLeftColor: 'transparent',
     borderLeftWidth: 5,
@@ -303,8 +369,12 @@ const styles = StyleSheet.create({
     marginTop: -2,
     width: 0,
   },
-  pinPointDefault: { borderTopColor: '#FFFFFF' },
-  pinPointSelected: { borderTopColor: colors.brand.red },
+  pinPointDefault: {
+    borderTopColor: '#FFFFFF',
+  },
+  pinPointSelected: {
+    borderTopColor: colors.brand.red,
+  },
   clusterCircle: {
     alignItems: 'center',
     backgroundColor: colors.brand.primary,
@@ -316,7 +386,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 36,
   },
-  countText: { color: colors.text.inverse, fontSize: typography.bodySmall, fontWeight: typography.fontWeight.bold },
+  dimmedClusterCircle: {
+    opacity: 0.45,
+    transform: [{ scale: 0.96 }],
+  },
+  countText: {
+    color: colors.text.inverse,
+    fontSize: typography.bodySmall,
+    fontWeight: typography.fontWeight.bold,
+  },
 });
 
 export function buildExplorationHints(region: ExploreMapRegion) {
@@ -331,4 +409,3 @@ export function buildExplorationHints(region: ExploreMapRegion) {
     { id: 'hint-8', coordinate: { latitude: region.latitude, longitude: region.longitude - 0.02 }, opacity: 0.8, scale: 1 },
   ];
 }
-export type ExploreRegionChangeDetails = { isGesture?: boolean };

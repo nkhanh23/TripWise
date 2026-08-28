@@ -7,10 +7,17 @@ import { mapCoordinateToFixturePercent } from '../utils/exploreMapUtils';
 
 type Props = {
   cluster: ClusterMarkerModel;
-  onPress: (cluster: ClusterMarkerModel) => void;
+  onPress?: (cluster: ClusterMarkerModel) => void;
+  dimmed?: boolean;
+  disabled?: boolean;
 };
 
-export const ExploreClusterMarker = memo(function ExploreClusterMarker({ cluster, onPress }: Props) {
+export const ExploreClusterMarker = memo(function ExploreClusterMarker({
+  cluster,
+  onPress,
+  dimmed = false,
+  disabled = false,
+}: Props) {
   const position = mapCoordinateToFixturePercent(cluster.coordinate);
   return (
     <View
@@ -25,8 +32,14 @@ export const ExploreClusterMarker = memo(function ExploreClusterMarker({ cluster
         accessibilityHint={`Nhấn để xem ${cluster.count} địa điểm trong khu vực này`}
         accessibilityLabel={`${cluster.count} địa điểm trong khu vực này`}
         accessibilityRole="button"
-        onPress={() => onPress(cluster)}
-        style={({ pressed }) => [styles.touchTarget, pressed && styles.pressed]}>
+        accessibilityState={{ disabled }}
+        disabled={disabled}
+        onPress={onPress ? () => onPress(cluster) : undefined}
+        style={({ pressed }) => [
+          styles.touchTarget,
+          dimmed && styles.dimmed,
+          pressed && !disabled && styles.pressed,
+        ]}>
         <View style={styles.clusterCircle}>
           <Text style={styles.countText}>{cluster.count}</Text>
         </View>
@@ -71,5 +84,9 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.8,
     transform: [{ scale: 0.95 }],
+  },
+  dimmed: {
+    opacity: 0.45,
+    transform: [{ scale: 0.96 }],
   },
 });

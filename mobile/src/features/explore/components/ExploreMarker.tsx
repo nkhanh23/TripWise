@@ -9,10 +9,18 @@ import { mapCoordinateToFixturePercent } from '../utils/exploreMapUtils';
 type Props = {
   place: ExploreMapPlace;
   isSelected: boolean;
-  onPress: (place: ExploreMapPlace) => void;
+  onPress?: (place: ExploreMapPlace) => void;
+  dimmed?: boolean;
+  disabled?: boolean;
 };
 
-export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, onPress }: Props) {
+export const ExploreMarker = memo(function ExploreMarker({
+  place,
+  isSelected,
+  onPress,
+  dimmed = false,
+  disabled = false,
+}: Props) {
   const position = 'fixtureMapCoordinate' in place
     ? place.fixtureMapCoordinate
     : mapCoordinateToFixturePercent(place.coordinate);
@@ -26,7 +34,6 @@ export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, on
         },
         isSelected && styles.selectedZIndex,
       ]}>
-      {/* Selected Name Badge */}
       {isSelected ? (
         <View style={styles.nameBadge}>
           <Text numberOfLines={1} style={styles.nameBadgeText}>
@@ -35,22 +42,23 @@ export const ExploreMarker = memo(function ExploreMarker({ place, isSelected, on
         </View>
       ) : null}
 
-      {/* Marker Pin Touch Target */}
       <Pressable
         accessibilityHint={`Xem chi tiết địa điểm ${place.name}`}
         accessibilityLabel={place.name}
         accessibilityRole="button"
-        accessibilityState={{ selected: isSelected }}
-        onPress={() => onPress(place)}
-        style={({ pressed }) => [styles.touchTarget, pressed && styles.pressed]}>
-        {/* Pin Outer Bubble */}
+        accessibilityState={{ disabled, selected: isSelected }}
+        disabled={disabled}
+        onPress={onPress ? () => onPress(place) : undefined}
+        style={({ pressed }) => [
+          styles.touchTarget,
+          dimmed && styles.dimmed,
+          pressed && !disabled && styles.pressed,
+        ]}>
         <View style={[styles.pinOuter, isSelected ? styles.pinOuterSelected : styles.pinOuterDefault]}>
-          {/* Inner Circle with Category Icon */}
           <View style={[styles.pinInner, isSelected ? styles.pinInnerSelected : styles.pinInnerDefault]}>
             <MaterialIcons color="#FFFFFF" name={place.iconName} size={14} />
           </View>
         </View>
-        {/* Pin Arrow Point */}
         <View style={[styles.pinPoint, isSelected ? styles.pinPointSelected : styles.pinPointDefault]} />
       </Pressable>
     </View>
@@ -144,5 +152,9 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.8,
     transform: [{ scale: 0.95 }],
+  },
+  dimmed: {
+    opacity: 0.45,
+    transform: [{ scale: 0.96 }],
   },
 });

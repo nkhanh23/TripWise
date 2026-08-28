@@ -79,7 +79,9 @@ export function useExploreDiscovery(
   const sequence = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastRequestKeyRef = useRef<string | null>(null);
+  const authoritativeRequestKeyRef = useRef<string | null>(null);
+  const activeRequestKeyRef = useRef<string | null>(null);
+  const pendingRequestKeyRef = useRef<string | null>(null);
   const forceNextLoadRef = useRef(false);
   const initialSettlePendingRef = useRef(true);
   const placesRef = useRef<ExploreMapPlace[]>(initialPlaces);
@@ -88,16 +90,35 @@ export function useExploreDiscovery(
     placesRef.current = places;
   }, [places]);
 
+  const clearPendingLoad = useCallback(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    pendingRequestKeyRef.current = null;
+  }, []);
+
+  const invalidateActiveRequest = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    activeRequestKeyRef.current = null;
+    sequence.current += 1;
+  }, []);
+
   const load = useCallback(
     async (nextRegion: ExploreMapRegion, nextCategory: ExploreCategory, force = false) => {
       if (!repository) return;
       const nextRequestKey = requestKey(nextRegion, nextCategory);
-      if (!force && lastRequestKeyRef.current === nextRequestKey) return;
-      lastRequestKeyRef.current = nextRequestKey;
+      if (!force) {
+        if (activeRequestKeyRef.current === nextRequestKey) return;
+        if (authoritativeRequestKeyRef.current === nextRequestKey) return;
+      }
+      clearPendingLoad();
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
       const requestSequence = ++sequence.current;
+      activeRequestKeyRef.current = nextRequestKey;
       setHasBackgroundError(false);
       setStatus(placesRef.current.length > 0 ? 'refreshing' : 'initial-loading');
       if (__DEV__) console.info('[ExploreDiscovery] request', { category: nextCategory, limit: 12 });
@@ -108,37 +129,42 @@ export function useExploreDiscovery(
         placesRef.current = nextPlaces;
         setPlaces(nextPlaces);
         setConfirmedCategory(nextCategory);
+        authoritativeRequestKeyRef.current = nextRequestKey;
+        activeRequestKeyRef.current = null;
         setStatus('ready');
         if (__DEV__) console.info('[ExploreDiscovery] success', { category: nextCategory, places: result.length });
       } catch {
         if (controller.signal.aborted || requestSequence !== sequence.current) return;
+        activeRequestKeyRef.current = null;
         if (placesRef.current.length > 0) {
           setHasBackgroundError(true);
           setStatus('ready');
           return;
         }
         setStatus('error');
+      } finally {
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+        }
       }
     },
-    [repository]
+    [clearPendingLoad, repository]
   );
 
   useEffect(() => {
     if (!repository) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    clearPendingLoad();
     const force = forceNextLoadRef.current;
     forceNextLoadRef.current = false;
     void load(regionRef.current, category, force);
-    return () => abortRef.current?.abort();
-  }, [category, load, repository, retryKey]);
+  }, [category, clearPendingLoad, load, repository, retryKey]);
 
   useEffect(
     () => () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      abortRef.current?.abort();
-      sequence.current += 1;
+      clearPendingLoad();
+      invalidateActiveRequest();
     },
-    []
+    [clearPendingLoad, invalidateActiveRequest]
   );
 
   const setCategory = useCallback(
@@ -149,13 +175,13 @@ export function useExploreDiscovery(
         setConfirmedCategory(next);
         return;
       }
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      abortRef.current?.abort();
+      clearPendingLoad();
+      invalidateActiveRequest();
       setHasBackgroundError(false);
       setStatus(placesRef.current.length > 0 ? 'refreshing' : 'initial-loading');
       setCategoryState(next);
     },
-    [category, fixtureMode]
+    [category, clearPendingLoad, fixtureMode, invalidateActiveRequest]
   );
 
   const onRegionChangeComplete = useCallback(
@@ -166,15 +192,25 @@ export function useExploreDiscovery(
         initialSettlePendingRef.current = false;
         if (hasEquivalentCenter(nextRegion, INITIAL_EXPLORE_REGION) && details?.isGesture !== true) return;
       }
-      if (lastRequestKeyRef.current === requestKey(nextRegion, category)) return;
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      abortRef.current?.abort();
-      sequence.current += 1;
-      lastRequestKeyRef.current = null;
+      const nextRequestKey = requestKey(nextRegion, category);
+      if (pendingRequestKeyRef.current === nextRequestKey) return;
+      if (activeRequestKeyRef.current === nextRequestKey) return;
+      if (authoritativeRequestKeyRef.current === nextRequestKey) {
+        clearPendingLoad();
+        return;
+      }
+      clearPendingLoad();
+      invalidateActiveRequest();
+      pendingRequestKeyRef.current = nextRequestKey;
       const capturedCategory = category;
-      debounceRef.current = setTimeout(() => void load(nextRegion, capturedCategory), DEBOUNCE_MS);
+      debounceRef.current = setTimeout(() => {
+        debounceRef.current = null;
+        if (pendingRequestKeyRef.current !== nextRequestKey) return;
+        pendingRequestKeyRef.current = null;
+        void load(nextRegion, capturedCategory);
+      }, DEBOUNCE_MS);
     },
-    [category, load, repository]
+    [category, clearPendingLoad, invalidateActiveRequest, load, repository]
   );
 
   const retry = useCallback(() => {
@@ -183,10 +219,12 @@ export function useExploreDiscovery(
       setHasBackgroundError(false);
       return;
     }
+    clearPendingLoad();
+    invalidateActiveRequest();
     forceNextLoadRef.current = true;
     setHasBackgroundError(false);
     setRetryKey((value) => value + 1);
-  }, [fixtureMode]);
+  }, [clearPendingLoad, fixtureMode, invalidateActiveRequest]);
 
   return {
     places,
@@ -199,4 +237,3 @@ export function useExploreDiscovery(
     retry,
   };
 }
-
