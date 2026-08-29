@@ -16,7 +16,7 @@ The base experience is abstractly personalized from trusted wizard input. It mus
 
 | Authority | Source of truth for | Explicitly not source of truth for |
 |---|---|---|
-| Current Google Stitch + TripWise UI | Geometry, spacing, typography, component identity, semantic visual language, Light/Dark consistency. | Motion timing or literal video copy. |
+| Current React Native TripWise UI/theme | Visual component patterns, geometry, spacing, typography, component identity, semantic visual language, and production UI consistency. | Motion timing, literal video copy, or generated itinerary facts. |
 | Canonical MP4 | Motion sequence, timing, reveal order, direction, entrance/exit behavior, rhythm, and transition character. | Literal runtime strings, raw colors, data, lifecycle outcome, or security. |
 | TripWise runtime data | Destination, duration, interests, pace, budget, group, title, generation/persistence outcome. | Reference-video timing. |
 | Existing i18n/theme architecture | EN/VI text, Light/Dark/System semantic colors, formatting, accessibility copy. | Video-rendered words/colors. |
@@ -224,24 +224,23 @@ Use native-capable interpolation; no `setInterval`/`requestAnimationFrame` React
 
 ## 16. Implementation tasks
 
-| Task | Scope |
-|---|---|
-| `MOTION-T001` | Validate MP4 metadata; inspect F000–F239 at 24fps; create manifest/reference spec; distinguish video motion from runtime i18n/theme; dependency decision only if necessary. No implementation. |
-| `MOTION-T002` | State machine, lifecycle latches, monotonic timeline, safe checkpoints, pure frame derivation, locale/theme stability. |
-| `MOTION-T003` | Audited abstract route/node construction. |
-| `MOTION-T004` | Audited abstract activity-card stagger; no exact locations. |
-| `MOTION-T005` | Audited bounded duration/day-indicator reveal; no fixed Day 1/2/3 contract. |
-| `MOTION-T006` | Generation hold/early-late synchronization. |
-| `MOTION-T007` | Saving hold and persistence-only retry. |
-| `MOTION-T008` | Persistence-confirmed localized success and Trip Detail CTA. |
-| `MOTION-T009` | Localized generation/save errors and differentiated retries. |
-| `MOTION-T010` | EN/VI, Light/Dark/System, accessibility, responsive bounds, reduced motion. |
-| `MOTION-T011` | Android cleanup/rerender/memory/frame-pacing/overdraw/stale-call audit. |
-| `MOTION-T012` | Automated regressions and quality gates. |
-| `MOTION-T013` | Android recording/frame alignment and motion/content evidence. |
+Progress boxes are evidence-based. `[ ]` means not completed. `[x]` is allowed only after actual implementation, test, or runtime evidence exists; planning text or agent claim alone is insufficient. Preserve `MOTION-T001` through `MOTION-T013` order and do not create `INT-P10` or later integration phases.
+
+- [ ] MOTION-T001 — Validate MP4 metadata; inspect F000–F239 at 24fps; create manifest/reference spec; distinguish video motion from runtime i18n/theme; dependency decision only if necessary. No implementation.
+- [ ] MOTION-T002 — State machine, lifecycle latches, monotonic timeline, safe checkpoints, pure frame derivation, locale/theme stability.
+- [ ] MOTION-T003 — Audited abstract route/node construction.
+- [ ] MOTION-T004 — Audited abstract activity-card stagger; no exact locations.
+- [ ] MOTION-T005 — Audited bounded duration/day-indicator reveal; no fixed Day 1/2/3 contract.
+- [ ] MOTION-T006 — Generation hold/early-late synchronization.
+- [ ] MOTION-T007 — Saving hold and persistence-only retry.
+- [ ] MOTION-T008 — Persistence-confirmed localized success and Trip Detail CTA.
+- [ ] MOTION-T009 — Localized generation/save errors and differentiated retries.
+- [ ] MOTION-T010 — EN/VI, Light/Dark/System, accessibility, responsive bounds, reduced motion.
+- [ ] MOTION-T011 — Android cleanup/rerender/memory/frame-pacing/overdraw/stale-call audit.
+- [ ] MOTION-T012 — Automated regressions and quality gates.
+- [ ] MOTION-T013 — Android recording/frame alignment and motion/content evidence.
 
 `MOTION-T010` completes before final automated/runtime closure. Do not start a later task when its prerequisite is unresolved.
-
 ## 17. Automated test plan
 
 Retain generation/persistence/idempotency/retry/success-gating regressions. Future tests must prove: one generation per action; no duplicate taps; deterministic 24fps F000–F239 origin; semantic EN/VI state keys/no hardcoded one-language copy; long VI/destination/title bounds; Light/Dark semantic role use/no raw reference colors; locale/theme update does not remount/restart timeline/business work or duplicate requests; safe early/slow generation hold; wizard retention on generation failure; save-once/draft retention/save-only retry; success impossible before real persistence; reduced-motion semantics; cleanup/stale/unmount safety; and audited frame checkpoints including F000/F024/F048/F120/F216/F239 plus every transition neighbor.
@@ -257,7 +256,7 @@ Required primary variants share one timeline:
 
 Across them verify short/long destination, short/long duration, relaxed/fast, solo/friends/family, image available/unavailable, normal/slow generation, generation failure, save failure/retry, success, persisted Trip Detail, no clipping/overflow/restart/duplicate/redbox/severe jump/contrast failure/untranslated text/fake data, and reduced motion where supported.
 
-Align Android capture with canonical 1280×720/24fps from accepted submit. Reference aspect ratio may differ from responsive UI; Stitch remains geometry truth. `MOTION-T001` defines anchor normalization without stretching either source or requiring identical localized glyph pixels. Extended holds are compared separately.
+Align Android capture with canonical 1280×720/24fps from accepted submit. Reference aspect ratio may differ from responsive UI; current React Native TripWise UI/theme remains visual, component, and geometry truth. `MOTION-T001` defines anchor normalization without stretching either source or requiring identical localized glyph pixels. Extended holds are compared separately.
 
 ```text
 FRAME_ALIGNMENT = PASS / FAIL / BLOCKED
@@ -288,6 +287,18 @@ Android runtime evidence is mandatory for final closure.
 
 Acceptance requires: canonical MP4 unchanged; actual 1280×720/24fps/240-frame/10-second metadata; 24fps F000–F239 manifest before implementation; MP4 motion but not literal colors/text; EN/VI plus Light/Dark/System through current systems; no locale/theme lifecycle/timeline/request restart; abstract personalization without generated places/fake provider data; separate generation/persistence with retained retry semantics and real persistence success gate; and Android four-variant/frame-aligned evidence.
 
-Stop and report if video metadata changes, video/Stitch conflict needs product decision, a dependency lacks approval, runtime would autoplay/rasterize/hardcode the MP4, exact generated places or fake data are needed, locale/theme cannot preserve in-flight state, or Android capture is unavailable. Use `BLOCKED`/`NOT_PROVEN`, never false PASS.
+Acceptance/runtime progress boxes follow the same evidence rule: leave unchecked until backed by actual audit, implementation, automated test, or Android runtime evidence.
+
+- [ ] Canonical MP4 audited
+- [ ] FRAME_MANIFEST completed
+- [ ] EN verified
+- [ ] VI verified
+- [ ] Light verified
+- [ ] Dark verified
+- [ ] System theme verified
+- [ ] Reduced motion verified
+- [ ] Android runtime verified
+- [ ] Full quality gates completed
+Stop and report if video metadata changes, canonical MP4/current React Native UI conflict needs product decision, a dependency lacks approval, runtime would autoplay/rasterize/hardcode the MP4, exact generated places or fake data are needed, locale/theme cannot preserve in-flight state, or Android capture is unavailable. Use `BLOCKED`/`NOT_PROVEN`, never false PASS.
 
 For this branch-baseline task, stop after committing this document and the unchanged canonical MP4. Do not begin `MOTION-T001`, implement animation, modify production source/tests/dependencies, deploy, or push.
