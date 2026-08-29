@@ -7,6 +7,8 @@ export type DestinationOption = {
   latitude?: number;
   longitude?: number;
   imageUrl: string;
+  /** Editorial or provider-derived geographic context used only for a destination cover lookup. */
+  imageQuery?: string;
   destinationType?: 'CITY' | 'COUNTRY';
   tag?: string;
   popular?: boolean;

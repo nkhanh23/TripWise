@@ -22,6 +22,12 @@ function load(destinations: DestinationOption[], repository: DestinationCoverRep
 }
 
 describe('destination image loader', () => {
+  it('uses contextual geographic identity for a destination cover lookup', async () => {
+    const repository: DestinationCoverRepository = { getDestinationCover: jest.fn().mockResolvedValue(cover) };
+    await load([{ ...city('nha-trang'), name: 'Nha Trang', formattedAddress: 'Khanh Hoa, Vietnam', imageQuery: 'Nha Trang, Khanh Hoa, Vietnam' }], repository).promise;
+    expect(repository.getDestinationCover).toHaveBeenCalledWith('Nha Trang, Khanh Hoa, Vietnam', 160, expect.any(AbortSignal));
+  });
+
   it('starts one request per destination while in flight and does not duplicate it on rerender', async () => {
     const pending = deferred<ResolvedImage>();
     const repository: DestinationCoverRepository = { getDestinationCover: jest.fn(() => pending.promise) };

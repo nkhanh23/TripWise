@@ -19,7 +19,7 @@ function deferred<T>() {
 
 describe('StepDestination image attribution', () => {
   beforeEach(() => {
-    mockedUseDestinationSearch.mockReturnValue({ query: 'Vietnam', setQuery: jest.fn(), results: [destination], loading: false, error: null, retry: jest.fn() });
+    mockedUseDestinationSearch.mockReturnValue({ query: 'Vietnam', setQuery: jest.fn(), results: [destination], loading: false, error: null, retry: jest.fn(), isSearchSuppressed: false });
     jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
   });
 

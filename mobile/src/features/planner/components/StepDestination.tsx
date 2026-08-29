@@ -11,6 +11,7 @@ import { supabase } from '../../../lib/supabase/client';
 import { loadDestinationImages } from '../destinationImageLoader';
 import { getResolvedImageSource } from '../../images/resolvedImageSource';
 import { ImageAttribution } from '../../images/components/ImageAttribution';
+import { useTranslation } from '../../../i18n';
 
 import type { DestinationCoverRepository } from '../../../integration/repositories';
 import type { DestinationSearchRepository } from '../../../integration/repositories/DestinationSearchRepository';
@@ -26,6 +27,16 @@ type Props = {
   destinationImageRepository?: DestinationCoverRepository;
 };
 
+// Editorial shortcuts for the empty state; they intentionally carry no Google identity or coordinates.
+const popularDestinations: DestinationOption[] = [
+  { id: 'editorial:nha-trang', name: 'Nha Trang', formattedAddress: 'Khanh Hoa, Vietnam', imageQuery: 'Nha Trang, Khanh Hoa, Vietnam', imageUrl: '', destinationType: 'CITY', popular: true },
+  { id: 'editorial:bangkok', name: 'Bangkok', formattedAddress: 'Thailand', imageQuery: 'Bangkok, Thailand', imageUrl: '', destinationType: 'CITY', popular: true },
+  { id: 'editorial:singapore', name: 'Singapore', formattedAddress: 'Singapore', imageQuery: 'Singapore', imageUrl: '', destinationType: 'CITY', popular: true },
+  { id: 'editorial:tokyo', name: 'Tokyo', formattedAddress: 'Japan', imageQuery: 'Tokyo, Japan', imageUrl: '', destinationType: 'CITY', popular: true },
+  { id: 'editorial:seoul', name: 'Seoul', formattedAddress: 'South Korea', imageQuery: 'Seoul, South Korea', imageUrl: '', destinationType: 'CITY', popular: true },
+  { id: 'editorial:paris', name: 'Paris', formattedAddress: 'France', imageQuery: 'Paris, France', imageUrl: '', destinationType: 'CITY', popular: true },
+];
+
 export const StepDestination = memo(function StepDestination({
   selectedDestination,
   customDestinationName,
@@ -36,7 +47,17 @@ export const StepDestination = memo(function StepDestination({
   destinationImageRepository,
 }: Props) {
   const { colors: themeColors, effectiveTheme } = useTheme();
-  const { query, setQuery, results, loading, error: searchError } = useDestinationSearch(repository, customDestinationName);
+  const { t } = useTranslation();
+  const selectedPopularDestination = selectedDestination?.popular === true
+    && selectedDestination.name === customDestinationName;
+  const { query, setQuery, results, loading, error: searchError, isSearchSuppressed } = useDestinationSearch(
+    repository,
+    customDestinationName,
+    { suppressInitialSearch: selectedPopularDestination },
+  );
+  const trimmedQuery = query.trim();
+  const isPopularDestinationsVisible = trimmedQuery.length === 0 || isSearchSuppressed;
+  const visibleDestinations = isPopularDestinationsVisible ? popularDestinations : results;
   const defaultImageRepository = useMemo(() => new SupabaseWikimediaImageRepository(supabase), []);
   const imageRepository = destinationImageRepository ?? defaultImageRepository;
   const [images, setImages] = useState<Record<string, ResolvedImage>>({});
@@ -45,7 +66,7 @@ export const StepDestination = memo(function StepDestination({
   useEffect(() => {
     const controller = new AbortController();
     void loadDestinationImages({
-      destinations: results,
+      destinations: visibleDestinations,
       repository: imageRepository,
       requestedIds: imageRequestsRef.current,
       signal: controller.signal,
@@ -54,7 +75,7 @@ export const StepDestination = memo(function StepDestination({
       },
     });
     return () => controller.abort();
-  }, [imageRepository, results]);
+  }, [imageRepository, visibleDestinations]);
 
   const handleSearchChange = (text: string) => {
     setQuery(text);
@@ -62,7 +83,7 @@ export const StepDestination = memo(function StepDestination({
   };
 
   const handleSelect = (dest: DestinationOption) => {
-    setQuery(dest.name);
+    setQuery(dest.name, { search: !dest.popular });
     onChangeCustomName(dest.name);
     onSelectDestination(dest);
   };
@@ -76,7 +97,7 @@ export const StepDestination = memo(function StepDestination({
       showsVerticalScrollIndicator={false}>
       {/* Subtitle description */}
       <AppText style={[styles.subtitle, { color: themeColors.text.secondary }]}>
-        Choose your dream destination or type any city to explore.
+        {t('planner.destination.subtitle')}
       </AppText>
 
       {/* Search Bar Input */}
@@ -93,7 +114,7 @@ export const StepDestination = memo(function StepDestination({
             autoCapitalize="words"
             autoCorrect={false}
             onChangeText={handleSearchChange}
-            placeholder="Search city, e.g. Singapore, Tokyo..."
+            placeholder={t('planner.destination.searchPlaceholder')}
             placeholderTextColor={themeColors.text.muted}
             returnKeyType="done"
             style={[styles.input, { color: themeColors.text.primary }]}
@@ -101,7 +122,7 @@ export const StepDestination = memo(function StepDestination({
           />
           {query.length > 0 ? (
             <Pressable
-              accessibilityLabel="Clear destination"
+              accessibilityLabel={t('planner.destination.clear')}
               accessibilityRole="button"
               hitSlop={8}
               onPress={() => handleSearchChange('')}
@@ -120,13 +141,20 @@ export const StepDestination = memo(function StepDestination({
         </View>
       ) : null}
 
-      {/* Section Heading */}
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: themeColors.text.primary }]}>Search Results</Text>
-        <Text style={[styles.sectionCount, { color: themeColors.text.muted }]}>
-          {loading ? 'Searching...' : `${results.length} available`}
-        </Text>
-      </View>
+      {isPopularDestinationsVisible || trimmedQuery.length >= 2 ? (
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: themeColors.text.primary }]}>
+            {isPopularDestinationsVisible ? t('planner.destination.popularTitle') : t('planner.destination.searchResults')}
+          </Text>
+          {!isPopularDestinationsVisible ? (
+            <Text style={[styles.sectionCount, { color: themeColors.text.muted }]}>
+              {loading ? t('planner.destination.searching') : t('planner.destination.available', { count: results.length })}
+            </Text>
+          ) : null}
+        </View>
+      ) : (
+        <Text style={[styles.helperText, { color: themeColors.text.muted }]}>{t('planner.destination.minimumQuery')}</Text>
+      )}
 
       {loading && (
         <ActivityIndicator size="small" color={themeColors.brand.primary} style={{ marginTop: 20 }} />
@@ -134,7 +162,7 @@ export const StepDestination = memo(function StepDestination({
 
       {/* Destination Cards Grid */}
       <View style={styles.grid}>
-          {!loading && results.map((dest: DestinationOption) => {
+          {!loading && visibleDestinations.map((dest: DestinationOption) => {
           const isSelected = selectedDestination?.id === dest.id;
 
           return (
@@ -161,7 +189,7 @@ export const StepDestination = memo(function StepDestination({
                     {isSelected ? <MaterialIcons color={themeColors.brand.primary} name="check-circle" size={18} /> : null}
                   </View>
                   <Text style={[styles.cardCountry, { color: themeColors.text.secondary }]}>{dest.formattedAddress}</Text>
-                  {dest.destinationType ? <Text style={[styles.destinationType, { color: themeColors.text.muted }]}>{dest.destinationType === 'CITY' ? 'City' : 'Country'}</Text> : null}
+                  {dest.destinationType ? <Text style={[styles.destinationType, { color: themeColors.text.muted }]}>{dest.destinationType === 'CITY' ? t('planner.destination.city') : t('planner.destination.country')}</Text> : null}
                 </View>
               </View>
             </Pressable>
@@ -241,6 +269,10 @@ const styles = StyleSheet.create({
   },
   sectionCount: {
     fontSize: 12,
+  },
+  helperText: {
+    fontSize: typography.bodySmall,
+    marginBottom: spacing.sm,
   },
   grid: {
     flexDirection: 'column',

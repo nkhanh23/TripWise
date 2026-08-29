@@ -18,6 +18,48 @@ describe('CreateTripWizardScreen destination search', () => {
     await advanceTimers(1);
     expect(search).toHaveBeenCalledTimes(1); expect(screen.getByLabelText('Tokyo, Japan')).toBeTruthy(); expect(screen.getByLabelText('Tokyo destination image')).toBeTruthy(); expect(screen.getByText('City')).toBeTruthy();
   });
+  it('shows editorial popular destinations for an empty query, hides them for provider search, and restores them when cleared', async () => {
+    const search = jest.fn().mockResolvedValue([tokyo]);
+    await render(<CreateTripWizardScreen destinationSearchRepository={{ search }} />);
+    expect(screen.getByText('Popular destinations')).toBeTruthy();
+    expect(screen.getByLabelText('Nha Trang, Khanh Hoa, Vietnam')).toBeTruthy();
+    expect(screen.queryByText('Search Results')).toBeNull();
+
+    await changeDestination('To');
+    await advanceTimers(500);
+    expect(search).toHaveBeenCalledWith('To', expect.any(AbortSignal));
+    expect(screen.getByText('Search Results')).toBeTruthy();
+    expect(screen.queryByText('Popular destinations')).toBeNull();
+
+    await changeDestination('');
+    expect(screen.getByText('Popular destinations')).toBeTruthy();
+    expect(screen.getByLabelText('Nha Trang, Khanh Hoa, Vietnam')).toBeTruthy();
+  });
+
+  it('keeps a popular destination selected without starting provider autocomplete, including after Back', async () => {
+    const search = jest.fn().mockResolvedValue([tokyo]);
+    await render(<CreateTripWizardScreen destinationSearchRepository={{ search }} />);
+    await press(screen.getByLabelText('Nha Trang, Khanh Hoa, Vietnam'));
+    expect(screen.getByDisplayValue('Nha Trang')).toBeTruthy();
+    expect(screen.getByLabelText('Nha Trang, Khanh Hoa, Vietnam').props.accessibilityState.selected).toBe(true);
+    await advanceTimers(501);
+    expect(search).not.toHaveBeenCalled();
+
+    await press(screen.getByText('Continue'));
+    expect(screen.getByText('Step 2 of 5')).toBeTruthy();
+    await press(screen.getByLabelText('Back'));
+    expect(screen.getByDisplayValue('Nha Trang')).toBeTruthy();
+    expect(screen.getByLabelText('Nha Trang, Khanh Hoa, Vietnam').props.accessibilityState.selected).toBe(true);
+    await advanceTimers(501);
+    expect(search).not.toHaveBeenCalled();
+
+    await changeDestination('To');
+    await advanceTimers(500);
+    expect(search).toHaveBeenCalledWith('To', expect.any(AbortSignal));
+    await changeDestination('');
+    expect(screen.getByText('Popular destinations')).toBeTruthy();
+  });
+
   it('preserves selected provider identity and query on Step 1 -> Step 2 -> Back without refetch', async () => {
     const search = jest.fn().mockResolvedValue([tokyo]); await render(<CreateTripWizardScreen destinationSearchRepository={{ search }} />);
     await changeDestination('Tokyo'); await advanceTimers(500);

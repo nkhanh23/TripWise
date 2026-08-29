@@ -211,6 +211,16 @@ export const viTranslations: Record<string, string> = {
   'planner.generationError.invalidResponse': 'Lịch trình tạo ra không hợp lệ. Vui lòng thử lại.',
   'planner.generationError.network': 'Không thể kết nối. Hãy kiểm tra mạng rồi thử lại.',
   'planner.generationError.unknown': 'Không thể tạo lịch trình. Vui lòng thử lại.',
+  'planner.destination.subtitle': 'Chọn điểm đến yêu thích hoặc nhập bất kỳ thành phố nào để khám phá.',
+  'planner.destination.searchPlaceholder': 'Tìm thành phố, ví dụ Singapore, Tokyo...',
+  'planner.destination.clear': 'Xóa điểm đến',
+  'planner.destination.popularTitle': 'Điểm đến phổ biến',
+  'planner.destination.searchResults': 'Kết quả tìm kiếm',
+  'planner.destination.searching': 'Đang tìm...',
+  'planner.destination.available': '{count} kết quả',
+  'planner.destination.minimumQuery': 'Nhập ít nhất 2 ký tự để tìm kiếm.',
+  'planner.destination.city': 'Thành phố',
+  'planner.destination.country': 'Quốc gia',
 
   // Trip Detail & Itinerary
   'tripDetail.itinerary': 'Lịch trình',

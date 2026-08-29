@@ -204,6 +204,16 @@ export const enTranslations: Record<string, string> = {
   'planner.generationError.invalidResponse': 'The generated itinerary was invalid. Please try again.',
   'planner.generationError.network': 'Unable to connect. Check your network and retry.',
   'planner.generationError.unknown': 'Unable to generate an itinerary. Please try again.',
+  'planner.destination.subtitle': 'Choose your dream destination or type any city to explore.',
+  'planner.destination.searchPlaceholder': 'Search city, e.g. Singapore, Tokyo...',
+  'planner.destination.clear': 'Clear destination',
+  'planner.destination.popularTitle': 'Popular destinations',
+  'planner.destination.searchResults': 'Search Results',
+  'planner.destination.searching': 'Searching...',
+  'planner.destination.available': '{count} available',
+  'planner.destination.minimumQuery': 'Type at least 2 characters to search.',
+  'planner.destination.city': 'City',
+  'planner.destination.country': 'Country',
 
   // Trip Detail & Itinerary
   'tripDetail.title': 'Trip Itinerary',

@@ -141,10 +141,20 @@ function candidateMatchesPlace(candidate: Candidate, context: TrustedPlaceContex
 }
 
 function candidateMatchesDestination(candidate: Candidate, destination: string): number | null {
-  const city = destination.split(',')[0]?.trim() ?? destination;
+  const [city = destination, ...context] = destination.split(',').map((part) => part.trim());
   const tokens = significantTokens(city);
   if (tokens.length === 0 || !tokens.every((token) => candidate.haystack.includes(token))) return null;
-  return 0.88;
+  const contextSegments = context
+    .map(significantTokens)
+    .filter((segment) => segment.length > 0);
+  // A destination identity that includes region/country must be corroborated by
+  // the candidate metadata for every supplied geographic segment. Otherwise a
+  // same-name city such as Paris, Texas can never stand in for Paris, France.
+  const contextMatched = contextSegments.every((segment) =>
+    segment.every((token) => candidate.haystack.includes(token))
+  );
+  if (contextSegments.length > 0 && !contextMatched) return null;
+  return contextSegments.length > 0 ? 0.9 : 0.88;
 }
 
 function providerError(status: number): WikimediaImageError {
@@ -233,7 +243,9 @@ export async function fetchDestinationCoverFromWikimedia(
   maxWidth = 800,
   fetcher: typeof fetch = fetch,
 ): Promise<WikimediaImageResult> {
-  const candidates = await candidatesFor(`${destination} city landmark skyline`, maxWidth, fetcher);
+  // Commons search treats extra terms as required. Searching the verified city
+  // identity first returns real city files instead of an empty candidate set.
+  const candidates = await candidatesFor(destination, maxWidth, fetcher);
   const matches = candidates
     .map((candidate) => ({ candidate, confidence: candidateMatchesDestination(candidate, destination) }))
     .filter((entry): entry is { candidate: Candidate; confidence: number } => entry.confidence !== null)

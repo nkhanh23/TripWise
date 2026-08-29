@@ -6,6 +6,14 @@ import type { DestinationOption } from './types';
 const successfulSearches = new WeakMap<DestinationSearchRepository, Map<string, DestinationOption[]>>();
 const maximumCachedQueries = 20;
 
+type DestinationSearchOptions = {
+  suppressInitialSearch?: boolean;
+};
+
+type QueryUpdateOptions = {
+  search?: boolean;
+};
+
 function cacheFor(repository: DestinationSearchRepository): Map<string, DestinationOption[]> {
   let cache = successfulSearches.get(repository);
   if (!cache) {
@@ -15,7 +23,11 @@ function cacheFor(repository: DestinationSearchRepository): Map<string, Destinat
   return cache;
 }
 
-export function useDestinationSearch(repository: DestinationSearchRepository, initialQuery = '') {
+export function useDestinationSearch(
+  repository: DestinationSearchRepository,
+  initialQuery = '',
+  options: DestinationSearchOptions = {},
+) {
   const [query, setQuery] = useState(initialQuery);
   const [retryNonce, setRetryNonce] = useState(0);
   const [results, setResults] = useState<DestinationOption[]>(() => cacheFor(repository).get(initialQuery.trim()) ?? []);
@@ -24,6 +36,7 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
   const abortControllerRef = useRef<AbortController | null>(null);
   const activeSequenceRef = useRef(0);
   const desiredQueryRef = useRef(initialQuery.trim());
+  const [suppressedQuery, setSuppressedQuery] = useState<string | null>(() => options.suppressInitialSearch ? initialQuery.trim() : null);
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -35,6 +48,8 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
     }
 
     if (trimmed.length < 2) return;
+
+    if (suppressedQuery === trimmed) return;
 
     if (cacheFor(repository).has(trimmed)) return;
 
@@ -75,15 +90,31 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
         abortControllerRef.current = null;
       }
     };
-  }, [query, repository, retryNonce]);
+  }, [query, repository, retryNonce, suppressedQuery]);
 
-  const updateQuery = useCallback((nextQuery: string) => {
-    if (nextQuery.trim().length < 2) {
+  const updateQuery = useCallback((nextQuery: string, updateOptions: QueryUpdateOptions = {}) => {
+    const trimmed = nextQuery.trim();
+    const shouldSearch = updateOptions.search !== false;
+    setSuppressedQuery(shouldSearch ? null : trimmed);
+
+    if (!shouldSearch) {
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
+      activeSequenceRef.current += 1;
+      desiredQueryRef.current = trimmed;
+      setResults([]);
+      setLoading(false);
+      setError(null);
+      setQuery(nextQuery);
+      return;
+    }
+
+    if (trimmed.length < 2) {
       setResults([]);
       setLoading(false);
       setError(null);
     } else {
-      const cached = cacheFor(repository).get(nextQuery.trim());
+      const cached = cacheFor(repository).get(trimmed);
       if (cached) {
         setResults(cached);
         setLoading(false);
@@ -94,5 +125,13 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
   }, [repository]);
 
   const retry = useCallback(() => setRetryNonce((value) => value + 1), []);
-  return { query, setQuery: updateQuery, results, loading, error, retry };
+  return {
+    query,
+    setQuery: updateQuery,
+    results,
+    loading,
+    error,
+    retry,
+    isSearchSuppressed: suppressedQuery === query.trim(),
+  };
 }

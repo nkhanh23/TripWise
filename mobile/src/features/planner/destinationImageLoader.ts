@@ -35,8 +35,15 @@ export async function loadDestinationImages({
       const destination = missing[next++];
       requestedIds.add(destination.id);
       try {
-        const image = await repository.getDestinationCover(destination.name, 160, signal);
+        const image = await repository.getDestinationCover(
+          destination.imageQuery ?? [destination.name, destination.formattedAddress].filter(Boolean).join(', '),
+          160,
+          signal,
+        );
         if (!signal.aborted) onResolved(destination.id, image);
+        // A safe no-match is not an in-flight request. A later user action can
+        // retry it, while the repository TTL still bounds provider work.
+        if (!image.uri) requestedIds.delete(destination.id);
       } catch {
         requestedIds.delete(destination.id);
       }
