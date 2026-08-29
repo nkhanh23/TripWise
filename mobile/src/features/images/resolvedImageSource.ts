@@ -10,7 +10,7 @@ export function getResolvedImageSource(
   uri: string,
   resolvedImage?: ResolvedImage,
 ): ImageSourcePropType {
-  return resolvedImage?.source === 'WIKIMEDIA_PLACE'
+  return resolvedImage?.source === 'WIKIMEDIA_PLACE' || resolvedImage?.source === 'DESTINATION_COVER'
     ? [{ uri, headers: wikimediaImageHeaders }]
     : { uri };
 }

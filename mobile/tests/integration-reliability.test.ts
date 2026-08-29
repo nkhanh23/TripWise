@@ -42,6 +42,27 @@ describe('integration idempotency and reliability', () => {
     await expect(pending).rejects.toMatchObject({ code: 'cancelled' });
   });
 
+  it('hard-times out an operation that ignores abort', async () => {
+    jest.useFakeTimers();
+    try {
+      let outcome = 'pending';
+      void executeWithReliability(
+        () => new Promise<void>(() => undefined),
+        { timeoutMs: 50, maximumAttempts: 1 },
+      ).then(
+        () => { outcome = 'resolved'; },
+        (error: IntegrationError) => { outcome = error.code; },
+      );
+
+      await jest.advanceTimersByTimeAsync(50);
+      await Promise.resolve();
+
+      expect(outcome).toBe('timeout');
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('keeps one bounded client attempt with margin above the Edge provider timeout', () => {
     expect(tripGenerationPolicy).toEqual({ timeoutMs: 50_000, maximumAttempts: 1 });
   });

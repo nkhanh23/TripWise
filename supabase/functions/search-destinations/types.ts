@@ -6,8 +6,9 @@ export type DestinationResult = {
   googlePlaceId: string;
   name: string;
   formattedAddress: string;
-  latitude: number;
-  longitude: number;
+  destinationType: 'CITY' | 'COUNTRY';
+  latitude?: number;
+  longitude?: number;
 };
 
 export type SearchDestinationsSuccessResponse = {

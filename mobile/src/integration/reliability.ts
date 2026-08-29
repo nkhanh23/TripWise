@@ -106,7 +106,7 @@ export async function executeWithReliability<T>(
     }, policy.timeoutMs);
 
     try {
-      return await operation(controller.signal, attempt);
+      return await raceWithAbort(operation(controller.signal, attempt), controller.signal);
     } catch (rawError) {
       if (externalSignal?.aborted) {
         throw new IntegrationError('cancelled');

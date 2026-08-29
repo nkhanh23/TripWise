@@ -22,8 +22,9 @@ function isValidDestinationResult(value: unknown): value is DestinationResult {
   return typeof result.googlePlaceId === 'string' && result.googlePlaceId.trim().length > 0
     && typeof result.name === 'string' && result.name.trim().length > 0
     && typeof result.formattedAddress === 'string'
-    && typeof result.latitude === 'number' && Number.isFinite(result.latitude) && result.latitude >= -90 && result.latitude <= 90
-    && typeof result.longitude === 'number' && Number.isFinite(result.longitude) && result.longitude >= -180 && result.longitude <= 180;
+    && (result.destinationType === 'CITY' || result.destinationType === 'COUNTRY')
+    && (result.latitude === undefined || (typeof result.latitude === 'number' && Number.isFinite(result.latitude) && result.latitude >= -90 && result.latitude <= 90))
+    && (result.longitude === undefined || (typeof result.longitude === 'number' && Number.isFinite(result.longitude) && result.longitude >= -180 && result.longitude <= 180));
 }
 
 export async function handleSearchDestinations(request: Request, dependencies: SearchDestinationsDependencies): Promise<Response> {
@@ -62,7 +63,7 @@ export async function handleSearchDestinations(request: Request, dependencies: S
 
   try {
     const results = await dependencies.search(query.trim(), request.signal);
-    const validResults = Array.isArray(results) ? results.filter(isValidDestinationResult).slice(0, 10) : [];
+    const validResults = Array.isArray(results) ? results.filter(isValidDestinationResult).slice(0, 6) : [];
     return new Response(JSON.stringify({ data: validResults }), { status: 200, headers: responseHeaders });
   } catch (error) {
     if (error instanceof SearchDestinationsError) return errorResponse(error);

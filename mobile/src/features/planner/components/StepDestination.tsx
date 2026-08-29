@@ -1,13 +1,20 @@
-import React, { memo } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useTheme } from '../../../theme';
-import { colors, spacing, typography, radius } from '../../../theme/tokens';
+import { spacing, typography, radius } from '../../../theme/tokens';
 import { AppText } from '../../../components/AppText';
 import type { DestinationOption } from '../types';
 import { useDestinationSearch } from '../destinationSearch';
+import { SupabaseWikimediaImageRepository } from '../../../integration/remote/supabaseWikimediaImageRepository';
+import { supabase } from '../../../lib/supabase/client';
+import { loadDestinationImages } from '../destinationImageLoader';
+import { getResolvedImageSource } from '../../images/resolvedImageSource';
+import { ImageAttribution } from '../../images/components/ImageAttribution';
 
+import type { DestinationCoverRepository } from '../../../integration/repositories';
 import type { DestinationSearchRepository } from '../../../integration/repositories/DestinationSearchRepository';
+import type { ResolvedImage } from '../../../integration/contracts';
 
 type Props = {
   selectedDestination: DestinationOption | null;
@@ -16,6 +23,7 @@ type Props = {
   onChangeCustomName: (name: string) => void;
   error?: string | null;
   repository: DestinationSearchRepository;
+  destinationImageRepository?: DestinationCoverRepository;
 };
 
 export const StepDestination = memo(function StepDestination({
@@ -25,9 +33,28 @@ export const StepDestination = memo(function StepDestination({
   onChangeCustomName,
   error,
   repository,
+  destinationImageRepository,
 }: Props) {
   const { colors: themeColors, effectiveTheme } = useTheme();
   const { query, setQuery, results, loading, error: searchError } = useDestinationSearch(repository, customDestinationName);
+  const defaultImageRepository = useMemo(() => new SupabaseWikimediaImageRepository(supabase), []);
+  const imageRepository = destinationImageRepository ?? defaultImageRepository;
+  const [images, setImages] = useState<Record<string, ResolvedImage>>({});
+  const imageRequestsRef = useRef(new Set<string>());
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadDestinationImages({
+      destinations: results,
+      repository: imageRepository,
+      requestedIds: imageRequestsRef.current,
+      signal: controller.signal,
+      onResolved: (destinationId, image) => {
+        setImages((current) => current[destinationId] ? current : { ...current, [destinationId]: image });
+      },
+    });
+    return () => controller.abort();
+  }, [imageRepository, results]);
 
   const handleSearchChange = (text: string) => {
     setQuery(text);
@@ -123,20 +150,19 @@ export const StepDestination = memo(function StepDestination({
                 isSelected && [styles.cardSelected, { borderColor: themeColors.brand.primary, backgroundColor: effectiveTheme === 'dark' ? 'rgba(77, 150, 255, 0.1)' : '#F3F8FF' }],
                 pressed && styles.cardPressed,
               ]}>
-              <View style={styles.cardInfo}>
-                <View style={styles.cardTitleRow}>
-                  <Text numberOfLines={1} style={[styles.cardName, { color: themeColors.text.primary }]}>
-                    {dest.name}
-                  </Text>
-                  {isSelected ? (
-                    <MaterialIcons
-                      color={themeColors.brand.primary}
-                      name="check-circle"
-                      size={18}
-                    />
-                  ) : null}
+              <View style={styles.cardRow}>
+                {dest.imageUrl || images[dest.id]?.uri ? (
+                  <Image accessibilityLabel={dest.name + ' destination image'} accessibilityRole="image" source={getResolvedImageSource(dest.imageUrl || images[dest.id].uri!, images[dest.id])} style={styles.thumbnail} />
+                ) : <View accessibilityLabel="Destination image unavailable" style={[styles.thumbnail, { backgroundColor: themeColors.background.surfaceVariant }]} />}
+                <ImageAttribution attribution={images[dest.id]?.attribution} />
+                <View style={styles.cardInfo}>
+                  <View style={styles.cardTitleRow}>
+                    <Text numberOfLines={1} style={[styles.cardName, { color: themeColors.text.primary }]}>{dest.name}</Text>
+                    {isSelected ? <MaterialIcons color={themeColors.brand.primary} name="check-circle" size={18} /> : null}
+                  </View>
+                  <Text style={[styles.cardCountry, { color: themeColors.text.secondary }]}>{dest.formattedAddress}</Text>
+                  {dest.destinationType ? <Text style={[styles.destinationType, { color: themeColors.text.muted }]}>{dest.destinationType === 'CITY' ? 'City' : 'Country'}</Text> : null}
                 </View>
-                <Text style={[styles.cardCountry, { color: themeColors.text.secondary }]}>{dest.formattedAddress}</Text>
               </View>
             </Pressable>
           );
@@ -238,10 +264,10 @@ const styles = StyleSheet.create({
     opacity: 0.88,
     transform: [{ scale: 0.98 }],
   },
-  cardInfo: {
-    gap: 2,
-    padding: spacing.sm,
-  },
+  cardRow: { alignItems: 'center', flexDirection: 'row', minHeight: 76, padding: spacing.sm },
+  thumbnail: { borderRadius: radius.control, height: 56, marginRight: spacing.sm, width: 56 },
+  cardInfo: { flex: 1, gap: 2 },
+  destinationType: { fontSize: 11, fontWeight: typography.fontWeight.semibold },
   cardTitleRow: {
     alignItems: 'center',
     flexDirection: 'row',

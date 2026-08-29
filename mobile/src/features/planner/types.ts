@@ -7,6 +7,7 @@ export type DestinationOption = {
   latitude?: number;
   longitude?: number;
   imageUrl: string;
+  destinationType?: 'CITY' | 'COUNTRY';
   tag?: string;
   popular?: boolean;
 };

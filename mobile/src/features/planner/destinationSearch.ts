@@ -18,7 +18,7 @@ function cacheFor(repository: DestinationSearchRepository): Map<string, Destinat
 export function useDestinationSearch(repository: DestinationSearchRepository, initialQuery = '') {
   const [query, setQuery] = useState(initialQuery);
   const [retryNonce, setRetryNonce] = useState(0);
-  const [results, setResults] = useState<DestinationOption[]>([]);
+  const [results, setResults] = useState<DestinationOption[]>(() => cacheFor(repository).get(initialQuery.trim()) ?? []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -34,20 +34,9 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
       abortControllerRef.current = null;
     }
 
-    if (trimmed.length < 2) {
-      setResults([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
+    if (trimmed.length < 2) return;
 
-    const cached = cacheFor(repository).get(trimmed);
-    if (cached) {
-      setResults(cached);
-      setLoading(false);
-      setError(null);
-      return;
-    }
+    if (cacheFor(repository).has(trimmed)) return;
 
     const sequence = activeSequenceRef.current;
     const timeout = setTimeout(async () => {
@@ -88,6 +77,22 @@ export function useDestinationSearch(repository: DestinationSearchRepository, in
     };
   }, [query, repository, retryNonce]);
 
+  const updateQuery = useCallback((nextQuery: string) => {
+    if (nextQuery.trim().length < 2) {
+      setResults([]);
+      setLoading(false);
+      setError(null);
+    } else {
+      const cached = cacheFor(repository).get(nextQuery.trim());
+      if (cached) {
+        setResults(cached);
+        setLoading(false);
+        setError(null);
+      }
+    }
+    setQuery(nextQuery);
+  }, [repository]);
+
   const retry = useCallback(() => setRetryNonce((value) => value + 1), []);
-  return { query, setQuery, results, loading, error, retry };
+  return { query, setQuery: updateQuery, results, loading, error, retry };
 }
