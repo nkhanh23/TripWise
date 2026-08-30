@@ -1,4 +1,4 @@
-﻿import { TouchableOpacity } from 'react-native';
+import { PlatformPressable } from '@react-navigation/elements';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -40,7 +40,7 @@ export function MainTabs() {
         tabBarShowLabel: false,
         tabBarActiveTintColor: colors.brand.primary,
         tabBarInactiveTintColor: colors.text.muted,
-        tabBarButton: (props) => <TouchableOpacity {...props} activeOpacity={0.6} />,
+        tabBarButton: (props) => <PlatformPressable {...props} pressOpacity={0.6} />,
         tabBarItemStyle: {
           paddingVertical: 2,
         },

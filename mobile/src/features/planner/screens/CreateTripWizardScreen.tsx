@@ -25,8 +25,8 @@ import type { DestinationSearchRepository } from '../../../integration/repositor
 import { StepPreferences } from '../components/StepPreferences';
 import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
-import { useTripGeneration } from '../generation';
-import { useTripPersistence } from '../persistence';
+import { AbstractTripBuildCanvas } from '../motion/AbstractTripBuildCanvas';
+import { useTripLifecycleCoordinator } from '../motion/useTripLifecycleCoordinator';
 import { initialWizardState } from '../data/mockWizardData';
 import type {
   BudgetTier,
@@ -64,8 +64,20 @@ export function CreateTripWizardScreen({
 
   const [currentStep, setCurrentStep] = useState<WizardStepNumber>(initialStep);
   const [stepError, setStepError] = useState<string | null>(null);
-  const { state: generation, generate, retry } = useTripGeneration(generationRepository);
-  const { state: persistence, save } = useTripPersistence();
+
+  const {
+    status: motionStatus,
+    frameAnim,
+    draft,
+    tripId,
+    generationError,
+    saveError,
+    submit,
+    retryGeneration,
+    retrySave,
+    cancel,
+  } = useTripLifecycleCoordinator(generationRepository);
+
   const completedPreviewRef = useRef(false);
 
   const [wizardState, setWizardState] = useState<CreateTripWizardState>(() => ({
@@ -74,11 +86,11 @@ export function CreateTripWizardScreen({
   }));
 
   useEffect(() => {
-    if (generation.status === 'success' && !completedPreviewRef.current) {
+    if (motionStatus === 'SAVE_SUCCESS' && !completedPreviewRef.current) {
       completedPreviewRef.current = true;
       onComplete?.(wizardState);
     }
-  }, [generation.status, onComplete, wizardState]);
+  }, [motionStatus, onComplete, wizardState]);
 
   // Step 1 handlers: Destination
   const handleSelectDestination = useCallback((dest: DestinationOption) => {
@@ -172,6 +184,11 @@ export function CreateTripWizardScreen({
     }
   }, [currentStep, navigation, onCancel]);
 
+  const handleCancel = useCallback(() => {
+    cancel();
+    onCancel?.();
+  }, [cancel, onCancel]);
+
   const handleNext = useCallback(() => {
     // Validation rules per step
     if (currentStep === 1) {
@@ -201,24 +218,21 @@ export function CreateTripWizardScreen({
       setCurrentStep((prev) => (prev + 1) as WizardStepNumber);
     } else {
       completedPreviewRef.current = false;
-      void generate(wizardState);
+      submit(wizardState);
     }
-  }, [currentStep, generate, wizardState, t]);
+  }, [currentStep, submit, wizardState, t]);
 
   const handleViewItinerary = useCallback(() => {
-    navigation.navigate('MainTabs');
-  }, [navigation]);
+    if (tripId) navigation.navigate('TripDetail', { tripId });
+  }, [navigation, tripId]);
 
   const handleExplorePlaces = useCallback(() => {
     navigation.navigate('MainTabs');
   }, [navigation]);
 
   const handleSaveTrip = useCallback(() => {
-    if (generation.status !== 'success') return;
-    void save(generation.preview, wizardState.tripTitle).then((tripId) => {
-      if (tripId) navigation.navigate('TripDetail', { tripId });
-    });
-  }, [generation, navigation, save, wizardState.tripTitle]);
+    // Save is now automatic via coordinator. We no longer manually trigger save.
+  }, []);
 
   // Render Step Content
   const stepContent = useMemo(() => {
@@ -292,28 +306,30 @@ export function CreateTripWizardScreen({
   ]);
 
   // Success celebration screen
-  if (generation.status === 'success') {
+  // Success celebration screen
+  if (motionStatus === 'SAVE_SUCCESS' && draft) {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background.surface, paddingTop: insets.top }]}>
         <CreateTripSuccessView
           onExplorePlaces={handleExplorePlaces}
           onSave={handleSaveTrip}
-          saveStatus={persistence.status}
+          saveStatus="success"
           onViewItinerary={handleViewItinerary}
-          preview={generation.preview}
+          preview={draft}
           state={wizardState}
         />
       </View>
     );
   }
 
-  // Simulated AI Generation Loading State
-  if (generation.status === 'generating') {
+  // Simulated AI Generation Loading State (Placeholder until visual motion)
+  if (['SUBMITTING', 'GENERATING', 'GENERATION_HOLD', 'GENERATION_SUCCESS', 'SAVING'].includes(motionStatus)) {
     return (
       <View
         accessibilityLabel={t('planner.generating')}
         accessibilityRole="progressbar"
         style={[styles.generatingContainer, { backgroundColor: colors.background.surface }]}>
+        <AbstractTripBuildCanvas colors={colors} durationDays={wizardState.durationDays} frameAnim={frameAnim} />
         <View
           style={[
             styles.generatingCircle,
@@ -323,7 +339,7 @@ export function CreateTripWizardScreen({
         </View>
         <ActivityIndicator color={colors.brand.primary} size="large" />
         <Text style={[styles.generatingTitle, { color: colors.text.primary }]}>
-          {t('planner.generatingTitle', {
+          {motionStatus === 'SAVING' ? t('planner.savingTrip') : t('planner.generatingTitle', {
             destination: wizardState.destination?.name || wizardState.customDestinationName || 'trip',
           })}
         </Text>
@@ -347,17 +363,17 @@ export function CreateTripWizardScreen({
       <WizardProgressBar
         currentStep={currentStep}
         onBack={handleBack}
-        onCancel={onCancel}
+        onCancel={handleCancel}
         totalSteps={5}
       />
 
       {/* Main Step Body */}
       <View style={styles.body}>{stepContent}</View>
 
-      {generation.status === 'error' ? (
+      {(motionStatus === 'GENERATION_ERROR' && generationError) || (motionStatus === 'SAVE_ERROR' && saveError) ? (
         <View accessibilityRole="alert" style={[styles.errorBanner, { backgroundColor: colors.background.surfaceVariant }]}>
           <Text style={[styles.errorText, { color: colors.state.error }]}>
-            {t(`planner.generationError.${generation.error.code}`)}
+            {motionStatus === 'GENERATION_ERROR' ? t(`planner.generationError.${generationError?.code}`) : t('planner.generationError.unknown')}
           </Text>
         </View>
       ) : null}
@@ -374,16 +390,16 @@ export function CreateTripWizardScreen({
         <Pressable
           accessibilityHint={
             currentStep === 5
-              ? generation.status === 'error' ? t('common.retry') : t('planner.generateItinerary')
+              ? (motionStatus === 'GENERATION_ERROR' || motionStatus === 'SAVE_ERROR') ? t('common.retry') : t('planner.generateItinerary')
               : t('common.continue')
           }
           accessibilityLabel={
             currentStep === 5
-              ? generation.status === 'error' ? t('common.retry') : t('planner.generateItinerary')
+              ? (motionStatus === 'GENERATION_ERROR' || motionStatus === 'SAVE_ERROR') ? t('common.retry') : t('planner.generateItinerary')
               : t('common.continue')
           }
           accessibilityRole="button"
-          onPress={generation.status === 'error' ? () => void retry() : handleNext}
+          onPress={motionStatus === 'GENERATION_ERROR' ? () => void retryGeneration() : (motionStatus === 'SAVE_ERROR' ? () => void retrySave() : handleNext)}
           style={({ pressed }) => [
             styles.continueButton,
             { backgroundColor: colors.brand.primary },
@@ -391,7 +407,7 @@ export function CreateTripWizardScreen({
           ]}>
           <Text style={[styles.continueButtonText, { color: colors.text.inverse }]}>
             {currentStep === 5
-              ? generation.status === 'error' ? t('common.retry') : t('planner.generateItinerary')
+              ? (motionStatus === 'GENERATION_ERROR' || motionStatus === 'SAVE_ERROR') ? t('common.retry') : t('planner.generateItinerary')
               : t('common.continue')}
           </Text>
           <MaterialIcons

@@ -3,7 +3,10 @@
 **Milestone ID:** `CREATE_TRIP_GENERATION_MOTION`
 **Task namespace:** `MOTION-T001` through `MOTION-T013`
 **Track:** Post-integration product-UI motion milestone; it does not create or extend `INT-P0` through `INT-P9`.
-**Status:** PLANNED / IMPLEMENTATION NOT STARTED
+
+# Phases: Create Trip Generation Motion
+
+Status: `ACTIVE — MOTION-T004 COMPLETE / NEXT MOTION-T005`
 **Runtime target:** Android
 
 ## 1. Purpose and scope
@@ -226,10 +229,10 @@ Use native-capable interpolation; no `setInterval`/`requestAnimationFrame` React
 
 Progress boxes are evidence-based. `[ ]` means not completed. `[x]` is allowed only after actual implementation, test, or runtime evidence exists; planning text or agent claim alone is insufficient. Preserve `MOTION-T001` through `MOTION-T013` order and do not create `INT-P10` or later integration phases.
 
-- [ ] MOTION-T001 — Validate MP4 metadata; inspect F000–F239 at 24fps; create manifest/reference spec; distinguish video motion from runtime i18n/theme; dependency decision only if necessary. No implementation.
-- [ ] MOTION-T002 — State machine, lifecycle latches, monotonic timeline, safe checkpoints, pure frame derivation, locale/theme stability.
-- [ ] MOTION-T003 — Audited abstract route/node construction.
-- [ ] MOTION-T004 — Audited abstract activity-card stagger; no exact locations.
+- [x] MOTION-T001 — Validate MP4 metadata; inspect F000–F239 at 24fps; create manifest/reference spec; distinguish video motion from runtime i18n/theme; dependency decision only if necessary. No implementation.
+- [x] MOTION-T002 — State machine, lifecycle latches, monotonic timeline, safe checkpoints, pure frame derivation, locale/theme stability.
+- [x] MOTION-T003 — Audited abstract route/node construction.
+- [x] MOTION-T004 — Audited abstract activity-card stagger; no exact locations.
 - [ ] MOTION-T005 — Audited bounded duration/day-indicator reveal; no fixed Day 1/2/3 contract.
 - [ ] MOTION-T006 — Generation hold/early-late synchronization.
 - [ ] MOTION-T007 — Saving hold and persistence-only retry.
@@ -289,8 +292,8 @@ Acceptance requires: canonical MP4 unchanged; actual 1280×720/24fps/240-frame/1
 
 Acceptance/runtime progress boxes follow the same evidence rule: leave unchecked until backed by actual audit, implementation, automated test, or Android runtime evidence.
 
-- [ ] Canonical MP4 audited
-- [ ] FRAME_MANIFEST completed
+- [x] Canonical MP4 audited
+- [x] FRAME_MANIFEST completed
 - [ ] EN verified
 - [ ] VI verified
 - [ ] Light verified
@@ -301,4 +304,4 @@ Acceptance/runtime progress boxes follow the same evidence rule: leave unchecked
 - [ ] Full quality gates completed
 Stop and report if video metadata changes, canonical MP4/current React Native UI conflict needs product decision, a dependency lacks approval, runtime would autoplay/rasterize/hardcode the MP4, exact generated places or fake data are needed, locale/theme cannot preserve in-flight state, or Android capture is unavailable. Use `BLOCKED`/`NOT_PROVEN`, never false PASS.
 
-For this branch-baseline task, stop after committing this document and the unchanged canonical MP4. Do not begin `MOTION-T001`, implement animation, modify production source/tests/dependencies, deploy, or push.
+For this implementation phase, proceed task by task. Stop and report if blockers arise. Do not modify production source/tests/dependencies until explicitly authorized by the current active task.
