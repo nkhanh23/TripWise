@@ -1,4 +1,4 @@
-import { generatedTripJsonSchema, validateGeneratedTrip } from './contract.ts';
+import { buildGeneratedTripJsonSchema, validateGeneratedTrip } from './contract.ts';
 import { GenerateTripError } from './errors.ts';
 import { buildTripPrompt, tripPlannerSystemInstruction } from './prompt.ts';
 import type { GenerateTripRequest, GeneratedTrip } from './types.ts';
@@ -90,7 +90,7 @@ export async function generateTripWithGemini(request: GenerateTripRequest): Prom
         store: false,
         system_instruction: tripPlannerSystemInstruction,
         input: buildTripPrompt(request),
-        response_format: { type: 'text', mime_type: 'application/json', schema: generatedTripJsonSchema },
+        response_format: { type: 'text', mime_type: 'application/json', schema: buildGeneratedTripJsonSchema(request) },
       }),
     });
 

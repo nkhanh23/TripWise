@@ -211,17 +211,19 @@ export const generatedTripJsonSchema = {
   properties: {
     title: { type: 'string', description: 'Concise Vietnamese trip title.' },
     destination: { type: 'string', description: 'Destination exactly as provided in the request.' },
-    startDate: { type: 'string', description: 'Trip start date in YYYY-MM-DD format.' },
-    endDate: { type: 'string', description: 'Trip end date in YYYY-MM-DD format.' },
+    startDate: { type: 'string', format: 'date', description: 'Trip start date in YYYY-MM-DD format.' },
+    endDate: { type: 'string', format: 'date', description: 'Trip end date in YYYY-MM-DD format.' },
     summary: { type: 'string', description: 'Short Vietnamese overview of the itinerary.' },
     days: {
       type: 'array',
+      minItems: 1,
+      maxItems: 14,
       items: {
         type: 'object',
         additionalProperties: false,
         properties: {
-          dayNumber: { type: 'integer' },
-          date: { type: 'string', description: 'Calendar date in YYYY-MM-DD format.' },
+          dayNumber: { type: 'integer', minimum: 1 },
+          date: { type: 'string', format: 'date', description: 'Calendar date in YYYY-MM-DD format.' },
           summary: { type: 'string' },
           items: {
             type: 'array',
@@ -231,13 +233,13 @@ export const generatedTripJsonSchema = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                position: { type: 'integer' },
+                position: { type: 'integer', minimum: 1 },
                 placeName: { type: 'string', description: 'AI-suggested place name; not verified place metadata.' },
                 placeQuery: { type: 'string', description: 'Search phrase for later Google Places resolution.' },
                 startTime: { type: 'string', description: 'Approximate local time in HH:MM format.' },
                 endTime: { type: 'string', description: 'Approximate local time in HH:MM format.' },
                 note: { type: 'string' },
-                estimatedCost: { type: 'number', minimum: 0, description: 'Non-authoritative estimated cost.' },
+                estimatedCost: { type: 'number', minimum: 0, maximum: 1_000_000_000, description: 'Non-authoritative estimated cost.' },
               },
               required: ['position', 'placeName'],
             },
@@ -249,3 +251,22 @@ export const generatedTripJsonSchema = {
   },
   required: ['title', 'destination', 'startDate', 'endDate', 'days'],
 } as const;
+
+export function buildGeneratedTripJsonSchema(request: GenerateTripRequest) {
+  const startDate = parseIsoDate(request.startDate);
+  const endDate = parseIsoDate(request.endDate);
+  const duration = (startDate && endDate) ? dateDifferenceInDays(startDate, endDate) : 1;
+  const bound = Math.max(1, Math.min(duration, maximumTripDays));
+
+  return {
+    ...generatedTripJsonSchema,
+    properties: {
+      ...generatedTripJsonSchema.properties,
+      days: {
+        ...generatedTripJsonSchema.properties.days,
+        minItems: bound,
+        maxItems: bound,
+      },
+    },
+  } as const;
+}
