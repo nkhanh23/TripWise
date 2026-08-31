@@ -27,9 +27,17 @@ function easeInOutInterval(frameAnim: Animated.Value) {
   });
 }
 
-/** Keeps T003/T004 visible until the audited T005 transition replaces them with abstract day indicators. */
+/** Keeps the route continuous while F110–F151 replaces activity cards with staggered day cards. */
 export function AbstractTripBuildCanvas({ colors, durationDays, frameAnim }: Props) {
   const transitionProgress = easeInOutInterval(frameAnim);
+  const routeTranslateY = transitionProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -ABSTRACT_CANVAS_SCROLL_DISTANCE * 0.35],
+  });
+  const routeOpacity = transitionProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.42],
+  });
   const activityTranslateY = transitionProgress.interpolate({
     inputRange: [0, 1],
     outputRange: [0, -ABSTRACT_CANVAS_SCROLL_DISTANCE],
@@ -45,8 +53,10 @@ export function AbstractTripBuildCanvas({ colors, durationDays, frameAnim }: Pro
       importantForAccessibility="no-hide-descendants"
       pointerEvents="none"
       style={styles.canvas}>
-      <Animated.View style={[StyleSheet.absoluteFill, { opacity: activityOpacity, transform: [{ translateY: activityTranslateY }] }]}>
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: routeOpacity, transform: [{ translateY: routeTranslateY }] }]}>
         <AbstractRouteNodes colors={colors} frameAnim={frameAnim} />
+      </Animated.View>
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: activityOpacity, transform: [{ translateY: activityTranslateY }] }]}>
         <AbstractActivityCards colors={colors} frameAnim={frameAnim} />
       </Animated.View>
       <AbstractDayIndicators colors={colors} durationDays={durationDays} frameAnim={frameAnim} />
@@ -56,9 +66,8 @@ export function AbstractTripBuildCanvas({ colors, durationDays, frameAnim }: Pro
 
 const styles = StyleSheet.create({
   canvas: {
-    height: 128,
-    marginBottom: 8,
+    height: 340,
     overflow: 'hidden',
-    width: 152,
+    width: 320,
   },
 });

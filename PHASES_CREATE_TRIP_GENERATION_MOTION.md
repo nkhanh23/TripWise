@@ -6,7 +6,7 @@
 
 # Phases: Create Trip Generation Motion
 
-Status: `ACTIVE — MOTION-T004 COMPLETE / NEXT MOTION-T005`
+Status: `ACTIVE — MOTION-T006 COMPLETE / NEXT MOTION-T007`
 **Runtime target:** Android
 
 ## 1. Purpose and scope
@@ -233,8 +233,8 @@ Progress boxes are evidence-based. `[ ]` means not completed. `[x]` is allowed o
 - [x] MOTION-T002 — State machine, lifecycle latches, monotonic timeline, safe checkpoints, pure frame derivation, locale/theme stability.
 - [x] MOTION-T003 — Audited abstract route/node construction.
 - [x] MOTION-T004 — Audited abstract activity-card stagger; no exact locations.
-- [ ] MOTION-T005 — Audited bounded duration/day-indicator reveal; no fixed Day 1/2/3 contract.
-- [ ] MOTION-T006 — Generation hold/early-late synchronization.
+- [x] MOTION-T005 — Audited bounded duration/day-indicator reveal; no fixed Day 1/2/3 contract.
+- [x] MOTION-T006 — Generation hold/early-late synchronization.
 - [ ] MOTION-T007 — Saving hold and persistence-only retry.
 - [ ] MOTION-T008 — Persistence-confirmed localized success and Trip Detail CTA.
 - [ ] MOTION-T009 — Localized generation/save errors and differentiated retries.

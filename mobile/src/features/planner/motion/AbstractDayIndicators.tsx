@@ -22,7 +22,7 @@ function easeOutInterval(frameAnim: Animated.Value, start: number, end: number) 
   });
 }
 
-/** T005 uses duration only as a bounded density signal; it never displays itinerary data. */
+/** T005 uses duration only as a bounded density signal; it never renders itinerary data. */
 export function AbstractDayIndicators({ colors, durationDays, frameAnim }: Props) {
   const indicatorCount = getBoundedDayIndicatorCount(durationDays);
 
@@ -52,8 +52,10 @@ export function AbstractDayIndicators({ colors, durationDays, frameAnim }: Props
               },
             ]}>
             <View style={[styles.rail, { backgroundColor: colors.brand.primary }]} />
-            <View style={[styles.primaryMark, { backgroundColor: colors.text.secondary }]} />
-            <View style={[styles.secondaryMark, { backgroundColor: colors.text.muted }]} />
+            <View style={styles.copyBlock}>
+              <View style={[styles.primaryMark, { backgroundColor: colors.text.secondary }]} />
+              <View style={[styles.secondaryMark, { backgroundColor: colors.text.muted }]} />
+            </View>
           </Animated.View>
         );
       })}
@@ -62,36 +64,39 @@ export function AbstractDayIndicators({ colors, durationDays, frameAnim }: Props
 }
 
 const INDICATOR_POSITIONS = [
-  { left: 18, top: 26 },
-  { left: 18, top: 57 },
-  { left: 18, top: 88 },
+  { left: 18, top: 54 },
+  { left: 92, top: 150 },
+  { left: 178, top: 246 },
 ] as const;
 
 const styles = StyleSheet.create({
+  copyBlock: {
+    gap: 7,
+  },
   indicator: {
     alignItems: 'center',
-    borderRadius: 9,
+    borderRadius: 14,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 6,
-    height: 24,
-    paddingHorizontal: 8,
+    gap: 10,
+    height: 62,
+    paddingHorizontal: 12,
     position: 'absolute',
-    width: 116,
+    width: 124,
   },
   primaryMark: {
     borderRadius: 2,
-    height: 4,
-    width: 42,
+    height: 5,
+    width: 56,
   },
   rail: {
-    borderRadius: 4,
-    height: 8,
-    width: 8,
+    borderRadius: 11,
+    height: 22,
+    width: 22,
   },
   secondaryMark: {
     borderRadius: 2,
     height: 4,
-    width: 24,
+    width: 36,
   },
 });

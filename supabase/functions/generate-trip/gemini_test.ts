@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   buildGeminiHeaders,
   defaultGeminiTimeoutMilliseconds,
+  parseGeneratedTripJson,
   readInteractionOutputText,
   resolveGeminiTimeoutMilliseconds,
 } from './gemini.ts';
@@ -32,6 +33,13 @@ Deno.test('reads structured text from the raw REST steps response', () => {
 
 Deno.test('keeps compatibility with the SDK convenience response shape', () => {
   assert.equal(readInteractionOutputText({ output_text: '{"ok":true}' }), '{"ok":true}');
+});
+
+Deno.test('parses JSON wrapped in outer markdown fences after trimming whitespace', () => {
+  assert.deepEqual(
+    parseGeneratedTripJson('  \n```json\n{ "title": "Nha Trang" }\n```\n  '),
+    { title: 'Nha Trang' },
+  );
 });
 
 Deno.test('rejects responses without model text content', () => {

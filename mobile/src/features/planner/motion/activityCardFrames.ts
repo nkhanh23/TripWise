@@ -15,8 +15,8 @@ const ACTIVITY_CARD_REVEALS: readonly ActivityCardReveal[] = [
   { start: 85, end: 95, direction: 'right', translatesUp: false },
 ];
 
-export const ABSTRACT_ACTIVITY_CARD_OFFSET_X = 36;
-export const ABSTRACT_ACTIVITY_CARD_OFFSET_Y = 12;
+export const ABSTRACT_ACTIVITY_CARD_OFFSET_X = 48;
+export const ABSTRACT_ACTIVITY_CARD_OFFSET_Y = 18;
 
 export function getActivityCardProgress(frame: number, cardIndex: number): number {
   const card = ACTIVITY_CARD_REVEALS[cardIndex];

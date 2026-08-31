@@ -9,8 +9,8 @@ const DAY_INDICATOR_REVEALS = [
 export const DAY_INDICATOR_TRANSITION_START = 110;
 export const DAY_INDICATOR_TRANSITION_END = 151;
 export const MAX_ABSTRACT_DAY_INDICATORS = DAY_INDICATOR_REVEALS.length;
-export const ABSTRACT_CANVAS_SCROLL_DISTANCE = 40;
-export const ABSTRACT_DAY_INDICATOR_OFFSET_Y = 12;
+export const ABSTRACT_CANVAS_SCROLL_DISTANCE = 96;
+export const ABSTRACT_DAY_INDICATOR_OFFSET_Y = 18;
 
 export function getBoundedDayIndicatorCount(durationDays: number): number {
   if (!Number.isFinite(durationDays) || durationDays < 1) return 0;
@@ -23,7 +23,8 @@ export function getDayTransitionProgress(frame: number): number {
 }
 
 export function getActivityCanvasTranslateY(frame: number): number {
-  return -ABSTRACT_CANVAS_SCROLL_DISTANCE * getDayTransitionProgress(frame);
+  const translateY = -ABSTRACT_CANVAS_SCROLL_DISTANCE * getDayTransitionProgress(frame);
+  return translateY === 0 ? 0 : translateY;
 }
 
 export function getDayIndicatorProgress(frame: number, indicatorIndex: number, durationDays: number): number {

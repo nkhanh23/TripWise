@@ -25,13 +25,14 @@ This reference summarizes the motion extracted from `video_animation/_ _title_Tr
 * **FINAL_INTERACTIVE_HOLD** (F210-F239)
 
 ## Key Visual Anchors & Reveal Order
-1. Text "Tailoring your adventure..." holds steady.
+1. The observed Stage-0 English glyph "Understanding your travel style..." holds steady. It is reference-only; runtime uses localized semantic generation copy.
 2. Route line extends monotonically downwards.
 3. Cards and nodes appear sequentially (Card 1 -> Card 2 -> Card 3), fading in and translating upwards from alternating sides.
 4. Entire list scrolls upwards when space is exhausted, transitioning to Day cards.
-5. Bottom text changes to "Saving your trip...".
-6. Success state replaces the entire generation canvas (Text changes, background fades, large success card scales in).
-7. Call to Action (CTA) button reveals last.
+5. During F110–F120, the bottom sheet changes from a generation-understanding semantic state to an itinerary-building semantic state; localized runtime copy is independent of the English reference glyphs.
+6. Bottom text changes to "Saving your trip..." only after F152.
+7. Success state replaces the entire generation canvas (Text changes, background fades, large success card scales in).
+8. Call to Action (CTA) button reveals last.
 
 ## Safe Lifecycle Boundaries
 

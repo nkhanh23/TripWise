@@ -50,6 +50,12 @@ export function readInteractionOutputText(interaction: GeminiInteractionResponse
   return null;
 }
 
+export function parseGeneratedTripJson(outputText: string): unknown {
+  const trimmedOutput = outputText.trim();
+  const fencedJson = /^```(?:json)?[\t ]*\r?\n([\s\S]*?)\r?\n```$/i.exec(trimmedOutput);
+  return JSON.parse(fencedJson?.[1].trim() ?? trimmedOutput);
+}
+
 export function buildGeminiHeaders(apiKey: string): Record<string, string> {
   return { 'content-type': 'application/json', 'x-goog-api-key': apiKey };
 }
@@ -104,13 +110,17 @@ export async function generateTripWithGemini(request: GenerateTripRequest): Prom
 
     let parsed: unknown;
     try {
-      parsed = JSON.parse(outputText);
+      parsed = parseGeneratedTripJson(outputText);
     } catch {
       throw new GenerateTripError('AI_INVALID_RESPONSE', 'AI response was not valid JSON.', 502);
     }
 
     const validated = validateGeneratedTrip(parsed, request);
     if (!validated.ok) {
+      console.warn('[generate-trip] Gemini itinerary contract rejected', {
+        category: 'invalid_itinerary_contract',
+        diagnostic: validated.diagnostic ?? 'trip_metadata_or_shape',
+      });
       throw new GenerateTripError('AI_INVALID_RESPONSE', validated.message, 502);
     }
     return validated.value;

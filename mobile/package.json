@@ -44,7 +44,8 @@
     "preset": "jest-expo",
     "testMatch": [
       "<rootDir>/tests/**/*.test.ts",
-      "<rootDir>/tests/**/*.test.tsx"
+      "<rootDir>/tests/**/*.test.tsx",
+      "<rootDir>/src/features/planner/motion/__tests__/**/*.test.ts"
     ]
   },
   "private": true

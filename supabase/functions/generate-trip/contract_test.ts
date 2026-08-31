@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { validateGenerateTripRequest, validateGeneratedTrip } from './contract.ts';
+import { normalizeTripPayload, validateGenerateTripRequest, validateGeneratedTrip } from './contract.ts';
 import type { GenerateTripRequest } from './types.ts';
 
 const request: GenerateTripRequest = {
@@ -34,6 +34,59 @@ Deno.test('validates the complete structured itinerary', () => {
     ],
   }, request);
   assert.equal(result.ok, true);
+});
+
+Deno.test('normalizes blank optional AI fields before validating the itinerary', () => {
+  const result = validateGeneratedTrip({
+    title: 'Hai ngày khám phá Nha Trang',
+    destination: 'Nha Trang',
+    startDate: '2026-09-01',
+    endDate: '2026-09-02',
+    summary: '   ',
+    days: [
+      {
+        dayNumber: 1, date: '2026-09-01', summary: '\t', items: [
+          { position: 1, placeName: 'Bãi biển Nha Trang', placeQuery: ' ', note: '\n', startTime: '  ', endTime: '\t' },
+        ],
+      },
+      { dayNumber: 2, date: '2026-09-02', items: [{ position: 1, placeName: 'Chợ Đầm' }] },
+    ],
+  }, request);
+
+  assert.equal(result.ok, true);
+  if (result.ok) {
+    assert.deepEqual(result.value, normalizeTripPayload(result.value));
+    assert.equal('summary' in result.value, false);
+    assert.equal('summary' in result.value.days[0], false);
+    assert.deepEqual(result.value.days[0].items[0], { position: 1, placeName: 'Bãi biển Nha Trang' });
+  }
+});
+
+Deno.test('rejects non-empty invalid optional times after normalization', () => {
+  const result = validateGeneratedTrip({
+    title: 'Hai ngày khám phá Nha Trang', destination: 'Nha Trang', startDate: '2026-09-01', endDate: '2026-09-02',
+    days: [
+      { dayNumber: 1, date: '2026-09-01', items: [{ position: 1, placeName: 'Bãi biển Nha Trang', startTime: '9AM' }] },
+      { dayNumber: 2, date: '2026-09-02', items: [{ position: 1, placeName: 'Chợ Đầm' }] },
+    ],
+  }, request);
+  assert.equal(result.ok, false);
+});
+
+Deno.test('reports a sanitized daily-itinerary diagnostic without logging generated values', () => {
+  const result = validateGeneratedTrip({
+    title: 'Hai ngày khám phá Nha Trang', destination: 'Nha Trang', startDate: '2026-09-01', endDate: '2026-09-02',
+    days: [
+      { dayNumber: 1, date: '2026-09-01', items: [{ position: 1, placeName: 'Bãi biển Nha Trang', startTime: '9AM' }] },
+      { dayNumber: 2, date: '2026-09-02', items: [{ position: 1, placeName: 'Chợ Đầm' }] },
+    ],
+  }, request);
+  assert.equal(result.ok, false);
+  if (!result.ok) {
+    assert.equal(result.message, 'AI response contains an invalid daily itinerary.');
+    assert.equal(result.diagnostic, 'days[0].items[0].startTime must use HH:MM');
+    assert.equal(result.diagnostic.includes('9AM'), false);
+  }
 });
 
 Deno.test('normalizes AI ordering and trip metadata from the trusted request', () => {

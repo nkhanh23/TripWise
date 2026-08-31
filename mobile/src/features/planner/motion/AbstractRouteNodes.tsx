@@ -3,7 +3,9 @@ import { Animated, StyleSheet, View } from 'react-native';
 import type { ThemePalette } from '../../../theme/types';
 import {
   ABSTRACT_ROUTE_NODE_FRAMES,
-  ABSTRACT_ROUTE_SEGMENT_HEIGHT,
+  ABSTRACT_ROUTE_LINE_WIDTH,
+  getRouteNodeLayout,
+  getRouteSegmentGeometry,
 } from './routeNodeFrames';
 
 type Props = {
@@ -19,10 +21,7 @@ function interval(frameAnim: Animated.Value, start: number, end: number) {
   });
 }
 
-/**
- * T003's abstract route is intentionally data-free. It visualizes audited
- * route/node roles only; cards, days, and generated place details belong later.
- */
+/** T003 route geometry is abstract, continuous, and deliberately data-free. */
 export function AbstractRouteNodes({ colors, frameAnim }: Props) {
   return (
     <View
@@ -31,24 +30,31 @@ export function AbstractRouteNodes({ colors, frameAnim }: Props) {
       pointerEvents="none"
       style={styles.canvas}>
       {ABSTRACT_ROUTE_NODE_FRAMES.routeSegments.map((segment, index) => {
+        const geometry = getRouteSegmentGeometry(index);
+        if (!geometry) return null;
         const progress = interval(frameAnim, segment.start, segment.end);
         const translateY = progress.interpolate({
           inputRange: [0, 1],
-          outputRange: [-ABSTRACT_ROUTE_SEGMENT_HEIGHT, 0],
+          outputRange: [-geometry.length, 0],
         });
         return (
           <Animated.View
             key={'route-segment-' + segment.start}
             style={[
               styles.routeSegmentWindow,
-              ROUTE_SEGMENT_POSITIONS[index],
-              { transform: [{ rotate: '42deg' }] },
+              {
+                height: geometry.length,
+                left: geometry.left,
+                top: geometry.top,
+                transform: [{ rotate: `${geometry.rotationDegrees}deg` }],
+              },
             ]}>
             <Animated.View
               style={[
                 styles.routeSegmentFill,
                 {
                   backgroundColor: colors.brand.primary,
+                  height: geometry.length,
                   transform: [{ translateY }],
                 },
               ]}
@@ -57,13 +63,15 @@ export function AbstractRouteNodes({ colors, frameAnim }: Props) {
         );
       })}
       {ABSTRACT_ROUTE_NODE_FRAMES.nodes.map((node, index) => {
+        const layout = getRouteNodeLayout(index);
+        if (!layout) return null;
         const progress = interval(frameAnim, node.start, node.end);
         return (
           <Animated.View
             key={'route-node-' + node.start}
             style={[
               styles.node,
-              NODE_POSITIONS[index],
+              layout,
               {
                 backgroundColor: colors.background.surface,
                 borderColor: colors.brand.primary,
@@ -78,23 +86,10 @@ export function AbstractRouteNodes({ colors, frameAnim }: Props) {
   );
 }
 
-const ROUTE_SEGMENT_POSITIONS = [
-  { left: 52, top: 8 },
-  { left: 88, top: 47 },
-  { left: 52, top: 86 },
-] as const;
-
-const NODE_POSITIONS = [
-  { left: 44, top: 3 },
-  { left: 80, top: 42 },
-  { left: 44, top: 81 },
-] as const;
-
 const styles = StyleSheet.create({
   canvas: {
-    height: 128,
-    marginBottom: 8,
-    width: 152,
+    height: 340,
+    width: 320,
   },
   node: {
     borderRadius: 10,
@@ -105,13 +100,11 @@ const styles = StyleSheet.create({
   },
   routeSegmentFill: {
     borderRadius: 2,
-    height: ABSTRACT_ROUTE_SEGMENT_HEIGHT,
-    width: 3,
+    width: ABSTRACT_ROUTE_LINE_WIDTH,
   },
   routeSegmentWindow: {
-    height: ABSTRACT_ROUTE_SEGMENT_HEIGHT,
     overflow: 'hidden',
     position: 'absolute',
-    width: 3,
+    width: ABSTRACT_ROUTE_LINE_WIDTH,
   },
 });

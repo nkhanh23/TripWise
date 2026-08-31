@@ -93,28 +93,37 @@ describe('useTripLifecycleCoordinator MOTION-T002', () => {
     expect(result.current.status).toBe('GENERATION_ERROR');
     expect(save).not.toHaveBeenCalled();
   });
-  it('latches an early draft and starts one persistence at F152 with that exact draft', async () => {
+  it('T006 latches an early result without leaving generation before F151', async () => {
     generate.mockResolvedValue(preview);
     save.mockReturnValue(new Promise(() => undefined));
     const { result } = await render();
     await act(() => result.current.submit(wizard));
     await act(async () => undefined);
+    expect(result.current.status).toBe('GENERATING');
     expect(save).not.toHaveBeenCalled();
+    expect(animations).toHaveLength(1);
     expect(await completeNext()).toBe(151);
     expect(await completeNext()).toBe(152);
     expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenLastCalledWith(preview, 'Title');
   });
 
-  it('latches a slow F151 result instead of reading stale rendered draft', async () => {
+  it('T006 holds at F151, then accepts a result there once without replaying the timeline', async () => {
     generate.mockReturnValue(new Promise(() => undefined));
     save.mockReturnValue(new Promise(() => undefined));
     const { result, rerender } = await render();
     await act(() => result.current.submit(wizard));
-    await completeNext();
+    expect(await completeNext()).toBe(LIFECYCLE_BOUNDARIES.GENERATION_LATCH);
+    expect(result.current.status).toBe('GENERATION_HOLD');
+    expect(animations).toHaveLength(0);
+
     await act(() => { genState = { status: 'success', preview, error: null }; });
     await rerender(undefined as never);
-    expect(await completeNext()).toBe(152);
+    await act(() => { genState = { status: 'success', preview, error: null }; });
+    await rerender(undefined as never);
+    expect(animations.map((animation) => animation.toValue)).toEqual([LIFECYCLE_BOUNDARIES.PERSISTENCE_ENTRY]);
+    expect(await completeNext()).toBe(LIFECYCLE_BOUNDARIES.PERSISTENCE_ENTRY);
+    expect(save).toHaveBeenCalledTimes(1);
     expect(save).toHaveBeenCalledWith(preview, 'Title');
   });
 
@@ -172,6 +181,21 @@ describe('useTripLifecycleCoordinator MOTION-T002', () => {
     await act(() => staleF151?.complete());
     expect(result.current.status).toBe('GENERATING');
     expect(save).not.toHaveBeenCalled();
+  });
+  it('T006 ignores a cancelled attempt error and its stale F151 callback', async () => {
+    generate.mockReturnValue(new Promise(() => undefined));
+    const { result, rerender } = await render();
+    await act(() => result.current.submit(wizard));
+    const staleF151 = animations.shift();
+
+    await act(() => result.current.cancel());
+    await act(() => { genState = { status: 'error', preview: null, error: new Error('cancelled attempt') }; });
+    await rerender(undefined as never);
+    await act(() => staleF151?.complete());
+
+    expect(result.current.status).toBe('IDLE');
+    expect(save).not.toHaveBeenCalled();
+    expect(animations).toHaveLength(0);
   });
   it('exposes success only after real tripId and F177, never at F176', async () => {
     const saveResult = deferred<string>();

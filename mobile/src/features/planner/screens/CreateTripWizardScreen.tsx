@@ -26,6 +26,7 @@ import { StepPreferences } from '../components/StepPreferences';
 import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
 import { AbstractTripBuildCanvas } from '../motion/AbstractTripBuildCanvas';
+import { CreateTripGenerationPresentation } from '../motion/CreateTripGenerationPresentation';
 import { useTripLifecycleCoordinator } from '../motion/useTripLifecycleCoordinator';
 import { initialWizardState } from '../data/mockWizardData';
 import type {
@@ -322,8 +323,20 @@ export function CreateTripWizardScreen({
     );
   }
 
-  // Simulated AI Generation Loading State (Placeholder until visual motion)
-  if (['SUBMITTING', 'GENERATING', 'GENERATION_HOLD', 'GENERATION_SUCCESS', 'SAVING'].includes(motionStatus)) {
+  // F000–F151 only: the composition is visual and frame-driven; the coordinator owns all effects.
+  if (['SUBMITTING', 'GENERATING', 'GENERATION_HOLD', 'GENERATION_SUCCESS'].includes(motionStatus)) {
+    return (
+      <CreateTripGenerationPresentation
+        colors={colors}
+        destination={wizardState.destination?.name || wizardState.customDestinationName}
+        durationDays={wizardState.durationDays}
+        frameAnim={frameAnim}
+      />
+    );
+  }
+
+  // Persistence visuals begin at F152 and remain outside the corrective T003–T006 scope.
+  if (motionStatus === 'SAVING') {
     return (
       <View
         accessibilityLabel={t('planner.generating')}

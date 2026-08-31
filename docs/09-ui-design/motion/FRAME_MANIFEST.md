@@ -14,7 +14,7 @@ This manifest describes the deterministic frame behavior for the canonical MP4 (
 ### Stage 0: `IDLE / INITIAL` (F000 – F023)
 * **Timecode**: 0.0s – 0.958s
 * **Lifecycle Interpretation**: Initial submission boundary. `SUBMITTING` / `GENERATING` starts.
-* **Element - Text**: "Tailoring your adventure..." (opacity = 1.0)
+* **Element - Text**: Observed reference glyph reads "Understanding your travel style..." (opacity = 1.0). This records MP4 observation only; runtime uses a localized semantic generation-status key, not the English literal.
 * **Element - Route Line**: Invisible (progress = 0%)
 * **Element - Cards**: Invisible (opacity = 0, translated down/hidden)
 
@@ -61,7 +61,8 @@ This manifest describes the deterministic frame behavior for the canonical MP4 (
 * **Timecode**: 4.583s – 6.291s
 * **Lifecycle Interpretation**: `GENERATING` loop continuation.
 * **Element - Canvas**: Entire route/card container translates upwards (`ease-in-out`).
-* **Element - Day Cards**: Activity/route presentation transitions to Day 1, Day 2, Day 3 cards. Cards fade in and translate upwards as the route line extends.
+* **Element - Day Cards**: Activity/route presentation transitions to bounded abstract day cards. Cards fade in and translate upwards as the route line extends.
+* **Element - Bottom Sheet**: The semantic generation-understanding slot crossfades/translates into the itinerary-building slot during F110–F120; itinerary-building then holds through F151. Runtime content uses localized keys, not reference English.
 
 ### Stage 8: `TRANSITION_TO_SAVING` (F152 – F160)
 * **Timecode**: 6.333s – 6.666s
@@ -98,7 +99,7 @@ This manifest describes the deterministic frame behavior for the canonical MP4 (
 
 ### Theme & Localization
 * **Semantic Theme Roles**: Canvas (surface), Route (accent/border), Cards (surface/border), Text (primary/secondary). Do not hardcode MP4 hex colors. Follow existing Light/Dark/System theme context.
-* **Localization**: Text values like "Tailoring your adventure..." and "Your trip is ready!" must map to i18n keys. Motion constraints (widths) must support variable lengths (EN/VI).
+* **Localization**: The observed Stage-0 wording ("Understanding your travel style...") and success wording are reference-only; runtime content must map to i18n keys. Motion constraints (widths) must support variable lengths (EN/VI).
 
 ### Reduced Motion
 * **Rule**: If reduced motion is enabled, replace translational motion with simple opacity fades, and bypass the scrolling loop (jump to static holds).

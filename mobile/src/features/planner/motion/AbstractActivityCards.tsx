@@ -21,10 +21,7 @@ function easedInterval(frameAnim: Animated.Value, start: number, end: number) {
   });
 }
 
-/**
- * T004 cards are semantic geometric placeholders only. They intentionally
- * contain no places, labels, coordinates, ratings, or provider metadata.
- */
+/** T004 cards are abstract hierarchy markers; no places, labels, or provider data. */
 export function AbstractActivityCards({ colors, frameAnim }: Props) {
   return (
     <View
@@ -56,8 +53,10 @@ export function AbstractActivityCards({ colors, frameAnim }: Props) {
               },
             ]}>
             <View style={[styles.accent, { backgroundColor: colors.brand.primary }]} />
-            <View style={[styles.primaryLine, { backgroundColor: colors.text.secondary }]} />
-            <View style={[styles.secondaryLine, { backgroundColor: colors.text.muted }]} />
+            <View style={styles.copyBlock}>
+              <View style={[styles.primaryLine, { backgroundColor: colors.text.secondary }]} />
+              <View style={[styles.secondaryLine, { backgroundColor: colors.text.muted }]} />
+            </View>
           </Animated.View>
         );
       })}
@@ -66,36 +65,39 @@ export function AbstractActivityCards({ colors, frameAnim }: Props) {
 }
 
 const CARD_POSITIONS = [
-  { left: 64, top: 10 },
-  { left: 12, top: 50 },
-  { left: 64, top: 90 },
+  { left: 176, top: 46 },
+  { left: 10, top: 138 },
+  { left: 176, top: 232 },
 ] as const;
 
 const styles = StyleSheet.create({
   accent: {
-    borderRadius: 4,
-    height: 8,
-    width: 8,
+    borderRadius: 12,
+    height: 24,
+    width: 24,
   },
   card: {
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 14,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 5,
-    height: 26,
-    paddingHorizontal: 7,
+    gap: 10,
+    height: 64,
+    paddingHorizontal: 12,
     position: 'absolute',
-    width: 76,
+    width: 134,
+  },
+  copyBlock: {
+    gap: 8,
   },
   primaryLine: {
     borderRadius: 2,
-    height: 4,
-    width: 27,
+    height: 5,
+    width: 62,
   },
   secondaryLine: {
     borderRadius: 2,
     height: 4,
-    width: 14,
+    width: 42,
   },
 });
