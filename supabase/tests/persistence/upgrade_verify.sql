@@ -25,6 +25,53 @@ begin
     raise exception 'Coordinate-pair invariant is missing after upgrade.';
   end if;
 
+  if not exists (
+    select 1
+    from public.trips as trip
+    join public.itinerary_days as day on day.trip_id = trip.id
+    join public.itinerary_items as item on item.itinerary_day_id = day.id
+    where trip.id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+      and trip.workspace_revision = 1
+      and item.item_kind = 'place'
+      and item.flexibility = 'fixed'
+      and item.priority = 'must_do'
+      and item.activity_status = 'scheduled'
+      and item.completed_at is null
+      and item.skipped_at is null
+      and not item.accommodation_details_present
+  ) then
+    raise exception 'Workspace legacy defaults did not preserve the legacy graph.';
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.itinerary_items'::regclass
+      and conname in (
+        'itinerary_items_kind_check',
+        'itinerary_items_flexibility_check',
+        'itinerary_items_priority_check',
+        'itinerary_items_activity_status_check',
+        'itinerary_items_activity_status_timestamp_check',
+        'itinerary_items_place_like_provider_fields_check',
+        'itinerary_items_note_schedule_check',
+        'itinerary_items_accommodation_timestamp_check',
+        'itinerary_items_accommodation_nights_check'
+      )
+    group by conrelid
+    having count(*) = 9
+  ) then
+    raise exception 'Workspace enum/status/provenance constraints are incomplete after upgrade.';
+  end if;
+
+  if not exists (
+    select 1
+    from pg_class
+    where oid = 'public.itinerary_item_source_links'::regclass
+      and relrowsecurity
+  ) then
+    raise exception 'Workspace source links table/RLS is missing after upgrade.';
+  end if;
+
   if not has_function_privilege(
     'authenticated', 'public.create_trip_graph(text,jsonb)', 'EXECUTE'
   ) then
@@ -48,4 +95,3 @@ $$;
 
 reset role;
 select 'upgrade_compatibility_pass' as result;
-

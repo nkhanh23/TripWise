@@ -14,7 +14,6 @@ import type {
   SavedTripsPage,
   SavedTripsPageRequest,
   TripId,
-  ItineraryItemId,
   UserId,
   WeatherForecast,
   WeatherRequest,
@@ -27,6 +26,9 @@ import type {
   SavePlaceCommand,
   SavedPlace,
   SavedPlacesPage,
+  ItineraryItemId,
+  WorkspaceMutationCommand,
+  WorkspaceMutationResult,
   ExplorePlacesRequest,
   ExploreDiscoveredPlace,
 } from './contracts';
@@ -65,6 +67,11 @@ export interface SavedTripsRepository {
   updateItemNote(itemId: ItineraryItemId, note: string | null, signal?: AbortSignal): Promise<boolean>;
   deleteTrip(tripId: TripId, signal?: AbortSignal): Promise<boolean>;
   getStats(signal?: AbortSignal): Promise<ProfileStatistics>;
+}
+
+/** Validated, CAS-protected workspace write boundary. No screen may call RPC directly. */
+export interface TravelWorkspaceRepository {
+  mutate(command: WorkspaceMutationCommand, signal?: AbortSignal): Promise<WorkspaceMutationResult>;
 }
 
 export interface PlaceResolutionRepository {

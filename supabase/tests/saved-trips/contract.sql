@@ -12,6 +12,34 @@ begin
 end
 $$;
 
+-- The initial optimistic-concurrency revision is server-owned for both the
+-- default path and an attempted client override.
+do $$
+declare
+  v_default_trip uuid;
+  v_override_trip uuid;
+  v_revision integer;
+begin
+  insert into public.trips(user_id,title,destination,start_date,end_date)
+  values(auth.uid(),'Revision default','Hue','2027-12-01','2027-12-01')
+  returning id, workspace_revision into v_default_trip, v_revision;
+  perform pg_temp.assert_saved_trip(v_revision = 1, 'Direct owner insert did not use canonical initial revision 1.');
+
+  insert into public.trips(user_id,title,destination,start_date,end_date,workspace_revision)
+  values(auth.uid(),'Revision override','Hue','2027-12-02','2027-12-02',999)
+  returning id, workspace_revision into v_override_trip, v_revision;
+  perform pg_temp.assert_saved_trip(v_revision = 1, 'Client selected a non-canonical initial workspace revision.');
+
+  update public.trips set title='Revision default updated' where id=v_default_trip;
+  perform pg_temp.assert_saved_trip(
+    (select workspace_revision from public.trips where id=v_default_trip) = 2,
+    'Authorized mutation did not advance exactly from the server-controlled revision.'
+  );
+
+  delete from public.trips where id in (v_default_trip, v_override_trip);
+end
+$$;
+
 insert into saved_trip_test_state(name, value_uuid)
 select 'detail', public.create_trip_graph('saved-detail-01', '{
   "title":"Bangkok detail","destination":"Bangkok","startDate":"2028-01-01","endDate":"2028-01-02","currency":"USD","days":[
@@ -106,11 +134,198 @@ do $$
 declare
   v_trip uuid := (select value_uuid from saved_trip_test_state where name='detail');
   v_item uuid := (select item.id from public.itinerary_items item join public.itinerary_days day on day.id=item.itinerary_day_id where day.trip_id=v_trip and item.position=1 and day.day_number=1);
+  v_revision integer;
 begin
+  select workspace_revision into v_revision from public.trips where id = v_trip;
+  perform pg_temp.assert_saved_trip(v_revision > 0, 'New trip workspace revision must be positive.');
+  perform pg_temp.assert_saved_trip(
+    exists (
+      select 1 from public.itinerary_items
+      where id = v_item
+        and item_kind = 'place'
+        and flexibility = 'fixed'
+        and priority = 'must_do'
+        and activity_status = 'scheduled'
+        and completed_at is null
+        and skipped_at is null
+    ),
+    'New trip workspace item defaults mismatch.'
+  );
   perform pg_temp.assert_saved_trip(public.update_itinerary_item_note(v_item, 'Updated note'), 'Owner note update failed.');
   perform pg_temp.assert_saved_trip((select note from public.itinerary_items where id=v_item)='Updated note', 'Updated note did not persist.');
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Owner note update did not advance workspace revision.');
+  v_revision := v_revision + 1;
   perform pg_temp.assert_saved_trip(public.update_itinerary_item_note(v_item, '   '), 'Owner note clear failed.');
   perform pg_temp.assert_saved_trip((select note is null from public.itinerary_items where id=v_item), 'Blank note did not normalize to NULL.');
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Owner note clear did not advance workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items set flexibility='flexible', priority='want_to_do' where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Flexibility/priority write bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items set start_time='09:00', end_time='10:00' where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Schedule write bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items
+  set contact_name='Local contact', contact_phone='+84 123 456', contact_address='Hue',
+      contact_website_url='https://example.test/contact', contact_booking_url='https://example.test/booking',
+      reservation_code='LOCAL-123'
+  where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Contact/reservation write bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items set activity_status='completed', completed_at='2000-01-01T00:00:00Z' where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Status write bypassed workspace revision.');
+  perform pg_temp.assert_saved_trip(
+    (select completed_at > '2000-01-01T00:00:00Z'::timestamptz and skipped_at is null from public.itinerary_items where id=v_item),
+    'Completed transition did not persist a server-generated lifecycle timestamp.'
+  );
+  v_revision := v_revision + 1;
+
+  begin
+    update public.itinerary_items set completed_at='2000-01-01T00:00:00Z' where id=v_item;
+    raise exception 'Expected direct completed_at mutation rejection.';
+  exception when sqlstate '22023' then null;
+  end;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision, 'Rejected completed_at mutation changed workspace revision.');
+
+  begin
+    update public.itinerary_items
+    set activity_status='skipped', completed_at=null, skipped_at=clock_timestamp()
+    where id=v_item;
+    raise exception 'Expected COMPLETED to SKIPPED transition rejection.';
+  exception when sqlstate '22023' then null;
+  end;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision, 'Rejected status transition changed workspace revision.');
+
+  update public.itinerary_items set activity_status='scheduled' where id=v_item;
+  perform pg_temp.assert_saved_trip(
+    (select completed_at is null and skipped_at is null from public.itinerary_items where id=v_item),
+    'Return to scheduled did not clear lifecycle timestamps.'
+  );
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items set activity_status='skipped', skipped_at='2000-01-01T00:00:00Z' where id=v_item;
+  perform pg_temp.assert_saved_trip(
+    (select skipped_at > '2000-01-01T00:00:00Z'::timestamptz and completed_at is null from public.itinerary_items where id=v_item),
+    'Skipped transition did not persist a server-generated lifecycle timestamp.'
+  );
+  v_revision := v_revision + 1;
+  begin
+    update public.itinerary_items set skipped_at='2000-01-01T00:00:00Z' where id=v_item;
+    raise exception 'Expected direct skipped_at mutation rejection.';
+  exception when sqlstate '22023' then null;
+  end;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision, 'Rejected skipped_at mutation changed workspace revision.');
+  update public.itinerary_items set activity_status='scheduled' where id=v_item;
+  perform pg_temp.assert_saved_trip(
+    (select completed_at is null and skipped_at is null from public.itinerary_items where id=v_item),
+    'Skipped-to-scheduled transition did not clear lifecycle timestamps.'
+  );
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items
+  set item_kind='transport', place_query=null, start_time=null, end_time=null, transport_mode='drive'
+  where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Transport kind write bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items
+  set transport_origin_label='Hue', transport_destination_label='Da Nang', transport_operator_name='Local operator',
+      transport_departure_at='2028-01-01T08:00:00Z', transport_arrival_at='2028-01-01T10:00:00Z',
+      transport_planned_cost_amount=50, transport_planned_cost_currency='USD'
+  where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Transport metadata write bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_items
+  set item_kind='accommodation', accommodation_details_present=true,
+      accommodation_check_in_at='2028-01-01T15:00:00Z', accommodation_check_out_at='2028-01-03T11:00:00Z',
+      accommodation_nights=2, transport_mode=null, transport_origin_label=null, transport_destination_label=null,
+      transport_operator_name=null, transport_departure_at=null, transport_arrival_at=null,
+      transport_planned_cost_amount=null, transport_planned_cost_currency=null
+  where id=v_item;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Accommodation metadata write bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  begin
+    update public.itinerary_items set accommodation_nights=1 where id=v_item;
+    raise exception 'Expected inconsistent accommodation nights rejection.';
+  exception when check_violation then null;
+  end;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision, 'Rejected accommodation write changed workspace revision.');
+end
+$$;
+
+do $$
+declare
+  v_day uuid := (select day.id from public.itinerary_days day where day.trip_id=(select value_uuid from saved_trip_test_state where name='detail') and day.day_number=1);
+begin
+  begin
+    insert into public.itinerary_items(itinerary_day_id,position,place_name,activity_status,completed_at)
+    values(v_day,3,'Invalid initially completed','completed',clock_timestamp());
+    raise exception 'Expected initially completed item rejection.';
+  exception when sqlstate '22023' then null;
+  end;
+  begin
+    insert into public.itinerary_items(itinerary_day_id,position,place_name,activity_status,skipped_at)
+    values(v_day,3,'Invalid initially skipped','skipped',clock_timestamp());
+    raise exception 'Expected initially skipped item rejection.';
+  exception when sqlstate '22023' then null;
+  end;
+  begin
+    insert into public.itinerary_items(itinerary_day_id,position,place_name,item_kind,start_time)
+    values(v_day,3,'Invalid note start','note','09:00');
+    raise exception 'Expected NOTE start_time rejection.';
+  exception when check_violation then null;
+  end;
+  begin
+    insert into public.itinerary_items(itinerary_day_id,position,place_name,item_kind,end_time)
+    values(v_day,3,'Invalid note end','note','10:00');
+    raise exception 'Expected NOTE end_time rejection.';
+  exception when check_violation then null;
+  end;
+end
+$$;
+
+do $$
+declare
+  v_trip uuid := (select value_uuid from saved_trip_test_state where name='detail');
+  v_item uuid := (select item.id from public.itinerary_items item join public.itinerary_days day on day.id=item.itinerary_day_id where day.trip_id=v_trip and item.position=1 and day.day_number=1);
+  v_revision integer;
+  v_position integer;
+begin
+  select workspace_revision into v_revision from public.trips where id=v_trip;
+  insert into public.itinerary_item_source_links (itinerary_item_id, link_type, url, position)
+  values (v_item, 'website', 'https://example.test/workspace', 1);
+  perform pg_temp.assert_saved_trip(
+    (select count(*) from public.itinerary_item_source_links where itinerary_item_id = v_item) = 1,
+    'Owner source link did not persist.'
+  );
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Source-link insert bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  update public.itinerary_item_source_links set label='Updated' where itinerary_item_id=v_item and position=1;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Source-link update bypassed workspace revision.');
+  v_revision := v_revision + 1;
+
+  for v_position in 2..12 loop
+    insert into public.itinerary_item_source_links(itinerary_item_id,link_type,url,position)
+    values(v_item,'website','https://example.test/link-' || v_position,v_position);
+  end loop;
+  perform pg_temp.assert_saved_trip((select count(*) from public.itinerary_item_source_links where itinerary_item_id=v_item)=12, 'Twelve source links did not persist.');
+  begin
+    insert into public.itinerary_item_source_links(itinerary_item_id,link_type,url,position)
+    values(v_item,'website','https://example.test/link-13',13);
+    raise exception 'Expected thirteenth source-link rejection.';
+  exception when sqlstate '22023' then null;
+  end;
+
+  select workspace_revision into v_revision from public.trips where id=v_trip;
+  delete from public.itinerary_item_source_links where itinerary_item_id=v_item and position=12;
+  perform pg_temp.assert_saved_trip((select workspace_revision from public.trips where id=v_trip) = v_revision + 1, 'Source-link delete bypassed workspace revision.');
 end
 $$;
 
@@ -136,6 +351,12 @@ begin
   ), 'User B list exposed user A trips.');
   perform pg_temp.assert_saved_trip(public.get_saved_trip_detail(v_trip) is null, 'User B detail exposed user A trip.');
   perform pg_temp.assert_saved_trip(not public.update_itinerary_item_note(v_item,'Cross-user'), 'User B updated user A note.');
+  begin
+    insert into public.itinerary_item_source_links(itinerary_item_id,link_type,url,position)
+    values(v_item,'website','https://example.test/cross-user',99);
+    raise exception 'Expected cross-user source-link rejection.';
+  exception when insufficient_privilege then null;
+  end;
   perform pg_temp.assert_saved_trip(not public.delete_saved_trip(v_trip), 'User B deleted user A trip.');
   perform set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 end

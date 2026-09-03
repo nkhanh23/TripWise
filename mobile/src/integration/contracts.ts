@@ -134,6 +134,73 @@ export type PersistTripCommand = {
 
 export type PersistenceErrorCode = 'TW001' | 'TW002' | 'TW003' | 'TW004' | 'TW005';
 
+export type WorkspaceMutationErrorCode =
+  | 'TW006' | 'TW007' | 'TW008' | 'TW009' | 'TW010' | 'TW011' | 'TW012' | 'TW013' | 'TW014';
+
+export type WorkspaceRevision = number;
+export type WorkspaceItemKind = 'place' | 'custom_activity' | 'restaurant' | 'transport' | 'accommodation' | 'reservation' | 'note';
+export type WorkspaceFlexibility = 'fixed' | 'flexible';
+export type WorkspacePriority = 'must_do' | 'want_to_do' | 'optional';
+export type WorkspaceActivityStatus = 'scheduled' | 'completed' | 'skipped';
+
+export type WorkspaceContactPatch = {
+  name?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  websiteUrl?: string | null;
+  bookingUrl?: string | null;
+  reservationCode?: string | null;
+};
+
+export type WorkspaceTransportPatch = {
+  mode?: 'walk' | 'drive' | 'transit' | 'bus' | 'train' | 'flight' | 'motorbike' | 'ferry' | 'other' | null;
+  originLabel?: string | null;
+  destinationLabel?: string | null;
+  operatorName?: string | null;
+  departureAt?: string | null;
+  arrivalAt?: string | null;
+  plannedCostAmount?: number | null;
+  plannedCostCurrency?: string | null;
+};
+
+export type WorkspaceAccommodationPatch = {
+  checkInAt?: string | null;
+  checkOutAt?: string | null;
+  nights?: number | null;
+};
+
+export type WorkspaceItemPatch = {
+  kind?: WorkspaceItemKind;
+  placeName?: string;
+  placeQuery?: string | null;
+  flexibility?: WorkspaceFlexibility;
+  priority?: WorkspacePriority;
+  startTime?: string | null;
+  endTime?: string | null;
+  note?: string | null;
+  contact?: WorkspaceContactPatch;
+  transport?: WorkspaceTransportPatch;
+  accommodation?: WorkspaceAccommodationPatch;
+};
+
+export type WorkspaceSourceLink = {
+  type: 'google_maps' | 'facebook' | 'instagram' | 'tiktok' | 'website' | 'booking' | 'other';
+  url: string;
+  label?: string;
+};
+
+export type UpdateWorkspaceItemCommand = {
+  type: 'update_item'; tripId: TripId; itemId: ItineraryItemId; expectedRevision: WorkspaceRevision; patch: WorkspaceItemPatch;
+};
+export type TransitionWorkspaceItemStatusCommand = {
+  type: 'transition_item_status'; tripId: TripId; itemId: ItineraryItemId; expectedRevision: WorkspaceRevision; status: WorkspaceActivityStatus;
+};
+export type ReplaceWorkspaceSourceLinksCommand = {
+  type: 'replace_source_links'; tripId: TripId; itemId: ItineraryItemId; expectedRevision: WorkspaceRevision; links: WorkspaceSourceLink[];
+};
+export type WorkspaceMutationCommand = UpdateWorkspaceItemCommand | TransitionWorkspaceItemStatusCommand | ReplaceWorkspaceSourceLinksCommand;
+export type WorkspaceMutationResult = { revision: WorkspaceRevision };
+
 export type SavedTripCursor = {
   createdAt: string;
   id: TripId;

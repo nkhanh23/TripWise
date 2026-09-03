@@ -71,10 +71,23 @@ export type Database = {
       }
       itinerary_items: {
         Row: {
+          accommodation_check_in_at: string | null
+          accommodation_check_out_at: string | null
+          accommodation_details_present: boolean
+          accommodation_nights: number | null
+          activity_status: string
+          completed_at: string | null
+          contact_address: string | null
+          contact_booking_url: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          contact_website_url: string | null
           created_at: string
           end_time: string | null
+          flexibility: string
           google_place_id: string | null
           id: string
+          item_kind: string
           itinerary_day_id: string
           latitude: number | null
           longitude: number | null
@@ -85,13 +98,37 @@ export type Database = {
           place_query: string | null
           place_resolved_at: string | null
           position: number
+          priority: string
+          reservation_code: string | null
+          skipped_at: string | null
           start_time: string | null
+          transport_arrival_at: string | null
+          transport_departure_at: string | null
+          transport_destination_label: string | null
+          transport_mode: string | null
+          transport_operator_name: string | null
+          transport_origin_label: string | null
+          transport_planned_cost_amount: number | null
+          transport_planned_cost_currency: string | null
         }
         Insert: {
+          accommodation_check_in_at?: string | null
+          accommodation_check_out_at?: string | null
+          accommodation_details_present?: boolean
+          accommodation_nights?: number | null
+          activity_status?: string
+          completed_at?: string | null
+          contact_address?: string | null
+          contact_booking_url?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_website_url?: string | null
           created_at?: string
           end_time?: string | null
+          flexibility?: string
           google_place_id?: string | null
           id?: string
+          item_kind?: string
           itinerary_day_id: string
           latitude?: number | null
           longitude?: number | null
@@ -102,13 +139,37 @@ export type Database = {
           place_query?: string | null
           place_resolved_at?: string | null
           position: number
+          priority?: string
+          reservation_code?: string | null
+          skipped_at?: string | null
           start_time?: string | null
+          transport_arrival_at?: string | null
+          transport_departure_at?: string | null
+          transport_destination_label?: string | null
+          transport_mode?: string | null
+          transport_operator_name?: string | null
+          transport_origin_label?: string | null
+          transport_planned_cost_amount?: number | null
+          transport_planned_cost_currency?: string | null
         }
         Update: {
+          accommodation_check_in_at?: string | null
+          accommodation_check_out_at?: string | null
+          accommodation_details_present?: boolean
+          accommodation_nights?: number | null
+          activity_status?: string
+          completed_at?: string | null
+          contact_address?: string | null
+          contact_booking_url?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_website_url?: string | null
           created_at?: string
           end_time?: string | null
+          flexibility?: string
           google_place_id?: string | null
           id?: string
+          item_kind?: string
           itinerary_day_id?: string
           latitude?: number | null
           longitude?: number | null
@@ -119,7 +180,18 @@ export type Database = {
           place_query?: string | null
           place_resolved_at?: string | null
           position?: number
+          priority?: string
+          reservation_code?: string | null
+          skipped_at?: string | null
           start_time?: string | null
+          transport_arrival_at?: string | null
+          transport_departure_at?: string | null
+          transport_destination_label?: string | null
+          transport_mode?: string | null
+          transport_operator_name?: string | null
+          transport_origin_label?: string | null
+          transport_planned_cost_amount?: number | null
+          transport_planned_cost_currency?: string | null
         }
         Relationships: [
           {
@@ -127,6 +199,44 @@ export type Database = {
             columns: ["itinerary_day_id"]
             isOneToOne: false
             referencedRelation: "itinerary_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      itinerary_item_source_links: {
+        Row: {
+          created_at: string
+          id: string
+          itinerary_item_id: string
+          label: string | null
+          link_type: string
+          position: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          itinerary_item_id: string
+          label?: string | null
+          link_type: string
+          position: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          itinerary_item_id?: string
+          label?: string | null
+          link_type?: string
+          position?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itinerary_item_source_links_itinerary_item_id_fkey"
+            columns: ["itinerary_item_id"]
+            isOneToOne: false
+            referencedRelation: "itinerary_items"
             referencedColumns: ["id"]
           },
         ]
@@ -208,6 +318,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          workspace_revision: number
         }
         Insert: {
           created_at?: string
@@ -222,6 +333,7 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          workspace_revision?: number
         }
         Update: {
           created_at?: string
@@ -236,6 +348,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          workspace_revision?: number
         }
         Relationships: []
       }
@@ -284,6 +397,7 @@ export type Database = {
         }
         Returns: Json
       }
+      mutate_travel_workspace: { Args: { p_command: Json }; Returns: Json }
       save_place: {
         Args: {
           p_google_place_id: string

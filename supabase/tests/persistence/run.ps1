@@ -79,7 +79,9 @@ try {
   $ready = $false
   for ($attempt = 1; $attempt -le 45; $attempt++) {
     & docker exec $container pg_isready -U postgres -d $freshDb *> $null
-    if ($LASTEXITCODE -eq 0) {
+    $databaseReady = $LASTEXITCODE -eq 0
+    $mainProcess = (& docker exec $container sh -c 'cat /proc/1/comm' 2>$null)
+    if ($databaseReady -and $LASTEXITCODE -eq 0 -and $mainProcess.Trim() -eq 'postgres') {
       $ready = $true
       break
     }
@@ -96,6 +98,7 @@ try {
   }
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $repoRoot 'supabase\tests\saved-trips\contract.sql')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_mutation_contract.sql')
 
   # Concurrent same-key/same-payload: both calls return one identical trip ID.
   $sameGraph = '{"title":"Concurrent same","destination":"Hue","startDate":"2027-06-01","endDate":"2027-06-01","days":[{"dayNumber":1,"date":"2027-06-01","items":[{"position":1,"placeName":"Citadel"}]}]}'
@@ -219,6 +222,57 @@ begin
 end
 `$`$;
 select 'concurrency_pass' as result;
+"@
+
+  # The source-link cap must remain 12 under real concurrent transactions.
+  Invoke-SqlText -Database $freshDb -Sql @"
+insert into public.trips(id,user_id,title,destination,start_date,end_date)
+values('99999999-9999-4999-8999-999999999911','11111111-1111-4111-8111-111111111111','Source link race','Hue','2027-10-01','2027-10-01');
+insert into public.itinerary_days(id,trip_id,day_number,date)
+values('99999999-9999-4999-8999-999999999912','99999999-9999-4999-8999-999999999911',1,'2027-10-01');
+insert into public.itinerary_items(id,itinerary_day_id,position,place_name)
+values('99999999-9999-4999-8999-999999999913','99999999-9999-4999-8999-999999999912',1,'Source link item');
+insert into public.itinerary_item_source_links(itinerary_item_id,link_type,url,position)
+select '99999999-9999-4999-8999-999999999913','website','https://example.test/race-' || value,value
+from generate_series(1,11) as value;
+"@
+
+  $sourceLinkTemplate = @"
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+do `$block`$
+begin
+  begin
+    insert into public.itinerary_item_source_links(itinerary_item_id,link_type,url,position)
+    values('99999999-9999-4999-8999-999999999913','website','https://example.test/%LABEL%',%POSITION%);
+    raise notice 'SOURCE_LINK_CONCURRENCY_RESULT=SUCCESS';
+    perform pg_sleep(1);
+  exception when sqlstate '22023' then
+    raise notice 'SOURCE_LINK_CONCURRENCY_RESULT=LIMIT_REJECTED';
+  end;
+end
+`$block`$;
+"@
+  $sourceLinkA = Start-ConcurrentSql -Sql ($sourceLinkTemplate.Replace('%LABEL%','race-a').Replace('%POSITION%','12'))
+  Start-Sleep -Milliseconds 150
+  $sourceLinkB = Start-ConcurrentSql -Sql ($sourceLinkTemplate.Replace('%LABEL%','race-b').Replace('%POSITION%','13'))
+  Wait-Job -Job $sourceLinkA, $sourceLinkB | Out-Null
+  $sourceLinkOutput = ((Receive-Job -Job $sourceLinkA) + (Receive-Job -Job $sourceLinkB)) -join "`n"
+  Remove-Job -Job $sourceLinkA, $sourceLinkB
+  if (([regex]::Matches($sourceLinkOutput, 'SOURCE_LINK_CONCURRENCY_RESULT=SUCCESS')).Count -ne 1 -or
+      ([regex]::Matches($sourceLinkOutput, 'SOURCE_LINK_CONCURRENCY_RESULT=LIMIT_REJECTED')).Count -ne 1) {
+    throw "Concurrent source-link cap did not produce one success and one limit rejection.`n$sourceLinkOutput"
+  }
+
+  Invoke-SqlText -Database $freshDb -Sql @"
+do `$`$
+begin
+  if (select count(*) from public.itinerary_item_source_links where itinerary_item_id='99999999-9999-4999-8999-999999999913') <> 12 then
+    raise exception 'Concurrent source-link cap exceeded twelve rows.';
+  end if;
+end
+`$`$;
+select 'source_link_concurrency_pass' as result;
 "@
 
   Invoke-SqlText -Database $freshDb -Sql "create database $upgradeDb;"

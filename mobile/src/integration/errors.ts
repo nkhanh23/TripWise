@@ -1,4 +1,4 @@
-import type { ExplorePlacesErrorCode, GenerateTripErrorCode, PersistenceErrorCode, ResolvePlaceErrorCode } from './contracts';
+import type { ExplorePlacesErrorCode, GenerateTripErrorCode, PersistenceErrorCode, ResolvePlaceErrorCode, WorkspaceMutationErrorCode } from './contracts';
 import { ContractValidationError, isRecord } from './validation';
 
 export type IntegrationErrorCode =
@@ -63,6 +63,7 @@ const generateCodes: readonly GenerateTripErrorCode[] = [
 ];
 
 const persistenceCodes: readonly PersistenceErrorCode[] = ['TW001', 'TW002', 'TW003', 'TW004', 'TW005'];
+const workspaceMutationCodes: readonly WorkspaceMutationErrorCode[] = ['TW006', 'TW007', 'TW008', 'TW009', 'TW010', 'TW011', 'TW012', 'TW013', 'TW014'];
 
 const resolvePlaceCodes: readonly ResolvePlaceErrorCode[] = [
   'PLACE_INPUT_INVALID', 'PLACE_NOT_FOUND', 'PLACE_AMBIGUOUS', 'PLACE_PROVIDER_AUTH',
@@ -119,6 +120,23 @@ export function mapResolvePlaceError(value: unknown): IntegrationError {
     case 'UNAUTHORIZED': return new IntegrationError('unauthorized');
     case 'INTERNAL_ERROR': return new IntegrationError('unknown');
     default: return new IntegrationError('unknown');
+  }
+}
+
+/** Maps only stable SQLSTATEs emitted by mutate_travel_workspace. */
+export function mapWorkspaceMutationError(value: unknown): IntegrationError {
+  const rawCode = isRecord(value) && typeof value.code === 'string' ? value.code : null;
+  if (!workspaceMutationCodes.includes(rawCode as WorkspaceMutationErrorCode)) return mapPostgrestError(value);
+  switch (rawCode as WorkspaceMutationErrorCode) {
+    case 'TW006': return new IntegrationError('unauthorized');
+    case 'TW007': return new IntegrationError('invalidRequest');
+    case 'TW008': return new IntegrationError('notFound');
+    case 'TW009': return new IntegrationError('conflict');
+    case 'TW010': return new IntegrationError('invalidRequest');
+    case 'TW011': return new IntegrationError('invalidRequest');
+    case 'TW012': return new IntegrationError('invalidRequest');
+    case 'TW013': return new IntegrationError('invalidRequest');
+    case 'TW014': return new IntegrationError('invalidRequest');
   }
 }
 

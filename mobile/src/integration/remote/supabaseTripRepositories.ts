@@ -3,13 +3,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Json } from '../../lib/supabase/database.types';
 import type {
   GenerateTripRequest, GeneratedTrip, ItineraryItemId, PersistTripCommand, ProfileStatistics, SavedTripDetail,
-  SavedTripsPage, SavedTripsPageRequest, TripId,
+  SavedTripsPage, SavedTripsPageRequest, TripId, WorkspaceMutationCommand, WorkspaceMutationResult,
 } from '../contracts';
 import {
-  IntegrationError, mapGenerateTripError, mapPersistenceError, mapPostgrestError, readFunctionErrorPayload,
+  IntegrationError, mapGenerateTripError, mapPersistenceError, mapPostgrestError, mapWorkspaceMutationError, readFunctionErrorPayload,
 } from '../errors';
 import type {
-  SavedTripsRepository, TripGenerationRepository, TripPersistenceRepository,
+  SavedTripsRepository, TravelWorkspaceRepository, TripGenerationRepository, TripPersistenceRepository,
 } from '../repositories';
 import {
   executeWithReliability, idempotentPersistencePolicy, supabaseMutationPolicy,
@@ -18,6 +18,7 @@ import {
 import {
   asTripId, parseGenerateTripSuccess, parseProfileStatistics, parseSavedTripDetail, parseSavedTripsPage,
   validateGenerateTripRequest, validatePersistTripCommand, validateSavedTripsPageRequest,
+  parseWorkspaceMutationResult, validateWorkspaceMutationCommand,
 } from '../validation';
 
 export class SupabaseTripGenerationRepository implements TripGenerationRepository {
@@ -74,13 +75,13 @@ export class SupabaseSavedTripsRepository implements SavedTripsRepository {
     }, supabaseReadPolicy, signal);
   }
 
+  /** Legacy note-only API remains read-compatible; new P1 workspace edits use CAS mutate(). */
   async updateItemNote(itemId: ItineraryItemId, note: string | null, signal?: AbortSignal): Promise<boolean> {
     const normalized = note === null ? null : note.trim();
     if (normalized !== null && normalized.length > 500) throw new IntegrationError('invalidRequest');
     return executeWithReliability(async (attemptSignal) => {
       const { data, error } = await this.client.rpc('update_itinerary_item_note', {
-        p_item_id: itemId,
-        p_note: (normalized === '' ? null : normalized) as unknown as string,
+        p_item_id: itemId, p_note: (normalized === '' ? null : normalized) as unknown as string,
       }).abortSignal(attemptSignal);
       if (error) throw mapPostgrestError(error);
       return data;
@@ -103,4 +104,24 @@ export class SupabaseSavedTripsRepository implements SavedTripsRepository {
       return data;
     }, supabaseMutationPolicy, signal);
   }
+}
+
+/**
+ * FEATURE-P1-T003 write boundary. Mutations are single-attempt CAS commands:
+ * a revision conflict is returned to the caller and is never retried/overwritten.
+ */
+export class SupabaseTravelWorkspaceRepository implements TravelWorkspaceRepository {
+  constructor(private readonly client: SupabaseClient<Database>) {}
+
+  async mutate(command: WorkspaceMutationCommand, signal?: AbortSignal): Promise<WorkspaceMutationResult> {
+    const stableCommand = validateWorkspaceMutationCommand(command);
+    return executeWithReliability(async (attemptSignal) => {
+      const { data, error } = await this.client.rpc('mutate_travel_workspace', {
+        p_command: stableCommand as unknown as Json,
+      }).abortSignal(attemptSignal);
+      if (error) throw mapWorkspaceMutationError(error);
+      return parseWorkspaceMutationResult(data);
+    }, supabaseMutationPolicy, signal);
+  }
+
 }

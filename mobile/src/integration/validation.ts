@@ -34,6 +34,10 @@ import type {
   ExplorePlacesRequest,
   ExplorePlacesSuccessEnvelope,
   ExploreCategory,
+  WorkspaceMutationCommand,
+  WorkspaceMutationResult,
+  WorkspaceItemPatch,
+  WorkspaceSourceLink,
 } from './contracts';
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -179,6 +183,91 @@ export function asTripId(value: unknown): TripId {
 export function asItineraryItemId(value: unknown): ItineraryItemId {
   if (!isUuid(value)) throw new ContractValidationError('itinerary item ID');
   return value as ItineraryItemId;
+}
+
+const workspaceKinds = ['place', 'custom_activity', 'restaurant', 'transport', 'accommodation', 'reservation', 'note'] as const;
+const workspaceFlexibilities = ['fixed', 'flexible'] as const;
+const workspacePriorities = ['must_do', 'want_to_do', 'optional'] as const;
+const workspaceStatuses = ['scheduled', 'completed', 'skipped'] as const;
+const sourceLinkTypes = ['google_maps', 'facebook', 'instagram', 'tiktok', 'website', 'booking', 'other'] as const;
+const transportModes = ['walk', 'drive', 'transit', 'bus', 'train', 'flight', 'motorbike', 'ferry', 'other'] as const;
+
+function nullableBoundedString(value: unknown, maximum: number): string | null | undefined {
+  if (value === undefined || value === null) return value;
+  return requiredString(value, maximum);
+}
+
+function validHttpsUrl(value: unknown): boolean {
+  if (typeof value !== 'string' || value.length > 2048 || /\s/.test(value)) return false;
+  try { return new URL(value).protocol === 'https:'; } catch { return false; }
+}
+
+function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
+  const allowed = ['kind', 'placeName', 'placeQuery', 'flexibility', 'priority', 'startTime', 'endTime', 'note', 'contact', 'transport', 'accommodation'];
+  if (!isRecord(value) || !hasOnlyKeys(value, allowed) || Object.keys(value).length === 0) throw new ContractValidationError('workspace item patch');
+  if (value.kind !== undefined && (typeof value.kind !== 'string' || !workspaceKinds.includes(value.kind as typeof workspaceKinds[number]))) throw new ContractValidationError('workspace item patch');
+  if (value.placeName !== undefined && requiredString(value.placeName, 160) === null) throw new ContractValidationError('workspace item patch');
+  if (value.placeQuery !== undefined && nullableBoundedString(value.placeQuery, 200) === null) throw new ContractValidationError('workspace item patch');
+  if (value.flexibility !== undefined && (typeof value.flexibility !== 'string' || !workspaceFlexibilities.includes(value.flexibility as typeof workspaceFlexibilities[number]))) throw new ContractValidationError('workspace item patch');
+  if (value.priority !== undefined && (typeof value.priority !== 'string' || !workspacePriorities.includes(value.priority as typeof workspacePriorities[number]))) throw new ContractValidationError('workspace item patch');
+  for (const key of ['startTime', 'endTime'] as const) if (value[key] !== undefined && value[key] !== null && (typeof value[key] !== 'string' || !timePattern.test(value[key]))) throw new ContractValidationError('workspace item patch');
+  if (value.note !== undefined && nullableBoundedString(value.note, 500) === null) throw new ContractValidationError('workspace item patch');
+  if (value.contact !== undefined) {
+    if (!isRecord(value.contact)) throw new ContractValidationError('workspace contact patch');
+    const contact = value.contact;
+    if (!hasOnlyKeys(contact, ['name', 'phone', 'address', 'websiteUrl', 'bookingUrl', 'reservationCode'])
+      || nullableBoundedString(contact.name, 120) === null || nullableBoundedString(contact.address, 500) === null
+      || nullableBoundedString(contact.reservationCode, 128) === null
+      || (contact.phone !== undefined && contact.phone !== null && (nullableBoundedString(contact.phone, 64) === null || typeof contact.phone !== 'string' || !/^[+0-9 ().-]+$/.test(contact.phone.trim())))
+      || (contact.websiteUrl !== undefined && contact.websiteUrl !== null && !validHttpsUrl(contact.websiteUrl))
+      || (contact.bookingUrl !== undefined && contact.bookingUrl !== null && !validHttpsUrl(contact.bookingUrl))) throw new ContractValidationError('workspace contact patch');
+  }
+  if (value.transport !== undefined) {
+    if (!isRecord(value.transport)) throw new ContractValidationError('workspace transport patch');
+    const transport = value.transport;
+    if (!hasOnlyKeys(transport, ['mode', 'originLabel', 'destinationLabel', 'operatorName', 'departureAt', 'arrivalAt', 'plannedCostAmount', 'plannedCostCurrency'])
+      || (transport.mode !== undefined && transport.mode !== null && (typeof transport.mode !== 'string' || !transportModes.includes(transport.mode as typeof transportModes[number])))
+      || ['originLabel', 'destinationLabel', 'operatorName'].some((key) => nullableBoundedString(transport[key], 160) === null)
+      || (transport.departureAt !== undefined && transport.departureAt !== null && !isIsoTimestamp(transport.departureAt))
+      || (transport.arrivalAt !== undefined && transport.arrivalAt !== null && !isIsoTimestamp(transport.arrivalAt))
+      || (transport.plannedCostAmount !== undefined && transport.plannedCostAmount !== null && finiteNumber(transport.plannedCostAmount, 0, 1_000_000_000) === null)
+      || (transport.plannedCostCurrency !== undefined && transport.plannedCostCurrency !== null && (typeof transport.plannedCostCurrency !== 'string' || !currencyPattern.test(transport.plannedCostCurrency)))) throw new ContractValidationError('workspace transport patch');
+  }
+  if (value.accommodation !== undefined) {
+    if (!isRecord(value.accommodation)) throw new ContractValidationError('workspace accommodation patch');
+    const accommodation = value.accommodation;
+    if (!hasOnlyKeys(accommodation, ['checkInAt', 'checkOutAt', 'nights'])
+      || (accommodation.checkInAt !== undefined && accommodation.checkInAt !== null && !isIsoTimestamp(accommodation.checkInAt))
+      || (accommodation.checkOutAt !== undefined && accommodation.checkOutAt !== null && !isIsoTimestamp(accommodation.checkOutAt))
+      || (accommodation.nights !== undefined && accommodation.nights !== null && (!Number.isInteger(accommodation.nights) || typeof accommodation.nights !== 'number' || accommodation.nights < 0 || accommodation.nights > 365))) throw new ContractValidationError('workspace accommodation patch');
+  }
+  return value as WorkspaceItemPatch;
+}
+
+function validateWorkspaceLinks(value: unknown): WorkspaceSourceLink[] {
+  if (!Array.isArray(value) || value.length > 12) throw new ContractValidationError('workspace source links');
+  return value.map((link) => {
+    if (!isRecord(link) || !hasOnlyKeys(link, ['type', 'url', 'label']) || typeof link.type !== 'string'
+      || !sourceLinkTypes.includes(link.type as typeof sourceLinkTypes[number]) || !validHttpsUrl(link.url)
+      || (link.label !== undefined && requiredString(link.label, 120) === null)
+      || (link.type === 'other' && requiredString(link.label, 120) === null)) throw new ContractValidationError('workspace source link');
+    return { type: link.type, url: (link.url as string).trim(), ...(link.label === undefined ? {} : { label: (link.label as string).trim() }) } as WorkspaceSourceLink;
+  });
+}
+
+export function validateWorkspaceMutationCommand(value: unknown): WorkspaceMutationCommand {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['type', 'tripId', 'itemId', 'expectedRevision', 'patch', 'status', 'links'])
+    || !isUuid(value.tripId) || !isUuid(value.itemId) || !Number.isInteger(value.expectedRevision) || typeof value.expectedRevision !== 'number' || value.expectedRevision < 1 || typeof value.type !== 'string') throw new ContractValidationError('workspace mutation command');
+  const base = { tripId: value.tripId as TripId, itemId: value.itemId as ItineraryItemId, expectedRevision: value.expectedRevision as number };
+  if (value.type === 'update_item' && value.status === undefined && value.links === undefined) return { type: 'update_item', ...base, patch: validateWorkspaceItemPatch(value.patch) };
+  if (value.type === 'transition_item_status' && value.patch === undefined && value.links === undefined && typeof value.status === 'string' && workspaceStatuses.includes(value.status as typeof workspaceStatuses[number])) return { type: 'transition_item_status', ...base, status: value.status as 'scheduled' | 'completed' | 'skipped' };
+  if (value.type === 'replace_source_links' && value.patch === undefined && value.status === undefined) return { type: 'replace_source_links', ...base, links: validateWorkspaceLinks(value.links) };
+  throw new ContractValidationError('workspace mutation command');
+}
+
+export function parseWorkspaceMutationResult(value: unknown): WorkspaceMutationResult {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['revision']) || !Number.isInteger(value.revision) || typeof value.revision !== 'number' || value.revision < 1) throw new ContractValidationError('workspace mutation result');
+  return { revision: value.revision as number };
 }
 
 export function asSavedPlaceId(value: unknown): SavedPlaceId {
