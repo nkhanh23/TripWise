@@ -170,7 +170,6 @@ export type WorkspaceAccommodationPatch = {
 };
 
 export type WorkspaceItemPatch = {
-  kind?: WorkspaceItemKind;
   placeName?: string;
   placeQuery?: string | null;
   flexibility?: WorkspaceFlexibility;

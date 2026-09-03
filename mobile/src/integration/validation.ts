@@ -185,7 +185,6 @@ export function asItineraryItemId(value: unknown): ItineraryItemId {
   return value as ItineraryItemId;
 }
 
-const workspaceKinds = ['place', 'custom_activity', 'restaurant', 'transport', 'accommodation', 'reservation', 'note'] as const;
 const workspaceFlexibilities = ['fixed', 'flexible'] as const;
 const workspacePriorities = ['must_do', 'want_to_do', 'optional'] as const;
 const workspaceStatuses = ['scheduled', 'completed', 'skipped'] as const;
@@ -203,9 +202,8 @@ function validHttpsUrl(value: unknown): boolean {
 }
 
 function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
-  const allowed = ['kind', 'placeName', 'placeQuery', 'flexibility', 'priority', 'startTime', 'endTime', 'note', 'contact', 'transport', 'accommodation'];
+  const allowed = ['placeName', 'placeQuery', 'flexibility', 'priority', 'startTime', 'endTime', 'note', 'contact', 'transport', 'accommodation'];
   if (!isRecord(value) || !hasOnlyKeys(value, allowed) || Object.keys(value).length === 0) throw new ContractValidationError('workspace item patch');
-  if (value.kind !== undefined && (typeof value.kind !== 'string' || !workspaceKinds.includes(value.kind as typeof workspaceKinds[number]))) throw new ContractValidationError('workspace item patch');
   if (value.placeName !== undefined && requiredString(value.placeName, 160) === null) throw new ContractValidationError('workspace item patch');
   if (value.placeQuery !== undefined && nullableBoundedString(value.placeQuery, 200) === null) throw new ContractValidationError('workspace item patch');
   if (value.flexibility !== undefined && (typeof value.flexibility !== 'string' || !workspaceFlexibilities.includes(value.flexibility as typeof workspaceFlexibilities[number]))) throw new ContractValidationError('workspace item patch');

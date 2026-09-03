@@ -99,6 +99,187 @@ try {
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $repoRoot 'supabase\tests\saved-trips\contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_mutation_contract.sql')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_security_matrix.sql')
+
+  # Canonical item->trip lock order: race the CAS RPC against the supported
+  # note RPC (which updates item then its revision trigger updates trip). A
+  # bounded wait proves there is no lock cycle; the stale CAS must conflict.
+  Invoke-SqlText -Database $freshDb -Sql @"
+insert into public.trips(id,user_id,title,destination,start_date,end_date)
+values('99999999-9999-4999-8999-999999999921','11111111-1111-4111-8111-111111111111','Lock order','Hue','2027-11-01','2027-11-01');
+insert into public.itinerary_days(id,trip_id,day_number,date)
+values('99999999-9999-4999-8999-999999999922','99999999-9999-4999-8999-999999999921',1,'2027-11-01');
+insert into public.itinerary_items(id,itinerary_day_id,position,place_name)
+values('99999999-9999-4999-8999-999999999923','99999999-9999-4999-8999-999999999922',1,'Lock item');
+"@
+  $noteLockSql = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+begin;
+select public.update_itinerary_item_note('99999999-9999-4999-8999-999999999923','Concurrent note');
+select pg_sleep(1);
+commit;
+select 'LOCK_ORDER_NOTE_SUCCESS' as result;
+"@
+  $workspaceLockSql = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+do `$block`$
+begin
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object(
+      'type','update_item', 'tripId','99999999-9999-4999-8999-999999999921',
+      'itemId','99999999-9999-4999-8999-999999999923', 'expectedRevision',3,
+      'patch',jsonb_build_object('note','CAS note')));
+    raise notice 'LOCK_ORDER_CAS_SUCCESS';
+  exception when sqlstate 'TW009' then
+    raise notice 'LOCK_ORDER_CAS_CONFLICT';
+  end;
+end
+`$block`$;
+"@
+  $noteLockJob = Start-ConcurrentSql -Sql $noteLockSql
+  Start-Sleep -Milliseconds 150
+  $workspaceLockJob = Start-ConcurrentSql -Sql $workspaceLockSql
+  $completedLockJobs = Wait-Job -Job $noteLockJob, $workspaceLockJob -Timeout 10
+  if ($completedLockJobs.Count -ne 2) {
+    Remove-Job -Job $noteLockJob, $workspaceLockJob -Force
+    throw 'Workspace lock-order concurrency test exceeded bounded timeout.'
+  }
+  $lockOutput = ((Receive-Job -Job $noteLockJob) + (Receive-Job -Job $workspaceLockJob)) -join "`n"
+  Remove-Job -Job $noteLockJob, $workspaceLockJob
+  if ($lockOutput -notmatch 'LOCK_ORDER_NOTE_SUCCESS' -or $lockOutput -notmatch 'LOCK_ORDER_CAS_CONFLICT') {
+    throw "Workspace lock-order concurrency result was invalid.`n$lockOutput"
+  }
+  Write-Output 'workspace_lock_order_concurrency_pass'
+
+  # Source-link UPDATE/DELETE take a child-row lock before their AFTER trigger
+  # obtains the trip revision lock. The replacement RPC must lock all current
+  # child rows (stable UUID order) before item -> trip, then return TW009 if a
+  # direct writer won. Both races have bounded waits to prove no lock cycle.
+  Invoke-SqlText -Database $freshDb -Sql @"
+insert into public.trips(id,user_id,title,destination,start_date,end_date) values
+('99999999-9999-4999-8999-999999999931','11111111-1111-4111-8111-111111111111','Source update lock','Hue','2027-11-02','2027-11-02'),
+('99999999-9999-4999-8999-999999999941','11111111-1111-4111-8111-111111111111','Source delete lock','Hue','2027-11-03','2027-11-03');
+insert into public.itinerary_days(id,trip_id,day_number,date) values
+('99999999-9999-4999-8999-999999999932','99999999-9999-4999-8999-999999999931',1,'2027-11-02'),
+('99999999-9999-4999-8999-999999999942','99999999-9999-4999-8999-999999999941',1,'2027-11-03');
+insert into public.itinerary_items(id,itinerary_day_id,position,place_name) values
+('99999999-9999-4999-8999-999999999933','99999999-9999-4999-8999-999999999932',1,'Source update item'),
+('99999999-9999-4999-8999-999999999943','99999999-9999-4999-8999-999999999942',1,'Source delete item');
+insert into public.itinerary_item_source_links(id,itinerary_item_id,link_type,url,label,position) values
+('99999999-9999-4999-8999-999999999934','99999999-9999-4999-8999-999999999933','website','https://example.test/update-one','One',1),
+('99999999-9999-4999-8999-999999999935','99999999-9999-4999-8999-999999999933','website','https://example.test/update-two','Two',2),
+('99999999-9999-4999-8999-999999999944','99999999-9999-4999-8999-999999999943','website','https://example.test/delete-one','One',1),
+('99999999-9999-4999-8999-999999999945','99999999-9999-4999-8999-999999999943','website','https://example.test/delete-two','Two',2);
+"@
+  $directSourceUpdateSql = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+begin;
+update public.itinerary_item_source_links set label='Direct update' where id='99999999-9999-4999-8999-999999999934';
+select pg_sleep(1);
+commit;
+select 'SOURCE_LINK_DIRECT_UPDATE_SUCCESS' as result;
+"@
+  $replaceAfterUpdateSql = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+do `$block`$
+begin
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object(
+      'type','replace_source_links', 'tripId','99999999-9999-4999-8999-999999999931',
+      'itemId','99999999-9999-4999-8999-999999999933', 'expectedRevision',5,
+      'links',jsonb_build_array(jsonb_build_object('type','website','url','https://example.test/replaced','label','Replacement'))));
+    raise notice 'SOURCE_LINK_REPLACE_UPDATE_SUCCESS';
+  exception when sqlstate 'TW009' then
+    raise notice 'SOURCE_LINK_REPLACE_UPDATE_CONFLICT';
+  end;
+end
+`$block`$;
+"@
+  $sourceUpdateJob = Start-ConcurrentSql -Sql $directSourceUpdateSql
+  Start-Sleep -Milliseconds 150
+  $replaceUpdateJob = Start-ConcurrentSql -Sql $replaceAfterUpdateSql
+  $completedSourceUpdateJobs = Wait-Job -Job $sourceUpdateJob, $replaceUpdateJob -Timeout 10
+  if ($completedSourceUpdateJobs.Count -ne 2) {
+    Remove-Job -Job $sourceUpdateJob, $replaceUpdateJob -Force
+    throw 'Source-link UPDATE lock-order test exceeded bounded timeout.'
+  }
+  $sourceUpdateOutput = ((Receive-Job -Job $sourceUpdateJob) + (Receive-Job -Job $replaceUpdateJob)) -join "`n"
+  Remove-Job -Job $sourceUpdateJob, $replaceUpdateJob
+  if ($sourceUpdateOutput -notmatch 'SOURCE_LINK_DIRECT_UPDATE_SUCCESS' -or $sourceUpdateOutput -notmatch 'SOURCE_LINK_REPLACE_UPDATE_CONFLICT') {
+    throw "Source-link UPDATE lock-order result was invalid.`n$sourceUpdateOutput"
+  }
+  Invoke-SqlText -Database $freshDb -Sql @"
+do `$`$
+begin
+  if (select workspace_revision from public.trips where id='99999999-9999-4999-8999-999999999931') <> 6
+     or (select count(*) from public.itinerary_item_source_links where itinerary_item_id='99999999-9999-4999-8999-999999999933') <> 2
+     or not exists (select 1 from public.itinerary_item_source_links where id='99999999-9999-4999-8999-999999999934' and label='Direct update' and position=1) then
+    raise exception 'Source-link UPDATE race did not preserve a valid monotonic state.';
+  end if;
+end
+`$`$;
+"@
+  $directSourceDeleteSql = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+begin;
+delete from public.itinerary_item_source_links where id='99999999-9999-4999-8999-999999999945';
+select pg_sleep(1);
+commit;
+select 'SOURCE_LINK_DIRECT_DELETE_SUCCESS' as result;
+"@
+  $replaceAfterDeleteSql = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+do `$block`$
+begin
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object(
+      'type','replace_source_links', 'tripId','99999999-9999-4999-8999-999999999941',
+      'itemId','99999999-9999-4999-8999-999999999943', 'expectedRevision',5,
+      'links',jsonb_build_array(jsonb_build_object('type','website','url','https://example.test/replaced','label','Replacement'))));
+    raise notice 'SOURCE_LINK_REPLACE_DELETE_SUCCESS';
+  exception when sqlstate 'TW009' then
+    raise notice 'SOURCE_LINK_REPLACE_DELETE_CONFLICT';
+  end;
+end
+`$block`$;
+"@
+  $sourceDeleteJob = Start-ConcurrentSql -Sql $directSourceDeleteSql
+  Start-Sleep -Milliseconds 150
+  $replaceDeleteJob = Start-ConcurrentSql -Sql $replaceAfterDeleteSql
+  $completedSourceDeleteJobs = Wait-Job -Job $sourceDeleteJob, $replaceDeleteJob -Timeout 10
+  if ($completedSourceDeleteJobs.Count -ne 2) {
+    Remove-Job -Job $sourceDeleteJob, $replaceDeleteJob -Force
+    throw 'Source-link DELETE lock-order test exceeded bounded timeout.'
+  }
+  $sourceDeleteOutput = ((Receive-Job -Job $sourceDeleteJob) + (Receive-Job -Job $replaceDeleteJob)) -join "`n"
+  Remove-Job -Job $sourceDeleteJob, $replaceDeleteJob
+  if ($sourceDeleteOutput -notmatch 'SOURCE_LINK_DIRECT_DELETE_SUCCESS' -or $sourceDeleteOutput -notmatch 'SOURCE_LINK_REPLACE_DELETE_CONFLICT') {
+    throw "Source-link DELETE lock-order result was invalid.`n$sourceDeleteOutput"
+  }
+  Invoke-SqlText -Database $freshDb -Sql @"
+do `$`$
+begin
+  if (select workspace_revision from public.trips where id='99999999-9999-4999-8999-999999999941') <> 6
+     or (select count(*) from public.itinerary_item_source_links where itinerary_item_id='99999999-9999-4999-8999-999999999943') <> 1
+     or not exists (select 1 from public.itinerary_item_source_links where id='99999999-9999-4999-8999-999999999944' and position=1) then
+    raise exception 'Source-link DELETE race did not preserve a valid monotonic state.';
+  end if;
+end
+`$`$;
+"@
+  Write-Output 'workspace_source_link_lock_order_concurrency_pass'
 
   # Concurrent same-key/same-payload: both calls return one identical trip ID.
   $sameGraph = '{"title":"Concurrent same","destination":"Hue","startDate":"2027-06-01","endDate":"2027-06-01","days":[{"dayNumber":1,"date":"2027-06-01","items":[{"position":1,"placeName":"Citadel"}]}]}'

@@ -39,6 +39,7 @@ begin
       and item.completed_at is null
       and item.skipped_at is null
       and not item.accommodation_details_present
+      and item.place_resolved_at is null
   ) then
     raise exception 'Workspace legacy defaults did not preserve the legacy graph.';
   end if;
@@ -76,6 +77,41 @@ begin
     'authenticated', 'public.create_trip_graph(text,jsonb)', 'EXECUTE'
   ) then
     raise exception 'Authenticated RPC grant is missing after upgrade.';
+  end if;
+
+  if to_regprocedure('public.mutate_travel_workspace(jsonb)') is null
+     or not has_function_privilege('authenticated', 'public.mutate_travel_workspace(jsonb)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.mutate_travel_workspace(jsonb)', 'EXECUTE')
+     or exists (
+       select 1 from pg_proc
+       where oid='public.mutate_travel_workspace(jsonb)'::regprocedure
+         and prosecdef
+     ) then
+    raise exception 'T003 SECURITY INVOKER RPC/grant contract is missing after upgrade.';
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid='public.itinerary_days'::regclass
+      and conname='itinerary_days_trip_day_number_key'
+      and condeferrable
+  ) or not exists (
+    select 1 from pg_constraint
+    where conrelid='public.itinerary_items'::regclass
+      and conname='itinerary_items_day_position_key'
+      and condeferrable
+  ) or not exists (
+    select 1 from pg_trigger
+    where tgrelid='public.itinerary_days'::regclass
+      and tgname='itinerary_days_enforce_contiguous_numbers'
+      and tgdeferrable
+  ) or not exists (
+    select 1 from pg_trigger
+    where tgrelid='public.itinerary_items'::regclass
+      and tgname='itinerary_items_enforce_contiguous_positions'
+      and tgdeferrable
+  ) then
+    raise exception 'Deferred ordering-contiguity invariant is missing after upgrade.';
   end if;
 end
 $$;

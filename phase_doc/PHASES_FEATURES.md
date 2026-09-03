@@ -17,8 +17,8 @@ Checkbox là nguồn theo dõi tiến độ **authoritative** của roadmap này
 | Integration (`INT-P0` through `INT-P9`) | COMPLETE — this roadmap does not create `INT-P10+` |
 | Runtime sản phẩm hiện tại | React Native + TypeScript + Expo; React Navigation; Android là target hiện tại; Supabase Auth/PostgreSQL/RLS/Edge Functions |
 | Motion / animation | **PAUSED BY USER**; bảo toàn code/bằng chứng hiện có; không tiếp tục `MOTION-T007` nếu chưa được ủy quyền lại rõ ràng |
-| Trạng thái roadmap | FEATURE-P0 COMPLETE; FEATURE-P1 READY FOR EXPLICIT USER AUTHORIZATION |
-| Phase thực thi tiếp theo | `FEATURE-P1` |
+| Trạng thái roadmap | FEATURE-P0 COMPLETE; FEATURE-P1 COMPLETE |
+| Phase thực thi tiếp theo | `FEATURE-P2` cần ủy quyền rõ ràng |
 | `FEATURE-P0` | **COMPLETE (baseline và contract freeze chỉ-tài-liệu)** |
 
 ## Thẩm quyền, bất biến và non-goals
@@ -116,7 +116,7 @@ Với Edge Functions có thay đổi: `deno check`, `deno lint`, `deno test`. V�
 
 **Kiểm thử / Android / bằng chứng:** inventory source và test, kiểm tra coverage Markdown, `git diff --check`; Android `NOT RUN` cho task chỉ-tài-liệu này. **Điều kiện hoàn thành:** đối chiếu đủ 50 heading; P1 contract được freeze phía dưới; không có source change. **Rủi ro rollback/regression:** tài liệu stale có thể ủy quyền write sai; giảm thiểu bằng cách đọc lại source hiện tại trước P1. **Cổng phase tiếp theo:** user ủy quyền rõ ràng `FEATURE-P1`.
 
-### [ ] FEATURE-P1 — Nền tảng Live Editable Travel Workspace
+### [x] FEATURE-P1 — Nền tảng Live Editable Travel Workspace
 
 **Mục tiêu / lý do:** thiết lập persisted model owner-scoped an toàn trước khi UI có mutation hoặc planning phụ thuộc vào nó.
 
@@ -395,21 +395,21 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Migration fresh/upgrade, generated types, legacy read, RLS, workspace revision, source-link concurrency và provider provenance PASS.
 
-#### [ ] FEATURE-P1-T003 — Contract mutation owner-scoped và repository
+#### [x] FEATURE-P1-T003 — Contract mutation owner-scoped và repository
 
-- [ ] FEATURE-P1-T003-S001 — Tạo validated transport, RPC/repository mutation contract owner-scoped.
-
-##### Checklist hoàn thành
-
-- [ ] Contract owner/stale-user/conflict và safe-error mapping PASS.
-
-#### [ ] FEATURE-P1-T004 — Kiểm thử migration, RLS và transport
-
-- [ ] FEATURE-P1-T004-S001 — Chạy ma trận migration/RLS/transport theo contract T001.
+- [x] FEATURE-P1-T003-S001 — Tạo validated transport, RPC/repository mutation contract owner-scoped.
 
 ##### Checklist hoàn thành
 
-- [ ] Fresh/upgrade, anonymous, owner/cross-user và forged-provider tests PASS.
+- [x] Contract owner/stale-user/conflict, strict JSON scalar và safe-error mapping PASS. Docker harness xác nhận `workspace_mutation_contract_pass`, `workspace_lock_order_concurrency_pass`, `workspace_source_link_lock_order_concurrency_pass` và `PERSISTENCE_TESTS_PASS`; `KIND_MUTABILITY = IMMUTABLE`. Lệnh item/status khóa `item → trip`; thay source-link khóa child theo UUID tăng dần rồi `item → trip`, tránh vòng chờ với CRUD source-link trực tiếp.
+
+#### [x] FEATURE-P1-T004 — Kiểm thử migration, RLS và transport
+
+- [x] FEATURE-P1-T004-S001 — Chạy ma trận migration/RLS/transport theo contract T001.
+
+##### Checklist hoàn thành
+
+- [x] Fresh/upgrade, anonymous, owner/cross-user, stale-session, forged-owner/provider, bảy kind, lifecycle, transport/accommodation, contact/source-link, ordering và safe-error tests PASS. Migration `20260903020000_workspace_ordering_contiguity.sql` dùng deferred final-state constraint trigger, chặn gap day/item từ direct CRUD nhưng cho phép renumber atomic; harness xác nhận `workspace_ordering_matrix_pass`. Android không là acceptance của nền tảng P1.
 
 #### [ ] FEATURE-P2-T001 — Thêm/sửa hoạt động và thay đổi thời gian
 

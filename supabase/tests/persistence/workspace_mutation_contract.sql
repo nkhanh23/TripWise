@@ -13,8 +13,12 @@ values
 insert into public.itinerary_items(id,itinerary_day_id,position,place_name)
 values
   ('71000000-0000-4000-8000-000000000021','71000000-0000-4000-8000-000000000011',1,'Owner item'),
+  ('71000000-0000-4000-8000-000000000023','71000000-0000-4000-8000-000000000011',2,'Verified item'),
   ('71000000-0000-4000-8000-000000000022','71000000-0000-4000-8000-000000000012',1,'Other owner item');
+update public.itinerary_items set google_place_id='verified-place-id', latitude=16.4, longitude=107.5, place_resolved_at=clock_timestamp()
+where id='71000000-0000-4000-8000-000000000023';
 insert into workspace_mutation_state values ('trip','71000000-0000-4000-8000-000000000001'), ('item','71000000-0000-4000-8000-000000000021');
+grant select on workspace_mutation_state to authenticated;
 
 set role authenticated;
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
@@ -30,16 +34,80 @@ begin
     raise exception 'Expected stale revision conflict.';
   exception when sqlstate 'TW009' then null; end;
   begin
-    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('googlePlaceId','forged')));
-    raise exception 'Expected provider field rejection.';
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch','{}'::jsonb));
+    raise exception 'Expected empty patch rejection.';
   exception when sqlstate 'TW010' then null; end;
   begin
-    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('kind','note','placeQuery','forbidden')));
-    raise exception 'Expected invalid field-kind rejection.';
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId','71000000-0000-4000-8000-000000000023','expectedRevision',(select workspace_revision from public.trips where id=(select value_uuid from workspace_mutation_state where name='trip')),'patch',jsonb_build_object('placeName','Forged replacement')));
+    raise exception 'Expected verified placeName rejection.';
+  exception when sqlstate 'TW013' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('transport',jsonb_build_object('mode','drive','departureAt','2028-01-01T10:00:00Z'))));
+    raise exception 'Expected incomplete transport timestamp rejection.';
   exception when sqlstate 'TW011' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('accommodation',jsonb_build_object('checkInAt','2028-01-03T15:00:00Z','checkOutAt','2028-01-01T11:00:00Z','nights',2))));
+    raise exception 'Expected invalid accommodation rejection.';
+  exception when sqlstate 'TW011' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('contact',jsonb_build_object('websiteUrl','javascript:alert(1)'))));
+    raise exception 'Expected unsafe contact URL rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('googlePlaceId','forged')));
+    raise exception 'Expected provider field rejection.';
+  exception when sqlstate 'TW013' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('ownerId','forged')));
+    raise exception 'Expected server-owned owner rejection.';
+  exception when sqlstate 'TW013' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('completedAt','2028-01-01T10:00:00Z')));
+    raise exception 'Expected server-owned lifecycle timestamp rejection.';
+  exception when sqlstate 'TW013' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision','1','patch',jsonb_build_object('note','wrong revision type')));
+    raise exception 'Expected strict expectedRevision type rejection.';
+  exception when sqlstate 'TW007' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('placeName',42)));
+    raise exception 'Expected strict placeName type rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('note',true)));
+    raise exception 'Expected strict note type rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('contact',jsonb_build_object('phone',123))));
+    raise exception 'Expected strict contact type rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('transport',jsonb_build_object('plannedCostAmount','123'))));
+    raise exception 'Expected strict transport amount type rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('accommodation',jsonb_build_object('nights','2'))));
+    raise exception 'Expected strict accommodation nights type rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','replace_source_links','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'links',jsonb_build_array(jsonb_build_object('type',42,'url',true))));
+    raise exception 'Expected strict source-link scalar rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('ordinaryUnknown','x')));
+    raise exception 'Expected ordinary unknown field rejection.';
+  exception when sqlstate 'TW010' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','update_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'patch',jsonb_build_object('kind','note')));
+    raise exception 'Expected immutable-kind rejection.';
+  exception when sqlstate 'TW010' then null; end;
   begin
     perform public.mutate_travel_workspace(jsonb_build_object('type','replace_source_links','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'links',jsonb_build_array(jsonb_build_object('type','website','url','javascript:alert(1)'))));
     raise exception 'Expected unsafe link rejection.';
+  exception when sqlstate 'TW014' then null; end;
+  begin
+    perform public.mutate_travel_workspace(jsonb_build_object('type','replace_source_links','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'links',(select jsonb_agg(jsonb_build_object('type','website','url','https://example.test/' || value)) from generate_series(1,13) value)));
+    raise exception 'Expected source-link cap rejection.';
   exception when sqlstate 'TW014' then null; end;
   v_result := public.mutate_travel_workspace(jsonb_build_object('type','replace_source_links','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'itemId',(select value_uuid from workspace_mutation_state where name='item'),'expectedRevision',(v_result->>'revision')::integer,'links',jsonb_build_array(jsonb_build_object('type','website','url','https://example.test/one'),jsonb_build_object('type','other','url','https://example.test/two','label','Two'))));
   if (select count(*) from public.itinerary_item_source_links where itinerary_item_id=(select value_uuid from workspace_mutation_state where name='item')) <> 2 then raise exception 'T003 source-link replacement was not atomic.'; end if;
