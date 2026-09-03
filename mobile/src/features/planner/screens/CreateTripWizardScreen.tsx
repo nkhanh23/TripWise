@@ -27,6 +27,7 @@ import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
 import { AbstractTripBuildCanvas } from '../motion/AbstractTripBuildCanvas';
 import { CreateTripGenerationPresentation } from '../motion/CreateTripGenerationPresentation';
+import { CreateTripMotionPreview } from '../motion/CreateTripMotionPreview';
 import { useTripLifecycleCoordinator } from '../motion/useTripLifecycleCoordinator';
 import { initialWizardState } from '../data/mockWizardData';
 import type {
@@ -80,6 +81,7 @@ export function CreateTripWizardScreen({
   } = useTripLifecycleCoordinator(generationRepository);
 
   const completedPreviewRef = useRef(false);
+  const [isMotionPreviewOpen, setMotionPreviewOpen] = useState(false);
 
   const [wizardState, setWizardState] = useState<CreateTripWizardState>(() => ({
     ...initialWizardState,
@@ -306,6 +308,16 @@ export function CreateTripWizardScreen({
     wizardState,
   ]);
 
+  if (__DEV__ && isMotionPreviewOpen) {
+    return (
+      <CreateTripMotionPreview
+        destination={wizardState.destination?.name || wizardState.customDestinationName}
+        durationDays={wizardState.durationDays}
+        onClose={() => setMotionPreviewOpen(false)}
+      />
+    );
+  }
+
   // Success celebration screen
   // Success celebration screen
   if (motionStatus === 'SAVE_SUCCESS' && draft) {
@@ -391,6 +403,22 @@ export function CreateTripWizardScreen({
         </View>
       ) : null}
 
+      {__DEV__ ? (
+        <View style={styles.motionPreviewEntry}>
+          <Pressable
+            accessibilityLabel={t('planner.motionPreview')}
+            accessibilityRole="button"
+            onPress={() => setMotionPreviewOpen(true)}
+            style={({ pressed }) => [
+              styles.motionPreviewButton,
+              { backgroundColor: colors.background.surfaceVariant, borderColor: colors.border.subtle },
+              pressed && styles.pressed,
+            ]}>
+            <Text style={[styles.motionPreviewButtonText, { color: colors.text.primary }]}>{t('planner.motionPreview')}</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
       {/* Fixed Bottom CTA Bar */}
       <View
         style={[
@@ -454,6 +482,23 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: typography.bodySmall,
     textAlign: 'center',
+  },
+  motionPreviewButton: {
+    alignItems: 'center',
+    borderRadius: radius.control,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: spacing.md,
+  },
+  motionPreviewButtonText: {
+    fontSize: typography.bodySmall,
+    fontWeight: typography.fontWeight.bold,
+  },
+  motionPreviewEntry: {
+    alignItems: 'flex-end',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xs,
   },
   continueButton: {
     alignItems: 'center',
