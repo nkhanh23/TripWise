@@ -1,0 +1,28 @@
+{
+  "sameDayReopenIds": [
+    "9bf30606-fa9c-4d5e-8a29-d9a5cb2ddd95",
+    "a89559da-6845-4a79-a614-4cf793063c27",
+    "7893bc9c-3bd1-4b9f-8f45-9ef3b446baf4",
+    "05c4f78b-ae04-445e-8293-96a2a56264b4"
+  ],
+  "crossDaySourceIds": [
+    "9bf30606-fa9c-4d5e-8a29-d9a5cb2ddd95",
+    "7893bc9c-3bd1-4b9f-8f45-9ef3b446baf4",
+    "05c4f78b-ae04-445e-8293-96a2a56264b4"
+  ],
+  "crossDayDestinationIds": [
+    "a89559da-6845-4a79-a614-4cf793063c27",
+    "f2917915-daac-4928-b766-0f98698ab137",
+    "14447021-d79c-42d5-8b8e-90c3d81536a2",
+    "6d110638-ae7e-49e9-b68b-d1e94a8a7c23",
+    "9d54b165-d033-444f-8c2b-caf19c34f376",
+    "9dd72016-d4a7-476c-aa1b-f5de24e1227a"
+  ],
+  "movedItemId": "a89559da-6845-4a79-a614-4cf793063c27",
+  "sameDayPositionBefore": 1,
+  "sameDayPositionAfter": 2,
+  "crossDaySourceDay": 1,
+  "crossDayTargetDay": 2,
+  "crossDayTargetPosition": 1,
+  "orderingVerification": "Authoritative getDetail parses every item.position == index+1 before rendering; reopened full graph rendered successfully. UI IDs verified above."
+}

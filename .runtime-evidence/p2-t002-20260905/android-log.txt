@@ -1,0 +1,395 @@
+--------- beginning of main
+09-06 22:01:03.385  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libjsi.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:03.441  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libfbjni.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:03.603  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libreactnative.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7dc822c6e530
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7dc822eba110
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7dc822ecc9a0
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7dc822f75560
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7dc823277bb0
+09-06 22:01:03.606  3807  3807 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7dc82328ab00
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7dc8232add70
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7dc8232b3860
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7dc823330590
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7dc8234933b0
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7dc8234a9780
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7dc8234b8780
+09-06 22:01:03.607  3807  3807 D jni_lib_merge: About to register 12 actual methods.
+09-06 22:01:03.743  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libreact_codegen_rnscreens.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing 13 pre-merged libs (including stub)
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x7dc822c6e530
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x7dc822eba110
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x7dc822ecc9a0
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x7dc822f75560
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreact_tracingjni_so.  onload_func: 0x7dc823277bb0
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x7dc82328ab00
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x7dc8232add70
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x7dc8232b3860
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x7dc823330590
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x7dc8234933b0
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x7dc8234a9780
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x7dc8234b8780
+09-06 22:01:03.743  3807  3807 D jni_lib_merge: About to register 12 actual methods.
+09-06 22:01:03.817  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libreact_codegen_safeareacontext.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:03.889  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libappmodules.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:05.404  3807  3807 E DevLauncherController: Failed to hide splash screen
+09-06 22:01:05.404  3807  3807 E DevLauncherController: java.lang.ClassNotFoundException: expo.modules.splashscreen.SplashScreenManager
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at java.lang.Class.classForName(Native Method)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at java.lang.Class.forName(Class.java:591)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at java.lang.Class.forName(Class.java:496)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at expo.modules.devlauncher.DevLauncherController$Companion.initialize$expo_dev_launcher_debug(DevLauncherController.kt:489)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at expo.modules.devlauncher.DevLauncherController$Companion.initialize(DevLauncherController.kt:527)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at expo.modules.devlauncher.DevLauncherController$Companion.initialize$default(DevLauncherController.kt:520)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at expo.modules.devlauncher.DevLauncherPackageDelegate$createApplicationLifecycleListeners$1.onCreate(DevLauncherPackageDelegate.kt:40)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at expo.modules.ApplicationLifecycleDispatcher.onApplicationCreate(ApplicationLifecycleDispatcher.kt:20)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at com.anonymous.tripwisemobile.MainApplication.onCreate(MainApplication.kt:38)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1396)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.app.ActivityThread.handleBindApplication(ActivityThread.java:8362)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.app.ActivityThread.-$$Nest$mhandleBindApplication(ActivityThread.java:0)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2775)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.os.Handler.dispatchMessageImpl(Handler.java:142)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.os.Handler.dispatchMessage(Handler.java:126)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.os.Looper.loopOnce(Looper.java:295)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.os.Looper.loop(Looper.java:398)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at android.app.ActivityThread.main(ActivityThread.java:9569)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at java.lang.reflect.Method.invoke(Native Method)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:575)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:918)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: Caused by: java.lang.ClassNotFoundException: Didn't find class "expo.modules.splashscreen.SplashScreenManager" on path: DexPathList[[zip file "/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk"],nativeLibraryDirectories=[/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/lib/x86_64, /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64, /system/lib64, /system_ext/lib64]]
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:248)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:644)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	at java.lang.ClassLoader.loadClass(ClassLoader.java:580)
+09-06 22:01:05.404  3807  3807 E DevLauncherController: 	... 21 more
+09-06 22:01:06.057  3807  3807 I Choreographer: Skipped 221 frames!  The application may be doing too much work on its main thread.
+--------- beginning of system
+09-06 22:01:06.073  3807  4060 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+09-06 22:01:06.126  3807  4060 I GFXSTREAM: [eglDisplay.cpp(297)] Opening libGLESv1_CM_emulation.so
+09-06 22:01:06.128  3807  4060 I GFXSTREAM: [eglDisplay.cpp(297)] Opening libGLESv2_emulation.so
+09-06 22:01:06.160  3807  4060 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+09-06 22:01:06.172  3807  4060 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+09-06 22:01:06.172  3807  4060 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+09-06 22:01:06.545  3807  3807 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+09-06 22:01:06.834  3807  3807 I .tripwisemobile: hiddenapi: Accessing hidden field Ljava/lang/reflect/Field;->accessFlags:I (runtime_flags=0, domain=core-platform, api=unsupported) from Lexpo/modules/ReactActivityDelegateWrapper; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-06 22:01:06.856  3807  3807 E .tripwisemobile: Invalid resource ID 0x00000000.
+09-06 22:01:06.881  3807  3807 D CompatChangeReporter: Compat change id reported: 377864165; UID 10229; state: ENABLED
+09-06 22:01:07.013  3807  3807 I .tripwisemobile: hiddenapi: Accessing hidden method Landroid/view/ViewGroup;->makeOptionalFitsSystemWindows()V (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/appcompat/widget/ViewUtils; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-06 22:01:07.085  3807  3807 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-06 22:01:07.085  3807  3807 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-06 22:01:07.175  3807  3807 W HWUI    : Unknown dataspace 0
+09-06 22:01:07.218  3807  3807 D VRI[MainActivity]: WindowInsets changed: 1080x2400 statusBars:[0,63,0,0] navigationBars:[0,0,0,63] mandatorySystemGestures:[0,63,0,84] 
+09-06 22:01:07.278  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@316b364
+09-06 22:01:07.285  3807  4129 W libc    : Access denied finding property "vendor.mesa.virtgpu.kumquat"
+09-06 22:01:07.288  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@316b364
+09-06 22:01:07.319  3807  3807 I Surface : Creating surface for consumer unnamed-3807-0 with slotExpansion=1 for 64 slots
+09-06 22:01:07.323  3807  3807 I Surface : Creating surface for consumer VRI[MainActivity]#0(BLAST Consumer)0 with slotExpansion=1 for 64 slots
+09-06 22:01:07.584  3807  3807 D InsetsController: hide(ime())
+09-06 22:01:07.587  3807  3807 I ImeTracker: com.anonymous.tripwisemobile:f0f91084: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-06 22:01:07.786  3807  4158 I HWUI    : Using FreeType backend (prop=Auto)
+09-06 22:01:07.942  3807  4034 W unknown:ReconnectingWebSocket: Couldn't connect to "ws://10.0.2.2:8082/message?device=sdk_gphone16k_x86_64%20-%2017%20-%20API%2037&app=com.anonymous.tripwisemobile&clientid=BridgelessDevSupportManager", will silently retry
+09-06 22:01:09.061  3807  3807 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+09-06 22:01:09.061  3807  3807 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+09-06 22:01:09.073  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+09-06 22:01:09.074  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+09-06 22:01:09.074  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+09-06 22:01:09.074  3807  4201 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning()
+09-06 22:01:09.101  3807  4202 W unknown:BridgelessReact: ReactHost{0}.isMetroRunning(): Async result = true
+09-06 22:01:09.101  3807  4201 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro()
+09-06 22:01:09.443  3807  3814 I .tripwisemobile: Background concurrent mark compact GC freed 5509KB AllocSpace bytes, 27(1584KB) LOS objects, 49% free, 5100KB/10200KB, paused 15.705ms,57.476ms total 497.709ms
+09-06 22:01:09.467  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libhermesvm.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:09.474  3807  3807 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libhermestooling.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:09.475  3807  3807 D jni_lib_merge: Entering merged library JNI_OnLoad.
+09-06 22:01:09.475  3807  3807 D jni_lib_merge: Preparing 4 pre-merged libs (including stub)
+09-06 22:01:09.475  3807  3807 D jni_lib_merge: Preparing to register libhermes_executor_so.  onload_func: 0x7dc927f566e0
+09-06 22:01:09.475  3807  3807 D jni_lib_merge: Preparing to register libhermesinstancejni_so.  onload_func: 0x7dc927f82b60
+09-06 22:01:09.475  3807  3807 D jni_lib_merge: Preparing to register libjsijniprofiler_so.  onload_func: 0x7dc927f84900
+09-06 22:01:09.475  3807  3807 D jni_lib_merge: About to register 3 actual methods.
+09-06 22:01:09.521  3807  3807 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-06 22:01:09.521  3807  3807 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-06 22:01:09.526  3807  3807 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+09-06 22:01:09.548  3807  3807 D VRI[MainActivity]: visibilityChanged oldVisibility=true newVisibility=false
+09-06 22:01:09.632  3807  3807 E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Loading from 192.168.1.8:8081…
+09-06 22:01:09.656  3807  3807 E unknown:ReactNative: Unable to display loading message because react activity isn't active, message: Reloading...
+09-06 22:01:12.003  3807  3807 I .tripwisemobile: hiddenapi: Accessing hidden method Landroid/os/SystemProperties;->addChangeCallback(Ljava/lang/Runnable;)V (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/compose/ui/platform/AndroidComposeView$Companion; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-06 22:01:12.978  3807  3807 D VRI[MainActivity]: WindowInsets changed: 1080x2400 statusBars:[0,63,0,0] navigationBars:[0,0,0,63] mandatorySystemGestures:[0,63,0,84] 
+09-06 22:01:12.984  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@428ea8e
+09-06 22:01:13.063  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@428ea8e
+09-06 22:01:13.746  3807  3807 I Surface : Creating surface for consumer unnamed-3807-1 with slotExpansion=1 for 64 slots
+09-06 22:01:13.748  3807  3807 I Surface : Creating surface for consumer VRI[MainActivity]#1(BLAST Consumer)1 with slotExpansion=1 for 64 slots
+09-06 22:01:14.292  3807  3807 I Choreographer: Skipped 276 frames!  The application may be doing too much work on its main thread.
+09-06 22:01:14.304  3807  3819 I HWUI    : Davey! duration=4749ms; Flags=1, FrameTimelineVsyncId=13056, IntendedVsync=104818317142, Vsync=104918317138, InputEventId=0, HandleInputStart=104930222200, AnimationStart=104930650100, PerformTraversalsStart=104930744100, DrawStart=109373397300, FrameDeadline=104834983808, FrameStartTime=104929011700, FrameInterval=16666666, WorkloadTarget=16666666, AnimationTime=104918317138, AnimationCounter=-1, SyncQueued=109443492800, SyncStart=109444327000, IssueDrawCommandsStart=109445209100, SwapBuffers=109550451100, FrameCompleted=109569012900, DequeueBufferDuration=23400, QueueBufferDuration=217800, GpuCompleted=109569012900, SwapBuffersCompleted=109552345800, DisplayPresentTime=0, CommandSubmissionCompleted=109550451100, 
+09-06 22:01:14.526  3807  4514 D ProfileInstaller: Installing profile for com.anonymous.tripwisemobile
+09-06 22:01:14.720  3807  3807 W unknown:BridgelessReact: ReactHost{0}.raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: Unhandled SoftException
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: com.facebook.react.bridge.ReactNoCrashSoftException: raiseSoftException(onWindowFocusChange(hasFocus = "true")): Tried to access onWindowFocusChange while context is not ready
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException(ReactHostImpl.kt:919)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.raiseSoftException$default(ReactHostImpl.kt:910)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.facebook.react.runtime.ReactHostImpl.onWindowFocusChange(ReactHostImpl.kt:682)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.facebook.react.ReactDelegate.onWindowFocusChanged(ReactDelegate.kt:229)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.facebook.react.ReactActivityDelegate.onWindowFocusChanged(ReactActivityDelegate.java:235)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invokeSuspend(ReactActivityDelegateWrapper.kt:320)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(ReactActivityDelegateWrapper.kt:8)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$onWindowFocusChanged$1.invoke(ReactActivityDelegateWrapper.kt:4)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper$launchLifecycleScopeWithLock$1.invokeSuspend(ReactActivityDelegateWrapper.kt:452)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.internal.DispatchedContinuationKt.resumeCancellableWith(DispatchedContinuation.kt:375)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.intrinsics.CancellableKt.startCoroutineCancellable(Cancellable.kt:26)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.CoroutineStart.invoke(CoroutineStart.kt:358)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.AbstractCoroutine.start(AbstractCoroutine.kt:134)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch(Builders.common.kt:53)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch(dex-id-4ee5d495fa49210ce150f9eab4d1707fd894c4fc:1)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt__Builders_commonKt.launch$default(Builders.common.kt:44)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at kotlinx.coroutines.BuildersKt.launch$default(dex-id-4ee5d495fa49210ce150f9eab4d1707fd894c4fc:1)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock(ReactActivityDelegateWrapper.kt:450)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.launchLifecycleScopeWithLock$default(ReactActivityDelegateWrapper.kt:446)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.ReactActivityDelegateWrapper.onWindowFocusChanged(ReactActivityDelegateWrapper.kt:318)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.facebook.react.ReactActivity.onWindowFocusChanged(ReactActivity.java:161)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at androidx.appcompat.view.WindowCallbackWrapper.onWindowFocusChanged(WindowCallbackWrapper.java:124)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at expo.modules.devmenu.detectors.InterceptingWindowCallback.onWindowFocusChanged(InterceptingWindowCallback.kt:2)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.android.internal.policy.DecorView.onWindowFocusChanged(DecorView.java:1628)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.View.dispatchWindowFocusChanged(View.java:17223)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.ViewGroup.dispatchWindowFocusChanged(ViewGroup.java:1532)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.ViewRootImpl.dispatchFocusEvent(ViewRootImpl.java:5433)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.ViewRootImpl.handleWindowFocusChanged(ViewRootImpl.java:5338)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged(ViewRootImpl.java:0)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl(ViewRootImpl.java:7558)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.view.ViewRootImpl$ViewRootHandler.handleMessage(ViewRootImpl.java:7461)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.os.Handler.dispatchMessageImpl(Handler.java:142)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.os.Handler.dispatchMessage(Handler.java:126)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.os.Looper.loopOnce(Looper.java:295)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.os.Looper.loop(Looper.java:398)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at android.app.ActivityThread.main(ActivityThread.java:9569)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at java.lang.reflect.Method.invoke(Native Method)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:575)
+09-06 22:01:14.732  3807  3807 E unknown:ReactHost: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:918)
+09-06 22:01:14.761  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:01:14.763  3807  3807 D ViewRootImpl: Skipping stats log for color mode
+09-06 22:01:14.773  3807  3807 D InsetsController: hide(ime())
+09-06 22:01:14.773  3807  3807 I ImeTracker: com.anonymous.tripwisemobile:4255f4fd: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-06 22:01:15.178  3807  3814 I .tripwisemobile: Background young concurrent mark compact GC freed 3152KB AllocSpace bytes, 0(0B) LOS objects, 37% free, 6344KB/10200KB, paused 4.329ms,23.070ms total 308.976ms
+09-06 22:01:17.422  3807  3814 W .tripwisemobile: Suspending all threads took: 11.465ms
+09-06 22:01:17.456  3807  3814 I .tripwisemobile: Background concurrent mark compact GC freed 1267KB AllocSpace bytes, 2(144KB) LOS objects, 49% free, 8613KB/16MB, paused 17.575ms,16.696ms total 150.588ms
+09-06 22:01:18.757  3807  3812 I .tripwisemobile: Compiler allocated 5551KB to compile void android.view.ViewRootImpl.performTraversals(long)
+09-06 22:01:20.478  3807  4202 W unknown:BridgelessReact: ReactHost{0}.loadJSBundleFromMetro(): Creating BundleLoader
+09-06 22:01:20.480  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating BridgelessReactContext
+09-06 22:01:20.492  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+09-06 22:01:21.329  3807  4201 I ExpoModulesCore: ✅ AppContext was initialized
+09-06 22:01:21.785  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+09-06 22:01:21.788  3807  4201 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): DevSupportManager.onNewReactContextCreated()
+09-06 22:01:21.828  3807  3807 W unknown:ReactNative: Packager connection already open, nooping.
+09-06 22:01:21.837  3807  4201 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+09-06 22:01:21.837  3807  3807 W unknown:BridgelessReact: ReactHost{0}.ReactContext.onHostResume()
+09-06 22:01:21.851  3807  3807 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+09-06 22:01:21.862  3807  3807 W DevLauncher: java.lang.NoSuchFieldException: No field colorScheme in class Lcom/facebook/react/modules/appearance/AppearanceModule; (declaration of 'com.facebook.react.modules.appearance.AppearanceModule' appears in /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes6.dex)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at java.lang.Class.getDeclaredField(Native Method)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at expo.modules.devlauncher.helpers.DevLauncherReflectionExtensionsKt.setProtectedDeclaredField(DevLauncherReflectionExtensions.kt:21)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at expo.modules.devlauncher.helpers.DevLauncherReflectionExtensionsKt.setProtectedDeclaredField$default(DevLauncherReflectionExtensions.kt:20)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader.applyUserInterfaceStyle(DevLauncherExpoAppLoader.kt:51)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader.onReactContext(DevLauncherExpoAppLoader.kt:28)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoader$createOnDelegateWillBeCreatedListener$1$2.onReactContextInitialized(DevLauncherAppLoader.kt:57)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.ReactHostImpl.getOrCreateReactInstanceTask$lambda$45$lambda$43(ReactHostImpl.kt:1136)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.ReactHostImpl.$r8$lambda$TGfHfKNzu8slhNdDyf1Q_eCNKxQ(ReactHostImpl.kt:0)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.ReactHostImpl$$ExternalSyntheticLambda44.invoke(D8$$SyntheticClass:0)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.ReactHostImpl$sam$com_facebook_react_runtime_internal_bolts_Continuation$0.then(ReactHostImpl.kt:2)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.internal.bolts.Task$Companion.completeImmediately$lambda$3(Task.kt:360)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.internal.bolts.Task$Companion.$r8$lambda$b7MTC0ufkn_2TjF4BGcNqGR9qK0(Task.kt:0)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.facebook.react.runtime.internal.bolts.Task$Companion$$ExternalSyntheticLambda3.run(D8$$SyntheticClass:0)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at android.os.Handler.handleCallback(Handler.java:1082)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at android.os.Handler.dispatchMessageImpl(Handler.java:135)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at android.os.Handler.dispatchMessage(Handler.java:126)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at android.os.Looper.loopOnce(Looper.java:295)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at android.os.Looper.loop(Looper.java:398)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at android.app.ActivityThread.main(ActivityThread.java:9569)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at java.lang.reflect.Method.invoke(Native Method)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:575)
+09-06 22:01:21.862  3807  3807 W DevLauncher: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:918)
+09-06 22:01:22.730  3807  3814 I .tripwisemobile: Background young concurrent mark compact GC freed 10MB AllocSpace bytes, 4(192KB) LOS objects, 58% free, 7157KB/16MB, paused 8.441ms,42.659ms total 348.493ms
+09-06 22:01:23.812  3807  4714 I WebViewFactory: Loading com.google.android.webview version 151.0.7922.199 (code 792219908)
+09-06 22:01:23.825  3807  4714 V ResourcesManager: The following library key has been added: ResourcesKey{ mHash=d9e4f33 mResDir=null mSplitDirs=[] mOverlayDirs=[] mLibDirs=[/data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/base.apk,/system/framework/android.test.base.jar,/system_ext/framework/androidx.window.extensions.jar] mDisplayId=0 mOverrideConfig=v37 mCompatInfo={420dpi always-compat} mLoaders=[]}
+09-06 22:01:23.930  3807  4714 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.test.base.jar
+09-06 22:01:23.930  3807  4714 D ApplicationLoaders: Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+09-06 22:01:23.939  3807  4714 D nativeloader: Configuring clns-10 for other apk /data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/lib/x86_64:/data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+09-06 22:01:24.168  3807  4714 I cr_WVCFactoryProvider: version=151.0.7922.199 (792219908) minSdkVersion=29 multiprocess=true packageId=2 splits=<none>
+09-06 22:01:24.243  3807  4713 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/libexpo-modules-core.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes7.dex): ok
+09-06 22:01:24.270  3807  4713 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+09-06 22:01:24.283  3807  4714 D nativeloader: Load /data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/base.apk!/lib/x86_64/libwebviewchromium.so using class loader ns clns-10 (caller=/data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/base.apk): ok
+09-06 22:01:24.299  3807  4714 D nativeloader: Load /system/lib64/libwebviewchromium_plat_support.so using class loader ns clns-10 (caller=/data/app/~~8aKxq92OPLL_ldkjGh1UeQ==/com.google.android.webview-8L8b2ee-UgnGz6fAk86l4w==/base.apk): ok
+09-06 22:01:24.319  3807  4850 I chromium: [0906/220124.318247:INFO:android_webview/browser/variations/variations_seed_loader.cc:67] Failed to open file for reading.: No such file or directory (2)
+09-06 22:01:24.324  3807  4850 I chromium: [0906/220124.324085:INFO:android_webview/browser/variations/variations_seed_loader.cc:67] Failed to open file for reading.: No such file or directory (2)
+09-06 22:01:24.419  3807  4713 I ExpoModulesCore: ✅ JSI interop was installed
+09-06 22:01:24.502  3807  4714 I cr_LibraryLoader: Successfully loaded native library
+09-06 22:01:24.511  3807  4714 I cr_CachingUmaRecorder: Flushed 37 samples from 19 histograms, 0 samples were dropped.
+09-06 22:01:24.553  3807  4713 I ExpoModulesCore: ✅ Constants were exported
+09-06 22:01:25.197  3807  4713 E .tripwisemobile: Invalid resource ID 0x00000000.
+09-06 22:01:25.712  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+09-06 22:01:25.773  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+09-06 22:01:25.803  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+09-06 22:01:25.806  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+09-06 22:01:25.824  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.CalloutManager
+09-06 22:01:25.825  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.maps.MapLocalTileManager
+09-06 22:01:25.872  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.MapViewManager
+09-06 22:01:25.875  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+09-06 22:01:25.876  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.WMSTileManager
+09-06 22:01:25.878  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+09-06 22:01:25.890  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+09-06 22:01:25.896  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.safearea.SafeAreaViewManager
+09-06 22:01:25.898  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+09-06 22:01:25.906  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.PolylineManager
+09-06 22:01:25.913  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+09-06 22:01:25.913  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.config.StackHeaderConfigViewManager
+09-06 22:01:25.915  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.PolygonManager
+09-06 22:01:25.918  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+09-06 22:01:25.922  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+09-06 22:01:25.925  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.maps.MapGradientPolylineManager
+09-06 22:01:25.926  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.maps.MapHeatmapManager
+09-06 22:01:25.943  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.host.TabsHostViewManager
+09-06 22:01:25.944  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.header.subview.StackHeaderSubviewViewManager
+09-06 22:01:25.956  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.OverlayManager
+09-06 22:01:25.958  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.scrollviewmarker.ScrollViewMarkerViewManager
+09-06 22:01:25.959  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.UrlTileManager
+09-06 22:01:25.963  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+09-06 22:01:25.964  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetContentWrapperViewManager
+09-06 22:01:25.965  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+09-06 22:01:25.979  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.MarkerManager
+09-06 22:01:25.984  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.host.StackHostViewManager
+09-06 22:01:25.985  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+09-06 22:01:25.993  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.stack.screen.StackScreenViewManager
+09-06 22:01:26.018  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.modals.formsheet.FormSheetHostViewManager
+09-06 22:01:26.026  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.screen.TabsScreenViewManager
+09-06 22:01:26.030  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.rnmaps.fabric.CircleManager
+09-06 22:01:26.519  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.debuggingoverlay.DebuggingOverlayManager
+09-06 22:01:26.545  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+09-06 22:01:26.569  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+09-06 22:01:26.592  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+09-06 22:01:26.610  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+09-06 22:01:26.638  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+09-06 22:01:26.663  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+09-06 22:01:26.687  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+09-06 22:01:26.702  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+09-06 22:01:26.713  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+09-06 22:01:26.725  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+09-06 22:01:26.741  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+09-06 22:01:26.764  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+09-06 22:01:26.775  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+09-06 22:01:26.793  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+09-06 22:01:26.813  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.SelectableTextViewManager
+09-06 22:01:26.829  3807  4713 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.virtual.view.ReactVirtualViewManager
+09-06 22:01:27.522  3807  4713 D nativeloader: Load /data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!/lib/x86_64/librnscreens.so using class loader ns clns-9 (caller=/data/app/~~eMVHmsNJOEPnUupMAAND_A==/com.anonymous.tripwisemobile-Fmme86S49Pgy2wCT35Gelw==/base.apk!classes2.dex): ok
+09-06 22:01:28.400  3807  4713 I ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
+09-06 22:01:28.953  3807  4714 W unknown:ReactNative: StatusBarModule: Ignored status bar change, current activity is edge-to-edge.
+09-06 22:01:28.953  3807  4714 W unknown:ReactNative: StatusBarModule: Ignored status bar change, current activity is edge-to-edge.
+09-06 22:01:29.226  3807  3814 I .tripwisemobile: NativeAlloc concurrent mark compact GC freed 4480KB AllocSpace bytes, 12(528KB) LOS objects, 49% free, 8933KB/17MB, paused 4.278ms,60.415ms total 140.584ms
+09-06 22:01:42.670  3807  4999 W .tripwisemobile: JNI critical lock held for 34.558ms on Thread[51,tid=4999,Runnable,Thread*=0x7dcab767a3a0,peer=0x261b2d0,"OkHttp https://bvblyrzbkyhcreimuumu.supabase.co/..."]
+09-06 22:01:44.612  3807  4714 W unknown:ReactNative: StatusBarModule: Ignored status bar change, current activity is edge-to-edge.
+09-06 22:01:44.827  3807  3807 I .tripwisemobile: hiddenapi: Accessing hidden field Landroid/widget/ScrollView;->mScroller:Landroid/widget/OverScroller; (runtime_flags=0, domain=platform, api=unsupported) from Lcom/facebook/react/views/scroll/ReactScrollView; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-06 22:01:45.374  3807  5042 I HWUI    : Davey! duration=734ms; Flags=0, FrameTimelineVsyncId=30003, IntendedVsync=139884982406, Vsync=139884982406, InputEventId=-836948269, HandleInputStart=139889982400, AnimationStart=139890085600, PerformTraversalsStart=140459175600, DrawStart=140461790100, FrameDeadline=140518315714, FrameStartTime=139889874000, FrameInterval=16666666, WorkloadTarget=16666666, AnimationTime=139884982406, AnimationCounter=-1, SyncQueued=140478739900, SyncStart=140481520400, IssueDrawCommandsStart=140490492500, SwapBuffers=140603707700, FrameCompleted=140622073000, DequeueBufferDuration=32700, QueueBufferDuration=9380100, GpuCompleted=140621881400, SwapBuffersCompleted=140622073000, DisplayPresentTime=0, CommandSubmissionCompleted=140603707700, 
+09-06 22:02:19.887  3807  3814 W .tripwisemobile: Suspending all threads took: 11.331ms
+09-06 22:02:20.104  3807  3814 I .tripwisemobile: Background young concurrent mark compact GC freed 6512KB AllocSpace bytes, 31(1472KB) LOS objects, 42% free, 10MB/17MB, paused 17.058ms,34.362ms total 455.558ms
+09-06 22:02:21.574  3807  3807 I .tripwisemobile: hiddenapi: Accessing hidden field Landroid/widget/HorizontalScrollView;->mScroller:Landroid/widget/OverScroller; (runtime_flags=0, domain=platform, api=unsupported) from Lcom/facebook/react/views/scroll/ReactHorizontalScrollView; (domain=app, TargetSdkVersion=36) using reflection: allowed
+09-06 22:02:22.321  3807  3818 I HWUI    : Davey! duration=800ms; Flags=0, FrameTimelineVsyncId=45945, IntendedVsync=176768314264, Vsync=176768314264, InputEventId=0, HandleInputStart=176770389800, AnimationStart=176770593700, PerformTraversalsStart=177437525100, DrawStart=177437838900, FrameDeadline=177534980900, FrameStartTime=176770359300, FrameInterval=16666666, WorkloadTarget=16666666, AnimationTime=176768314264, AnimationCounter=-1, SyncQueued=177486784100, SyncStart=177504316100, IssueDrawCommandsStart=177508035600, SwapBuffers=177577190600, FrameCompleted=177586062900, DequeueBufferDuration=33200, QueueBufferDuration=313300, GpuCompleted=177586062900, SwapBuffersCompleted=177578373500, DisplayPresentTime=0, CommandSubmissionCompleted=177577190600, 
+09-06 22:04:00.811  3807  3814 I .tripwisemobile: Background concurrent mark compact GC freed 6000KB AllocSpace bytes, 15(672KB) LOS objects, 49% free, 10MB/21MB, paused 1.575ms,17.943ms total 55.215ms
+09-06 22:04:56.780  3807  3807 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+09-06 22:04:56.780  3807  3807 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+09-06 22:04:56.788  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@694a06a
+09-06 22:04:56.788  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@694a06a
+09-06 22:04:56.793  3807  3807 I Surface : Creating surface for consumer unnamed-3807-2 with slotExpansion=1 for 64 slots
+09-06 22:04:56.794  3807  3807 I Surface : Creating surface for consumer VRI[MainActivity]#2(BLAST Consumer)2 with slotExpansion=1 for 64 slots
+09-06 22:04:56.946  3807  3807 D InsetsController: hide(ime())
+09-06 22:04:56.947  3807  3807 I ImeTracker: com.anonymous.tripwisemobile:c5aca0b2: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-06 22:05:19.768  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:05:19.810  3807  3807 D InsetsController: hide(ime())
+09-06 22:05:19.810  3807  3807 I ImeTracker: com.anonymous.tripwisemobile:3cb630f7: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-06 22:06:01.065  3807  3814 W .tripwisemobile: Cleared Reference was only reachable from finalizer (only reported once)
+09-06 22:06:01.088  3807  3814 I .tripwisemobile: Background young concurrent mark compact GC freed 8916KB AllocSpace bytes, 23(960KB) LOS objects, 44% free, 12MB/21MB, paused 1.390ms,15.391ms total 38.799ms
+09-06 22:06:57.258  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@559c9fa
+09-06 22:06:57.259  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@559c9fa
+09-06 22:06:57.263  3807  3807 I Surface : Creating surface for consumer unnamed-3807-3 with slotExpansion=1 for 64 slots
+09-06 22:06:57.264  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:9bed4f0]#3(BLAST Consumer)3 with slotExpansion=1 for 64 slots
+09-06 22:06:57.326  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:06:59.454  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@e1fdabd
+09-06 22:06:59.455  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@e1fdabd
+09-06 22:06:59.459  3807  3807 I Surface : Creating surface for consumer unnamed-3807-4 with slotExpansion=1 for 64 slots
+09-06 22:06:59.460  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:2f34768]#4(BLAST Consumer)4 with slotExpansion=1 for 64 slots
+09-06 22:06:59.512  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:01.007  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@a2b33f
+09-06 22:07:01.007  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@a2b33f
+09-06 22:07:01.016  3807  3807 I Surface : Creating surface for consumer unnamed-3807-5 with slotExpansion=1 for 64 slots
+09-06 22:07:01.018  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:dada812]#5(BLAST Consumer)5 with slotExpansion=1 for 64 slots
+09-06 22:07:02.174  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:02.286  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@96a98b1
+09-06 22:07:02.286  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@96a98b1
+09-06 22:07:02.292  3807  3807 I Surface : Creating surface for consumer unnamed-3807-6 with slotExpansion=1 for 64 slots
+09-06 22:07:02.293  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:cdc286c]#6(BLAST Consumer)6 with slotExpansion=1 for 64 slots
+09-06 22:07:03.834  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:03.857  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@d2766a0
+09-06 22:07:03.858  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@d2766a0
+09-06 22:07:03.862  3807  3807 I Surface : Creating surface for consumer unnamed-3807-7 with slotExpansion=1 for 64 slots
+09-06 22:07:03.863  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:b11c46]#7(BLAST Consumer)7 with slotExpansion=1 for 64 slots
+09-06 22:07:04.804  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:04.823  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@4ce6a0b
+09-06 22:07:04.825  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@4ce6a0b
+09-06 22:07:04.828  3807  3807 I Surface : Creating surface for consumer unnamed-3807-8 with slotExpansion=1 for 64 slots
+09-06 22:07:04.829  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:28cd3c9]#8(BLAST Consumer)8 with slotExpansion=1 for 64 slots
+09-06 22:07:05.708  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:05.721  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@8c05fe2
+09-06 22:07:05.721  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@8c05fe2
+09-06 22:07:05.725  3807  3807 I Surface : Creating surface for consumer unnamed-3807-9 with slotExpansion=1 for 64 slots
+09-06 22:07:05.726  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:4ea2418]#9(BLAST Consumer)9 with slotExpansion=1 for 64 slots
+09-06 22:07:06.634  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:06.651  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@e4c54d5
+09-06 22:07:06.652  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@e4c54d5
+09-06 22:07:06.659  3807  3807 I Surface : Creating surface for consumer unnamed-3807-10 with slotExpansion=1 for 64 slots
+09-06 22:07:06.660  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:68b8b63]#10(BLAST Consumer)10 with slotExpansion=1 for 64 slots
+09-06 22:07:07.613  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:07.635  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@eb55454
+09-06 22:07:07.635  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@eb55454
+09-06 22:07:07.641  3807  3807 I Surface : Creating surface for consumer unnamed-3807-11 with slotExpansion=1 for 64 slots
+09-06 22:07:07.642  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:98299cb]#11(BLAST Consumer)11 with slotExpansion=1 for 64 slots
+09-06 22:07:08.553  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:08.570  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@7bc938f
+09-06 22:07:08.570  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@7bc938f
+09-06 22:07:08.578  3807  3807 I Surface : Creating surface for consumer unnamed-3807-12 with slotExpansion=1 for 64 slots
+09-06 22:07:08.579  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:3a0926d]#12(BLAST Consumer)12 with slotExpansion=1 for 64 slots
+09-06 22:07:09.505  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:09.525  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@9690876
+09-06 22:07:09.527  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@9690876
+09-06 22:07:09.530  3807  3807 I Surface : Creating surface for consumer unnamed-3807-13 with slotExpansion=1 for 64 slots
+09-06 22:07:09.531  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:47dbe4c]#13(BLAST Consumer)13 with slotExpansion=1 for 64 slots
+09-06 22:07:10.365  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:10.384  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@6051cb9
+09-06 22:07:10.387  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@6051cb9
+09-06 22:07:10.392  3807  3807 I Surface : Creating surface for consumer unnamed-3807-14 with slotExpansion=1 for 64 slots
+09-06 22:07:10.393  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:f817514]#14(BLAST Consumer)14 with slotExpansion=1 for 64 slots
+09-06 22:07:10.981  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:23.255  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@86617f8
+09-06 22:07:23.255  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@86617f8
+09-06 22:07:23.258  3807  3807 I Surface : Creating surface for consumer unnamed-3807-15 with slotExpansion=1 for 64 slots
+09-06 22:07:23.259  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:ac7423f]#15(BLAST Consumer)15 with slotExpansion=1 for 64 slots
+09-06 22:07:23.291  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:23.533  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@b886c3
+09-06 22:07:23.535  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@b886c3
+09-06 22:07:23.537  3807  3807 I Surface : Creating surface for consumer unnamed-3807-16 with slotExpansion=1 for 64 slots
+09-06 22:07:23.538  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:3abde6]#16(BLAST Consumer)16 with slotExpansion=1 for 64 slots
+09-06 22:07:23.574  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:24.492  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@d0eb215
+09-06 22:07:24.495  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@d0eb215
+09-06 22:07:24.501  3807  3807 I Surface : Creating surface for consumer unnamed-3807-17 with slotExpansion=1 for 64 slots
+09-06 22:07:24.502  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:43d19a0]#17(BLAST Consumer)17 with slotExpansion=1 for 64 slots
+09-06 22:07:24.608  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:29.568  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@37b3bd7
+09-06 22:07:29.569  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@37b3bd7
+09-06 22:07:29.578  3807  3807 I Surface : Creating surface for consumer unnamed-3807-18 with slotExpansion=1 for 64 slots
+09-06 22:07:29.579  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:3e5c48a]#18(BLAST Consumer)18 with slotExpansion=1 for 64 slots
+09-06 22:07:29.632  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:32.400  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@bd477c7
+09-06 22:07:32.401  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@bd477c7
+09-06 22:07:32.406  3807  3807 I Surface : Creating surface for consumer unnamed-3807-19 with slotExpansion=1 for 64 slots
+09-06 22:07:32.407  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:342bf3a]#19(BLAST Consumer)19 with slotExpansion=1 for 64 slots
+09-06 22:07:32.443  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null
+09-06 22:07:34.108  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda14@122bcf9
+09-06 22:07:34.109  3807  4132 D WindowOnBackDispatcher: setOnBackInvokedCallbackInfo: android.view.ViewRootImpl$$ExternalSyntheticLambda14@122bcf9
+09-06 22:07:34.114  3807  3807 I Surface : Creating surface for consumer unnamed-3807-20 with slotExpansion=1 for 64 slots
+09-06 22:07:34.115  3807  3807 I Surface : Creating surface for consumer VRI[PopupWindow:7335a54]#20(BLAST Consumer)20 with slotExpansion=1 for 64 slots
+09-06 22:07:34.543  3807  3807 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): null

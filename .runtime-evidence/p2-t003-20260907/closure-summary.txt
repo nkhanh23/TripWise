@@ -1,0 +1,61 @@
+FEATURE-P2-T003 EXACT-CURRENT CLOSURE
+Captured: 2026-09-07 Asia/Bangkok
+
+SCOPE
+- Capability: skip, complete, and note create/update/remove for existing itinerary items.
+- Production data: real linked Supabase trip; fixture mode was not used.
+- Android target: emulator-5554, package com.anonymous.tripwisemobile.
+- Trip: Tokyo Exploration 2026.
+- Stable item UUID: 05c4f78b-ae04-445e-8293-96a2a56264b4.
+- Runtime provider provenance: NOT_AVAILABLE; the exercised real item was UNRESOLVED.
+
+MOBILE GATES
+- npm run typecheck: PASS.
+- npm run lint: PASS with 0 errors and 12 pre-existing warnings.
+- npm test -- --runInBand: PASS; 64 passed suites, 1 skipped suite; 463 passed tests, 1 skipped test, 464 total.
+- Focused final regression after null-note validator correction: PASS; 2 suites, 24 tests.
+- npx expo-doctor: 20/21; EXPO_DOCTOR_BASELINE=YES; EXPO_DOCTOR_T003_REGRESSION=NO.
+
+ANDROID EXACT-CURRENT EVIDENCE
+- Metro status: packager-status:running through adb reverse tcp:8081.
+- Final current-bundle reload timestamp: 2026-09-07 10:38:12.600000000 +0700.
+- Note add: PASS; note-added-trip-detail.xml/png.
+- Note add Home -> reopen: PASS; note-reopen-trip-detail.xml/png.
+- Skip: PASS; skipped-trip-detail.xml/png.
+- Skip Home -> reopen: PASS; skipped-home-reopen.xml/png.
+- Note edit: PASS; note-edited-trip-detail.xml.
+- Note edit Home -> reopen: PASS; note-edited-home-reopen.xml.
+- Complete: PASS; completed-trip-detail.xml/png.
+- Complete Home -> reopen: PASS; completed-home-reopen.xml/png.
+- Note remove after current-bundle reload: PASS; note-removed-trip-detail.xml/png.
+- Final full Home -> reopen: PASS; final-home-reopen.xml/png.
+- Final assertions: FINAL_UUID=True; FINAL_COMPLETED=True; FINAL_NOTE_REMOVED=True; FINAL_TRIP=True.
+- Android logs: android-note-added.log, android-runtime.log.
+
+CONTRACT AND CONCURRENCY
+- Reused public.mutate_travel_workspace(jsonb); no migration or RPC change.
+- Function remains SECURITY INVOKER and derives owner access from auth.uid().
+- Status/note lock order remains itinerary item row -> owner-scoped trip row -> workspace_revision CAS -> same-row UPDATE.
+- Stale revision raises TW009; the client performs no automatic mutation replay.
+- Client performs one logical mutation per action and one authoritative read after conflict; success returns to Trip Detail, whose focus listener performs the authoritative read.
+- Status and note updates preserve day membership, position, UUID, and provider-owned fields; no delete/recreate and no full graph rewrite.
+- The lock order is compatible with T002 move ordering because both acquire item locks before the trip lock; T003 does not acquire day locks.
+
+DATABASE EVIDENCE
+- No SQL changed for T003, so the Docker/persistence suite was not rerun.
+- Current persistence contract covers owner CAS note mutation, TW009 stale conflict, provider/server-owned field rejection, lifecycle transition validation, cross-user TW008, and authenticated/anon RPC privileges.
+
+SOURCE SHA-256 AT CLOSURE
+- 361758B3E5992A0942BD9C1CD5D0E6F97631565450E19424A8B1BA49818FA709  mobile/src/features/trips/useActivityEditorController.ts
+- 22F7BEB6DB537AF41CFFC97CB91953CEC1EAC1C6E82D32DB6594D7EFB5C2F617  mobile/src/features/trips/screens/ActivityEditorScreen.tsx
+- EBBF66676EE2E80ECA9CFFE975A7B142B03AAFF70E3DC1D5E0A5472DCF1CD75A  mobile/src/features/trips/components/ItineraryCard.tsx
+- 501D9D96F4996F0A7814FDC98298D5989A49EB44050767CCBEA325D0E63EE5A4  mobile/src/i18n/en.ts
+- 7CCB46DE126DBB2EB5028603E98218C95AB8682A872CF433970FA8B03869683A  mobile/src/i18n/vi.ts
+- 2A1C41F92B766EE894663640C44C90A1B77905F1B3367FE44FD13BD6ABE78A27  mobile/src/integration/validation.ts
+
+SAFETY
+- Dependencies changed by T003: NO.
+- Migration changed by T003: NO.
+- T004/T005 started: NO.
+- Commit/push: NO.
+- CREATE_TRIP_GENERATION_MOTION: PAUSED_BY_USER.

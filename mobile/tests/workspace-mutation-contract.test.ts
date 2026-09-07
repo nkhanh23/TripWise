@@ -9,6 +9,7 @@ import { validateWorkspaceMutationCommand } from '../src/integration/validation'
 
 const tripId = '11111111-1111-4111-8111-111111111111';
 const itemId = '22222222-2222-4222-8222-222222222222';
+const dayId = '33333333-3333-4333-8333-333333333333';
 
 describe('FEATURE-P1-T003 workspace mutation transport', () => {
   it('sends only a typed CAS command and returns the server revision', async () => {
@@ -17,6 +18,27 @@ describe('FEATURE-P1-T003 workspace mutation transport', () => {
     const repository = new SupabaseTravelWorkspaceRepository({ rpc } as unknown as SupabaseClient<Database>);
     await expect(repository.mutate({ type: 'update_item', tripId: tripId as never, itemId: itemId as never, expectedRevision: 8, patch: { note: 'Owner note' } })).resolves.toEqual({ revision: 9 });
     expect(rpc).toHaveBeenCalledWith('mutate_travel_workspace', { p_command: expect.objectContaining({ expectedRevision: 8, patch: { note: 'Owner note' } }) });
+  });
+
+  it('accepts an explicit null note and sends the existing clear-note contract', async () => {
+    const abortSignal = jest.fn().mockResolvedValue({ data: { revision: 10 }, error: null });
+    const rpc = jest.fn().mockReturnValue({ abortSignal });
+    const repository = new SupabaseTravelWorkspaceRepository({ rpc } as unknown as SupabaseClient<Database>);
+    await expect(repository.mutate({ type: 'update_item', tripId: tripId as never, itemId: itemId as never, expectedRevision: 9, patch: { note: null } })).resolves.toEqual({ revision: 10 });
+    expect(rpc).toHaveBeenCalledWith('mutate_travel_workspace', { p_command: expect.objectContaining({ itemId, expectedRevision: 9, patch: { note: null } }) });
+  });
+
+  it('sends a custom-activity create command to the owner-scoped create RPC', async () => {
+    const abortSignal = jest.fn().mockResolvedValue({ data: { revision: 9, itemId }, error: null });
+    const rpc = jest.fn().mockReturnValue({ abortSignal });
+    const repository = new SupabaseTravelWorkspaceRepository({ rpc } as unknown as SupabaseClient<Database>);
+    await expect(repository.mutate({ type: 'create_item', tripId: tripId as never, dayId: dayId as never, expectedRevision: 8, item: { itemKind: 'custom_activity', title: 'Museum visit', flexibility: 'flexible', priority: 'want_to_do', startTime: '09:00', endTime: '10:00' } })).resolves.toEqual({ revision: 9, itemId });
+    expect(rpc).toHaveBeenCalledWith('create_travel_workspace_item', expect.objectContaining({ p_command: expect.objectContaining({ dayId, item: expect.objectContaining({ itemKind: 'custom_activity' }) }) }));
+  });
+
+  it('rejects provider spoofing and invalid custom-activity time before transport', () => {
+    expect(() => validateWorkspaceMutationCommand({ type: 'create_item', tripId, dayId, expectedRevision: 1, item: { itemKind: 'custom_activity', title: 'x', flexibility: 'fixed', priority: 'must_do', googlePlaceId: 'forged' } })).toThrow('create custom activity');
+    expect(() => validateWorkspaceMutationCommand({ type: 'create_item', tripId, dayId, expectedRevision: 1, item: { itemKind: 'custom_activity', title: 'x', flexibility: 'fixed', priority: 'must_do', startTime: '11:00', endTime: '10:00' } })).toThrow('create custom activity');
   });
 
   it('rejects forged provider/owner fields, invalid kind pairs, unsafe links and oversized payloads before transport', () => {

@@ -182,6 +182,17 @@ export type WorkspaceItemPatch = {
   accommodation?: WorkspaceAccommodationPatch;
 };
 
+/** P2-T001 intentionally creates only user-authored activities. Provider-backed
+ * place creation remains behind the protected resolver flow. */
+export type CreateCustomActivityPayload = {
+  itemKind: 'custom_activity';
+  title: string;
+  flexibility: WorkspaceFlexibility;
+  priority: WorkspacePriority;
+  startTime?: string | null;
+  endTime?: string | null;
+};
+
 export type WorkspaceSourceLink = {
   type: 'google_maps' | 'facebook' | 'instagram' | 'tiktok' | 'website' | 'booking' | 'other';
   url: string;
@@ -197,8 +208,14 @@ export type TransitionWorkspaceItemStatusCommand = {
 export type ReplaceWorkspaceSourceLinksCommand = {
   type: 'replace_source_links'; tripId: TripId; itemId: ItineraryItemId; expectedRevision: WorkspaceRevision; links: WorkspaceSourceLink[];
 };
-export type WorkspaceMutationCommand = UpdateWorkspaceItemCommand | TransitionWorkspaceItemStatusCommand | ReplaceWorkspaceSourceLinksCommand;
-export type WorkspaceMutationResult = { revision: WorkspaceRevision };
+export type CreateWorkspaceItemCommand = {
+  type: 'create_item'; tripId: TripId; dayId: ItineraryDayId; expectedRevision: WorkspaceRevision; item: CreateCustomActivityPayload;
+};
+export type MoveWorkspaceItemCommand = {
+  type: 'move_item'; tripId: TripId; itemId: ItineraryItemId; expectedRevision: WorkspaceRevision; targetDayId: ItineraryDayId; targetPosition: number;
+};
+export type WorkspaceMutationCommand = CreateWorkspaceItemCommand | UpdateWorkspaceItemCommand | TransitionWorkspaceItemStatusCommand | ReplaceWorkspaceSourceLinksCommand | MoveWorkspaceItemCommand;
+export type WorkspaceMutationResult = { revision: WorkspaceRevision; itemId?: ItineraryItemId; noOp?: boolean };
 
 export type SavedTripCursor = {
   createdAt: string;
@@ -232,6 +249,10 @@ export type SavedTripsPage = {
 export type SavedTripItemBase = {
   id: ItineraryItemId;
   position: number;
+  itemKind: WorkspaceItemKind;
+  flexibility: WorkspaceFlexibility;
+  priority: WorkspacePriority;
+  activityStatus: WorkspaceActivityStatus;
   placeName: string;
   placeQuery?: string;
   startTime?: string;
@@ -275,6 +296,9 @@ export type SavedTripDetail = {
   currency: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Optional only for the frozen pre-workspace read contract. Mutations must
+   * never infer a revision when this field is absent. */
+  workspaceRevision?: WorkspaceRevision;
   days: SavedTripDay[];
 };
 

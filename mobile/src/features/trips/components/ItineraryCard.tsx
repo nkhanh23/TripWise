@@ -17,6 +17,7 @@ type Props = {
   onPressItem?: (item: ItineraryItem) => void;
   onGetDirections?: (item: ItineraryItem) => void;
   onResolve?: (item: ItineraryItem) => void;
+  onMoveOrReorder?: (item: ItineraryItem) => void;
   resolutionStatus?: 'UNRESOLVED_IDLE' | 'RESOLVING' | 'VERIFIED' | 'ERROR';
 };
 
@@ -27,6 +28,7 @@ export const ItineraryCard = memo(function ItineraryCard({
   onPressItem,
   onGetDirections,
   onResolve,
+  onMoveOrReorder,
   resolutionStatus = item.resolution === 'VERIFIED' ? 'VERIFIED' : 'UNRESOLVED_IDLE',
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
@@ -129,6 +131,12 @@ export const ItineraryCard = memo(function ItineraryCard({
                   {item.subtitle}
                 </AppText>
               ) : null}
+              {item.activityStatus && item.activityStatus !== 'scheduled' ? (
+                <View accessibilityLabel={t(`workspaceEditor.status.${item.activityStatus}`)} accessibilityRole="text" style={styles.statusBadge}>
+                  <MaterialIcons color={item.activityStatus === 'completed' ? colors.state.success : colors.text.muted} name={item.activityStatus === 'completed' ? 'check-circle' : 'skip-next'} size={15} />
+                  <AppText style={[styles.statusText, { color: item.activityStatus === 'completed' ? colors.state.success : colors.text.muted }]}>{t(`workspaceEditor.status.${item.activityStatus}`)}</AppText>
+                </View>
+              ) : null}
             </View>
 
             {/* Category Icon Badge */}
@@ -184,6 +192,18 @@ export const ItineraryCard = memo(function ItineraryCard({
               <Text style={[styles.directionsText, { color: colors.brand.primary }]}>
                 {resolutionStatus === 'RESOLVING' ? t('trips.resolvingPlace') : resolutionStatus === 'ERROR' ? t('trips.retryResolve') : t('trips.resolvePlace')}
               </Text>
+            </Pressable>
+          ) : null}
+          {onMoveOrReorder ? (
+            <Pressable
+              accessibilityHint={t('workspaceMove.actionHint')}
+              accessibilityLabel={t('workspaceMove.action')}
+              accessibilityRole="button"
+              hitSlop={8}
+              onPress={() => onMoveOrReorder(item)}
+              style={styles.moveRow}>
+              <MaterialIcons color={colors.brand.primary} name="swap-vert" size={18} />
+              <Text style={[styles.directionsText, { color: colors.brand.primary }]}>{t('workspaceMove.action')}</Text>
             </Pressable>
           ) : null}
         </View>
@@ -311,5 +331,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.xs,
     marginTop: spacing.sm,
+  },
+  statusBadge: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    gap: 4,
+    minHeight: 24,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  moveRow: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+    minHeight: 44,
   },
 });

@@ -25,7 +25,7 @@ import { TripEmptyDayState } from '../components/TripEmptyDayState';
 import { TripFAB } from '../components/TripFAB';
 import { TripSummaryBentoCard } from '../components/TripSummaryBentoCard';
 import { getMockTripDetail } from '../data/mockTripDetail';
-import type { PlaceImageRepository, PlacePhotoRepository, PlaceResolutionRepository, SavedTripsRepository, TripCoverImageRepository, WeatherRepository } from '../../../integration/repositories';
+import type { PlaceImageRepository, PlacePhotoRepository, PlaceResolutionRepository, SavedTripsRepository, TravelWorkspaceRepository, TripCoverImageRepository, WeatherRepository } from '../../../integration/repositories';
 import { CompositePlaceImageRepository, SequentialTripCoverImageRepository } from '../../../integration/imageResolution';
 import { mapSavedTripDetailToTripDetailData } from '../integrationMappers';
 import { asTripId, isUuid } from '../../../integration/validation';
@@ -38,7 +38,11 @@ import { SupabasePlacePhotoRepository } from '../../../integration/remote/supaba
 import { SupabaseWikimediaImageRepository } from '../../../integration/remote/supabaseWikimediaImageRepository';
 import { SupabasePlaceResolutionRepository } from '../../../integration/remote/supabasePlaceResolutionRepository';
 import { SupabaseSavedTripsRepository } from '../../../integration/remote/supabaseTripRepositories';
+import { SupabaseTravelWorkspaceRepository } from '../../../integration/remote/supabaseTripRepositories';
 import { supabase } from '../../../lib/supabase/client';
+import type { SavedTripDetail } from '../../../integration/contracts';
+import { WorkspaceMoveSheet } from '../components/WorkspaceMoveSheet';
+import { useWorkspaceMoveController } from '../useWorkspaceMoveController';
 import type {
   ItineraryItem,
   TripDetailData,
@@ -58,6 +62,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'TripDetail'> & {
   tripCoverRepository?: TripCoverImageRepository;
   weatherRepository?: WeatherRepository;
   weatherNow?: () => Date;
+  workspaceRepository?: TravelWorkspaceRepository;
   fixtureMode?: boolean;
 };
 
@@ -76,6 +81,7 @@ export function TripDetailScreen({
   tripCoverRepository,
   weatherRepository,
   weatherNow,
+  workspaceRepository: injectedWorkspaceRepository,
   fixtureMode,
 }: Props) {
   const insets = useSafeAreaInsets();
@@ -166,8 +172,24 @@ export function TripDetailScreen({
   const [selectedDayIdState, setSelectedDayId] = useState<string>('');
   const [refreshKey, setRefreshKey] = useState<number>(0);
   const [remoteTripData, setRemoteTripData] = useState<TripDetailData | null>(null);
+  const [remoteSavedDetail, setRemoteSavedDetail] = useState<SavedTripDetail | null>(null);
   const remoteTripDataRef = useRef<TripDetailData | null>(null);
   const remoteLoadRef = useRef<{ tripId: string; promise: Promise<boolean> } | null>(null);
+
+  const workspaceRepository = useMemo(() => injectedWorkspaceRepository ?? new SupabaseTravelWorkspaceRepository(supabase), [injectedWorkspaceRepository]);
+  const moveSavedTripsRepository = useMemo(() => effectiveRepository ?? new SupabaseSavedTripsRepository(supabase), [effectiveRepository]);
+  const applyAuthoritativeDetail = useCallback((detail: SavedTripDetail | null) => {
+    remoteTripDataRef.current = detail ? mapSavedTripDetailToTripDetailData(detail) : null;
+    setRemoteSavedDetail(detail);
+    setRemoteTripData(remoteTripDataRef.current);
+    setStatus(detail ? 'ready' : 'not_found');
+  }, []);
+  const moveController = useWorkspaceMoveController({
+    detail: isRemoteTrip ? remoteSavedDetail : null,
+    savedTripsRepository: moveSavedTripsRepository,
+    workspaceRepository,
+    onAuthoritativeDetail: applyAuthoritativeDetail,
+  });
 
   const loadRemoteDetail = useCallback((showBlockingLoader = true): Promise<boolean> => {
     if (!effectiveRepository || !tripId || !isRemoteTrip) return Promise.resolve(false);
@@ -189,12 +211,14 @@ export function TripDetailScreen({
       .then((detail) => {
         if (!detail) {
           remoteTripDataRef.current = null;
+          setRemoteSavedDetail(null);
           setRemoteTripData(null);
           setStatus('not_found');
           return false;
         }
         const mapped = mapSavedTripDetailToTripDetailData(detail);
         remoteTripDataRef.current = mapped;
+        setRemoteSavedDetail(detail);
         setRemoteTripData(mapped);
         setStatus('ready');
         return true;
@@ -204,6 +228,7 @@ export function TripDetailScreen({
           setStatus('ready');
         } else {
           remoteTripDataRef.current = null;
+          setRemoteSavedDetail(null);
           setRemoteTripData(null);
           setStatus('error');
         }
@@ -307,14 +332,20 @@ export function TripDetailScreen({
 
   const handlePressItem = useCallback(
     (item: ItineraryItem) => {
-      if (item.placeId) {
+      if (isRemoteTrip) {
+        navigation.navigate('ActivityEditor', { tripId: tripId!, mode: 'edit', itemId: item.id });
+      } else if (item.placeId) {
         navigation.navigate('PlaceDetail', { placeId: item.placeId });
       } else {
         Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
       }
     },
-    [navigation, t]
+    [isRemoteTrip, navigation, t, tripId]
   );
+
+  const handleMoveOrReorder = useCallback((item: ItineraryItem) => {
+    if (isRemoteTrip) moveController.open(item.id);
+  }, [isRemoteTrip, moveController]);
 
   const handleGetDirections = useCallback(
     (item: ItineraryItem) => {
@@ -360,7 +391,7 @@ export function TripDetailScreen({
     if (onPressAddPlace) {
       onPressAddPlace();
     } else if (!isFixture) {
-      Alert.alert(t('common.unavailableTitle'), t('addPlace.unavailableSubtitle'));
+      if (tripId) navigation.navigate('ActivityEditor', { tripId, mode: 'add', dayId: activeDay?.id ?? effectiveSelectedDayId });
     } else if (tripId) {
       navigation.navigate('AddPlace', {
         tripId,
@@ -516,6 +547,7 @@ export function TripDetailScreen({
                 item={displayItem}
                 onGetDirections={handleGetDirections}
                 onPressItem={handlePressItem}
+                onMoveOrReorder={isRemoteTrip ? handleMoveOrReorder : undefined}
                 onResolve={handleResolveItem}
                 resolutionStatus={resolutionStatuses[item.id]}
               />
@@ -527,6 +559,7 @@ export function TripDetailScreen({
 
       {/* 3. Floating Action Button (FAB) */}
       <TripFAB bottomInset={insets.bottom} onPress={handleFABPress} />
+      {isRemoteTrip ? <WorkspaceMoveSheet controller={moveController} detail={remoteSavedDetail} /> : null}
     </View>
   );
 }

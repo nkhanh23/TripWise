@@ -1,0 +1,37 @@
+{
+  "capturedAtUtc": "2026-09-06T15:32:04.9636002Z",
+  "files": [
+    {
+      "path": "mobile/src/features/trips/useWorkspaceMoveController.ts",
+      "sha256": "C5A78D7EB3299AA50FC4919A1E806FEC180937B21FED88F96CE5A7B603A04398"
+    },
+    {
+      "path": "mobile/src/features/trips/components/WorkspaceMoveSheet.tsx",
+      "sha256": "A2EC8593E250261D342B1EF9194078B2500D3DD5C8F7F3B92796E5AC1E5D6294"
+    },
+    {
+      "path": "mobile/src/features/trips/screens/TripDetailScreen.tsx",
+      "sha256": "3EA34B8A7F3091F43CE9DC663EB94BAB2E6CF688BF5FF2028A0C40C1EFF98344"
+    },
+    {
+      "path": "mobile/src/integration/contracts.ts",
+      "sha256": "F667123D2AC1164CCCD4925ACA0A3B244320BFAEDBC0E6B1AB3A633997885A1B"
+    },
+    {
+      "path": "mobile/src/integration/validation.ts",
+      "sha256": "8E63533B46727C00B25C4C48B1BB33CC29A2C85F595A524CBDDD1B65314926B3"
+    },
+    {
+      "path": "mobile/src/integration/remote/supabaseTripRepositories.ts",
+      "sha256": "9BC2E4E271CBF3B369F894D82C3D563A5A0785DDC18C30DE71F425A2E95EEFDE"
+    },
+    {
+      "path": "supabase/migrations/20260904000000_workspace_p2_t002_atomic_move.sql",
+      "sha256": "828093D02D9BB67F2578B53514D3B2D02A8BA38C4126B4646EE33A2EAD63129B"
+    },
+    {
+      "path": "supabase/migrations/20260905000000_workspace_create_item_lock_corrective.sql",
+      "sha256": "BB1A23EB1E4BFE465BD2C76D0977EB82022B7145DD7E685125B3C989E262B9BA"
+    }
+  ]
+}

@@ -90,6 +90,13 @@ begin
     raise exception 'T003 SECURITY INVOKER RPC/grant contract is missing after upgrade.';
   end if;
 
+  if to_regprocedure('public.create_travel_workspace_item(jsonb)') is null
+     or not has_function_privilege('authenticated', 'public.create_travel_workspace_item(jsonb)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.create_travel_workspace_item(jsonb)', 'EXECUTE')
+     or exists (select 1 from pg_proc where oid='public.create_travel_workspace_item(jsonb)'::regprocedure and prosecdef) then
+    raise exception 'P2 T001 SECURITY INVOKER create RPC/grant contract is missing after upgrade.';
+  end if;
+
   if not exists (
     select 1 from pg_constraint
     where conrelid='public.itinerary_days'::regclass

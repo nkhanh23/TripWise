@@ -1,5 +1,8 @@
 ﻿{
   "id": "db5c6e22-ba18-465a-b803-f03702d4e73a",
+  "workspaceRevision": 1,
+  "estimatedBudget": null,
+  "currency": null,
   "days": [
     {
       "id": "8c8ecc64-7d81-4124-99d1-4ab7ab891977",
@@ -9,6 +12,10 @@
           "id": "dc8858b9-3980-414e-b463-5663af8424f8",
           "latitude": 13.7438652,
           "position": 1,
+          "itemKind": "place",
+          "flexibility": "fixed",
+          "priority": "must_do",
+          "activityStatus": "scheduled",
           "longitude": 100.488444,
           "placeName": "Ch├╣a Arun",
           "placeQuery": "Wat Arun Bangkok",
@@ -21,6 +28,10 @@
           "id": "97473912-5e3c-4b33-9611-f5c6107e1399",
           "latitude": 13.7498558,
           "position": 2,
+          "itemKind": "place",
+          "flexibility": "fixed",
+          "priority": "must_do",
+          "activityStatus": "scheduled",
           "longitude": 100.4915765,
           "placeName": "The Grand Palace",
           "placeQuery": "Grand Palace Bangkok",

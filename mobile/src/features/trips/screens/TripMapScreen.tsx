@@ -138,6 +138,7 @@ export const TripMapScreen = memo(function TripMapScreen({
           currency: null,
           createdAt: '',
           updatedAt: '',
+          workspaceRevision: tripData.workspaceRevision,
           days: tripData.days.map((d) => ({
             id: d.id as never,
             dayNumber: d.dayNumber,
@@ -148,6 +149,10 @@ export const TripMapScreen = memo(function TripMapScreen({
               .map((item, index) => ({
                 id: item.id as never,
                 position: index + 1,
+                itemKind: item.workspaceItemKind ?? 'place',
+                flexibility: item.flexibility ?? 'fixed',
+                priority: item.priority ?? 'must_do',
+                activityStatus: item.activityStatus ?? 'scheduled',
                 placeName: item.title,
                 resolution: 'VERIFIED',
                 googlePlaceId: item.googlePlaceId as never,

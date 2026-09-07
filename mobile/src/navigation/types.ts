@@ -33,6 +33,9 @@ export type RootStackParamList = {
     tripId: string;
     initialDayId?: string;
   };
+  ActivityEditor:
+    | { tripId: string; mode: 'add'; dayId?: string }
+    | { tripId: string; mode: 'edit'; itemId: string };
   TripMap: {
     tripId: string;
     initialDayId?: string;

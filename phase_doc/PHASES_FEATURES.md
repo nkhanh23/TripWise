@@ -411,29 +411,29 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Fresh/upgrade, anonymous, owner/cross-user, stale-session, forged-owner/provider, bảy kind, lifecycle, transport/accommodation, contact/source-link, ordering và safe-error tests PASS. Migration `20260903020000_workspace_ordering_contiguity.sql` dùng deferred final-state constraint trigger, chặn gap day/item từ direct CRUD nhưng cho phép renumber atomic; harness xác nhận `workspace_ordering_matrix_pass`. Android không là acceptance của nền tảng P1.
 
-#### [ ] FEATURE-P2-T001 — Thêm/sửa hoạt động và thay đổi thời gian
+#### [x] FEATURE-P2-T001 — Thêm/sửa hoạt động và thay đổi thời gian
 
-- [ ] FEATURE-P2-T001-S001 — Triển khai mutation/UI add, edit và đổi thời gian qua repository contract.
-
-##### Checklist hoàn thành
-
-- [ ] Runtime owner-safe, validation, rollback và bằng chứng Android PASS.
-
-#### [ ] FEATURE-P2-T002 — Sắp xếp lại và chuyển ngày
-
-- [ ] FEATURE-P2-T002-S001 — Triển khai reorder/move-day atomic với conflict feedback.
+- [x] FEATURE-P2-T001-S001 — Triển khai mutation/UI add, edit và đổi thời gian qua repository contract.
 
 ##### Checklist hoàn thành
 
-- [ ] Ordering contiguous, stale conflict và regression khi reopen PASS.
+- [x] Runtime owner-safe, validation, rollback và bằng chứng Android PASS.
 
-#### [ ] FEATURE-P2-T003 — Bỏ qua, hoàn thành và ghi chú
+#### [x] FEATURE-P2-T002 — Sắp xếp lại và chuyển ngày
 
-- [ ] FEATURE-P2-T003-S001 — Triển khai trạng thái skip/complete và note mutation theo lifecycle frozen.
+- [x] FEATURE-P2-T002-S001 — Triển khai reorder/move-day atomic với conflict feedback.
 
 ##### Checklist hoàn thành
 
-- [ ] Transition validation, cô lập owner và bằng chứng Android PASS.
+- [x] Ordering contiguous, stale conflict và regression khi reopen PASS.
+
+#### [x] FEATURE-P2-T003 — Bỏ qua, hoàn thành và ghi chú
+
+- [x] FEATURE-P2-T003-S001 — Triển khai trạng thái skip/complete và note mutation theo lifecycle frozen.
+
+##### Checklist hoàn thành
+
+- [x] Transition validation, cô lập owner và bằng chứng Android PASS.
 
 #### [ ] FEATURE-P2-T004 — Form transport, accommodation, contact và source link
 

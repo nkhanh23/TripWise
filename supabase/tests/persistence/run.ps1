@@ -99,7 +99,114 @@ try {
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $repoRoot 'supabase\tests\saved-trips\contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_mutation_contract.sql')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_move_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_security_matrix.sql')
+
+  # P2-T001: two authenticated append commands begin from the same revision.
+  # The trip-row CAS lock must serialize them: exactly one append commits and
+  # the other returns TW009, leaving a contiguous, authoritative final state.
+  Invoke-SqlText -Database $freshDb -Sql @"
+insert into public.trips(id,user_id,title,destination,start_date,end_date)
+values('99999999-9999-4999-8999-999999999951','11111111-1111-4111-8111-111111111111','Create race','Hue','2027-11-04','2027-11-04');
+insert into public.itinerary_days(id,trip_id,day_number,date)
+values('99999999-9999-4999-8999-999999999952','99999999-9999-4999-8999-999999999951',1,'2027-11-04');
+insert into public.itinerary_items(id,itinerary_day_id,position,place_name)
+values('99999999-9999-4999-8999-999999999953','99999999-9999-4999-8999-999999999952',1,'Existing item');
+"@
+  $createRaceTemplate = @"
+set statement_timeout = '3000ms';
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+do `$block`$
+begin
+  begin
+    perform public.create_travel_workspace_item(jsonb_build_object(
+      'type','create_item','tripId','99999999-9999-4999-8999-999999999951',
+      'dayId','99999999-9999-4999-8999-999999999952','expectedRevision',3,
+      'item',jsonb_build_object('itemKind','custom_activity','title','%TITLE%',
+        'flexibility','fixed','priority','must_do')));
+    raise notice 'CREATE_ITEM_RACE=SUCCESS';
+  exception when sqlstate 'TW009' then
+    raise notice 'CREATE_ITEM_RACE=TW009';
+  end;
+end
+`$block`$;
+"@
+  $createRaceA = Start-ConcurrentSql -Sql ($createRaceTemplate.Replace('%TITLE%','Race A'))
+  Start-Sleep -Milliseconds 100
+  $createRaceB = Start-ConcurrentSql -Sql ($createRaceTemplate.Replace('%TITLE%','Race B'))
+  $completedCreateRaceJobs = Wait-Job -Job $createRaceA, $createRaceB -Timeout 10
+  if ($completedCreateRaceJobs.Count -ne 2) {
+    Remove-Job -Job $createRaceA, $createRaceB -Force
+    throw 'Create-item concurrency test exceeded bounded timeout.'
+  }
+  $createRaceOutput = ((Receive-Job -Job $createRaceA) + (Receive-Job -Job $createRaceB)) -join "`n"
+  Remove-Job -Job $createRaceA, $createRaceB
+  if (([regex]::Matches($createRaceOutput, 'CREATE_ITEM_RACE=SUCCESS')).Count -ne 1 -or
+      ([regex]::Matches($createRaceOutput, 'CREATE_ITEM_RACE=TW009')).Count -ne 1) {
+    throw "Create-item race was not one success plus one TW009 conflict.`n$createRaceOutput"
+  }
+  Invoke-SqlText -Database $freshDb -Sql @"
+do `$`$
+begin
+  if (select workspace_revision from public.trips where id='99999999-9999-4999-8999-999999999951') <> 4
+     or (select count(*) from public.itinerary_items where itinerary_day_id='99999999-9999-4999-8999-999999999952') <> 2
+     or exists (
+       select 1 from public.itinerary_items where itinerary_day_id='99999999-9999-4999-8999-999999999952'
+       group by itinerary_day_id having array_agg(position order by position) <> array[1,2]
+     ) then
+    raise exception 'Create-item race did not leave one contiguous authoritative append.';
+  end if;
+end
+`$`$;
+"@
+  Write-Output 'workspace_create_item_concurrency_pass'
+
+  # P2-T002: three independent multi-session races cover same-item moves,
+  # different-item same-day reorders, and cross-day competition. Each pair
+  # starts from its exact initial revision; bounded waits prove no lock cycle.
+  Invoke-SqlText -Database $freshDb -Sql @"
+insert into public.trips(id,user_id,title,destination,start_date,end_date) values
+('99999999-9999-4999-8999-999999999961','11111111-1111-4111-8111-111111111111','Move same item','Hue','2027-11-05','2027-11-06'),
+('99999999-9999-4999-8999-999999999971','11111111-1111-4111-8111-111111111111','Move different','Hue','2027-11-07','2027-11-07'),
+('99999999-9999-4999-8999-999999999981','11111111-1111-4111-8111-111111111111','Move cross day','Hue','2027-11-08','2027-11-09');
+insert into public.itinerary_days(id,trip_id,day_number,date) values
+('99999999-9999-4999-8999-999999999962','99999999-9999-4999-8999-999999999961',1,'2027-11-05'),('99999999-9999-4999-8999-999999999963','99999999-9999-4999-8999-999999999961',2,'2027-11-06'),
+('99999999-9999-4999-8999-999999999972','99999999-9999-4999-8999-999999999971',1,'2027-11-07'),
+('99999999-9999-4999-8999-999999999982','99999999-9999-4999-8999-999999999981',1,'2027-11-08'),('99999999-9999-4999-8999-999999999983','99999999-9999-4999-8999-999999999981',2,'2027-11-09');
+insert into public.itinerary_items(id,itinerary_day_id,position,place_name) values
+('99999999-9999-4999-8999-999999999964','99999999-9999-4999-8999-999999999962',1,'Same A'),('99999999-9999-4999-8999-999999999965','99999999-9999-4999-8999-999999999962',2,'Same B'),('99999999-9999-4999-8999-999999999966','99999999-9999-4999-8999-999999999963',1,'Same C'),
+('99999999-9999-4999-8999-999999999973','99999999-9999-4999-8999-999999999972',1,'Different A'),('99999999-9999-4999-8999-999999999974','99999999-9999-4999-8999-999999999972',2,'Different B'),('99999999-9999-4999-8999-999999999975','99999999-9999-4999-8999-999999999972',3,'Different C'),
+('99999999-9999-4999-8999-999999999984','99999999-9999-4999-8999-999999999982',1,'Cross A'),('99999999-9999-4999-8999-999999999985','99999999-9999-4999-8999-999999999982',2,'Cross B'),('99999999-9999-4999-8999-999999999986','99999999-9999-4999-8999-999999999983',1,'Cross C');
+"@
+  $moveRaceTemplate = @"
+set statement_timeout = '3000ms'; set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+do `$block`$
+begin
+  begin perform public.move_travel_workspace_item(jsonb_build_object('type','move_item','tripId','99999999-9999-4999-8999-999999999961','itemId','99999999-9999-4999-8999-999999999964','expectedRevision',6,'targetDayId','99999999-9999-4999-8999-999999999963','targetPosition',2)); raise notice 'MOVE_RACE_SAME=%LABEL%_SUCCESS'; exception when sqlstate 'TW009' then raise notice 'MOVE_RACE_SAME=%LABEL%_TW009'; end;
+  begin perform public.move_travel_workspace_item(jsonb_build_object('type','move_item','tripId','99999999-9999-4999-8999-999999999971','itemId','%DIFF_ITEM%','expectedRevision',5,'targetDayId','99999999-9999-4999-8999-999999999972','targetPosition',1)); raise notice 'MOVE_RACE_DIFFERENT=%LABEL%_SUCCESS'; exception when sqlstate 'TW009' then raise notice 'MOVE_RACE_DIFFERENT=%LABEL%_TW009'; end;
+  begin perform public.move_travel_workspace_item(jsonb_build_object('type','move_item','tripId','99999999-9999-4999-8999-999999999981','itemId','%CROSS_ITEM%','expectedRevision',6,'targetDayId','99999999-9999-4999-8999-999999999983','targetPosition',2)); raise notice 'MOVE_RACE_CROSS=%LABEL%_SUCCESS'; exception when sqlstate 'TW009' then raise notice 'MOVE_RACE_CROSS=%LABEL%_TW009'; end;
+end `$block`$;
+"@
+  $moveRaceA = Start-ConcurrentSql -Sql ($moveRaceTemplate.Replace('%LABEL%','A').Replace('%DIFF_ITEM%','99999999-9999-4999-8999-999999999974').Replace('%CROSS_ITEM%','99999999-9999-4999-8999-999999999984'))
+  Start-Sleep -Milliseconds 100
+  $moveRaceB = Start-ConcurrentSql -Sql ($moveRaceTemplate.Replace('%LABEL%','B').Replace('%DIFF_ITEM%','99999999-9999-4999-8999-999999999975').Replace('%CROSS_ITEM%','99999999-9999-4999-8999-999999999985'))
+  $completedMoveJobs = Wait-Job -Job $moveRaceA, $moveRaceB -Timeout 15
+  if ($completedMoveJobs.Count -ne 2) { Remove-Job -Job $moveRaceA, $moveRaceB -Force; throw 'Move concurrency test exceeded bounded timeout.' }
+  $moveOutput = ((Receive-Job -Job $moveRaceA) + (Receive-Job -Job $moveRaceB)) -join "`n"
+  Remove-Job -Job $moveRaceA, $moveRaceB
+  foreach ($race in @('MOVE_RACE_SAME','MOVE_RACE_DIFFERENT','MOVE_RACE_CROSS')) {
+    if (([regex]::Matches($moveOutput, "$race=.*_SUCCESS")).Count -ne 1 -or ([regex]::Matches($moveOutput, "$race=.*_TW009")).Count -ne 1) { throw "Move race result was invalid for $race.`n$moveOutput" }
+  }
+  Invoke-SqlText -Database $freshDb -Sql @"
+do `$`$
+begin
+  if exists (select 1 from (select itinerary_day_id, position, row_number() over (partition by itinerary_day_id order by position) as expected from public.itinerary_items where itinerary_day_id in ('99999999-9999-4999-8999-999999999962','99999999-9999-4999-8999-999999999963','99999999-9999-4999-8999-999999999972','99999999-9999-4999-8999-999999999982','99999999-9999-4999-8999-999999999983')) as ordered where position <> expected) then raise exception 'Move race left non-contiguous positions.'; end if;
+  if (select count(*) from public.itinerary_items where id='99999999-9999-4999-8999-999999999964') <> 1 or (select count(*) from public.itinerary_items where id in ('99999999-9999-4999-8999-999999999984','99999999-9999-4999-8999-999999999985')) <> 2 then raise exception 'Move race lost or duplicated stable items.'; end if;
+end `$`$;
+"@
+  Write-Output 'workspace_move_concurrency_pass'
 
   # Canonical item->trip lock order: race the CAS RPC against the supported
   # note RPC (which updates item then its revision trigger updates trip). A
@@ -455,6 +562,9 @@ end
 `$`$;
 select 'source_link_concurrency_pass' as result;
 "@
+
+
+  . (Join-Path $PSScriptRoot 'workspace_direct_writer_concurrency.ps1')
 
   Invoke-SqlText -Database $freshDb -Sql "create database $upgradeDb;"
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'bootstrap.sql')

@@ -1,0 +1,42 @@
+ M mobile/src/features/trips/components/ItineraryCard.tsx
+ M mobile/src/features/trips/integrationMappers.ts
+ M mobile/src/features/trips/placePhotos.ts
+ M mobile/src/features/trips/screens/TripDetailScreen.tsx
+ M mobile/src/features/trips/screens/TripMapScreen.tsx
+ M mobile/src/features/trips/types.ts
+ M mobile/src/i18n/en.ts
+ M mobile/src/i18n/vi.ts
+ M mobile/src/integration/contracts.ts
+ M mobile/src/integration/remote/supabaseTripRepositories.ts
+ M mobile/src/integration/validation.ts
+ M mobile/src/lib/supabase/database.types.ts
+ M mobile/src/navigation/AppNavigator.tsx
+ M mobile/src/navigation/MainTabs.tsx
+ M mobile/src/navigation/types.ts
+ M mobile/tests/fixtures/rpc-shape.json
+ M mobile/tests/integration-validation.test.ts
+ M mobile/tests/trips-runtime-regression.test.tsx
+ M mobile/tests/workspace-mutation-contract.test.ts
+ M phase_doc/PHASES_FEATURES.md
+ M supabase/tests/persistence/run.ps1
+ M supabase/tests/persistence/upgrade_verify.sql
+ M supabase/tests/persistence/workspace_mutation_contract.sql
+?? .runtime-evidence/p2-t001-android-20260904/
+?? .runtime-evidence/p2-t002-20260905/
+?? .runtime-evidence/p2-t002-20260906-exact-current/
+?? mobile/src/features/trips/components/WorkspaceMoveSheet.tsx
+?? mobile/src/features/trips/screens/ActivityEditorScreen.tsx
+?? mobile/src/features/trips/useActivityEditorController.ts
+?? mobile/src/features/trips/useWorkspaceMoveController.ts
+?? mobile/tests/ActivityEditorConflictAndSubmit.test.tsx
+?? mobile/tests/ActivityEditorScreen.test.tsx
+?? mobile/tests/ActivityEditorStaleUser.test.tsx
+?? mobile/tests/P2T001LegacyTripDetail.test.tsx
+?? mobile/tests/WorkspaceMoveController.test.tsx
+?? output.txt
+?? supabase/migrations/20260903030000_workspace_p2_t001_read_and_create.sql
+?? supabase/migrations/20260904000000_workspace_p2_t002_atomic_move.sql
+?? supabase/migrations/20260905000000_workspace_create_item_lock_corrective.sql
+?? supabase/tests/persistence/workspace_direct_writer_concurrency.ps1
+?? supabase/tests/persistence/workspace_move_contract.sql
+?? temp.txt

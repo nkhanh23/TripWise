@@ -1,0 +1,22 @@
+[
+  {
+    "source": "mobile/src\\integration\\validation.ts",
+    "metroSourceMatchesDisk": true
+  },
+  {
+    "source": "mobile/src\\integration\\remote\\supabaseTripRepositories.ts",
+    "metroSourceMatchesDisk": true
+  },
+  {
+    "source": "mobile/src\\features\\trips\\screens\\TripDetailScreen.tsx",
+    "metroSourceMatchesDisk": true
+  },
+  {
+    "source": "mobile/src\\features\\trips\\components\\WorkspaceMoveSheet.tsx",
+    "metroSourceMatchesDisk": true
+  },
+  {
+    "source": "mobile/src\\features\\trips\\useWorkspaceMoveController.ts",
+    "metroSourceMatchesDisk": true
+  }
+]

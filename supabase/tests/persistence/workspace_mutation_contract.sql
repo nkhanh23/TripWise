@@ -119,6 +119,26 @@ begin
 end $$;
 
 do $$
+declare v_revision integer; v_result jsonb; v_day uuid := '71000000-0000-4000-8000-000000000011';
+begin
+  perform set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+  select workspace_revision into v_revision from public.trips where id=(select value_uuid from workspace_mutation_state where name='trip');
+  v_result := public.create_travel_workspace_item(jsonb_build_object(
+    'type','create_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),
+    'dayId',v_day,'expectedRevision',v_revision,'item',jsonb_build_object(
+      'itemKind','custom_activity','title','Owner custom activity','flexibility','flexible','priority','want_to_do','startTime','12:00','endTime','13:00')));
+  if (v_result->>'itemId') is null or (v_result->>'revision')::integer <= v_revision
+     or not exists (select 1 from public.itinerary_items where id=(v_result->>'itemId')::uuid and item_kind='custom_activity' and activity_status='scheduled' and position=3)
+     or exists (select 1 from public.itinerary_items where id=(v_result->>'itemId')::uuid and (google_place_id is not null or latitude is not null or longitude is not null)) then
+    raise exception 'P2 T001 owner custom-activity append contract failed.';
+  end if;
+  begin perform public.create_travel_workspace_item(jsonb_build_object('type','create_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'dayId',v_day,'expectedRevision',v_revision,'item',jsonb_build_object('itemKind','custom_activity','title','Stale','flexibility','fixed','priority','must_do'))); raise exception 'Expected create stale revision conflict.';
+  exception when sqlstate 'TW009' then null; end;
+  begin perform public.create_travel_workspace_item(jsonb_build_object('type','create_item','tripId',(select value_uuid from workspace_mutation_state where name='trip'),'dayId',v_day,'expectedRevision',(v_result->>'revision')::integer,'item',jsonb_build_object('itemKind','custom_activity','title','Spoof','flexibility','fixed','priority','must_do','googlePlaceId','forged'))); raise exception 'Expected create provider spoof rejection.';
+  exception when sqlstate 'TW014' then null; end;
+end $$;
+
+do $$
 begin
   perform set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',false);
   begin

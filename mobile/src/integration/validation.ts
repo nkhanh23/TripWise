@@ -38,6 +38,7 @@ import type {
   WorkspaceMutationResult,
   WorkspaceItemPatch,
   WorkspaceSourceLink,
+  CreateCustomActivityPayload,
 } from './contracts';
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -188,6 +189,7 @@ export function asItineraryItemId(value: unknown): ItineraryItemId {
 const workspaceFlexibilities = ['fixed', 'flexible'] as const;
 const workspacePriorities = ['must_do', 'want_to_do', 'optional'] as const;
 const workspaceStatuses = ['scheduled', 'completed', 'skipped'] as const;
+const workspaceKinds = ['place', 'custom_activity', 'restaurant', 'transport', 'accommodation', 'reservation', 'note'] as const;
 const sourceLinkTypes = ['google_maps', 'facebook', 'instagram', 'tiktok', 'website', 'booking', 'other'] as const;
 const transportModes = ['walk', 'drive', 'transit', 'bus', 'train', 'flight', 'motorbike', 'ferry', 'other'] as const;
 
@@ -209,7 +211,7 @@ function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
   if (value.flexibility !== undefined && (typeof value.flexibility !== 'string' || !workspaceFlexibilities.includes(value.flexibility as typeof workspaceFlexibilities[number]))) throw new ContractValidationError('workspace item patch');
   if (value.priority !== undefined && (typeof value.priority !== 'string' || !workspacePriorities.includes(value.priority as typeof workspacePriorities[number]))) throw new ContractValidationError('workspace item patch');
   for (const key of ['startTime', 'endTime'] as const) if (value[key] !== undefined && value[key] !== null && (typeof value[key] !== 'string' || !timePattern.test(value[key]))) throw new ContractValidationError('workspace item patch');
-  if (value.note !== undefined && nullableBoundedString(value.note, 500) === null) throw new ContractValidationError('workspace item patch');
+  if (value.note !== undefined && value.note !== null && nullableBoundedString(value.note, 500) === null) throw new ContractValidationError('workspace item patch');
   if (value.contact !== undefined) {
     if (!isRecord(value.contact)) throw new ContractValidationError('workspace contact patch');
     const contact = value.contact;
@@ -239,7 +241,27 @@ function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
       || (accommodation.checkOutAt !== undefined && accommodation.checkOutAt !== null && !isIsoTimestamp(accommodation.checkOutAt))
       || (accommodation.nights !== undefined && accommodation.nights !== null && (!Number.isInteger(accommodation.nights) || typeof accommodation.nights !== 'number' || accommodation.nights < 0 || accommodation.nights > 365))) throw new ContractValidationError('workspace accommodation patch');
   }
+  if (typeof value.startTime === 'string' && typeof value.endTime === 'string' && value.endTime < value.startTime) throw new ContractValidationError('workspace item patch');
   return value as WorkspaceItemPatch;
+}
+
+function validateCreateCustomActivity(value: unknown): CreateCustomActivityPayload {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['itemKind', 'title', 'flexibility', 'priority', 'startTime', 'endTime'])
+    || value.itemKind !== 'custom_activity' || requiredString(value.title, 160) === null
+    || typeof value.flexibility !== 'string' || !workspaceFlexibilities.includes(value.flexibility as typeof workspaceFlexibilities[number])
+    || typeof value.priority !== 'string' || !workspacePriorities.includes(value.priority as typeof workspacePriorities[number])
+    || (value.startTime !== undefined && value.startTime !== null && (typeof value.startTime !== 'string' || !timePattern.test(value.startTime)))
+    || (value.endTime !== undefined && value.endTime !== null && (typeof value.endTime !== 'string' || !timePattern.test(value.endTime)))
+    || (typeof value.startTime === 'string' && typeof value.endTime === 'string' && value.endTime < value.startTime)) {
+    throw new ContractValidationError('create custom activity');
+  }
+  return {
+    itemKind: 'custom_activity', title: (value.title as string).trim(),
+    flexibility: value.flexibility as CreateCustomActivityPayload['flexibility'],
+    priority: value.priority as CreateCustomActivityPayload['priority'],
+    ...(value.startTime === undefined ? {} : { startTime: value.startTime as string | null }),
+    ...(value.endTime === undefined ? {} : { endTime: value.endTime as string | null }),
+  };
 }
 
 function validateWorkspaceLinks(value: unknown): WorkspaceSourceLink[] {
@@ -254,9 +276,18 @@ function validateWorkspaceLinks(value: unknown): WorkspaceSourceLink[] {
 }
 
 export function validateWorkspaceMutationCommand(value: unknown): WorkspaceMutationCommand {
-  if (!isRecord(value) || !hasOnlyKeys(value, ['type', 'tripId', 'itemId', 'expectedRevision', 'patch', 'status', 'links'])
-    || !isUuid(value.tripId) || !isUuid(value.itemId) || !Number.isInteger(value.expectedRevision) || typeof value.expectedRevision !== 'number' || value.expectedRevision < 1 || typeof value.type !== 'string') throw new ContractValidationError('workspace mutation command');
+  if (!isRecord(value) || !hasOnlyKeys(value, ['type', 'tripId', 'dayId', 'itemId', 'expectedRevision', 'item', 'patch', 'status', 'links', 'targetDayId', 'targetPosition'])
+    || !isUuid(value.tripId) || !Number.isInteger(value.expectedRevision) || typeof value.expectedRevision !== 'number' || value.expectedRevision < 1 || typeof value.type !== 'string') throw new ContractValidationError('workspace mutation command');
+  if (value.type === 'create_item' && isUuid(value.dayId) && value.itemId === undefined && value.patch === undefined && value.status === undefined && value.links === undefined) {
+    return { type: 'create_item', tripId: value.tripId as TripId, dayId: value.dayId as ItineraryDayId, expectedRevision: value.expectedRevision, item: validateCreateCustomActivity(value.item) };
+  }
+  if (!isUuid(value.itemId) || value.dayId !== undefined || value.item !== undefined) throw new ContractValidationError('workspace mutation command');
   const base = { tripId: value.tripId as TripId, itemId: value.itemId as ItineraryItemId, expectedRevision: value.expectedRevision as number };
+  if (value.type === 'move_item' && value.patch === undefined && value.status === undefined && value.links === undefined
+    && isUuid(value.targetDayId) && typeof value.targetPosition === 'number' && Number.isInteger(value.targetPosition) && value.targetPosition >= 1) {
+    return { type: 'move_item', ...base, targetDayId: value.targetDayId as ItineraryDayId, targetPosition: value.targetPosition };
+  }
+  if (value.targetDayId !== undefined || value.targetPosition !== undefined) throw new ContractValidationError('workspace mutation command');
   if (value.type === 'update_item' && value.status === undefined && value.links === undefined) return { type: 'update_item', ...base, patch: validateWorkspaceItemPatch(value.patch) };
   if (value.type === 'transition_item_status' && value.patch === undefined && value.links === undefined && typeof value.status === 'string' && workspaceStatuses.includes(value.status as typeof workspaceStatuses[number])) return { type: 'transition_item_status', ...base, status: value.status as 'scheduled' | 'completed' | 'skipped' };
   if (value.type === 'replace_source_links' && value.patch === undefined && value.status === undefined) return { type: 'replace_source_links', ...base, links: validateWorkspaceLinks(value.links) };
@@ -264,8 +295,8 @@ export function validateWorkspaceMutationCommand(value: unknown): WorkspaceMutat
 }
 
 export function parseWorkspaceMutationResult(value: unknown): WorkspaceMutationResult {
-  if (!isRecord(value) || !hasOnlyKeys(value, ['revision']) || !Number.isInteger(value.revision) || typeof value.revision !== 'number' || value.revision < 1) throw new ContractValidationError('workspace mutation result');
-  return { revision: value.revision as number };
+  if (!isRecord(value) || !hasOnlyKeys(value, ['revision', 'itemId', 'noOp']) || !Number.isInteger(value.revision) || typeof value.revision !== 'number' || value.revision < 1 || (value.itemId !== undefined && !isUuid(value.itemId)) || (value.noOp !== undefined && typeof value.noOp !== 'boolean')) throw new ContractValidationError('workspace mutation result');
+  return { revision: value.revision as number, ...(value.itemId === undefined ? {} : { itemId: value.itemId as ItineraryItemId }), ...(value.noOp === undefined ? {} : { noOp: value.noOp }) };
 }
 
 export function asSavedPlaceId(value: unknown): SavedPlaceId {
@@ -612,14 +643,25 @@ function parseSavedTripItem(value: unknown, expectedPosition: number): SavedTrip
     throw new ContractValidationError('saved trip item');
   }
   const allowed = [
-    'id', 'position', 'placeName', 'placeQuery', 'resolution', 'googlePlaceId', 'latitude', 'longitude',
+    'id', 'position', 'itemKind', 'flexibility', 'priority', 'activityStatus', 'placeName', 'placeQuery', 'resolution', 'googlePlaceId', 'latitude', 'longitude',
     'placeAddress', 'placeCategory', 'placeResolvedAt', 'startTime', 'endTime', 'note',
   ];
   if (!hasOnlyKeys(value, allowed)) throw new ContractValidationError('saved trip item');
   const placeName = requiredString(value.placeName, 160);
   const placeQuery = optionalString(value.placeQuery, 200);
   const note = optionalString(value.note, 500);
+  // P1's saved-trip read contract predates workspace semantics. Absence is a
+  // legacy representation; an explicitly malformed workspace field is never
+  // silently normalized.
+  const itemKind = value.itemKind === undefined ? 'place' : value.itemKind;
+  const flexibility = value.flexibility === undefined ? 'fixed' : value.flexibility;
+  const priority = value.priority === undefined ? 'must_do' : value.priority;
+  const activityStatus = value.activityStatus === undefined ? 'scheduled' : value.activityStatus;
   if (!placeName || placeQuery === null || note === null
+    || typeof itemKind !== 'string' || !workspaceKinds.includes(itemKind as typeof workspaceKinds[number])
+    || typeof flexibility !== 'string' || !workspaceFlexibilities.includes(flexibility as typeof workspaceFlexibilities[number])
+    || typeof priority !== 'string' || !workspacePriorities.includes(priority as typeof workspacePriorities[number])
+    || typeof activityStatus !== 'string' || !workspaceStatuses.includes(activityStatus as typeof workspaceStatuses[number])
     || (value.startTime !== undefined && (typeof value.startTime !== 'string' || !timePattern.test(value.startTime)))
     || (value.endTime !== undefined && (typeof value.endTime !== 'string' || !timePattern.test(value.endTime)))) {
     throw new ContractValidationError('saved trip item');
@@ -627,6 +669,10 @@ function parseSavedTripItem(value: unknown, expectedPosition: number): SavedTrip
   const base = {
     id: value.id as ItineraryItemId,
     position: expectedPosition,
+    itemKind: itemKind as typeof workspaceKinds[number],
+    flexibility: flexibility as typeof workspaceFlexibilities[number],
+    priority: priority as typeof workspacePriorities[number],
+    activityStatus: activityStatus as typeof workspaceStatuses[number],
     placeName,
     ...(placeQuery === undefined ? {} : { placeQuery }),
     ...(value.startTime === undefined ? {} : { startTime: value.startTime }),
@@ -688,9 +734,12 @@ function parseSavedTripDay(value: unknown, expectedDay: number, startDate: strin
 export function parseSavedTripDetail(value: unknown): SavedTripDetail | null {
   if (value === null) return null;
   if (!isRecord(value)
-    || !hasOnlyKeys(value, ['id', 'title', 'destination', 'startDate', 'endDate', 'estimatedBudget', 'currency', 'createdAt', 'updatedAt', 'days'])
+    || !hasOnlyKeys(value, ['id', 'title', 'destination', 'startDate', 'endDate', 'estimatedBudget', 'currency', 'createdAt', 'updatedAt', 'workspaceRevision', 'days'])
     || !isUuid(value.id) || !isIsoDate(value.startDate) || !isIsoDate(value.endDate)
-    || !isIsoTimestamp(value.createdAt) || !isIsoTimestamp(value.updatedAt) || !Array.isArray(value.days)) {
+    || !isIsoTimestamp(value.createdAt) || !isIsoTimestamp(value.updatedAt)
+    || (value.workspaceRevision !== undefined
+      && (typeof value.workspaceRevision !== 'number' || !Number.isInteger(value.workspaceRevision) || value.workspaceRevision < 1))
+    || !Array.isArray(value.days)) {
     throw new ContractValidationError('saved trip detail');
   }
   const title = requiredString(value.title, 160);
@@ -718,6 +767,7 @@ export function parseSavedTripDetail(value: unknown): SavedTripDetail | null {
     currency,
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
+    ...(value.workspaceRevision === undefined ? {} : { workspaceRevision: value.workspaceRevision }),
     days: value.days.map((day, index) => parseSavedTripDay(day, index + 1, value.startDate as string)),
   };
 }

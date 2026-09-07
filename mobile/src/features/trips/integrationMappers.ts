@@ -44,15 +44,16 @@ export function mapSavedTripDetailToTripDetailData(detail: SavedTripDetail): Tri
     budgetPercent: 0,
     travelers: [],
     savedPlacesCount: detail.days.reduce((count, day) => count + day.items.length, 0),
+    workspaceRevision: detail.workspaceRevision,
     days: detail.days.map((day, dayIndex) => ({
       id: day.id,
       dayNumber: day.dayNumber,
       date: day.date ?? detail.startDate,
       dateLabel: `Day ${day.dayNumber} • ${day.date ?? detail.startDate}`,
       title: day.summary,
-      items: day.items.map((item, itemIndex) => ({
+      items: day.items.map((item) => ({
         id: item.id,
-        type: 'place' as const,
+        type: item.itemKind === 'custom_activity' ? 'activity' : item.itemKind,
         time: item.startTime ?? '',
         title: item.placeName,
         subtitle: item.note,
@@ -61,6 +62,10 @@ export function mapSavedTripDetailToTripDetailData(detail: SavedTripDetail): Tri
         placeId: undefined,
         location: item.resolution === 'UNRESOLVED' ? 'Unresolved place suggestion' : item.placeAddress,
         resolution: item.resolution,
+        workspaceItemKind: item.itemKind,
+        flexibility: item.flexibility,
+        priority: item.priority,
+        activityStatus: item.activityStatus,
         ...(item.resolution === 'VERIFIED' ? {
           googlePlaceId: item.googlePlaceId, latitude: item.latitude, longitude: item.longitude,
           placeResolvedAt: item.placeResolvedAt,

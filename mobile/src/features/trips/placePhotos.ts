@@ -23,7 +23,7 @@ export function useTripPlacePhotos(
   const verifiedIds = useMemo(() => tripData
     ? [...new Set(tripData.days.flatMap((day) => day.items)
       .filter((item) => item.resolution === 'VERIFIED' && item.googlePlaceId)
-      .map((item) => item.googlePlaceId as string))]
+      .map((item) => item.googlePlaceId as string))].sort()
     : [], [tripData]);
   const resolutionIdentity = useMemo(() => JSON.stringify(tripData ? {
     destination: tripData.destination,

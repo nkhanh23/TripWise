@@ -116,9 +116,17 @@ export class SupabaseTravelWorkspaceRepository implements TravelWorkspaceReposit
   async mutate(command: WorkspaceMutationCommand, signal?: AbortSignal): Promise<WorkspaceMutationResult> {
     const stableCommand = validateWorkspaceMutationCommand(command);
     return executeWithReliability(async (attemptSignal) => {
-      const { data, error } = await this.client.rpc('mutate_travel_workspace', {
-        p_command: stableCommand as unknown as Json,
-      }).abortSignal(attemptSignal);
+      const { data, error } = stableCommand.type === 'create_item'
+        ? await this.client.rpc('create_travel_workspace_item', {
+          p_command: stableCommand as unknown as Json,
+        }).abortSignal(attemptSignal)
+        : stableCommand.type === 'move_item'
+          ? await this.client.rpc('move_travel_workspace_item', {
+            p_command: stableCommand as unknown as Json,
+          }).abortSignal(attemptSignal)
+        : await this.client.rpc('mutate_travel_workspace', {
+          p_command: stableCommand as unknown as Json,
+        }).abortSignal(attemptSignal);
       if (error) throw mapWorkspaceMutationError(error);
       return parseWorkspaceMutationResult(data);
     }, supabaseMutationPolicy, signal);

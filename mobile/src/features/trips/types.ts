@@ -38,7 +38,7 @@ export type TripSectionData = {
 
 export type TripsUIStatus = 'loading' | 'ready' | 'error' | 'empty';
 
-export type ItineraryItemType = 'place' | 'activity' | 'restaurant' | 'transport' | 'note';
+export type ItineraryItemType = 'place' | 'activity' | 'restaurant' | 'transport' | 'accommodation' | 'reservation' | 'note';
 
 export type ItineraryItem = {
   id: string;
@@ -62,6 +62,10 @@ export type ItineraryItem = {
   latitude?: number;
   longitude?: number;
   placeResolvedAt?: string;
+  workspaceItemKind?: import('../../integration/contracts').WorkspaceItemKind;
+  flexibility?: import('../../integration/contracts').WorkspaceFlexibility;
+  priority?: import('../../integration/contracts').WorkspacePriority;
+  activityStatus?: import('../../integration/contracts').WorkspaceActivityStatus;
 };
 
 export type TransportSegment = {
@@ -94,6 +98,7 @@ export type TripDetailData = {
   budgetPercent: number; // 80
   travelers: TravelerAvatar[];
   savedPlacesCount: number; // 14
+  workspaceRevision?: number;
   days: TripDayItinerary[];
 };
 

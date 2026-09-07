@@ -376,6 +376,7 @@ export type Database = {
             Args: { p_graph: Json; p_idempotency_key: string }
             Returns: string
           }
+      create_travel_workspace_item: { Args: { p_command: Json }; Returns: Json }
       delete_saved_trip: { Args: { p_trip_id: string }; Returns: boolean }
       delete_user_account: { Args: never; Returns: undefined }
       get_saved_trip_detail: { Args: { p_trip_id: string }; Returns: Json }
@@ -397,6 +398,7 @@ export type Database = {
         }
         Returns: Json
       }
+      move_travel_workspace_item: { Args: { p_command: Json }; Returns: Json }
       mutate_travel_workspace: { Args: { p_command: Json }; Returns: Json }
       save_place: {
         Args: {

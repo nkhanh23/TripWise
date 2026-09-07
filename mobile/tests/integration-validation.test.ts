@@ -57,9 +57,9 @@ describe('integration DTO validation', () => {
   it('requires protected provenance before accepting provider fields', () => {
     const common = {
       id: tripId, title: 'Trip', destination: 'Huế', startDate: '2026-09-01', endDate: '2026-09-01',
-      estimatedBudget: null, currency: null, createdAt, updatedAt: createdAt,
+      estimatedBudget: null, currency: null, createdAt, updatedAt: createdAt, workspaceRevision: 1,
     };
-    const unresolved = { id: itemId, position: 1, placeName: 'Đại Nội', resolution: 'UNRESOLVED' };
+    const unresolved = { id: itemId, position: 1, itemKind: 'place', flexibility: 'fixed', priority: 'must_do', activityStatus: 'scheduled', placeName: 'Đại Nội', resolution: 'UNRESOLVED' };
     const detail = { ...common, days: [{ id: dayId, dayNumber: 1, date: '2026-09-01', items: [unresolved] }] };
     expect(parseSavedTripDetail(detail)?.days[0].items[0]).toMatchObject({
       resolution: 'UNRESOLVED', latitude: null, longitude: null,
@@ -68,6 +68,40 @@ describe('integration DTO validation', () => {
       ...detail,
       days: [{ ...detail.days[0], items: [{ ...unresolved, googlePlaceId: 'provider-looking-id' }] }],
     })).toThrow('Invalid unresolved saved trip item contract.');
+  });
+
+  it('reads omitted legacy workspace fields, but rejects explicit malformed workspace fields', () => {
+    const legacy = {
+      id: tripId, title: 'Legacy trip', destination: 'Hue', startDate: '2026-09-01', endDate: '2026-09-01',
+      estimatedBudget: null, currency: null, createdAt, updatedAt: createdAt,
+      days: [{ id: dayId, dayNumber: 1, date: '2026-09-01', items: [{
+        id: itemId, position: 1, placeName: 'Legacy place', resolution: 'UNRESOLVED',
+      }] }],
+    };
+    const parsed = parseSavedTripDetail(legacy);
+    expect(parsed?.workspaceRevision).toBeUndefined();
+    expect(parsed?.days[0].items[0]).toMatchObject({
+      itemKind: 'place', flexibility: 'fixed', priority: 'must_do', activityStatus: 'scheduled',
+    });
+    expect(() => parseSavedTripDetail({
+      ...legacy, days: [{ ...legacy.days[0], items: [{ ...legacy.days[0].items[0], itemKind: 'not-a-kind' }] }],
+    })).toThrow('Invalid saved trip item contract.');
+    expect(() => parseSavedTripDetail({ ...legacy, workspaceRevision: 0 })).toThrow('Invalid saved trip detail contract.');
+    expect(() => parseSavedTripDetail({
+      ...legacy, days: [{ ...legacy.days[0], items: [{ ...legacy.days[0].items[0], flexibility: 42 }] }],
+    })).toThrow('Invalid saved trip item contract.');
+
+    const p2 = parseSavedTripDetail({
+      ...legacy,
+      workspaceRevision: 9,
+      days: [{ ...legacy.days[0], items: [{
+        ...legacy.days[0].items[0], itemKind: 'custom_activity', flexibility: 'flexible', priority: 'want_to_do', activityStatus: 'scheduled',
+      }] }],
+    });
+    expect(p2?.workspaceRevision).toBe(9);
+    expect(p2?.days[0].items[0]).toMatchObject({
+      itemKind: 'custom_activity', flexibility: 'flexible', priority: 'want_to_do', activityStatus: 'scheduled',
+    });
   });
 
   it('validates keyset cursor, limit and saved page response', () => {

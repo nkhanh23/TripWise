@@ -105,6 +105,7 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
     currency: null,
     createdAt: '2026-08-21T00:00:00.000Z',
     updatedAt: '2026-08-21T00:00:00.000Z',
+    workspaceRevision: 1,
     days: [
       {
         id: '11111111-1111-4111-8111-111111111111' as any,
@@ -115,6 +116,7 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
           {
             id: '22222222-2222-4222-8222-222222222222' as any,
             position: 1,
+            itemKind: 'place', flexibility: 'fixed', priority: 'must_do', activityStatus: 'scheduled',
             placeName: 'Chùa Arun',
             resolution: 'VERIFIED',
             googlePlaceId: 'ChIJWatArun' as any,
@@ -130,6 +132,7 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
           {
             id: '33333333-3333-4333-8333-333333333333' as any,
             position: 2,
+            itemKind: 'place', flexibility: 'fixed', priority: 'must_do', activityStatus: 'scheduled',
             placeName: 'The Grand Palace',
             resolution: 'VERIFIED',
             googlePlaceId: 'ChIJGrandPalace' as any,
@@ -268,7 +271,7 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
     expect(items.length).toBeGreaterThan(0);
     fireEvent.press(items[0]);
     expect(mockNavigate).not.toHaveBeenCalledWith('PlaceDetail', expect.anything());
-    expect(alert).toHaveBeenCalledWith('Action unavailable', 'This action is not available yet.');
+    expect(mockNavigate).toHaveBeenCalledWith('ActivityEditor', expect.objectContaining({ mode: 'edit', itemId: expect.any(String) }));
 
     // Flush any pending promises to prevent act warnings from leaking
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -325,6 +328,7 @@ describe('Trips & Map Production Runtime Regression Tests', () => {
             {
               id: '55555555-5555-4555-8555-555555555555' as any,
               position: 1,
+              itemKind: 'place', flexibility: 'fixed', priority: 'must_do', activityStatus: 'scheduled',
               placeName: 'Wat Arun, Bangkok, Thailand',
               resolution: 'UNRESOLVED',
               latitude: null,
