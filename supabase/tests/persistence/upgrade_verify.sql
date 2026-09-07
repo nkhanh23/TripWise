@@ -144,10 +144,10 @@ begin
     raise exception 'update_trip_expense SECURITY INVOKER RPC/grant contract is missing after upgrade.';
   end if;
 
-  if to_regprocedure('public.delete_trip_expense(uuid)') is null
-     or not has_function_privilege('authenticated', 'public.delete_trip_expense(uuid)', 'EXECUTE')
-     or has_function_privilege('anon', 'public.delete_trip_expense(uuid)', 'EXECUTE')
-     or exists (select 1 from pg_proc where oid='public.delete_trip_expense(uuid)'::regprocedure and prosecdef) then
+  if to_regprocedure('public.delete_trip_expense(uuid,uuid)') is null
+     or not has_function_privilege('authenticated', 'public.delete_trip_expense(uuid,uuid)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.delete_trip_expense(uuid,uuid)', 'EXECUTE')
+     or exists (select 1 from pg_proc where oid='public.delete_trip_expense(uuid,uuid)'::regprocedure and prosecdef) then
     raise exception 'delete_trip_expense SECURITY INVOKER RPC/grant contract is missing after upgrade.';
   end if;
 

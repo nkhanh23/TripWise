@@ -9,7 +9,7 @@ import type {
   TripExpensesPage,
   UpdateTripExpenseCommand,
 } from '../contracts';
-import { mapPostgrestError } from '../errors';
+import { IntegrationError, mapPostgrestError } from '../errors';
 import type { TripExpenseLedgerRepository } from '../repositories';
 import { executeWithReliability, supabaseMutationPolicy, supabaseReadPolicy } from '../reliability';
 import {
@@ -52,6 +52,7 @@ export class SupabaseTripExpenseLedgerRepository implements TripExpenseLedgerRep
           })
           .abortSignal(attemptSignal);
 
+        if (error?.code === 'P0002') throw new IntegrationError('notFound');
         if (error) throw mapPostgrestError(error);
         return parseTripExpenseRecord(data);
       },
@@ -66,6 +67,7 @@ export class SupabaseTripExpenseLedgerRepository implements TripExpenseLedgerRep
       async (attemptSignal) => {
         const { data, error } = await this.client
           .rpc('delete_trip_expense', {
+            p_trip_id: validated.tripId,
             p_expense_id: validated.expenseId,
           })
           .abortSignal(attemptSignal);

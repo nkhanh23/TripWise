@@ -577,6 +577,8 @@ select 'source_link_concurrency_pass' as result;
   }
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'upgrade_verify.sql')
 
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_ledger_contract.sql')
+
   Write-Output 'PERSISTENCE_TESTS_PASS'
 }
 finally {

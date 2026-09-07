@@ -257,12 +257,12 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 **Kiểm thử / Android / bằng chứng:** accounting/rounding, RLS A/B, FX unavailable, ledger pagination, Android quick-add và refresh. **Điều kiện hoàn thành:** expense được persist thật và budget risk dual-currency trung thực. **Rủi ro rollback/regression:** money precision và rate staleness; giữ nguyên original amount/rate. **Cổng phase tiếp theo:** P3 data, provider, Android evidence PASS.
 
-#### [x] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
+#### [ ] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
 
-**Trạng thái:** COMPLETE — Subtask S001 hoàn thành.
+**Trạng thái:** NEEDS_FIX — corrective closure đang chờ exact-current gates.
 
-- [x] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
-- [x] RLS theo owner, category/origin validation và pagination PASS.
+- [ ] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
+- [ ] RLS theo owner, category/origin validation và pagination PASS.
 
 ##### Checklist hoàn thành
 - [x] Schema `public.trip_expenses` với RLS owner-only, immutability trigger, attachment same-trip trigger, composite index `(trip_id, created_at desc, id desc)`.

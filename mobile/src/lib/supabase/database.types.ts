@@ -401,7 +401,7 @@ export type Database = {
     }
     Functions: {
       create_trip_expense: { Args: { p_command: Json }; Returns: Json }
-      delete_trip_expense: { Args: { p_expense_id: string }; Returns: boolean }
+      delete_trip_expense: { Args: { p_trip_id: string; p_expense_id: string }; Returns: boolean }
       list_trip_expenses: {
         Args: {
           p_category?: string

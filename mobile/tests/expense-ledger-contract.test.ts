@@ -20,6 +20,44 @@ const itemId = '22222222-2222-4222-8222-222222222222';
 const expenseId = '33333333-3333-4333-8333-333333333333';
 
 describe('FEATURE-P3-T001-S001 Expense Ledger Contract', () => {
+  describe('corrective boundary regressions', () => {
+    it.each(['unexpected', 'provider', 'createdAt', 'updatedAt'])('rejects unsupported field %s', (key) => {
+      expect(() => validateCreateTripExpenseCommand({ tripId, category: 'food', origin: 'actual', amount: 1, currency: 'USD', [key]: 'forged' })).toThrow(ContractValidationError);
+      expect(() => validateUpdateTripExpenseCommand({ tripId, expenseId, patch: { note: null }, [key]: 'forged' })).toThrow(ContractValidationError);
+      expect(() => validateUpdateTripExpenseCommand({ tripId, expenseId, patch: { [key]: 'forged' } })).toThrow(ContractValidationError);
+    });
+
+    it.each(['', '   ', '\t\n\r', '\u00a0\u2003\ufeff'])('rejects blank note %j without turning it into a clear', (note) => {
+      expect(() => validateCreateTripExpenseCommand({ tripId, category: 'food', origin: 'actual', amount: 1, currency: 'USD', note })).toThrow(ContractValidationError);
+      expect(() => validateUpdateTripExpenseCommand({ tripId, expenseId, patch: { note } })).toThrow(ContractValidationError);
+    });
+
+    it('preserves explicit null clear and rejects empty patches', () => {
+      expect(validateUpdateTripExpenseCommand({ tripId, expenseId, patch: { note: null } }).patch).toEqual({ note: null });
+      expect(() => validateUpdateTripExpenseCommand({ tripId, expenseId, patch: {} })).toThrow(ContractValidationError);
+    });
+
+    it('maps wrong-trip update to safe notFound and sends the supplied context once', async () => {
+      const wrongTripId = '44444444-4444-4444-8444-444444444444';
+      const abortSignal = jest.fn().mockResolvedValue({ data: null, error: { code: 'P0002', message: 'Expense not found.' } });
+      const rpc = jest.fn().mockReturnValue({ abortSignal });
+      const repo = new SupabaseTripExpenseLedgerRepository({ rpc } as unknown as SupabaseClient<Database>);
+      await expect(repo.updateExpense({ tripId: wrongTripId as never, expenseId: expenseId as never, patch: { note: null } })).rejects.toMatchObject({ code: 'notFound' });
+      expect(rpc).toHaveBeenCalledTimes(1);
+      expect(rpc).toHaveBeenCalledWith('update_trip_expense', { p_command: { tripId: wrongTripId, expenseId, patch: { note: null } } });
+    });
+
+    it('preserves non-disclosing false for wrong-trip delete and sends both IDs once', async () => {
+      const wrongTripId = '44444444-4444-4444-8444-444444444444';
+      const abortSignal = jest.fn().mockResolvedValue({ data: false, error: null });
+      const rpc = jest.fn().mockReturnValue({ abortSignal });
+      const repo = new SupabaseTripExpenseLedgerRepository({ rpc } as unknown as SupabaseClient<Database>);
+      await expect(repo.deleteExpense({ tripId: wrongTripId as never, expenseId: expenseId as never })).resolves.toBe(false);
+      expect(rpc).toHaveBeenCalledTimes(1);
+      expect(rpc).toHaveBeenCalledWith('delete_trip_expense', { p_trip_id: wrongTripId, p_expense_id: expenseId });
+    });
+  });
+
   describe('validateCreateTripExpenseCommand', () => {
     it('accepts a valid planned expense without attachment', () => {
       const cmd = validateCreateTripExpenseCommand({
@@ -392,7 +430,7 @@ describe('FEATURE-P3-T001-S001 Expense Ledger Contract', () => {
 
       const result = await repo.deleteExpense({ tripId: tripId as never, expenseId: expenseId as never });
       expect(result).toBe(true);
-      expect(rpc).toHaveBeenCalledWith('delete_trip_expense', { p_expense_id: expenseId });
+      expect(rpc).toHaveBeenCalledWith('delete_trip_expense', { p_trip_id: tripId, p_expense_id: expenseId });
     });
 
     it('lists expenses via list_trip_expenses RPC and returns parsed page', async () => {
