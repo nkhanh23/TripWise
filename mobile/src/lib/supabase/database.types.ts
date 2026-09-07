@@ -15,6 +15,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_trip_expense_aggregate: { Args: { p_request: Json }; Returns: Json }
       graphql: {
         Args: {
           extensions?: Json
@@ -608,4 +609,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

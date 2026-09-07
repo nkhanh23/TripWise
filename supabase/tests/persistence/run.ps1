@@ -102,6 +102,7 @@ try {
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_move_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_security_matrix.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'expense_ledger_contract.sql')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'expense_aggregate_contract.sql')
 
   # P2-T001: two authenticated append commands begin from the same revision.
   # The trip-row CAS lock must serialize them: exactly one append commits and
@@ -578,6 +579,7 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'upgrade_verify.sql')
 
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_ledger_contract.sql')
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_aggregate_contract.sql')
 
   Write-Output 'PERSISTENCE_TESTS_PASS'
 }
