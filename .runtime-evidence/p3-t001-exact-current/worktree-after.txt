@@ -1,0 +1,9 @@
+ M phase_doc/PHASES_FEATURES.md
+?? .runtime-evidence/p3-t001-exact-current/changed-files.json
+?? .runtime-evidence/p3-t001-exact-current/finalize-evidence.py
+?? .runtime-evidence/p3-t001-exact-current/remote-apply-exit.txt
+?? .runtime-evidence/p3-t001-exact-current/remote-dry-run-exit.txt
+?? .runtime-evidence/p3-t001-exact-current/remote-migration-list-before-exit.txt
+?? .runtime-evidence/p3-t001-exact-current/remote-migration-list-exit.txt
+?? .runtime-evidence/p3-t001-exact-current/source-hashes-after.json
+?? .runtime-evidence/p3-t001-exact-current/source-integrity.txt

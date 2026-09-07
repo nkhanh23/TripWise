@@ -1,0 +1,6 @@
+SOURCE_SCOPE_PASS
+All pre-existing files present. Only the seven listed scoped files changed.
+Foundation migration SHA256 unchanged: 5933F8376DF12904D01F847223BE416BA8959A13AC8B3A981779B8D5316697BD
+P1/P2 production source, migrations and regression tests unchanged.
+Mobile package.json and lockfile unchanged; no dependency upgrades.
+Motion source unchanged; CREATE_TRIP_GENERATION_MOTION = PAUSED_BY_USER.

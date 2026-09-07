@@ -257,12 +257,12 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 **Kiểm thử / Android / bằng chứng:** accounting/rounding, RLS A/B, FX unavailable, ledger pagination, Android quick-add và refresh. **Điều kiện hoàn thành:** expense được persist thật và budget risk dual-currency trung thực. **Rủi ro rollback/regression:** money precision và rate staleness; giữ nguyên original amount/rate. **Cổng phase tiếp theo:** P3 data, provider, Android evidence PASS.
 
-#### [ ] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
+#### [x] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
 
-**Trạng thái:** NEEDS_FIX — corrective closure đang chờ exact-current gates.
+**Trạng thái:** COMPLETE — T001 corrective closure PASS; exact-current evidence: `.runtime-evidence/p3-t001-exact-current/REVIEWER_CLOSURE.md`. Android: NOT RUN — deferred to FEATURE-P3-T005.
 
-- [ ] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
-- [ ] RLS theo owner, category/origin validation và pagination PASS.
+- [x] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
+- [x] RLS theo owner, category/origin validation và pagination PASS.
 
 ##### Checklist hoàn thành
 - [x] Schema `public.trip_expenses` với RLS owner-only, immutability trigger, attachment same-trip trigger, composite index `(trip_id, created_at desc, id desc)`.
@@ -270,7 +270,9 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 - [x] 9-category allowlist (`food`, `transport`, `accommodation`, `activity`, `shopping`, `ticket`, `personal`, `reservation`, `other`) và 3-origin allowlist (`planned`, `actual`, `unplanned`) được enforce chặt ở cả SQL trigger/check và mobile client validator.
 - [x] Attachment cùng trip/cùng user; cross-trip/cross-user attachment bị reject với error code `22023`.
 - [x] Forward migration `20260907010000_expense_ledger_foundation.sql` đã apply cả local Docker (`freshDb` và `upgradeDb` PASS) và remote Supabase DEV.
-- [x] Mobile contracts, validators, và `SupabaseTripExpenseLedgerRepository` hoàn chỉnh; 24 Jest tests PASS; mobile test suite 66/67 PASS (505 tests pass, 1 skipped).
+- [x] Corrective `20260907020000_expense_ledger_contract_corrective.sql`: strict JSON whitelist, update/delete trip binding, column-level audit protection; SECURITY INVOKER/RLS giữ nguyên. Fresh/upgrade expense regressions PASS; DEV chỉ apply migration mới, local/remote aligned.
+- [x] Exact-current lint PASS (0 errors, 12 warnings), typecheck PASS; Expo Doctor 20/21 accepted baseline (5 patch mismatches), dependencies không đổi.
+- [x] Mobile contracts, validators, và `SupabaseTripExpenseLedgerRepository` hoàn chỉnh; 35/35 focused Jest PASS; full Jest 66 suites PASS, 1 skipped (516 tests PASS, 1 skipped).
 
 #### [ ] FEATURE-P3-T002 — So sánh ước tính và thực tế, phân bổ danh mục
 
@@ -476,13 +478,13 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Runtime Android và ma trận regression PASS.
 
-#### [ ] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
+#### [x] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
 
-- [ ] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
+- [x] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
 
 ##### Checklist hoàn thành
 
-- [ ] RLS theo owner, category/origin validation và pagination PASS.
+- [x] RLS theo owner, category/origin validation và pagination PASS.
 
 #### [ ] FEATURE-P3-T002 — Chi phí ước tính/thực tế và breakdown
 

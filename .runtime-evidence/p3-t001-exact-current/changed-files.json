@@ -1,0 +1,49 @@
+{
+  "modified": [
+    "mobile/src/integration/remote/supabaseTripExpenseRepository.ts",
+    "mobile/src/lib/supabase/database.types.ts",
+    "mobile/tests/expense-ledger-contract.test.ts",
+    "phase_doc/PHASES_FEATURES.md",
+    "supabase/tests/persistence/expense_ledger_contract.sql",
+    "supabase/tests/persistence/run.ps1",
+    "supabase/tests/persistence/upgrade_verify.sql"
+  ],
+  "createdSource": [
+    "supabase/migrations/20260907020000_expense_ledger_contract_corrective.sql"
+  ],
+  "evidenceFiles": [
+    "REVIEWER_CLOSURE.md",
+    "apply-corrective.py",
+    "changed-files.json",
+    "expo-doctor-exit.txt",
+    "expo-doctor-raw.log",
+    "expo-doctor-sandbox-exit.txt",
+    "expo-doctor-sandbox-raw.log",
+    "extend-tests.py",
+    "finalize-evidence.py",
+    "focused-jest-exit.txt",
+    "focused-jest-raw.log",
+    "full-jest-exit.txt",
+    "full-jest-raw.log",
+    "lint-exit.txt",
+    "lint-raw.log",
+    "persistence-attempt1-exit.txt",
+    "persistence-attempt1-raw.log",
+    "persistence-exit.txt",
+    "persistence-raw.log",
+    "remote-apply-exit.txt",
+    "remote-apply-raw.log",
+    "remote-dry-run-exit.txt",
+    "remote-dry-run-raw.log",
+    "remote-migration-list-before-exit.txt",
+    "remote-migration-list-before-raw.log",
+    "remote-migration-list-exit.txt",
+    "remote-migration-list-raw.log",
+    "source-hashes-after.json",
+    "source-hashes-before.json",
+    "source-integrity.txt",
+    "typecheck-exit.txt",
+    "typecheck-raw.log",
+    "worktree-after.txt"
+  ]
+}
