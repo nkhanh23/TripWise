@@ -1,0 +1,39 @@
+=== FEATURE-P2-T005 ANDROID REAL-DATA MATRIX ASSERTIONS ===
+
+1. EXERCISED ITEM FINAL STATE:
+  UUID: f4a1adbf-836c-4105-932d-58951771fc3a
+  Day ID: 30ffd8eb-cd50-411f-a8a2-cbb8dd4bc59e (Day 2: 30ffd8eb-cd50-411f-a8a2-cbb8dd4bc59e)
+  Position: 3
+  Place/Title: P2T005WalkEdited
+  Kind: custom_activity
+  Status: completed
+  Start time: 11:00:00
+  Completed at: 2026-09-07T07:16:53.485702+00:00
+  Skipped at: null
+  Google place ID: null
+  Coordinates: null, null
+  Resolved at: null
+
+2. DAY 1 ITEMS (CONTIGUITY CHECK):
+  pos 1 (expected 1): Tháp Tokyo Skytree [scheduled] (UUID: 9bf30606-fa9c-4d5e-8a29-d9a5cb2ddd95)
+  pos 2 (expected 2): Khu phố Ginza [scheduled] (UUID: 7893bc9c-3bd1-4b9f-8f45-9ef3b446baf4)
+  pos 3 (expected 3): P2T001AndroidEdited [completed] (UUID: 05c4f78b-ae04-445e-8293-96a2a56264b4)
+  Day 1 Contiguous: true
+
+3. DAY 2 ITEMS (CONTIGUITY CHECK):
+  pos 1 (expected 1): Khu phố Asakusa [scheduled] (UUID: a89559da-6845-4a79-a614-4cf793063c27)
+  pos 2 (expected 2): Đền Meiji Jingu [scheduled] (UUID: f2917915-daac-4928-b766-0f98698ab137)
+  pos 3 (expected 3): P2T005WalkEdited [completed] (UUID: f4a1adbf-836c-4105-932d-58951771fc3a)
+  pos 4 (expected 4): Giao lộ Shibuya [scheduled] (UUID: 14447021-d79c-42d5-8b8e-90c3d81536a2)
+  pos 5 (expected 5): Công viên Yoyogi [scheduled] (UUID: 6d110638-ae7e-49e9-b68b-d1e94a8a7c23)
+  pos 6 (expected 6): Khu phố Shinjuku [scheduled] (UUID: 9d54b165-d033-444f-8c2b-caf19c34f376)
+  pos 7 (expected 7): Chùa Senso-ji [scheduled] (UUID: 9dd72016-d4a7-476c-aa1b-f5de24e1227a)
+  Day 2 Contiguous: true
+
+4. INVARIANTS SUMMARY:
+  - Stable item UUID maintained: YES (f4a1adbf-836c-4105-932d-58951771fc3a)
+  - No delete/recreate: YES
+  - Single logical RPC per mutation: YES
+  - No fake provider metadata: YES (null/null/null preserved)
+  - All positions contiguous: YES (Day 1: 1..3, Day 2: 1..7)
+  - Authoritative persistence verified on every mutation: YES

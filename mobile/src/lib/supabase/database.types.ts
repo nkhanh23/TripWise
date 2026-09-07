@@ -352,11 +352,68 @@ export type Database = {
         }
         Relationships: []
       }
+      trip_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          currency: string
+          id: string
+          itinerary_item_id: string | null
+          note: string | null
+          origin: string
+          spent_at: string | null
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          currency: string
+          id?: string
+          itinerary_item_id?: string | null
+          note?: string | null
+          origin: string
+          spent_at?: string | null
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          itinerary_item_id?: string | null
+          note?: string | null
+          origin?: string
+          spent_at?: string | null
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      create_trip_expense: { Args: { p_command: Json }; Returns: Json }
+      delete_trip_expense: { Args: { p_expense_id: string }; Returns: boolean }
+      list_trip_expenses: {
+        Args: {
+          p_category?: string
+          p_cursor_created_at?: string
+          p_cursor_id?: string
+          p_limit?: number
+          p_origin?: string
+          p_trip_id: string
+        }
+        Returns: Json
+      }
+      update_trip_expense: { Args: { p_command: Json }; Returns: Json }
       apply_verified_place_snapshot: {
         Args: {
           p_google_place_id: string

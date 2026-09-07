@@ -1,0 +1,38 @@
+COMMAND=npm run lint
+
+
+> tripwise-mobile@1.0.0 lint
+> expo lint
+
+env: load .env.local .env
+env: export EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+
+D:\Dev\TripWise\mobile\src\features\explore\ExploreScreen.tsx
+   7:27  warning  'colors' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+  88:6   warning  React Hook useMemo has a missing dependency: 'displayCategory'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\Dev\TripWise\mobile\src\features\planner\components\WizardProgressBar.tsx
+  1:1   warning  Unexpected Unicode BOM (Byte Order Mark)  unicode-bom
+  5:10  warning  'colors' is defined but never used        @typescript-eslint/no-unused-vars
+
+D:\Dev\TripWise\mobile\src\features\planner\data\mockWizardData.ts
+  4:3  warning  'DestinationOption' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\Dev\TripWise\mobile\src\features\settings\components\SettingsRow.tsx
+  1:1  warning  Unexpected Unicode BOM (Byte Order Mark)  unicode-bom
+
+D:\Dev\TripWise\mobile\src\features\settings\components\SettingsSwitchRow.tsx
+  1:1  warning  Unexpected Unicode BOM (Byte Order Mark)  unicode-bom
+
+D:\Dev\TripWise\mobile\src\features\trips\screens\TripDetailScreen.tsx
+   32:29  warning  'D:\Dev\TripWise\mobile\src\integration\contracts.ts' imported multiple times                                import/no-duplicates
+   40:46  warning  'D:\Dev\TripWise\mobile\src\integration\remote\supabaseTripRepositories.ts' imported multiple times          import/no-duplicates
+   41:51  warning  'D:\Dev\TripWise\mobile\src\integration\remote\supabaseTripRepositories.ts' imported multiple times          import/no-duplicates
+   43:38  warning  'D:\Dev\TripWise\mobile\src\integration\contracts.ts' imported multiple times                                import/no-duplicates
+  401:6   warning  React Hook useCallback has an unnecessary dependency: 't'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 12 problems (0 errors, 12 warnings)
+  0 errors and 5 warnings potentially fixable with the `--fix` option.
+
+
+EXIT_CODE=0

@@ -233,7 +233,7 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 `FEATURE-P1-T002 = READY_FOR_EXPLICIT_USER_AUTHORIZATION` — it is not started by this task.
 
-### [ ] FEATURE-P2 — Runtime Workspace production
+### [x] FEATURE-P2 — Runtime Workspace production
 
 **Mục tiêu / lý do:** biến Trip Detail thành workspace live an toàn thay vì chủ yếu chỉ trình bày read-only.
 
@@ -256,6 +256,31 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 **Bảo mật/RLS:** expense là private, chỉ owner, input decimal/currency/time phải validate; không dùng service-role ở client. **Hiệu năng/khả năng phục hồi:** ledger phân trang, tổng hợp ở server, cache FX có nhãn freshness/TTL, không khuếch đại retry; mất FX không được chặn trip. **UI/Stitch:** dùng ngôn ngữ trực quan budget đã được duyệt; không dùng rate giả. **Địa phương hóa/theme/accessibility:** định dạng tiền tệ theo locale, giá trị kép và freshness của rate có thể truy cập.
 
 **Kiểm thử / Android / bằng chứng:** accounting/rounding, RLS A/B, FX unavailable, ledger pagination, Android quick-add và refresh. **Điều kiện hoàn thành:** expense được persist thật và budget risk dual-currency trung thực. **Rủi ro rollback/regression:** money precision và rate staleness; giữ nguyên original amount/rate. **Cổng phase tiếp theo:** P3 data, provider, Android evidence PASS.
+
+#### [x] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
+
+**Trạng thái:** COMPLETE — Subtask S001 hoàn thành.
+
+- [x] FEATURE-P3-T001-S001 — Tạo ledger private cho planned/actual/unplanned và expense attachment.
+- [x] RLS theo owner, category/origin validation và pagination PASS.
+
+##### Checklist hoàn thành
+- [x] Schema `public.trip_expenses` với RLS owner-only, immutability trigger, attachment same-trip trigger, composite index `(trip_id, created_at desc, id desc)`.
+- [x] 4 SECURITY INVOKER RPCs: `create_trip_expense`, `update_trip_expense`, `delete_trip_expense`, `list_trip_expenses` với microsecond cursor pagination và filter category/origin.
+- [x] 9-category allowlist (`food`, `transport`, `accommodation`, `activity`, `shopping`, `ticket`, `personal`, `reservation`, `other`) và 3-origin allowlist (`planned`, `actual`, `unplanned`) được enforce chặt ở cả SQL trigger/check và mobile client validator.
+- [x] Attachment cùng trip/cùng user; cross-trip/cross-user attachment bị reject với error code `22023`.
+- [x] Forward migration `20260907010000_expense_ledger_foundation.sql` đã apply cả local Docker (`freshDb` và `upgradeDb` PASS) và remote Supabase DEV.
+- [x] Mobile contracts, validators, và `SupabaseTripExpenseLedgerRepository` hoàn chỉnh; 24 Jest tests PASS; mobile test suite 66/67 PASS (505 tests pass, 1 skipped).
+
+#### [ ] FEATURE-P3-T002 — So sánh ước tính và thực tế, phân bổ danh mục
+
+- [ ] FEATURE-P3-T002-S001 — Server-side aggregation và category breakdown.
+
+#### [ ] FEATURE-P3-T003 — Tiền tệ kép và FX quote provenance
+
+#### [ ] FEATURE-P3-T004 — Phân tích rủi ro ngân sách và cảnh báo vượt ngưỡng
+
+#### [ ] FEATURE-P3-T005 — Giao diện Expense / Budget và xác minh runtime Android
 
 ### [ ] FEATURE-P4 — Candidate và Live Intelligence
 
@@ -435,21 +460,21 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Transition validation, cô lập owner và bằng chứng Android PASS.
 
-#### [ ] FEATURE-P2-T004 — Form transport, accommodation, contact và source link
+#### [x] FEATURE-P2-T004 — Form transport, accommodation, contact và source link
 
-- [ ] FEATURE-P2-T004-S001 — Triển khai editor cho metadata theo field/kind matrix.
-
-##### Checklist hoàn thành
-
-- [ ] URL/field validation, a11y/EN/VI và không giả mạo provider PASS.
-
-#### [ ] FEATURE-P2-T005 — Refresh remote và bằng chứng Android workspace
-
-- [ ] FEATURE-P2-T005-S001 — Xác minh add/edit/reorder/move/skip/complete/reopen trên Android bằng dữ liệu thực.
+- [x] FEATURE-P2-T004-S001 — Triển khai editor cho metadata theo field/kind matrix.
 
 ##### Checklist hoàn thành
 
-- [ ] Runtime Android và ma trận regression PASS.
+- [x] URL/field validation, a11y/EN/VI và không giả mạo provider PASS.
+
+#### [x] FEATURE-P2-T005 — Refresh remote và bằng chứng Android workspace
+
+- [x] FEATURE-P2-T005-S001 — Xác minh add/edit/reorder/move/skip/complete/reopen trên Android bằng dữ liệu thực.
+
+##### Checklist hoàn thành
+
+- [x] Runtime Android và ma trận regression PASS.
 
 #### [ ] FEATURE-P3-T001 — Sổ cái chi phí, danh mục và nguồn gốc
 

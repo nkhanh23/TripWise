@@ -62,6 +62,38 @@ describe('FEATURE-P1-T003 workspace mutation transport', () => {
     expect(() => validateWorkspaceMutationCommand({ type: 'replace_source_links', ...base, links: [{ type: 7, url: true }] })).toThrow('workspace source link');
   });
 
+  it('enforces T004 transport, accommodation, contact, and source-link validation', () => {
+    const base = { tripId, itemId, expectedRevision: 1 };
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { transport: { departureAt: '2028-01-01T10:00:00Z', arrivalAt: null } } })).toThrow('workspace transport patch');
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { transport: { departureAt: '2028-01-01T12:00:00Z', arrivalAt: '2028-01-01T10:00:00Z' } } })).toThrow('workspace transport patch');
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { transport: { plannedCostAmount: 10, plannedCostCurrency: 'vnd' } } })).toThrow('workspace transport patch');
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { accommodation: { checkInAt: '2028-01-03T10:00:00Z', checkOutAt: '2028-01-01T10:00:00Z', nights: 2 } } })).toThrow('workspace accommodation patch');
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { contact: { phone: 'call-me', websiteUrl: 'http://unsafe.test' } } })).toThrow('workspace contact patch');
+    expect(() => validateWorkspaceMutationCommand({ type: 'replace_source_links', ...base, links: Array.from({ length: 13 }, (_, index) => ({ type: 'website', url: `https://example.test/${index}` })) })).toThrow('workspace source links');
+    expect(() => validateWorkspaceMutationCommand({ type: 'replace_source_links', ...base, links: [{ type: 'other', url: 'https://example.test' }] })).toThrow('workspace source link');
+  });
+
+  it('derives accommodation nights using UTC calendar dates', () => {
+    const base = { tripId, itemId, expectedRevision: 1 };
+    
+    // Sliced dates: 01-01 to 01-03 (2 nights)
+    // UTC dates: 01-02 to 01-03 (1 night)
+    const checkInOffset = '2028-01-01T23:00:00-05:00';
+    const checkOutOffset = '2028-01-03T01:00:00-05:00';
+    
+    // Valid nights using UTC dates passes
+    expect(validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { accommodation: { checkInAt: checkInOffset, checkOutAt: checkOutOffset, nights: 1 } } })).toBeTruthy();
+    
+    // Incorrect local-date-based nights value is rejected
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { accommodation: { checkInAt: checkInOffset, checkOutAt: checkOutOffset, nights: 2 } } })).toThrow('workspace accommodation patch');
+    
+    // Existing Z/UTC examples still pass
+    expect(validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { accommodation: { checkInAt: '2028-01-01T15:00:00Z', checkOutAt: '2028-01-03T10:00:00Z', nights: 2 } } })).toBeTruthy();
+    
+    // Invalid reversed accommodation interval still rejects
+    expect(() => validateWorkspaceMutationCommand({ type: 'update_item', ...base, patch: { accommodation: { checkInAt: '2028-01-03T10:00:00Z', checkOutAt: '2028-01-01T10:00:00Z', nights: 2 } } })).toThrow('workspace accommodation patch');
+  });
+
   it('maps the stable revision conflict without retry/overwrite semantics', () => {
     const error = mapWorkspaceMutationError({ code: 'TW009', message: 'internal detail is ignored' });
     expect(error).toBeInstanceOf(IntegrationError);

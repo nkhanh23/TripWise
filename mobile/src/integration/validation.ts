@@ -39,6 +39,16 @@ import type {
   WorkspaceItemPatch,
   WorkspaceSourceLink,
   CreateCustomActivityPayload,
+  CreateTripExpenseCommand,
+  UpdateTripExpenseCommand,
+  DeleteTripExpenseCommand,
+  ListTripExpensesRequest,
+  TripExpenseRecord,
+  TripExpensesPage,
+  ExpenseId,
+  ExpenseCategory,
+  ExpenseOrigin,
+  TripExpenseCursor,
 } from './contracts';
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -162,6 +172,11 @@ export function isIsoTimestamp(value: unknown): value is string {
     && !Number.isNaN(new Date(value).getTime());
 }
 
+function utcDateMs(isoString: string): number {
+  const date = new Date(isoString);
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+
 export function inclusiveDurationDays(startDate: string, endDate: string): number {
   if (!isIsoDate(startDate) || !isIsoDate(endDate)) {
     throw new ContractValidationError('date range');
@@ -193,9 +208,9 @@ const workspaceKinds = ['place', 'custom_activity', 'restaurant', 'transport', '
 const sourceLinkTypes = ['google_maps', 'facebook', 'instagram', 'tiktok', 'website', 'booking', 'other'] as const;
 const transportModes = ['walk', 'drive', 'transit', 'bus', 'train', 'flight', 'motorbike', 'ferry', 'other'] as const;
 
-function nullableBoundedString(value: unknown, maximum: number): string | null | undefined {
-  if (value === undefined || value === null) return value;
-  return requiredString(value, maximum);
+function invalidNullableBoundedString(value: unknown, maximum: number): boolean {
+  if (value === undefined || value === null) return false;
+  return requiredString(value, maximum) === null;
 }
 
 function validHttpsUrl(value: unknown): boolean {
@@ -207,18 +222,18 @@ function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
   const allowed = ['placeName', 'placeQuery', 'flexibility', 'priority', 'startTime', 'endTime', 'note', 'contact', 'transport', 'accommodation'];
   if (!isRecord(value) || !hasOnlyKeys(value, allowed) || Object.keys(value).length === 0) throw new ContractValidationError('workspace item patch');
   if (value.placeName !== undefined && requiredString(value.placeName, 160) === null) throw new ContractValidationError('workspace item patch');
-  if (value.placeQuery !== undefined && nullableBoundedString(value.placeQuery, 200) === null) throw new ContractValidationError('workspace item patch');
+  if (invalidNullableBoundedString(value.placeQuery, 200)) throw new ContractValidationError('workspace item patch');
   if (value.flexibility !== undefined && (typeof value.flexibility !== 'string' || !workspaceFlexibilities.includes(value.flexibility as typeof workspaceFlexibilities[number]))) throw new ContractValidationError('workspace item patch');
   if (value.priority !== undefined && (typeof value.priority !== 'string' || !workspacePriorities.includes(value.priority as typeof workspacePriorities[number]))) throw new ContractValidationError('workspace item patch');
   for (const key of ['startTime', 'endTime'] as const) if (value[key] !== undefined && value[key] !== null && (typeof value[key] !== 'string' || !timePattern.test(value[key]))) throw new ContractValidationError('workspace item patch');
-  if (value.note !== undefined && value.note !== null && nullableBoundedString(value.note, 500) === null) throw new ContractValidationError('workspace item patch');
+  if (invalidNullableBoundedString(value.note, 500)) throw new ContractValidationError('workspace item patch');
   if (value.contact !== undefined) {
     if (!isRecord(value.contact)) throw new ContractValidationError('workspace contact patch');
     const contact = value.contact;
     if (!hasOnlyKeys(contact, ['name', 'phone', 'address', 'websiteUrl', 'bookingUrl', 'reservationCode'])
-      || nullableBoundedString(contact.name, 120) === null || nullableBoundedString(contact.address, 500) === null
-      || nullableBoundedString(contact.reservationCode, 128) === null
-      || (contact.phone !== undefined && contact.phone !== null && (nullableBoundedString(contact.phone, 64) === null || typeof contact.phone !== 'string' || !/^[+0-9 ().-]+$/.test(contact.phone.trim())))
+      || invalidNullableBoundedString(contact.name, 120) || invalidNullableBoundedString(contact.address, 500)
+      || invalidNullableBoundedString(contact.reservationCode, 128)
+      || (contact.phone !== undefined && contact.phone !== null && (invalidNullableBoundedString(contact.phone, 64) || typeof contact.phone !== 'string' || !/^[+0-9 ().-]+$/.test(contact.phone.trim())))
       || (contact.websiteUrl !== undefined && contact.websiteUrl !== null && !validHttpsUrl(contact.websiteUrl))
       || (contact.bookingUrl !== undefined && contact.bookingUrl !== null && !validHttpsUrl(contact.bookingUrl))) throw new ContractValidationError('workspace contact patch');
   }
@@ -227,11 +242,14 @@ function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
     const transport = value.transport;
     if (!hasOnlyKeys(transport, ['mode', 'originLabel', 'destinationLabel', 'operatorName', 'departureAt', 'arrivalAt', 'plannedCostAmount', 'plannedCostCurrency'])
       || (transport.mode !== undefined && transport.mode !== null && (typeof transport.mode !== 'string' || !transportModes.includes(transport.mode as typeof transportModes[number])))
-      || ['originLabel', 'destinationLabel', 'operatorName'].some((key) => nullableBoundedString(transport[key], 160) === null)
+      || ['originLabel', 'destinationLabel', 'operatorName'].some((key) => invalidNullableBoundedString(transport[key], 160))
       || (transport.departureAt !== undefined && transport.departureAt !== null && !isIsoTimestamp(transport.departureAt))
       || (transport.arrivalAt !== undefined && transport.arrivalAt !== null && !isIsoTimestamp(transport.arrivalAt))
       || (transport.plannedCostAmount !== undefined && transport.plannedCostAmount !== null && finiteNumber(transport.plannedCostAmount, 0, 1_000_000_000) === null)
-      || (transport.plannedCostCurrency !== undefined && transport.plannedCostCurrency !== null && (typeof transport.plannedCostCurrency !== 'string' || !currencyPattern.test(transport.plannedCostCurrency)))) throw new ContractValidationError('workspace transport patch');
+      || (transport.plannedCostCurrency !== undefined && transport.plannedCostCurrency !== null && (typeof transport.plannedCostCurrency !== 'string' || !currencyPattern.test(transport.plannedCostCurrency)))
+      || ('departureAt' in transport && 'arrivalAt' in transport && ((typeof transport.departureAt === 'string') !== (typeof transport.arrivalAt === 'string')))
+      || (typeof transport.departureAt === 'string' && typeof transport.arrivalAt === 'string' && Date.parse(transport.arrivalAt) < Date.parse(transport.departureAt))
+      || ('plannedCostAmount' in transport && 'plannedCostCurrency' in transport && ((typeof transport.plannedCostAmount === 'number') !== (typeof transport.plannedCostCurrency === 'string')))) throw new ContractValidationError('workspace transport patch');
   }
   if (value.accommodation !== undefined) {
     if (!isRecord(value.accommodation)) throw new ContractValidationError('workspace accommodation patch');
@@ -239,7 +257,12 @@ function validateWorkspaceItemPatch(value: unknown): WorkspaceItemPatch {
     if (!hasOnlyKeys(accommodation, ['checkInAt', 'checkOutAt', 'nights'])
       || (accommodation.checkInAt !== undefined && accommodation.checkInAt !== null && !isIsoTimestamp(accommodation.checkInAt))
       || (accommodation.checkOutAt !== undefined && accommodation.checkOutAt !== null && !isIsoTimestamp(accommodation.checkOutAt))
-      || (accommodation.nights !== undefined && accommodation.nights !== null && (!Number.isInteger(accommodation.nights) || typeof accommodation.nights !== 'number' || accommodation.nights < 0 || accommodation.nights > 365))) throw new ContractValidationError('workspace accommodation patch');
+      || (accommodation.nights !== undefined && accommodation.nights !== null && (!Number.isInteger(accommodation.nights) || typeof accommodation.nights !== 'number' || accommodation.nights < 0 || accommodation.nights > 365))
+      || ('checkInAt' in accommodation && 'checkOutAt' in accommodation && ((typeof accommodation.checkInAt === 'string') !== (typeof accommodation.checkOutAt === 'string')))
+      || (typeof accommodation.checkInAt === 'string' && typeof accommodation.checkOutAt === 'string' && Date.parse(accommodation.checkOutAt) <= Date.parse(accommodation.checkInAt))
+      || (typeof accommodation.nights === 'number' && 'checkInAt' in accommodation && 'checkOutAt' in accommodation
+        && (typeof accommodation.checkInAt !== 'string' || typeof accommodation.checkOutAt !== 'string'
+          || Math.round((utcDateMs(accommodation.checkOutAt) - utcDateMs(accommodation.checkInAt)) / 86_400_000) !== accommodation.nights))) throw new ContractValidationError('workspace accommodation patch');
   }
   if (typeof value.startTime === 'string' && typeof value.endTime === 'string' && value.endTime < value.startTime) throw new ContractValidationError('workspace item patch');
   return value as WorkspaceItemPatch;
@@ -644,7 +667,7 @@ function parseSavedTripItem(value: unknown, expectedPosition: number): SavedTrip
   }
   const allowed = [
     'id', 'position', 'itemKind', 'flexibility', 'priority', 'activityStatus', 'placeName', 'placeQuery', 'resolution', 'googlePlaceId', 'latitude', 'longitude',
-    'placeAddress', 'placeCategory', 'placeResolvedAt', 'startTime', 'endTime', 'note',
+    'placeAddress', 'placeCategory', 'placeResolvedAt', 'startTime', 'endTime', 'note', 'contact', 'transport', 'accommodation', 'sourceLinks',
   ];
   if (!hasOnlyKeys(value, allowed)) throw new ContractValidationError('saved trip item');
   const placeName = requiredString(value.placeName, 160);
@@ -657,6 +680,15 @@ function parseSavedTripItem(value: unknown, expectedPosition: number): SavedTrip
   const flexibility = value.flexibility === undefined ? 'fixed' : value.flexibility;
   const priority = value.priority === undefined ? 'must_do' : value.priority;
   const activityStatus = value.activityStatus === undefined ? 'scheduled' : value.activityStatus;
+  let metadata: Pick<SavedTripItem, 'contact' | 'transport' | 'accommodation'> = {};
+  try {
+    if (value.contact !== undefined) metadata.contact = validateWorkspaceItemPatch({ contact: value.contact }).contact;
+    if (value.transport !== undefined) metadata.transport = validateWorkspaceItemPatch({ transport: value.transport }).transport;
+    if (value.accommodation !== undefined) metadata.accommodation = validateWorkspaceItemPatch({ accommodation: value.accommodation }).accommodation;
+  } catch {
+    throw new ContractValidationError('saved trip item metadata');
+  }
+  const sourceLinks = value.sourceLinks === undefined ? [] : validateWorkspaceLinks(value.sourceLinks);
   if (!placeName || placeQuery === null || note === null
     || typeof itemKind !== 'string' || !workspaceKinds.includes(itemKind as typeof workspaceKinds[number])
     || typeof flexibility !== 'string' || !workspaceFlexibilities.includes(flexibility as typeof workspaceFlexibilities[number])
@@ -678,6 +710,8 @@ function parseSavedTripItem(value: unknown, expectedPosition: number): SavedTrip
     ...(value.startTime === undefined ? {} : { startTime: value.startTime }),
     ...(value.endTime === undefined ? {} : { endTime: value.endTime }),
     ...(note === undefined ? {} : { note }),
+    ...metadata,
+    sourceLinks,
   };
   if (value.resolution === 'UNRESOLVED') {
     if (value.googlePlaceId !== undefined || value.latitude !== undefined || value.longitude !== undefined
@@ -1087,3 +1121,334 @@ export function parseSavedPlacesPage(value: unknown): {
     nextCursor,
   };
 }
+
+const expenseCategories = ['food', 'transport', 'accommodation', 'activity', 'shopping', 'ticket', 'personal', 'reservation', 'other'] as const;
+const expenseOrigins = ['planned', 'actual', 'unplanned'] as const;
+
+export function validateCreateTripExpenseCommand(command: unknown): CreateTripExpenseCommand {
+  if (!isRecord(command)) throw new ContractValidationError('create trip expense command');
+  if (command.ownerId !== undefined || command.userId !== undefined) {
+    throw new ContractValidationError('create trip expense command: owner cannot be client-supplied');
+  }
+  if (!hasOnlyKeys(command, ['tripId', 'category', 'origin', 'amount', 'currency', 'note', 'spentAt', 'itineraryItemId'])) {
+    throw new ContractValidationError('create trip expense command');
+  }
+  const tripId = requiredString(command.tripId, 64);
+  if (!tripId || !isUuid(tripId)) throw new ContractValidationError('create trip expense command: tripId');
+
+  if (typeof command.category !== 'string' || !expenseCategories.includes(command.category as typeof expenseCategories[number])) {
+    throw new ContractValidationError('create trip expense command: category');
+  }
+  const category = command.category as ExpenseCategory;
+
+  if (typeof command.origin !== 'string' || !expenseOrigins.includes(command.origin as typeof expenseOrigins[number])) {
+    throw new ContractValidationError('create trip expense command: origin');
+  }
+  const origin = command.origin as ExpenseOrigin;
+
+  if (typeof command.amount !== 'number' || !Number.isFinite(command.amount) || command.amount <= 0 || command.amount > 9_999_999_999.99) {
+    throw new ContractValidationError('create trip expense command: amount');
+  }
+  const amount = Number(command.amount.toFixed(2));
+
+  if (typeof command.currency !== 'string' || !currencyPattern.test(command.currency.trim())) {
+    throw new ContractValidationError('create trip expense command: currency');
+  }
+  const currency = command.currency.trim();
+
+  let note: string | null = null;
+  if (command.note !== undefined && command.note !== null) {
+    if (typeof command.note !== 'string') throw new ContractValidationError('create trip expense command: note');
+    const trimmed = command.note.trim();
+    if (trimmed.length < 1 || trimmed.length > 500) throw new ContractValidationError('create trip expense command: note');
+    note = trimmed;
+  }
+
+  let spentAt: string | null = null;
+  if (command.spentAt !== undefined && command.spentAt !== null) {
+    if (typeof command.spentAt !== 'string' || !isIsoTimestamp(command.spentAt)) {
+      throw new ContractValidationError('create trip expense command: spentAt');
+    }
+    spentAt = command.spentAt;
+  }
+
+  let itineraryItemId: ItineraryItemId | null = null;
+  if (command.itineraryItemId !== undefined && command.itineraryItemId !== null) {
+    if (typeof command.itineraryItemId !== 'string' || !isUuid(command.itineraryItemId)) {
+      throw new ContractValidationError('create trip expense command: itineraryItemId');
+    }
+    itineraryItemId = command.itineraryItemId as ItineraryItemId;
+  }
+
+  return {
+    tripId: tripId as TripId,
+    category,
+    origin,
+    amount,
+    currency,
+    note,
+    spentAt,
+    itineraryItemId,
+  };
+}
+
+export function validateUpdateTripExpenseCommand(command: unknown): UpdateTripExpenseCommand {
+  if (!isRecord(command)) throw new ContractValidationError('update trip expense command');
+  if (command.ownerId !== undefined || command.userId !== undefined) {
+    throw new ContractValidationError('update trip expense command: owner cannot be client-supplied');
+  }
+  if (!hasOnlyKeys(command, ['expenseId', 'tripId', 'patch'])) {
+    throw new ContractValidationError('update trip expense command');
+  }
+  const expenseId = requiredString(command.expenseId, 64);
+  if (!expenseId || !isUuid(expenseId)) throw new ContractValidationError('update trip expense command: expenseId');
+
+  const tripId = requiredString(command.tripId, 64);
+  if (!tripId || !isUuid(tripId)) throw new ContractValidationError('update trip expense command: tripId');
+
+  if (!isRecord(command.patch)) throw new ContractValidationError('update trip expense command: patch');
+  const patch = command.patch;
+  if (patch.id !== undefined || patch.tripId !== undefined || patch.ownerId !== undefined || patch.userId !== undefined) {
+    throw new ContractValidationError('update trip expense command: immutable fields in patch');
+  }
+  if (!hasOnlyKeys(patch, ['category', 'origin', 'amount', 'currency', 'note', 'spentAt', 'itineraryItemId']) || Object.keys(patch).length === 0) {
+    throw new ContractValidationError('update trip expense command: patch');
+  }
+
+  const validatedPatch: UpdateTripExpenseCommand['patch'] = {};
+
+  if (patch.category !== undefined) {
+    if (typeof patch.category !== 'string' || !expenseCategories.includes(patch.category as typeof expenseCategories[number])) {
+      throw new ContractValidationError('update trip expense command: patch.category');
+    }
+    validatedPatch.category = patch.category as ExpenseCategory;
+  }
+
+  if (patch.origin !== undefined) {
+    if (typeof patch.origin !== 'string' || !expenseOrigins.includes(patch.origin as typeof expenseOrigins[number])) {
+      throw new ContractValidationError('update trip expense command: patch.origin');
+    }
+    validatedPatch.origin = patch.origin as ExpenseOrigin;
+  }
+
+  if (patch.amount !== undefined) {
+    if (typeof patch.amount !== 'number' || !Number.isFinite(patch.amount) || patch.amount <= 0 || patch.amount > 9_999_999_999.99) {
+      throw new ContractValidationError('update trip expense command: patch.amount');
+    }
+    validatedPatch.amount = Number(patch.amount.toFixed(2));
+  }
+
+  if (patch.currency !== undefined) {
+    if (typeof patch.currency !== 'string' || !currencyPattern.test(patch.currency.trim())) {
+      throw new ContractValidationError('update trip expense command: patch.currency');
+    }
+    validatedPatch.currency = patch.currency.trim();
+  }
+
+  if (patch.note !== undefined) {
+    if (patch.note === null) {
+      validatedPatch.note = null;
+    } else if (typeof patch.note === 'string') {
+      const trimmed = patch.note.trim();
+      if (trimmed.length < 1 || trimmed.length > 500) throw new ContractValidationError('update trip expense command: patch.note');
+      validatedPatch.note = trimmed;
+    } else {
+      throw new ContractValidationError('update trip expense command: patch.note');
+    }
+  }
+
+  if (patch.spentAt !== undefined) {
+    if (patch.spentAt === null) {
+      validatedPatch.spentAt = null;
+    } else if (typeof patch.spentAt === 'string' && isIsoTimestamp(patch.spentAt)) {
+      validatedPatch.spentAt = patch.spentAt;
+    } else {
+      throw new ContractValidationError('update trip expense command: patch.spentAt');
+    }
+  }
+
+  if (patch.itineraryItemId !== undefined) {
+    if (patch.itineraryItemId === null) {
+      validatedPatch.itineraryItemId = null;
+    } else if (typeof patch.itineraryItemId === 'string' && isUuid(patch.itineraryItemId)) {
+      validatedPatch.itineraryItemId = patch.itineraryItemId as ItineraryItemId;
+    } else {
+      throw new ContractValidationError('update trip expense command: patch.itineraryItemId');
+    }
+  }
+
+  return {
+    expenseId: expenseId as ExpenseId,
+    tripId: tripId as TripId,
+    patch: validatedPatch,
+  };
+}
+
+export function validateDeleteTripExpenseCommand(command: unknown): DeleteTripExpenseCommand {
+  if (!isRecord(command) || !hasOnlyKeys(command, ['expenseId', 'tripId'])) {
+    throw new ContractValidationError('delete trip expense command');
+  }
+  const expenseId = requiredString(command.expenseId, 64);
+  const tripId = requiredString(command.tripId, 64);
+  if (!expenseId || !isUuid(expenseId) || !tripId || !isUuid(tripId)) {
+    throw new ContractValidationError('delete trip expense command: IDs');
+  }
+  return {
+    expenseId: expenseId as ExpenseId,
+    tripId: tripId as TripId,
+  };
+}
+
+export function validateListTripExpensesRequest(request: unknown): ListTripExpensesRequest {
+  if (!isRecord(request) || !hasOnlyKeys(request, ['tripId', 'limit', 'cursor', 'category', 'origin'])) {
+    throw new ContractValidationError('list trip expenses request');
+  }
+  const tripId = requiredString(request.tripId, 64);
+  if (!tripId || !isUuid(tripId)) throw new ContractValidationError('list trip expenses request: tripId');
+
+  let limit = 20;
+  if (request.limit !== undefined) {
+    if (typeof request.limit !== 'number' || !Number.isInteger(request.limit) || request.limit < 1 || request.limit > 50) {
+      throw new ContractValidationError('list trip expenses request: limit');
+    }
+    limit = request.limit;
+  }
+
+  let cursor: TripExpenseCursor | null = null;
+  if (request.cursor !== undefined && request.cursor !== null) {
+    if (!isRecord(request.cursor) || !hasOnlyKeys(request.cursor, ['createdAt', 'id'])) {
+      throw new ContractValidationError('list trip expenses request: cursor');
+    }
+    const createdAt = requiredString(request.cursor.createdAt, 64);
+    const id = requiredString(request.cursor.id, 64);
+    if (!createdAt || !isIsoTimestamp(createdAt) || !id || !isUuid(id)) {
+      throw new ContractValidationError('list trip expenses request: cursor');
+    }
+    cursor = { createdAt, id: id as ExpenseId };
+  }
+
+  let category: ExpenseCategory | undefined;
+  if (request.category !== undefined) {
+    if (typeof request.category !== 'string' || !expenseCategories.includes(request.category as typeof expenseCategories[number])) {
+      throw new ContractValidationError('list trip expenses request: category');
+    }
+    category = request.category as ExpenseCategory;
+  }
+
+  let origin: ExpenseOrigin | undefined;
+  if (request.origin !== undefined) {
+    if (typeof request.origin !== 'string' || !expenseOrigins.includes(request.origin as typeof expenseOrigins[number])) {
+      throw new ContractValidationError('list trip expenses request: origin');
+    }
+    origin = request.origin as ExpenseOrigin;
+  }
+
+  return {
+    tripId: tripId as TripId,
+    limit,
+    cursor,
+    category,
+    origin,
+  };
+}
+
+export function parseTripExpenseRecord(value: unknown): TripExpenseRecord {
+  if (!isRecord(value) || !hasOnlyKeys(value, [
+    'id', 'tripId', 'itineraryItemId', 'category', 'origin', 'amount', 'currency', 'note', 'spentAt', 'createdAt', 'updatedAt',
+  ])) {
+    throw new ContractValidationError('trip expense record');
+  }
+
+  const id = requiredString(value.id, 64);
+  const tripId = requiredString(value.tripId, 64);
+  const createdAt = requiredString(value.createdAt, 64);
+  const updatedAt = requiredString(value.updatedAt, 64);
+
+  if (!id || !isUuid(id) || !tripId || !isUuid(tripId) || !createdAt || !isIsoTimestamp(createdAt) || !updatedAt || !isIsoTimestamp(updatedAt)) {
+    throw new ContractValidationError('trip expense record: IDs or timestamps');
+  }
+
+  let itineraryItemId: ItineraryItemId | null = null;
+  if (value.itineraryItemId !== null && value.itineraryItemId !== undefined) {
+    if (typeof value.itineraryItemId !== 'string' || !isUuid(value.itineraryItemId)) {
+      throw new ContractValidationError('trip expense record: itineraryItemId');
+    }
+    itineraryItemId = value.itineraryItemId as ItineraryItemId;
+  }
+
+  if (typeof value.category !== 'string' || !expenseCategories.includes(value.category as typeof expenseCategories[number])) {
+    throw new ContractValidationError('trip expense record: category');
+  }
+  const category = value.category as ExpenseCategory;
+
+  if (typeof value.origin !== 'string' || !expenseOrigins.includes(value.origin as typeof expenseOrigins[number])) {
+    throw new ContractValidationError('trip expense record: origin');
+  }
+  const origin = value.origin as ExpenseOrigin;
+
+  const rawAmount = typeof value.amount === 'string' ? Number(value.amount) : value.amount;
+  if (typeof rawAmount !== 'number' || !Number.isFinite(rawAmount) || rawAmount <= 0) {
+    throw new ContractValidationError('trip expense record: amount');
+  }
+  const amount = Number(rawAmount.toFixed(2));
+
+  if (typeof value.currency !== 'string' || !currencyPattern.test(value.currency.trim())) {
+    throw new ContractValidationError('trip expense record: currency');
+  }
+  const currency = value.currency.trim();
+
+  let note: string | null = null;
+  if (value.note !== null && value.note !== undefined) {
+    if (typeof value.note !== 'string') throw new ContractValidationError('trip expense record: note');
+    note = value.note.trim();
+  }
+
+  let spentAt: string | null = null;
+  if (value.spentAt !== null && value.spentAt !== undefined) {
+    if (typeof value.spentAt !== 'string' || !isIsoTimestamp(value.spentAt)) {
+      throw new ContractValidationError('trip expense record: spentAt');
+    }
+    spentAt = value.spentAt;
+  }
+
+  return {
+    id: id as ExpenseId,
+    tripId: tripId as TripId,
+    itineraryItemId,
+    category,
+    origin,
+    amount,
+    currency,
+    note,
+    spentAt,
+    createdAt,
+    updatedAt,
+  };
+}
+
+export function parseTripExpensesPage(value: unknown): TripExpensesPage {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['items', 'nextCursor']) || !Array.isArray(value.items)) {
+    throw new ContractValidationError('list trip expenses response');
+  }
+
+  const items = value.items.map((item) => parseTripExpenseRecord(item));
+
+  let nextCursor: TripExpenseCursor | null = null;
+  if (value.nextCursor !== null && value.nextCursor !== undefined) {
+    if (!isRecord(value.nextCursor) || !hasOnlyKeys(value.nextCursor, ['createdAt', 'id'])) {
+      throw new ContractValidationError('list trip expenses response: nextCursor');
+    }
+    const createdAt = requiredString(value.nextCursor.createdAt, 64);
+    const id = requiredString(value.nextCursor.id, 64);
+    if (!createdAt || !isIsoTimestamp(createdAt) || !id || !isUuid(id)) {
+      throw new ContractValidationError('list trip expenses response: nextCursor');
+    }
+    nextCursor = { createdAt, id: id as ExpenseId };
+  }
+
+  return {
+    items,
+    nextCursor,
+  };
+}
+

@@ -1,0 +1,28 @@
+FEATURE-P2-T003 EVIDENCE-ONLY RAW GATES CLOSURE
+Captured: 2026-09-07 Asia/Bangkok
+
+SOURCE HASHES
+- source-hashes-before-gates.log captured before fresh gates.
+- source-hashes-after-gates.log captured after fresh gates.
+- SOURCE_HASH_MATCH=True.
+
+COMMANDS
+- npm run typecheck: EXIT_CODE=0, PASS; typecheck-exact-current.log.
+- npm run lint: EXIT_CODE=0, PASS; 0 errors and 12 warnings; lint-exact-current.log.
+- npm test -- --runInBand tests/ActivityEditorScreen.test.tsx tests/ActivityEditorConflictAndSubmit.test.tsx tests/ActivityEditorStaleUser.test.tsx tests/ItineraryCardStatus.test.tsx tests/workspace-mutation-contract.test.ts: EXIT_CODE=0, PASS; 5 suites and 32 tests; jest-focused-t003-exact-current.log.
+- npm test -- --runInBand: EXIT_CODE=0, PASS; 64 suites passed, 1 skipped; 463 tests passed, 1 skipped; jest-full-exact-current.log.
+- npx expo-doctor: EXIT_CODE=1 because npx registry fetch was rejected with EACCES; expo-doctor-fresh-attempt-raw.log. Existing accepted baseline remains 20/21, EXPO_DOCTOR_BASELINE=YES, EXPO_DOCTOR_T003_REGRESSION=NO. No dependency change.
+
+NOT RERUN
+- Android: existing exact-current XML/PNG/log evidence remains valid and was not modified.
+- Docker/persistence: no SQL/RPC/migration change in T003; not rerun.
+
+SAFETY CONFIRMATION
+- Production source changed during this evidence run: NO.
+- Test source changed during this evidence run: NO.
+- Migration/RPC/Edge Function changed during this evidence run: NO.
+- Dependency/package/lockfile changed during this evidence run: NO.
+- Roadmap changed during this evidence run: NO.
+- FEATURE-P2-T004/T005 started: NO.
+- CREATE_TRIP_GENERATION_MOTION started: NO; remains PAUSED_BY_USER.
+- Commit/push/reset/restore/checkout/clean/stash/discard/stage: NONE.

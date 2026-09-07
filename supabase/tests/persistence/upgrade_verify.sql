@@ -120,6 +120,43 @@ begin
   ) then
     raise exception 'Deferred ordering-contiguity invariant is missing after upgrade.';
   end if;
+
+  if not exists (
+    select 1
+    from pg_class
+    where oid = 'public.trip_expenses'::regclass
+      and relrowsecurity
+  ) then
+    raise exception 'Trip expenses table/RLS is missing after upgrade.';
+  end if;
+
+  if to_regprocedure('public.create_trip_expense(jsonb)') is null
+     or not has_function_privilege('authenticated', 'public.create_trip_expense(jsonb)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.create_trip_expense(jsonb)', 'EXECUTE')
+     or exists (select 1 from pg_proc where oid='public.create_trip_expense(jsonb)'::regprocedure and prosecdef) then
+    raise exception 'create_trip_expense SECURITY INVOKER RPC/grant contract is missing after upgrade.';
+  end if;
+
+  if to_regprocedure('public.update_trip_expense(jsonb)') is null
+     or not has_function_privilege('authenticated', 'public.update_trip_expense(jsonb)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.update_trip_expense(jsonb)', 'EXECUTE')
+     or exists (select 1 from pg_proc where oid='public.update_trip_expense(jsonb)'::regprocedure and prosecdef) then
+    raise exception 'update_trip_expense SECURITY INVOKER RPC/grant contract is missing after upgrade.';
+  end if;
+
+  if to_regprocedure('public.delete_trip_expense(uuid)') is null
+     or not has_function_privilege('authenticated', 'public.delete_trip_expense(uuid)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.delete_trip_expense(uuid)', 'EXECUTE')
+     or exists (select 1 from pg_proc where oid='public.delete_trip_expense(uuid)'::regprocedure and prosecdef) then
+    raise exception 'delete_trip_expense SECURITY INVOKER RPC/grant contract is missing after upgrade.';
+  end if;
+
+  if to_regprocedure('public.list_trip_expenses(uuid,integer,timestamptz,uuid,text,text)') is null
+     or not has_function_privilege('authenticated', 'public.list_trip_expenses(uuid,integer,timestamptz,uuid,text,text)', 'EXECUTE')
+     or has_function_privilege('anon', 'public.list_trip_expenses(uuid,integer,timestamptz,uuid,text,text)', 'EXECUTE')
+     or exists (select 1 from pg_proc where oid='public.list_trip_expenses(uuid,integer,timestamptz,uuid,text,text)'::regprocedure and prosecdef) then
+    raise exception 'list_trip_expenses SECURITY INVOKER RPC/grant contract is missing after upgrade.';
+  end if;
 end
 $$;
 

@@ -31,6 +31,12 @@ import type {
   WorkspaceMutationResult,
   ExplorePlacesRequest,
   ExploreDiscoveredPlace,
+  CreateTripExpenseCommand,
+  UpdateTripExpenseCommand,
+  DeleteTripExpenseCommand,
+  ListTripExpensesRequest,
+  TripExpenseRecord,
+  TripExpensesPage,
 } from './contracts';
 
 export type SignUpResult = {
@@ -134,3 +140,11 @@ export interface PlaceMetadataRepository { getMetadata(googlePlaceId: string, si
 export interface DestinationSearchRepository {
   search(query: string, signal?: AbortSignal): Promise<import('../features/planner/types').DestinationOption[]>;
 }
+
+export interface TripExpenseLedgerRepository {
+  createExpense(command: CreateTripExpenseCommand, signal?: AbortSignal): Promise<TripExpenseRecord>;
+  updateExpense(command: UpdateTripExpenseCommand, signal?: AbortSignal): Promise<TripExpenseRecord>;
+  deleteExpense(command: DeleteTripExpenseCommand, signal?: AbortSignal): Promise<boolean>;
+  listExpenses(request: ListTripExpensesRequest, signal?: AbortSignal): Promise<TripExpensesPage>;
+}
+

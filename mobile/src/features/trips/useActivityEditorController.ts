@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { SavedTripDetail, WorkspaceActivityStatus, WorkspaceFlexibility, WorkspaceMutationCommand, WorkspacePriority } from '../../integration/contracts';
+import type {
+  SavedTripDetail, WorkspaceActivityStatus, WorkspaceFlexibility, WorkspaceItemKind, WorkspaceMutationCommand,
+  WorkspacePriority, WorkspaceSourceLink,
+} from '../../integration/contracts';
 import type { SavedTripsRepository, TravelWorkspaceRepository } from '../../integration/repositories';
-import { asTripId, isUuid } from '../../integration/validation';
+import { asTripId, isIsoTimestamp, isUuid } from '../../integration/validation';
 
 type EditorRoute =
   | { tripId: string; mode: 'add'; dayId?: string }
@@ -21,6 +24,11 @@ export type ActivityEditorController = {
   flexibility: WorkspaceFlexibility;
   priority: WorkspacePriority;
   note: string;
+  itemKind?: WorkspaceItemKind;
+  contact: WorkspaceContactDraft;
+  transport: WorkspaceTransportDraft;
+  accommodation: WorkspaceAccommodationDraft;
+  sourceLinks: WorkspaceSourceLinkDraft[];
   mutationReady: boolean;
   errorKey: string | null;
   conflict: boolean;
@@ -31,12 +39,38 @@ export type ActivityEditorController = {
   setFlexibility: (value: WorkspaceFlexibility) => void;
   setPriority: (value: WorkspacePriority) => void;
   setNote: (value: string) => void;
+  setContactField: (field: keyof WorkspaceContactDraft, value: string) => void;
+  setTransportField: (field: keyof WorkspaceTransportDraft, value: string) => void;
+  setAccommodationField: (field: keyof WorkspaceAccommodationDraft, value: string) => void;
+  addSourceLink: () => void;
+  updateSourceLink: (index: number, patch: Partial<WorkspaceSourceLinkDraft>) => void;
+  removeSourceLink: (index: number) => void;
+  saveSourceLinks: () => Promise<void>;
   clearTime: () => void;
   submit: () => Promise<void>;
   transitionStatus: (status: WorkspaceActivityStatus) => Promise<void>;
 };
 
+export type WorkspaceContactDraft = {
+  name: string; phone: string; address: string; websiteUrl: string; bookingUrl: string; reservationCode: string;
+};
+export type WorkspaceTransportDraft = {
+  mode: NonNullable<NonNullable<SavedTripDetail['days'][number]['items'][number]['transport']>['mode']>;
+  originLabel: string; destinationLabel: string; operatorName: string; departureAt: string; arrivalAt: string;
+  plannedCostAmount: string; plannedCostCurrency: string;
+};
+export type WorkspaceAccommodationDraft = { checkInAt: string; checkOutAt: string; nights: string };
+export type WorkspaceSourceLinkDraft = WorkspaceSourceLink & { label: string };
+
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+const phonePattern = /^[+0-9 ().-]+$/;
+const currencyPattern = /^[A-Z]{3}$/;
+const emptyContact: WorkspaceContactDraft = { name: '', phone: '', address: '', websiteUrl: '', bookingUrl: '', reservationCode: '' };
+const emptyTransport: WorkspaceTransportDraft = { mode: 'other', originLabel: '', destinationLabel: '', operatorName: '', departureAt: '', arrivalAt: '', plannedCostAmount: '', plannedCostCurrency: '' };
+const emptyAccommodation: WorkspaceAccommodationDraft = { checkInAt: '', checkOutAt: '', nights: '' };
+
+function nullableText(value: string): string | null { const normalized = value.trim(); return normalized || null; }
+function validHttps(value: string): boolean { try { return new URL(value).protocol === 'https:' && !/\s/.test(value); } catch { return false; } }
 
 /**
  * Narrow P2-T001 orchestration boundary. The screen owns only presentation and
@@ -67,6 +101,10 @@ export function useActivityEditorController({
   const [flexibility, setFlexibility] = useState<WorkspaceFlexibility>('fixed');
   const [priority, setPriority] = useState<WorkspacePriority>('must_do');
   const [note, setNote] = useState('');
+  const [contact, setContact] = useState<WorkspaceContactDraft>(emptyContact);
+  const [transport, setTransport] = useState<WorkspaceTransportDraft>(emptyTransport);
+  const [accommodation, setAccommodation] = useState<WorkspaceAccommodationDraft>(emptyAccommodation);
+  const [sourceLinks, setSourceLinks] = useState<WorkspaceSourceLinkDraft[]>([]);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const generation = useRef(0);
@@ -84,6 +122,22 @@ export function useActivityEditorController({
       setFlexibility(found.flexibility);
       setPriority(found.priority);
       setNote(found.note ?? '');
+      setContact({
+        name: found.contact?.name ?? '', phone: found.contact?.phone ?? '', address: found.contact?.address ?? '',
+        websiteUrl: found.contact?.websiteUrl ?? '', bookingUrl: found.contact?.bookingUrl ?? '', reservationCode: found.contact?.reservationCode ?? '',
+      });
+      setTransport({
+        ...emptyTransport, ...found.transport, mode: found.transport?.mode ?? 'other',
+        originLabel: found.transport?.originLabel ?? '', destinationLabel: found.transport?.destinationLabel ?? '',
+        operatorName: found.transport?.operatorName ?? '', departureAt: found.transport?.departureAt ?? '', arrivalAt: found.transport?.arrivalAt ?? '',
+        plannedCostAmount: found.transport?.plannedCostAmount?.toString() ?? '',
+        plannedCostCurrency: found.transport?.plannedCostCurrency ?? '',
+      });
+      setAccommodation({
+        checkInAt: found.accommodation?.checkInAt ?? '', checkOutAt: found.accommodation?.checkOutAt ?? '',
+        nights: found.accommodation?.nights?.toString() ?? '',
+      });
+      setSourceLinks((found.sourceLinks ?? []).map((link) => ({ ...link, label: link.label ?? '' })));
       setDayId(next?.days.find((day) => day.items.some((item) => item.id === found.id))?.id ?? '');
     } else if (route.mode === 'add') {
       setDayId((current) => current || next?.days[0]?.id || '');
@@ -172,6 +226,37 @@ export function useActivityEditorController({
       setErrorKey('workspaceEditor.timeRange'); return;
     }
     if (note.trim().length > 500) { setErrorKey('workspaceEditor.noteTooLong'); return; }
+    if (route.mode === 'edit') {
+      if (contact.name.trim().length > 120 || contact.phone.trim().length > 64 || contact.address.trim().length > 500
+        || contact.reservationCode.trim().length > 128 || (contact.phone.trim() && !phonePattern.test(contact.phone.trim()))
+        || (contact.websiteUrl.trim() && !validHttps(contact.websiteUrl.trim()))
+        || (contact.bookingUrl.trim() && !validHttps(contact.bookingUrl.trim()))) {
+        setErrorKey('workspaceEditor.contactInvalid'); return;
+      }
+      if (uiItem?.itemKind === 'transport') {
+        const hasDeparture = Boolean(transport.departureAt.trim()); const hasArrival = Boolean(transport.arrivalAt.trim());
+        const hasCost = Boolean(transport.plannedCostAmount.trim()); const hasCurrency = Boolean(transport.plannedCostCurrency.trim());
+        const parsedCost = hasCost ? Number(transport.plannedCostAmount) : null;
+        if (transport.originLabel.trim().length > 160 || transport.destinationLabel.trim().length > 160 || transport.operatorName.trim().length > 160
+          || hasDeparture !== hasArrival || (hasDeparture && (!isIsoTimestamp(transport.departureAt.trim()) || !isIsoTimestamp(transport.arrivalAt.trim())))
+          || (hasDeparture && Date.parse(transport.arrivalAt) < Date.parse(transport.departureAt))
+          || hasCost !== hasCurrency || (hasCost && (!Number.isFinite(parsedCost) || (parsedCost ?? -1) < 0 || (parsedCost ?? 0) > 1_000_000_000))
+          || (hasCurrency && !currencyPattern.test(transport.plannedCostCurrency.trim()))) {
+          setErrorKey('workspaceEditor.transportInvalid'); return;
+        }
+      }
+      if (uiItem?.itemKind === 'accommodation') {
+        const hasCheckIn = Boolean(accommodation.checkInAt.trim()); const hasCheckOut = Boolean(accommodation.checkOutAt.trim());
+        const hasNights = Boolean(accommodation.nights.trim()); const parsedNights = hasNights ? Number(accommodation.nights) : null;
+        const actualNights = hasCheckIn && hasCheckOut
+          ? Math.round((Date.parse(accommodation.checkOutAt.slice(0, 10)) - Date.parse(accommodation.checkInAt.slice(0, 10))) / 86_400_000) : null;
+        if (hasCheckIn !== hasCheckOut || (hasCheckIn && (!isIsoTimestamp(accommodation.checkInAt.trim()) || !isIsoTimestamp(accommodation.checkOutAt.trim())))
+          || (hasCheckIn && Date.parse(accommodation.checkOutAt) <= Date.parse(accommodation.checkInAt))
+          || (hasNights && (!Number.isInteger(parsedNights) || (parsedNights ?? -1) < 0 || (parsedNights ?? 366) > 365 || !hasCheckIn || parsedNights !== actualNights))) {
+          setErrorKey('workspaceEditor.accommodationInvalid'); return;
+        }
+      }
+    }
     if (route.mode === 'add') {
       if (!dayId) { setErrorKey('workspaceEditor.saveFailed'); return; }
       await executeMutation({
@@ -179,12 +264,42 @@ export function useActivityEditorController({
           item: { itemKind: 'custom_activity', title, flexibility, priority, startTime: startTime || null, endTime: endTime || null },
       });
     } else if (uiItem) {
+      const metadataPatch = {
+        contact: {
+          name: nullableText(contact.name), phone: nullableText(contact.phone), address: nullableText(contact.address),
+          websiteUrl: nullableText(contact.websiteUrl), bookingUrl: nullableText(contact.bookingUrl), reservationCode: nullableText(contact.reservationCode),
+        },
+        ...(uiItem.itemKind === 'transport' ? { transport: {
+          mode: transport.mode, originLabel: nullableText(transport.originLabel), destinationLabel: nullableText(transport.destinationLabel),
+          operatorName: nullableText(transport.operatorName), departureAt: nullableText(transport.departureAt), arrivalAt: nullableText(transport.arrivalAt),
+          plannedCostAmount: transport.plannedCostAmount.trim() ? Number(transport.plannedCostAmount) : null,
+          plannedCostCurrency: nullableText(transport.plannedCostCurrency),
+        } } : {}),
+        ...(uiItem.itemKind === 'accommodation' ? { accommodation: {
+          checkInAt: nullableText(accommodation.checkInAt), checkOutAt: nullableText(accommodation.checkOutAt),
+          nights: accommodation.nights.trim() ? Number(accommodation.nights) : null,
+        } } : {}),
+      };
       await executeMutation({
           type: 'update_item', tripId: detail.id, itemId: uiItem.id, expectedRevision,
-          patch: { ...(providerLocked ? {} : { placeName: title }), flexibility, priority, note: note.trim() ? note : null, ...(scheduleEligible ? { startTime: startTime || null, endTime: endTime || null } : {}) },
+          patch: { ...(providerLocked ? {} : { placeName: title }), flexibility, priority, note: note.trim() ? note : null, ...(scheduleEligible ? { startTime: startTime || null, endTime: endTime || null } : {}), ...metadataPatch },
       });
     }
-  }, [detail, dayId, endTime, executeMutation, flexibility, note, priority, providerLocked, route.mode, scheduleEligible, startTime, title, uiItem, user]);
+  }, [accommodation, contact, detail, dayId, endTime, executeMutation, flexibility, note, priority, providerLocked, route.mode, scheduleEligible, startTime, title, transport, uiItem, user]);
+
+  const saveSourceLinks = useCallback(async () => {
+    if (savingRef.current || !detail || !user || route.mode !== 'edit' || !uiItem) return;
+    const expectedRevision = detail.workspaceRevision;
+    if (typeof expectedRevision !== 'number' || !Number.isInteger(expectedRevision) || expectedRevision < 1) { setErrorKey('workspaceEditor.unavailable'); return; }
+    if (sourceLinks.length > 12 || sourceLinks.some((link) => !validHttps(link.url.trim()) || link.url.length > 2048
+      || link.label.trim().length > 120 || (link.type === 'other' && !link.label.trim()))) {
+      setErrorKey('workspaceEditor.sourceLinksInvalid'); return;
+    }
+    await executeMutation({
+      type: 'replace_source_links', tripId: detail.id, itemId: uiItem.id, expectedRevision,
+      links: sourceLinks.map((link) => ({ type: link.type, url: link.url.trim(), ...(link.label.trim() ? { label: link.label.trim() } : {}) })),
+    });
+  }, [detail, executeMutation, route.mode, sourceLinks, uiItem, user]);
 
   const transitionStatus = useCallback(async (status: WorkspaceActivityStatus) => {
     if (savingRef.current || !detail || !user || route.mode !== 'edit' || !uiItem) return;
@@ -196,7 +311,14 @@ export function useActivityEditorController({
     await executeMutation({ type: 'transition_item_status', tripId: detail.id, itemId: uiItem.id, expectedRevision, status });
   }, [detail, executeMutation, route.mode, uiItem, user]);
 
-  return { detail, loading, saving, title, dayId, startTime, endTime, flexibility, priority, note, mutationReady, errorKey, conflict,
+  return { detail, loading, saving, title, dayId, startTime, endTime, flexibility, priority, note, itemKind: uiItem?.itemKind,
+    contact, transport, accommodation, sourceLinks, mutationReady, errorKey, conflict,
     setTitle, setDayId, setStartTime, setEndTime, setFlexibility, setPriority, setNote,
-    clearTime: () => { setStartTime(''); setEndTime(''); }, submit, transitionStatus };
+    setContactField: (field, value) => setContact((current) => ({ ...current, [field]: value })),
+    setTransportField: (field, value) => setTransport((current) => ({ ...current, [field]: value })),
+    setAccommodationField: (field, value) => setAccommodation((current) => ({ ...current, [field]: value })),
+    addSourceLink: () => setSourceLinks((current) => current.length >= 12 ? current : [...current, { type: 'website', url: '', label: '' }]),
+    updateSourceLink: (index, patch) => setSourceLinks((current) => current.map((link, candidate) => candidate === index ? { ...link, ...patch } : link)),
+    removeSourceLink: (index) => setSourceLinks((current) => current.filter((_, candidate) => candidate !== index)),
+    clearTime: () => { setStartTime(''); setEndTime(''); }, submit, transitionStatus, saveSourceLinks };
 }

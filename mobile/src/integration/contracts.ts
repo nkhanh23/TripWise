@@ -6,6 +6,7 @@ export type ItineraryDayId = Brand<string, 'ItineraryDayId'>;
 export type ItineraryItemId = Brand<string, 'ItineraryItemId'>;
 export type GooglePlaceId = Brand<string, 'GooglePlaceId'>;
 export type SavedPlaceId = Brand<string, 'SavedPlaceId'>;
+export type ExpenseId = Brand<string, 'ExpenseId'>;
 export type FixtureId = Brand<string, 'FixtureId'>;
 
 export type AuthenticatedUser = {
@@ -258,6 +259,10 @@ export type SavedTripItemBase = {
   startTime?: string;
   endTime?: string;
   note?: string;
+  contact?: WorkspaceContactPatch;
+  transport?: WorkspaceTransportPatch;
+  accommodation?: WorkspaceAccommodationPatch;
+  sourceLinks?: WorkspaceSourceLink[];
 };
 
 export type UnresolvedSavedTripItem = SavedTripItemBase & {
@@ -516,3 +521,81 @@ export type SavePlaceCommand = {
 
 
 export type PlaceMetadata = { googlePlaceId: string; rating?: number; userRatingCount?: number; };
+
+export type ExpenseCategory =
+  | 'food'
+  | 'transport'
+  | 'accommodation'
+  | 'activity'
+  | 'shopping'
+  | 'ticket'
+  | 'personal'
+  | 'reservation'
+  | 'other';
+
+export type ExpenseOrigin = 'planned' | 'actual' | 'unplanned';
+
+export type TripExpenseRecord = {
+  id: ExpenseId;
+  tripId: TripId;
+  itineraryItemId: ItineraryItemId | null;
+  category: ExpenseCategory;
+  origin: ExpenseOrigin;
+  amount: number;
+  currency: string;
+  note: string | null;
+  spentAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TripExpenseCursor = {
+  createdAt: string;
+  id: ExpenseId;
+};
+
+export type TripExpensesPage = {
+  items: TripExpenseRecord[];
+  nextCursor: TripExpenseCursor | null;
+};
+
+export type ListTripExpensesRequest = {
+  tripId: TripId;
+  limit?: number;
+  cursor?: TripExpenseCursor | null;
+  category?: ExpenseCategory;
+  origin?: ExpenseOrigin;
+};
+
+export type CreateTripExpenseCommand = {
+  tripId: TripId;
+  category: ExpenseCategory;
+  origin: ExpenseOrigin;
+  amount: number;
+  currency: string;
+  note?: string | null;
+  spentAt?: string | null;
+  itineraryItemId?: ItineraryItemId | null;
+};
+
+export type UpdateTripExpensePatch = {
+  category?: ExpenseCategory;
+  origin?: ExpenseOrigin;
+  amount?: number;
+  currency?: string;
+  note?: string | null;
+  spentAt?: string | null;
+  itineraryItemId?: ItineraryItemId | null;
+};
+
+export type UpdateTripExpenseCommand = {
+  expenseId: ExpenseId;
+  tripId: TripId;
+  patch: UpdateTripExpensePatch;
+};
+
+export type DeleteTripExpenseCommand = {
+  expenseId: ExpenseId;
+  tripId: TripId;
+};
+
