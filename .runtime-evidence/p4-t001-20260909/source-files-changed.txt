@@ -1,0 +1,10 @@
+mobile/src/integration/candidateDiscoveryContract.ts
+mobile/src/integration/candidateDiscoverySession.ts
+mobile/src/integration/remote/supabaseCandidateDiscoveryRepository.ts
+mobile/tests/candidate-discovery.test.ts
+supabase/functions/explore-places/boundedJson.ts
+supabase/functions/explore-places/bounds_test.ts
+supabase/functions/explore-places/googlePlaces.ts
+supabase/functions/explore-places/handler.ts
+docs/05-engineering/candidate-discovery-contract.md
+phase_doc/PHASES_FEATURES.md

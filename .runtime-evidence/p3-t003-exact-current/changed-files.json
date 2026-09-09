@@ -1,0 +1,16 @@
+{
+  "modified": [
+    "mobile/src/lib/supabase/database.types.ts",
+    "phase_doc/PHASES_FEATURES.md",
+    "supabase/tests/persistence/run.ps1"
+  ],
+  "created": [
+    "supabase/migrations/20260907083901_trip_fx_context.sql",
+    "supabase/tests/persistence/trip_fx_context_contract.sql",
+    "mobile/src/integration/fxContract.ts",
+    "mobile/src/integration/remote/frankfurterFxRepository.ts",
+    "mobile/src/integration/remote/supabaseTripFxContextRepository.ts",
+    "mobile/tests/fx-contract.test.ts",
+    "mobile/tests/fx-repository.test.ts"
+  ]
+}

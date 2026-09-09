@@ -1,0 +1,7 @@
+{
+  "observed": false,
+  "headers": null,
+  "perSecondRateLimit": "UNRESOLVED / ACCOUNT-SPECIFIC",
+  "documentedDefaultDailyQuota": 5000,
+  "runtimeQuota": "NOT_OBSERVED"
+}

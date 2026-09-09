@@ -1,25 +1,41 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { memo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AppText } from '../../../components/AppText';
+import { useTranslation } from '../../../i18n';
+import { useTheme } from '../../../theme';
 import { colors, radius, spacing, typography } from '../../../theme/tokens';
+import { CANONICAL_BUDGET_CURRENCIES } from '../budgetValidation';
 import { mockBudgetOptions, mockGroupOptions } from '../data/mockWizardData';
 import type { BudgetTier, GroupType } from '../types';
 
 type Props = {
   selectedBudget: BudgetTier;
   selectedGroup: GroupType;
+  budgetAmount: string;
+  budgetCurrency: string;
+  budgetError?: string | null;
   onSelectBudget: (budget: BudgetTier) => void;
   onSelectGroup: (group: GroupType) => void;
+  onChangeBudgetAmount: (amount: string) => void;
+  onSelectBudgetCurrency: (currency: string) => void;
 };
 
 export const StepBudgetGroup = memo(function StepBudgetGroup({
   selectedBudget,
   selectedGroup,
+  budgetAmount,
+  budgetCurrency,
+  budgetError,
   onSelectBudget,
   onSelectGroup,
+  onChangeBudgetAmount,
+  onSelectBudgetCurrency,
 }: Props) {
+  const { t } = useTranslation();
+  const { colors: palette } = useTheme();
+
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
@@ -81,7 +97,73 @@ export const StepBudgetGroup = memo(function StepBudgetGroup({
         </View>
       </View>
 
-      {/* Section 2: Who's Traveling */}
+      {/* Section 2: Trip Budget (Accounting) */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: palette.text.primary }]}>{t('planner.budget.accountingSectionTitle')}</Text>
+        <AppText style={[styles.budgetDesc, { color: palette.text.secondary }]}>
+          {t('planner.budget.accountingSubtitle')}
+        </AppText>
+
+        <View testID="accounting-budget" style={[styles.accountingContainer, { backgroundColor: palette.background.surface, borderColor: palette.border.default, shadowColor: palette.overlay.scrim }]}>
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: palette.text.primary }]}>{t('planner.budget.amountLabel')}</Text>
+            <View style={[styles.textInputWrapper, { backgroundColor: palette.background.surface, borderColor: budgetError ? palette.state.error : palette.border.default }]}>
+              <TextInput
+                accessibilityHint={t('planner.budget.amountHint')}
+                accessibilityLabel={t('planner.budget.amountLabel')}
+                keyboardType="decimal-pad"
+                onChangeText={onChangeBudgetAmount}
+                placeholder="0.00"
+                placeholderTextColor={palette.text.muted}
+                selectionColor={palette.brand.primary}
+                style={[styles.textInput, { color: palette.text.primary }]}
+                value={budgetAmount}
+              />
+            </View>
+            {budgetError ? (
+              <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={[styles.errorText, { color: palette.state.error }]}>
+                {budgetError}
+              </Text>
+            ) : null}
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: palette.text.primary }]}>{t('planner.budget.currencyLabel')}</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.currencyRow}>
+              {CANONICAL_BUDGET_CURRENCIES.map((cur) => {
+                const isCurSelected = budgetCurrency === cur;
+                return (
+                  <Pressable
+                    accessibilityLabel={t('planner.budget.currencyOptionLabel', { currency: cur })}
+                    accessibilityHint={t('planner.budget.currencyOptionHint', { currency: cur })}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isCurSelected }}
+                    key={cur}
+                    onPress={() => onSelectBudgetCurrency(cur)}
+                    style={({ pressed }) => [
+                      styles.currencyPill,
+                      { backgroundColor: isCurSelected ? palette.brand.primary : palette.background.surfaceVariant, borderColor: isCurSelected ? palette.brand.primary : palette.border.default },
+                      pressed && styles.pressed,
+                    ]}>
+                    <Text
+                      style={[
+                        styles.currencyPillText,
+                        { color: isCurSelected ? palette.text.inverse : palette.text.primary },
+                      ]}>
+                      {cur}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </View>
+
+      {/* Section 3: Who's Traveling */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Who&apos;s Traveling?</Text>
         <View style={styles.groupGrid}>
@@ -207,6 +289,58 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     fontSize: 12,
     lineHeight: 16,
+  },
+  accountingContainer: {
+    borderRadius: radius.card,
+    borderWidth: 1,
+    elevation: 2,
+    gap: spacing.md,
+    marginTop: spacing.sm,
+    padding: spacing.md,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  inputGroup: {
+    gap: 6,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  textInputWrapper: {
+    borderRadius: radius.input,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 48,
+    paddingHorizontal: spacing.md,
+  },
+  textInput: {
+    minHeight: 44,
+    fontSize: 16,
+    paddingVertical: 8,
+  },
+  errorText: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  currencyRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingVertical: 4,
+  },
+  currencyPill: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 44,
+    minWidth: 54,
+    paddingHorizontal: 12,
+  },
+  currencyPillText: {
+    fontSize: 13,
+    fontWeight: typography.fontWeight.semibold,
   },
   groupGrid: {
     flexDirection: 'row',

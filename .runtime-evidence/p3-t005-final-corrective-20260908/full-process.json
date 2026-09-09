@@ -1,0 +1,12 @@
+{
+  "command": [
+    "cmd.exe",
+    "/d",
+    "/c",
+    "npm test -- --runInBand"
+  ],
+  "cwd": "D:\\Dev\\TripWise\\mobile",
+  "started": "2026-09-08T11:27:46.123749+00:00",
+  "ended": "2026-09-08T11:28:54.673010+00:00",
+  "exit": 0
+}

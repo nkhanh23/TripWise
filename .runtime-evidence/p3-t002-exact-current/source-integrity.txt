@@ -1,0 +1,4 @@
+SOURCE_SCOPE_PASS
+Every pre-existing captured file still present. Only database.types.ts, persistence/run.ps1 and roadmap changed among captured files.
+Both applied T001 migration hashes, T001 CRUD/parser/repository/tests, P1/P2 production source and tests, motion source, package.json and lockfile unchanged.
+New T002 files separately hashed in after manifest.

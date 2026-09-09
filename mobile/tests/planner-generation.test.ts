@@ -48,4 +48,47 @@ describe('planner generation mapping', () => {
     expect(preview.days[0].items[0]).not.toHaveProperty('googlePlaceId');
     expect(preview.days[0].items[0]).not.toHaveProperty('latitude');
   });
+
+  it('maps persistence graph with exact configured budget and currency without fabricating numbers', () => {
+    const preview = mapGeneratedTripToPlannerPreview({
+      title: 'Tokyo adventure',
+      destination: 'Tokyo',
+      startDate: '2026-10-15',
+      endDate: '2026-10-15',
+      days: [
+        {
+          dayNumber: 1,
+          date: '2026-10-15',
+          items: [{ position: 1, placeName: 'Shibuya Sky' }],
+        },
+      ],
+    });
+
+    // Case 1: Configured budget and currency
+    const graphWithBudget = require('../src/features/planner/generationContracts').mapPlannerPreviewToPersistenceGraph(
+      preview,
+      'My Custom Tokyo Trip',
+      { estimatedBudget: 1000, currency: 'USD' },
+    );
+    expect(graphWithBudget.title).toBe('My Custom Tokyo Trip');
+    expect(graphWithBudget.estimatedBudget).toBe(1000);
+    expect(graphWithBudget.currency).toBe('USD');
+
+    // Case 2: Explicit null budget and currency (unconfigured)
+    const graphUnconfigured = require('../src/features/planner/generationContracts').mapPlannerPreviewToPersistenceGraph(
+      preview,
+      null,
+      { estimatedBudget: null, currency: null },
+    );
+    expect(graphUnconfigured.title).toBe('Tokyo adventure');
+    expect(graphUnconfigured.estimatedBudget).toBeNull();
+    expect(graphUnconfigured.currency).toBeNull();
+
+    // Case 3: Omitted budgetConfig
+    const graphOmitted = require('../src/features/planner/generationContracts').mapPlannerPreviewToPersistenceGraph(
+      preview,
+    );
+    expect(graphOmitted.estimatedBudget).toBeUndefined();
+    expect(graphOmitted.currency).toBeUndefined();
+  });
 });

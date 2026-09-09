@@ -4,6 +4,7 @@ import { assertInclusiveDuration } from '../../integration/mappers';
 import { validateGenerateTripRequest } from '../../integration/validation';
 import { mockTravelStyles } from './data/mockWizardData';
 import type { CreateTripWizardState } from './types';
+import { isValidBudgetCurrency, parseAccountingBudgetInput, validateAccountingBudget } from './budgetValidation';
 
 export type PlannerGeneratedItem = {
   position: number;
@@ -26,6 +27,9 @@ export type PlannerGeneratedPreview = {
 };
 
 export function mapWizardStateToGenerateTripRequest(state: CreateTripWizardState): GenerateTripRequest {
+  if (!validateAccountingBudget(state.budgetAmount, state.budgetCurrency).valid) {
+    throw new IntegrationError('invalidRequest');
+  }
   const destination = state.destination?.name ?? state.customDestinationName.trim();
   assertInclusiveDuration(state.startDate, state.endDate, state.durationDays);
   const preferences = state.selectedStyles.map((styleId) => {
@@ -62,10 +66,23 @@ export function mapGeneratedTripToPlannerPreview(generated: GeneratedTrip): Plan
   };
 }
 
+export type PlannerBudgetConfig = {
+  estimatedBudget?: number | null;
+  currency?: string | null;
+};
+
 export function mapPlannerPreviewToPersistenceGraph(
   preview: PlannerGeneratedPreview,
   userEnteredTitle?: string | null,
+  budgetConfig?: PlannerBudgetConfig | null,
 ): TripGraphPayload {
+  if (budgetConfig?.estimatedBudget !== undefined && budgetConfig.estimatedBudget !== null) {
+    if (typeof budgetConfig.estimatedBudget !== 'number'
+      || !parseAccountingBudgetInput(String(budgetConfig.estimatedBudget)).valid
+      || !isValidBudgetCurrency(budgetConfig.currency)) {
+      throw new IntegrationError('invalidRequest');
+    }
+  }
   const title = userEnteredTitle?.trim() || preview.title.trim();
   if (!title) throw new IntegrationError('invalidRequest');
   return {
@@ -73,6 +90,8 @@ export function mapPlannerPreviewToPersistenceGraph(
     destination: preview.destination,
     startDate: preview.startDate,
     endDate: preview.endDate,
+    ...(budgetConfig?.estimatedBudget !== undefined ? { estimatedBudget: budgetConfig.estimatedBudget } : {}),
+    ...(budgetConfig?.currency !== undefined ? { currency: budgetConfig.currency } : {}),
     days: preview.days.map((day) => ({
       dayNumber: day.dayNumber,
       date: day.date,

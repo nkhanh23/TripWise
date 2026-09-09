@@ -1,0 +1,8 @@
+{
+  "authenticated": true,
+  "method": "signInWithPassword",
+  "role": "authenticated",
+  "anonymous": false,
+  "privilegedClient": false,
+  "ownerHash": "5f3942074c2502f3bd72055eaa86caa3ea230f5c8ebdf0369f8ec9e9a067d608"
+}

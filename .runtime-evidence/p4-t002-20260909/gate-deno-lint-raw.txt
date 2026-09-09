@@ -1,0 +1,2 @@
+--- STDERR ---
+Checked 8 files

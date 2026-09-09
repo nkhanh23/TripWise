@@ -17,7 +17,7 @@ This skill governs security inspections, vulnerability audits, and safe data bou
 
 - **Never** mark an endpoint, RPC function, query, or screen safe merely because the user possesses a valid authentication session or JWT.
 - Every read, update, insert, and delete operation MUST enforce strict identity-based authorization (resource ownership).
-- In Supabase RLS, `TO authenticated` alone only restricts against unauthenticated callers; it provides **zero** isolation between different authenticated users unless paired with explicit ownership checks (`(select auth.uid()) = user_id`).
+- In Supabase RLS, `TO authenticated` alone only restricts against unauthenticated callers; it provides **zero** cross-user isolation unless paired with explicit canonical ownership verification (direct owner checks or trusted parent graph checks).
 
 ---
 
@@ -37,14 +37,30 @@ This skill governs security inspections, vulnerability audits, and safe data bou
 When inspecting or creating database tables, migrations, and functions:
 
 - **RLS Enforcement:** Verify that every table in the `public` schema has `ENABLE ROW LEVEL SECURITY` turned on.
-- **Ownership Predicates:**
-  - `SELECT`: `TO authenticated USING ((select auth.uid()) = user_id)`
-  - `INSERT`: `TO authenticated WITH CHECK ((select auth.uid()) = user_id)`
-  - `UPDATE`: Requires **both** `USING ((select auth.uid()) = user_id)` and `WITH CHECK ((select auth.uid()) = user_id)` to prevent users from transferring rows to another user.
-  - `DELETE`: `TO authenticated USING ((select auth.uid()) = user_id)`
-- **SECURITY DEFINER Functions:**
-  - Functions executing as `SECURITY DEFINER` run with creator privileges. They MUST explicitly set `SET search_path = public, pg_temp` to prevent search path hijacking.
-  - Verify that `SECURITY DEFINER` functions validate the caller's identity via `auth.uid()` internally.
+- **Canonical Ownership Paths & RLS Predicates:**
+  - **Follow Canonical Ownership:** Authorization MUST follow the resource's actual canonical ownership relationship in the current LIVE LOCAL schema:
+    - **Primary / Direct Identity Resources (e.g. `profiles`):** Ownership matches `(select auth.uid()) = id`.
+    - **Direct-Owner Root Resources (e.g. `trips`, `saved_places`):** Ownership matches `(select auth.uid()) = user_id`.
+    - **Child Resources (e.g. `itinerary_days`, `trip_expenses`):** Ownership must be derived through their trusted parent relationship to the owner trip (e.g. `exists (select 1 from public.trips where trips.id = itinerary_days.trip_id and trips.user_id = (select auth.uid()))`).
+    - **Deeper Child Resources (e.g. `itinerary_items`, `itinerary_item_source_links`):** Ownership must be derived through the canonical parent graph (e.g. item -> day -> trip or item -> trip).
+  - **No Duplicated Ownership State:** Never add a `user_id`, owner column, or parallel ownership field to a child table merely to simplify an RLS expression. Do not denormalize ownership unless an explicitly authorized architecture/data task proves it necessary. Duplicated ownership fields can drift out of sync with the parent record and do not increase security.
+  - **RLS Operation Semantics:**
+    - `SELECT`: Requires an owner-scoped `USING` predicate matching the table's canonical ownership path.
+    - `INSERT`: Requires an owner-scoped `WITH CHECK` predicate matching the table's canonical ownership path.
+    - `UPDATE`: Requires correct owner scoping in **both** `USING` and `WITH CHECK` whenever caller-modifiable ownership or relationship context exists (preventing row reassignment across users or parent trips).
+    - `DELETE`: Requires an owner-scoped `USING` predicate matching the table's canonical ownership path.
+    - For child resources, an `EXISTS` ownership check through trusted parent relationships is valid and expected when matching current schema contracts.
+  - **Preserve Accepted RLS Contracts:** Never rewrite an accepted RLS policy or migration merely to normalize it to an alternative stylistic ownership form. Applied migrations remain forward-only. If current production policy is already correct and tested, preserve it unless concrete evidence identifies a security defect.
+- **SECURITY DEFINER Functions & Search Path Hardening:**
+  - Functions executing as `SECURITY DEFINER` run with elevated/creator privileges. They MUST explicitly set a safe, pinned `search_path` appropriate to the function contract to prevent search path hijacking. Never rely on an attacker-controlled, mutable, or default search path.
+  - **Recognized Safe Pinned Patterns:** TripWise migrations legitimately use explicitly pinned forms matching the function contract, including:
+    - `SET search_path = ''` with fully-qualified object references (e.g. `public.profiles`, `auth.users`) — as seen in accepted profile/account deletion hardening functions.
+    - `SET search_path = pg_catalog`
+    - `SET search_path = pg_catalog, public`
+    - Another explicitly justified safe pinned path matching the current function contract.
+  - **No Universal Syntax Mandate:** Do not prescribe one universal `search_path` syntax across all routines. Preserve already accepted hardened function contracts unless concrete evidence requires a forward-only corrective migration. Never rewrite an accepted migration merely to normalize syntax.
+  - **Comprehensive Privilege Review:** Review function body qualification, grants, internal caller ownership checks (`auth.uid()`), RLS interactions, and privilege scope together.
+  - Verify that `SECURITY DEFINER` functions validate the caller's identity via `auth.uid()` internally whenever user-scoped data or mutations are involved.
 - **RPC Grants & Exposure:**
   - Do not grant execute on RPC functions to `PUBLIC` or `anon` unless the routine is explicitly designed for unauthenticated public use.
   - Revoke default public execute privileges where appropriate.

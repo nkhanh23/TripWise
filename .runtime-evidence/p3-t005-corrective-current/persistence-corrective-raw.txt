@@ -1,0 +1,10 @@
+request returned 500 Internal Server Error for API route and version http://localhost:2375/v1.54/containers/json?all=1&filters=%7B%22name%22%3A%7B%22%5E%2Ftripwise-persistence-tests%24%22%3Atrue%7D%7D, check if the server supports the requested API version
+request returned 500 Internal Server Error for API route and version http://localhost:2375/_ping, check if the server supports the requested API version
+request returned 500 Internal Server Error for API route and version http://localhost:2375/v1.54/containers/json?all=1&filters=%7B%22name%22%3A%7B%22%5E%2Ftripwise-persistence-tests%24%22%3Atrue%7D%7D, check if the server supports the requested API version
+docker command failed with exit code 1
+At D:\Dev\TripWise\supabase\tests\persistence\run.ps1:23 char:5
++     throw "docker command failed with exit code $LASTEXITCODE"
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (docker command failed with exit code 1:String) [], RuntimeException
+    + FullyQualifiedErrorId : docker command failed with exit code 1
+ 

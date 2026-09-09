@@ -24,6 +24,7 @@ import {
 import { AddPlaceScreen } from '../features/trips/screens/AddPlaceScreen';
 import { ActivityEditorScreen } from '../features/trips/screens/ActivityEditorScreen';
 import { TripDetailScreen } from '../features/trips/screens/TripDetailScreen';
+import { TripExpensesScreen } from '../features/trips/screens/TripExpensesScreen';
 import { TripMapScreen } from '../features/trips/screens/TripMapScreen';
 import { TranslationProvider, useTranslation } from '../i18n';
 import { getNavigationTheme, ThemeProvider, useTheme } from '../theme';
@@ -57,6 +58,7 @@ function AuthenticatedNavigator() {
       <AppStack.Screen component={RoutePreviewScreen} name="RoutePreview" />
       <AppStack.Screen component={CreateTripWizardScreen} name="CreateTripWizard" />
       <AppStack.Screen component={TripDetailScreen} name="TripDetail" />
+      <AppStack.Screen component={TripExpensesScreen} name="TripExpenses" />
       <AppStack.Screen component={AddPlaceScreen} name="AddPlace" />
       <AppStack.Screen component={ActivityEditorScreen} name="ActivityEditor" />
       <AppStack.Screen component={TripMapScreen} name="TripMap" />

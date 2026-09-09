@@ -1,0 +1,216 @@
+NOTICE:  EXPENSE_AGGREGATE_EXPLAIN_BEGIN: exact installed day query, 3000 ledger rows, authenticated RLS
+NOTICE:  Aggregate  (cost=25230.38..25230.40 rows=1 width=32) (actual rows=1 loops=1)
+NOTICE:    Buffers: shared hit=47
+NOTICE:    CTE page
+NOTICE:      ->  Limit  (cost=25224.09..25224.98 rows=51 width=254) (actual rows=51 loops=1)
+NOTICE:            Buffers: shared hit=47
+NOTICE:            ->  WindowAgg  (cost=25224.09..25233.05 rows=512 width=254) (actual rows=51 loops=1)
+NOTICE:                  Buffers: shared hit=47
+NOTICE:                  ->  Sort  (cost=25224.09..25225.37 rows=512 width=246) (actual rows=51 loops=1)
+NOTICE:                        Sort Key: ((totals.group_key)::text) COLLATE "C"
+NOTICE:                        Sort Method: quicksort  Memory: 29kB
+NOTICE:                        Buffers: shared hit=47
+NOTICE:                        ->  Subquery Scan on totals  (cost=25125.33..25201.05 rows=512 width=246) (actual rows=60 loops=1)
+NOTICE:                              Buffers: shared hit=47
+NOTICE:                              ->  GroupAggregate  (cost=25125.33..25201.05 rows=512 width=214) (actual rows=60 loops=1)
+NOTICE:                                    Group Key: (((CASE WHEN (d.id IS NOT NULL) THEN ('i:'::text || (d.id)::text) WHEN (e.spent_at IS NOT NULL) THEN ('s:'::text || to_char((e.spent_at AT TIME ZONE 'UTC'::text), 'YYYY-MM-DD'::text)) ELSE 'u'::text END || '|'::text) || btrim((e.currency)::text))), (btrim((e.currency)::text)), (CASE WHEN (d.id IS NOT NULL) THEN 'itinerary'::text WHEN (e.spent_at IS NOT NULL) THEN 'spentDate'::text ELSE 'unassigned'::text END), d.id, (CASE WHEN (d.id IS NOT NULL) THEN d.date ELSE ((e.spent_at AT TIME ZONE 'UTC'::text))::date END)
+NOTICE:                                    Buffers: shared hit=47
+NOTICE:                                    ->  Sort  (cost=25125.33..25129.08 rows=1500 width=128) (actual rows=3000 loops=1)
+NOTICE:                                          Sort Key: (((CASE WHEN (d.id IS NOT NULL) THEN ('i:'::text || (d.id)::text) WHEN (e.spent_at IS NOT NULL) THEN ('s:'::text || to_char((e.spent_at AT TIME ZONE 'UTC'::text), 'YYYY-MM-DD'::text)) ELSE 'u'::text END || '|'::text) || btrim((e.currency)::text))), (btrim((e.currency)::text)), (CASE WHEN (d.id IS NOT NULL) THEN 'itinerary'::text WHEN (e.spent_at IS NOT NULL) THEN 'spentDate'::text ELSE 'unassigned'::text END), d.id, (CASE WHEN (d.id IS NOT NULL) THEN d.date ELSE ((e.spent_at AT TIME ZONE 'UTC'::text))::date END)
+NOTICE:                                          Sort Method: quicksort  Memory: 284kB
+NOTICE:                                          Buffers: shared hit=47
+NOTICE:                                          ->  Nested Loop Left Join  (cost=4.33..25046.20 rows=1500 width=128) (actual rows=3000 loops=1)
+NOTICE:                                                Join Filter: (d.id = i.itinerary_day_id)
+NOTICE:                                                Buffers: shared hit=47
+NOTICE:                                                ->  Nested Loop Left Join  (cost=0.15..24903.24 rows=1500 width=56) (actual rows=3000 loops=1)
+NOTICE:                                                      Buffers: shared hit=46
+NOTICE:                                                      ->  Seq Scan on trip_expenses e  (cost=0.00..24791.42 rows=1500 width=56) (actual rows=3000 loops=1)
+NOTICE:                                                            Filter: ((trip_id = '82000000-0000-4000-8000-000000000003'::uuid) AND (hashed SubPlan 6))
+NOTICE:                                                            Rows Removed by Filter: 11
+NOTICE:                                                            Buffers: shared hit=46
+NOTICE:                                                            SubPlan 6
+NOTICE:                                                              ->  Result  (cost=4.21..9.55 rows=2 width=16) (actual rows=20 loops=1)
+NOTICE:                                                                    One-Time Filter: ($5 = $4)
+NOTICE:                                                                    Buffers: shared hit=5
+NOTICE:                                                                    InitPlan 4 (returns $4)
+NOTICE:                                                                      ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                                    InitPlan 5 (returns $5)
+NOTICE:                                                                      ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                                    ->  Bitmap Heap Scan on trips  (cost=4.21..9.55 rows=2 width=16) (actual rows=20 loops=1)
+NOTICE:                                                                          Recheck Cond: (user_id = $4)
+NOTICE:                                                                          Heap Blocks: exact=4
+NOTICE:                                                                          Buffers: shared hit=5
+NOTICE:                                                                          ->  Bitmap Index Scan on trips_user_created_id_idx  (cost=0.00..4.16 rows=2 width=0) (actual rows=25 loops=1)
+NOTICE:                                                                                Index Cond: (user_id = $4)
+NOTICE:                                                                                Buffers: shared hit=1
+NOTICE:                                                      ->  Memoize  (cost=0.15..24.80 rows=1 width=32) (actual rows=0 loops=3000)
+NOTICE:                                                            Cache Key: e.itinerary_item_id
+NOTICE:                                                            Cache Mode: logical
+NOTICE:                                                            Hits: 2999  Misses: 1  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+NOTICE:                                                            ->  Index Scan using itinerary_items_pkey on itinerary_items i  (cost=0.14..24.79 rows=1 width=32) (actual rows=0 loops=1)
+NOTICE:                                                                  Index Cond: (id = e.itinerary_item_id)
+NOTICE:                                                                  Filter: (SubPlan 15)
+NOTICE:                                                                  SubPlan 15
+NOTICE:                                                                    ->  Result  (cost=0.34..24.60 rows=1 width=0) (never executed)
+NOTICE:                                                                          One-Time Filter: ($14 = $6)
+NOTICE:                                                                          InitPlan 7 (returns $6)
+NOTICE:                                                                            ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                                          InitPlan 14 (returns $14)
+NOTICE:                                                                            ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                                          ->  Nested Loop  (cost=0.34..24.60 rows=1 width=0) (never executed)
+NOTICE:                                                                                ->  Index Scan using itinerary_days_pkey on itinerary_days  (cost=0.15..16.38 rows=1 width=16) (never executed)
+NOTICE:                                                                                      Index Cond: (id = i.itinerary_day_id)
+NOTICE:                                                                                      Filter: (hashed SubPlan 13)
+NOTICE:                                                                                      SubPlan 13
+NOTICE:                                                                                        ->  Result  (cost=4.21..9.55 rows=2 width=16) (never executed)
+NOTICE:                                                                                              One-Time Filter: ($13 = $12)
+NOTICE:                                                                                              InitPlan 11 (returns $12)
+NOTICE:                                                                                                ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                                                              InitPlan 12 (returns $13)
+NOTICE:                                                                                                ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                                                              ->  Bitmap Heap Scan on trips trips_1  (cost=4.21..9.55 rows=2 width=16) (never executed)
+NOTICE:                                                                                                    Recheck Cond: (user_id = $12)
+NOTICE:                                                                                                    ->  Bitmap Index Scan on trips_user_created_id_idx  (cost=0.00..4.16 rows=2 width=0) (never executed)
+NOTICE:                                                                                                          Index Cond: (user_id = $12)
+NOTICE:                                                                                ->  Index Scan using trips_pkey on trips trips_2  (cost=0.15..8.17 rows=1 width=16) (never executed)
+NOTICE:                                                                                      Index Cond: (id = itinerary_days.trip_id)
+NOTICE:                                                                                      Filter: (user_id = $6)
+NOTICE:                                                ->  Materialize  (cost=4.18..45.48 rows=2 width=36) (actual rows=0 loops=3000)
+NOTICE:                                                      Buffers: shared hit=1
+NOTICE:                                                      ->  Bitmap Heap Scan on itinerary_days d  (cost=4.18..45.47 rows=2 width=36) (actual rows=0 loops=1)
+NOTICE:                                                            Recheck Cond: (trip_id = '82000000-0000-4000-8000-000000000003'::uuid)
+NOTICE:                                                            Filter: (hashed SubPlan 30)
+NOTICE:                                                            Buffers: shared hit=1
+NOTICE:                                                            ->  Bitmap Index Scan on itinerary_days_trip_day_number_key  (cost=0.00..4.18 rows=4 width=0) (actual rows=0 loops=1)
+NOTICE:                                                                  Index Cond: (trip_id = '82000000-0000-4000-8000-000000000003'::uuid)
+NOTICE:                                                                  Buffers: shared hit=1
+NOTICE:                                                            SubPlan 30
+NOTICE:                                                              ->  Result  (cost=4.21..9.55 rows=2 width=16) (never executed)
+NOTICE:                                                                    One-Time Filter: ($31 = $30)
+NOTICE:                                                                    InitPlan 28 (returns $30)
+NOTICE:                                                                      ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+DO
+NOTICE:                                                                    InitPlan 29 (returns $31)
+NOTICE:                                                                      ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                                    ->  Bitmap Heap Scan on trips trips_3  (cost=4.21..9.55 rows=2 width=16) (never executed)
+NOTICE:                                                                          Recheck Cond: (user_id = $30)
+NOTICE:                                                                          ->  Bitmap Index Scan on trips_user_created_id_idx  (cost=0.00..4.16 rows=2 width=0) (never executed)
+NOTICE:                                                                                Index Cond: (user_id = $30)
+NOTICE:    ->  Sort  (cost=2.47..2.59 rows=51 width=222) (actual rows=51 loops=1)
+NOTICE:          Sort Key: page.group_key COLLATE "C"
+NOTICE:          Sort Method: quicksort  Memory: 28kB
+NOTICE:          Buffers: shared hit=47
+NOTICE:          ->  CTE Scan on page  (cost=0.00..1.02 rows=51 width=222) (actual rows=51 loops=1)
+NOTICE:                Buffers: shared hit=47
+NOTICE:  Planning:
+NOTICE:    Buffers: shared hit=62
+NOTICE:  Planning Time: 3.097 ms
+NOTICE:  Execution Time: 6.751 ms
+NOTICE:  EXPENSE_AGGREGATE_EXPLAIN_END
+NOTICE:  EXPENSE_AGGREGATE_EXPLAIN_BEGIN: exact installed day query, 3000 ledger rows, authenticated RLS
+NOTICE:  Aggregate  (cost=3439.64..3439.65 rows=1 width=32) (actual rows=1 loops=1)
+NOTICE:    Buffers: shared hit=51
+NOTICE:    CTE page
+NOTICE:      ->  Limit  (cost=3433.34..3434.23 rows=51 width=254) (actual rows=51 loops=1)
+NOTICE:            Buffers: shared hit=51
+NOTICE:            ->  WindowAgg  (cost=3433.34..3437.82 rows=256 width=254) (actual rows=51 loops=1)
+NOTICE:                  Buffers: shared hit=51
+NOTICE:                  ->  Sort  (cost=3433.34..3433.98 rows=256 width=246) (actual rows=51 loops=1)
+NOTICE:                        Sort Key: ((totals.group_key)::text) COLLATE "C"
+NOTICE:                        Sort Method: quicksort  Memory: 29kB
+NOTICE:                        Buffers: shared hit=51
+NOTICE:                        ->  Subquery Scan on totals  (cost=3407.74..3423.10 rows=256 width=246) (actual rows=60 loops=1)
+NOTICE:                              Buffers: shared hit=51
+NOTICE:                              ->  HashAggregate  (cost=3407.74..3423.10 rows=256 width=214) (actual rows=60 loops=1)
+NOTICE:                                    Group Key: ((CASE WHEN (d.id IS NOT NULL) THEN ('i:'::text || (d.id)::text) WHEN (e.spent_at IS NOT NULL) THEN ('s:'::text || to_char((e.spent_at AT TIME ZONE 'UTC'::text), 'YYYY-MM-DD'::text)) ELSE 'u'::text END || '|'::text) || btrim((e.currency)::text)), btrim((e.currency)::text), CASE WHEN (d.id IS NOT NULL) THEN 'itinerary'::text WHEN (e.spent_at IS NOT NULL) THEN 'spentDate'::text ELSE 'unassigned'::text END, d.id, CASE WHEN (d.id IS NOT NULL) THEN d.date ELSE ((e.spent_at AT TIME ZONE 'UTC'::text))::date END
+NOTICE:                                    Batches: 1  Memory Usage: 61kB
+NOTICE:                                    Buffers: shared hit=51
+NOTICE:                                    ->  Nested Loop Left Join  (cost=0.00..3366.49 rows=1500 width=128) (actual rows=3000 loops=1)
+NOTICE:                                          Join Filter: (d.id = i.itinerary_day_id)
+NOTICE:                                          Buffers: shared hit=51
+NOTICE:                                          ->  Nested Loop Left Join  (cost=0.00..3289.42 rows=1500 width=56) (actual rows=3000 loops=1)
+NOTICE:                                                Join Filter: (i.id = e.itinerary_item_id)
+NOTICE:                                                Rows Removed by Join Filter: 15000
+NOTICE:                                                Buffers: shared hit=50
+NOTICE:                                                ->  Seq Scan on trip_expenses e  (cost=0.00..3262.77 rows=1500 width=56) (actual rows=3000 loops=1)
+NOTICE:                                                      Filter: ((trip_id = '82000000-0000-4000-8000-000000000003'::uuid) AND (hashed SubPlan 6))
+NOTICE:                                                      Rows Removed by Filter: 11
+NOTICE:                                                      Buffers: shared hit=42
+NOTICE:                                                      SubPlan 6
+NOTICE:                                                        ->  Result  (cost=0.04..1.05 rows=1 width=16) (actual rows=5 loops=1)
+NOTICE:                                                              One-Time Filter: ($5 = $4)
+NOTICE:                                                              Buffers: shared hit=1
+NOTICE:                                                              InitPlan 4 (returns $4)
+NOTICE:                                                                ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                              InitPlan 5 (returns $5)
+NOTICE:                                                                ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                              ->  Seq Scan on trips  (cost=0.04..1.05 rows=1 width=16) (actual rows=5 loops=1)
+NOTICE:                                                                    Filter: (user_id = $4)
+NOTICE:                                                                    Rows Removed by Filter: 2
+NOTICE:                                                                    Buffers: shared hit=1
+NOTICE:                                                ->  Materialize  (cost=0.00..4.15 rows=1 width=32) (actual rows=5 loops=3000)
+NOTICE:                                                      Buffers: shared hit=8
+NOTICE:                                                      ->  Seq Scan on itinerary_items i  (cost=0.00..4.15 rows=1 width=32) (actual rows=5 loops=1)
+NOTICE:                                                            Filter: (hashed SubPlan 24)
+NOTICE:                                                            Rows Removed by Filter: 2
+NOTICE:                                                            Buffers: shared hit=8
+NOTICE:                                                            SubPlan 24
+NOTICE:                                                              ->  Result  (cost=0.04..3.14 rows=1 width=16) (actual rows=5 loops=1)
+NOTICE:                                                                    One-Time Filter: ($23 = $16)
+NOTICE:                                                                    Buffers: shared hit=7
+NOTICE:                                                                    InitPlan 16 (returns $16)
+NOTICE:                                                                      ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                                    InitPlan 23 (returns $23)
+NOTICE:                                                                      ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                                    ->  Nested Loop  (cost=0.04..3.14 rows=1 width=16) (actual rows=5 loops=1)
+NOTICE:                                                                          Join Filter: (itinerary_days.trip_id = trips_2.id)
+NOTICE:                                                                          Rows Removed by Join Filter: 11
+NOTICE:                                                                          Buffers: shared hit=7
+NOTICE:                                                                          ->  Seq Scan on itinerary_days  (cost=0.00..2.07 rows=1 width=32) (actual rows=5 loops=1)
+NOTICE:                                                                                Filter: (hashed SubPlan 22)
+NOTICE:                                                                                Rows Removed by Filter: 2
+NOTICE:                                                                                Buffers: shared hit=2
+NOTICE:                                                                                SubPlan 22
+NOTICE:                                                                                  ->  Result  (cost=0.04..1.05 rows=1 width=16) (actual rows=5 loops=1)
+NOTICE:                                                                                        One-Time Filter: ($22 = $21)
+NOTICE:                                                                                        Buffers: shared hit=1
+NOTICE:                                                                                        InitPlan 20 (returns $21)
+NOTICE:                                                                                          ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                                                        InitPlan 21 (returns $22)
+NOTICE:                                                                                          ->  Result  (cost=0.00..0.02 rows=1 width=16) (actual rows=1 loops=1)
+NOTICE:                                                                                        ->  Seq Scan on trips trips_1  (cost=0.04..1.05 rows=1 width=16) (actual rows=5 loops=1)
+NOTICE:                                                                                              Filter: (user_id = $21)
+NOTICE:                                                                                              Rows Removed by Filter: 2
+NOTICE:                                                                                              Buffers: shared hit=1
+NOTICE:                                                                          ->  Seq Scan on trips trips_2  (cost=0.00..1.01 rows=1 width=16) (actual rows=3 loops=5)
+NOTICE:                                                                                Filter: (user_id = $16)
+NOTICE:                                                                                Rows Removed by Filter: 0
+NOTICE:                                                                                Buffers: shared hit=5
+NOTICE:                                          ->  Materialize  (cost=0.00..2.08 rows=1 width=36) (actual rows=0 loops=3000)
+NOTICE:                                                Buffers: shared hit=1
+NOTICE:                                                ->  Seq Scan on itinerary_days d  (cost=0.00..2.07 rows=1 width=36) (actual rows=0 loops=1)
+NOTICE:                                                      Filter: ((trip_id = '82000000-0000-4000-8000-000000000003'::uuid) AND (hashed SubPlan 30))
+NOTICE:                                                      Rows Removed by Filter: 7
+NOTICE:                                                      Buffers: shared hit=1
+NOTICE:                                                      SubPlan 30
+NOTICE:                                                        ->  Result  (cost=0.04..1.05 rows=1 width=16) (never executed)
+NOTICE:                                                              One-Time Filter: ($29 = $28)
+NOTICE:                                                              InitPlan 28 (returns $28)
+DO
+RESET
+NOTICE:                                                                ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                              InitPlan 29 (returns $29)
+NOTICE:                                                                ->  Result  (cost=0.00..0.02 rows=1 width=16) (never executed)
+NOTICE:                                                              ->  Seq Scan on trips trips_3  (cost=0.04..1.05 rows=1 width=16) (never executed)
+NOTICE:                                                                    Filter: (user_id = $28)
+NOTICE:    ->  Sort  (cost=2.47..2.59 rows=51 width=222) (actual rows=51 loops=1)
+NOTICE:          Sort Key: page.group_key COLLATE "C"
+NOTICE:          Sort Method: quicksort  Memory: 28kB
+NOTICE:          Buffers: shared hit=51
+NOTICE:          ->  CTE Scan on page  (cost=0.00..1.02 rows=51 width=222) (actual rows=51 loops=1)
+NOTICE:                Buffers: shared hit=51
+NOTICE:  Planning:
+NOTICE:    Buffers: shared hit=70
+NOTICE:  Planning Time: 3.092 ms
+NOTICE:  Execution Time: 7.266 ms
+NOTICE:  EXPENSE_AGGREGATE_EXPLAIN_END

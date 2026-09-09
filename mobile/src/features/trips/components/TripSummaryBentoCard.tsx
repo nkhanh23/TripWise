@@ -14,6 +14,7 @@ type Props = {
   travelers?: TravelerAvatar[];
   savedPlacesCount: number;
   onViewMap?: () => void;
+  onPressBudget?: () => void;
 };
 
 export const TripSummaryBentoCard = memo(function TripSummaryBentoCard({
@@ -23,6 +24,7 @@ export const TripSummaryBentoCard = memo(function TripSummaryBentoCard({
   travelers = [],
   savedPlacesCount,
   onViewMap,
+  onPressBudget,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
@@ -37,7 +39,17 @@ export const TripSummaryBentoCard = memo(function TripSummaryBentoCard({
         },
       ]}>
       {/* 1. Budget Status Column */}
-      <View style={[styles.column, { borderRightColor: colors.border.subtle, borderRightWidth: 1 }]}>
+      <Pressable
+        accessibilityHint={t('tripExpenses.title')}
+        accessibilityLabel={t('tripDetail.budgetStatus')}
+        accessibilityRole="button"
+        disabled={!onPressBudget}
+        onPress={onPressBudget}
+        style={({ pressed }) => [
+          styles.column,
+          { borderRightColor: colors.border.subtle, borderRightWidth: 1 },
+          pressed && onPressBudget && styles.pressed,
+        ]}>
         <Text style={[styles.sectionLabel, { color: colors.text.muted }]}>
           {t('tripDetail.budgetStatus')}
         </Text>
@@ -60,7 +72,7 @@ export const TripSummaryBentoCard = memo(function TripSummaryBentoCard({
             ]}
           />
         </View>
-      </View>
+      </Pressable>
 
       {/* 2. Companions Column */}
       <View style={[styles.column, { borderRightColor: colors.border.subtle, borderRightWidth: 1 }]}>

@@ -1,0 +1,93 @@
+[
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "EUR",
+    "rate": 0.86101,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 0.86101
+      }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "GBP",
+    "rate": 0.73963,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 0.73963
+      }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "JPY",
+    "rate": 155.81,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 155.81
+      }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "KRW",
+    "rate": 1344.62,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 1344.62
+      }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "SGD",
+    "rate": 1.267,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 1.267
+      }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "THB",
+    "rate": 32.903,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 32.903
+      }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "base": "USD",
+    "quote": "VND",
+    "rate": 26048,
+    "providers": [
+      {
+        "key": "RBA",
+        "date": "2026-09-07",
+        "rate": 26048
+      }
+    ]
+  }
+]

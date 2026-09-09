@@ -1,0 +1,36 @@
+# Cache, coalescing, and concurrency assertions (FEATURE-P3-T003)
+
+1. Cache Key & Structure:
+- Key: `${sourceCurrency}:${destinationCurrency}` (canonical pair).
+- Scope: In-memory repository singleton per mobile app process.
+- Capacity: Bounded to maximum 64 entries.
+- Eviction policy: Oldest entry evicted when size reaches 64.
+
+2. Cache TTL & Freshness:
+- Retrieval TTL (`FX_CACHE_TTL_MS`): 1 hour (3,600,000 ms). Secondary requests within this window return cached quote without invoking network transport.
+- Freshness threshold (`FX_FRESH_MS`): 4 days (345,600,000 ms).
+- Staleness threshold (`FX_MAX_AGE_MS`): 7 days (604,800,000 ms).
+- Expiration: Quotes older than 7 days become unavailable with reason 'expired'.
+
+3. In-Flight Request Coalescing:
+- Concurrent requests for identical currency pair share a single in-flight Promise<FxResult>.
+- Verified by test: 5 simultaneous callers trigger exactly 1 HTTP network request; all 5 receive identical fresh result.
+
+4. Active Provider Concurrency Bounding:
+- Semaphore restricts concurrent active HTTP fetches to maximum 2 (`MAX_ACTIVE_FETCHES = 2`).
+- Excess callers enter bounded FIFO wait queue until an active fetch releases its slot.
+
+5. Failure Cooldown:
+- Duration (`FX_FAILURE_COOLDOWN_MS`): 60 seconds (60,000 ms).
+- On provider error (HTTP 429/500/503/timeout/network), subsequent requests for that pair within 60s return unavailable immediately without calling the public provider again.
+- Once cooldown expires, provider can be queried again.
+
+6. Subscriber Cancellation Resilience:
+- When a consumer provides an AbortSignal and cancels, only that consumer rejects with IntegrationError('cancelled').
+- The in-flight network request continues uninterrupted to serve other concurrent subscribers and populate cache.
+- Verified by test: Subscriber A aborts while Subscriber B receives successful FxResult.
+
+7. No Private Data Transmission:
+- URL: `https://api.frankfurter.dev/v2/rates?base={SRC}&quotes={DST}&providers=RBA&expand=providers`
+- Query parameters contain strictly public currency codes.
+- Headers: `Accept: application/json`. No authorization tokens, trip IDs, user IDs, or expense amounts are sent.

@@ -1,0 +1,27 @@
+{
+  "executed": false,
+  "provider": "Ticketmaster",
+  "api": "Discovery API v2",
+  "method": "GET",
+  "host": "app.ticketmaster.com",
+  "path": "/discovery/v2/events.json",
+  "proposedQuery": {
+    "size": 3,
+    "page": 0,
+    "city": "London",
+    "countryCode": "GB",
+    "startDateTime": "2026-09-10T00:00:00Z",
+    "endDateTime": "2026-09-17T00:00:00Z",
+    "sort": "date,asc",
+    "includeTest": "no"
+  },
+  "proposedBounds": {
+    "retries": 0,
+    "fanOut": 0,
+    "timeoutMs": 8000,
+    "responseByteLimit": 262144,
+    "paginationLoops": 0,
+    "maxProviderCalls": 1
+  },
+  "actualProviderCalls": 0
+}

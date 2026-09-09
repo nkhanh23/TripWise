@@ -1,0 +1,118 @@
+{
+  "requestedGooglePlaceId": "ChIJaSv_6gaZ4jARnbiUVn6Z_YY",
+  "returnedProviderBoundGooglePlaceId": "ChIJaSv_6gaZ4jARnbiUVn6Z_YY",
+  "identityBoundMatch": true,
+  "intelligence": {
+    "kind": "live-place-intelligence",
+    "googlePlaceId": "ChIJaSv_6gaZ4jARnbiUVn6Z_YY",
+    "businessStatus": "OPERATIONAL",
+    "openingHours": {
+      "periods": [
+        {
+          "open": {
+            "day": 0,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 0,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 1,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 1,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 2,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 2,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 3,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 3,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 4,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 4,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 5,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 5,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 6,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 6,
+            "hour": 18,
+            "minute": 0
+          }
+        }
+      ],
+      "weekdayDescriptions": [
+        "Monday: 8:00 AM – 6:00 PM",
+        "Tuesday: 8:00 AM – 6:00 PM",
+        "Wednesday: 8:00 AM – 6:00 PM",
+        "Thursday: 8:00 AM – 6:00 PM",
+        "Friday: 8:00 AM – 6:00 PM",
+        "Saturday: 8:00 AM – 6:00 PM",
+        "Sunday: 8:00 AM – 6:00 PM"
+      ],
+      "openNow": true
+    },
+    "utcOffsetMinutes": 420,
+    "rating": 4.7,
+    "userRatingCount": 45214,
+    "provenance": {
+      "provider": "google-places",
+      "boundary": "get-place-metadata",
+      "observation": "CLIENT_RECEIVED",
+      "fetchedAt": "2026-09-09T04:10:06.034Z",
+      "receivedAt": "2026-09-09T04:10:00.923Z"
+    }
+  }
+}

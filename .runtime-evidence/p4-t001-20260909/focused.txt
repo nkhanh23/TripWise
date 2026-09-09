@@ -1,0 +1,66 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand candidate-discovery.test.ts
+
+PASS tests/candidate-discovery.test.ts
+  candidate discovery request
+    √ rejects invalid/unknown input {"center":{"latitude":null,"longitude":0}} (83 ms)
+    √ rejects invalid/unknown input {"center":{"latitude":91,"longitude":0}} (1 ms)
+    √ rejects invalid/unknown input {"center":{"latitude":0,"longitude":null}} (1 ms)
+    √ rejects invalid/unknown input {"center":{"latitude":0,"longitude":-181}} (1 ms)
+    √ rejects invalid/unknown input {"radiusMeters":99} (1 ms)
+    √ rejects invalid/unknown input {"radiusMeters":5001} (1 ms)
+    √ rejects invalid/unknown input {"radiusMeters":null} (1 ms)
+    √ rejects invalid/unknown input {"limit":0} (1 ms)
+    √ rejects invalid/unknown input {"limit":13} (1 ms)
+    √ rejects invalid/unknown input {} (1 ms)
+    √ rejects invalid/unknown input {"limit":1.5}
+    √ rejects invalid/unknown input {"category":"nightlife"} (1 ms)
+    √ rejects invalid/unknown input {"types":["cafe"]} (1 ms)
+    √ rejects invalid/unknown input {"query":"x"}
+    √ rejects invalid/unknown input {"tripId":"private"} (1 ms)
+    √ rejects invalid/unknown input {"providerUrl":"http://localhost/secrets"}
+    √ rejects invalid/unknown input {"center":{"latitude":13.76,"longitude":100.52,"extra":true}}
+  candidate facts and review boundary
+    √ rejects malformed or accepted candidate {"googlePlaceId":"bad"} (4 ms)
+    √ rejects malformed or accepted candidate {"googlePlaceId":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} (1 ms)
+    √ rejects malformed or accepted candidate {"name":" "} (1 ms)
+    √ rejects malformed or accepted candidate {"name":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} (1 ms)
+    √ rejects malformed or accepted candidate {"coordinate":{"latitude":-91,"longitude":0}} (1 ms)
+    √ rejects malformed or accepted candidate {"coordinate":{"latitude":0,"longitude":null}}
+    √ rejects malformed or accepted candidate {"category":"all"} (1 ms)
+    √ rejects malformed or accepted candidate {"category":"invented"} (1 ms)
+    √ rejects malformed or accepted candidate {"rating":5.1} (1 ms)
+    √ rejects malformed or accepted candidate {"rating":null}
+    √ rejects malformed or accepted candidate {"userRatingCount":-1}
+    √ rejects malformed or accepted candidate {"userRatingCount":0.5} (1 ms)
+    √ rejects malformed or accepted candidate {"userRatingCount":9007199254740992} (1 ms)
+    √ rejects malformed or accepted candidate {"address":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+    √ rejects malformed or accepted candidate {"status":"ACCEPTED"} (1 ms)
+    √ rejects malformed or accepted candidate {"review":"ACCEPTED"}
+    √ rejects malformed or accepted candidate {"kind":"custom_activity"} (1 ms)
+    √ rejects malformed or accepted candidate {"provenance":{"provider":"gemini","boundary":"explore-places","observation":"CLIENT_RECEIVED","receivedAt":"2026-09-09T00:00:00.000Z"}} (1 ms)
+    √ rejects malformed or accepted candidate {"provenance":{"provider":"google-places","boundary":"explore-places","observation":"CLIENT_RECEIVED","receivedAt":"2026-02-30T00:00:00.000Z"}}
+    √ rejects malformed or accepted candidate {"provenance":{"provider":"google-places","boundary":"explore-places","observation":"CLIENT_RECEIVED","receivedAt":"yesterday"}} (1 ms)
+    √ rejects malformed or accepted candidate {"provenance":{"provider":"google-places","boundary":"explore-places","observation":"LIVE_HOURS","receivedAt":"2026-09-09T00:00:00.000Z"}} (1 ms)
+    √ rejects malformed or accepted candidate {"businessStatus":"OPERATIONAL"}
+    √ rejects count overflow and duplicates; empty is honest (3 ms)
+    √ preserves facts, omits unavailable metadata, and performs zero persistence (4 ms)
+    √ rejects extra transport/provider data and request-specific overflow/category mismatch (17 ms)
+  deterministic ranking input
+    √ canonicalizes identities and preferences without sorting by score or reading provider JSON (3 ms)
+    √ rejects unsupported context
+    √ rejects unsupported context
+    √ rejects unsupported context (1 ms)
+    √ rejects unsupported context
+    √ rejects unsupported context (1 ms)
+  cancellation and stale isolation
+    √ propagates caller abort to transport, with zero retry and zero persistence (2 ms)
+    √ session transition aborts old-user work even if transport never settles (2 ms)
+    √ coalesces equivalent queries; newer query rejects old work; dispose cancels unmount (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       51 passed, 51 total
+Snapshots:   0 total
+Time:        2.864 s
+Ran all test suites matching /candidate-discovery.test.ts/i.

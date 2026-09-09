@@ -1,0 +1,90 @@
+[
+  {
+    "path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\candidateDiscoveryContract.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\candidateDiscoverySession.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\remote\\supabaseCandidateDiscoveryRepository.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\mobile\\tests\\candidate-discovery.test.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\boundedJson.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\bounds_test.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\googlePlaces.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\handler.ts",
+    "match": true
+  },
+  {
+    "path": "D:\\Dev\\TripWise\\docs\\05-engineering\\candidate-discovery-contract.md",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/handler.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/metadata.ts",
+    "match": true
+  },
+  {
+    "path": "mobile/tests/place-intelligence.test.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/index.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/errors.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/metadata_test.ts",
+    "match": true
+  },
+  {
+    "path": "mobile/src/integration/errors.ts",
+    "match": true
+  },
+  {
+    "path": "mobile/src/integration/remote/supabasePlaceMetadataRepository.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/types.ts",
+    "match": true
+  },
+  {
+    "path": "mobile/src/integration/placeIntelligenceContract.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/boundedJson.ts",
+    "match": true
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/handler.test.ts",
+    "match": true
+  },
+  {
+    "path": "mobile/src/integration/repositories.ts",
+    "match": true
+  }
+]

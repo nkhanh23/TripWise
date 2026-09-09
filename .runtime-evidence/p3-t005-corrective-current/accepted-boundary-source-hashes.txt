@@ -1,0 +1,15 @@
+SHA256 current exact-source snapshot (2026-09-08)
+
+T003
+bd1ec917a638548b8822339cbeebd80e18a232b675f283e2e7830be4f1661aa6  mobile/src/integration/fxContract.ts
+3640a19dbdd4f8b7c36be846c4b1dc1847f0f79a3c70ce18c737bb26b0ebe254  mobile/src/integration/remote/exchangeRateFxRepository.ts
+d2d208061235284494319fdb3b30142f5009e1eb61fe4ea3a9db68822ae826dc  mobile/src/integration/remote/supabaseTripFxContextRepository.ts
+c2de7258bc382c151a0d9105eccfdcdc316b90fb48ab4dfc0a9b2b571d321585  supabase/migrations/20260907083901_trip_fx_context.sql
+
+T004
+cef0fc7d954d2c4b02c6c75b35c8e8551b8c4e2f82ea3dfe6377beba68fb9e72  mobile/src/integration/budgetRiskContract.ts
+0f3eb0f49c5c9222586983f6a9cdb3687e16fb1223e838e2568601edd8c6904d  mobile/src/integration/remote/budgetRiskService.ts
+
+Comparison
+- The three T003 source hashes match .runtime-evidence/p3-t005-exact-current/frozen-source-hashes.json.
+- The two T004 source hashes match .runtime-evidence/p3-t004-exact-current/final-exactness-source-hashes-after.json.

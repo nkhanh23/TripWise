@@ -1,0 +1,51 @@
+[0m[38;5;245mrunning 15 tests from ./supabase/functions/explore-places/bounds_test.ts[0m
+actual bytes bound rejects oversized chunked body and multibyte payload ... [0m[32mok[0m [0m[38;5;245m(9ms)[0m
+handler rejects oversized missing/lying length and URL before provider ... [0m[32mok[0m [0m[38;5;245m(3ms)[0m
+bounded provider fields id 12 ... [0m[32mok[0m [0m[38;5;245m(766µs)[0m
+bounded provider fields id 210 ... [0m[32mok[0m [0m[38;5;245m(86µs)[0m
+bounded provider fields displayName 228 ... [0m[32mok[0m [0m[38;5;245m(82µs)[0m
+bounded provider fields formattedAddress 524 ... [0m[32mok[0m [0m[38;5;245m(161µs)[0m
+bounded provider fields types 368 ... [0m[32mok[0m [0m[38;5;245m(56µs)[0m
+bounded provider fields types 115 ... [0m[32mok[0m [0m[38;5;245m(47µs)[0m
+bounded provider fields primaryType 119 ... [0m[32mok[0m [0m[38;5;245m(52µs)[0m
+bounded provider fields rating 13 ... [0m[32mok[0m [0m[38;5;245m(88µs)[0m
+bounded provider fields userRatingCount 36 ... [0m[32mok[0m [0m[38;5;245m(81µs)[0m
+raw provider extras are scrubbed; absent ratings are not invented ... [0m[32mok[0m [0m[38;5;245m(122µs)[0m
+provider bounds actual body, result count, requested limit and duplicates ... [0m[32mok[0m [0m[38;5;245m(11ms)[0m
+handler protects result count and sanitizes unknown provider error ...
+[0m[38;5;245m------- output -------[0m
+Unhandled explore-places error
+[0m[38;5;245m----- output end -----[0m
+handler protects result count and sanitizes unknown provider error ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+pre-cancelled discovery never contacts provider ... [0m[32mok[0m [0m[38;5;245m(1ms)[0m
+[0m[38;5;245mrunning 7 tests from ./supabase/functions/explore-places/contract_test.ts[0m
+accepts the bounded discovery contract ... [0m[32mok[0m [0m[38;5;245m(956µs)[0m
+invalid latitude ... [0m[32mok[0m [0m[38;5;245m(525µs)[0m
+invalid longitude ... [0m[32mok[0m [0m[38;5;245m(77µs)[0m
+invalid radius ... [0m[32mok[0m [0m[38;5;245m(55µs)[0m
+invalid category ... [0m[32mok[0m [0m[38;5;245m(65µs)[0m
+unbounded limit ... [0m[32mok[0m [0m[38;5;245m(43µs)[0m
+unknown field ... [0m[32mok[0m [0m[38;5;245m(47µs)[0m
+[0m[38;5;245mrunning 16 tests from ./supabase/functions/explore-places/googlePlaces_test.ts[0m
+category map is the approved bounded Google type set ... [0m[32mok[0m [0m[38;5;245m(869µs)[0m
+valid provider response is normalized and preserves identity and coordinates ... [0m[32mok[0m [0m[38;5;245m(448µs)[0m
+provider ratings remain optional and normalize when supplied ... [0m[32mok[0m [0m[38;5;245m(142µs)[0m
+malformed provider response fails safely ... [0m[32mok[0m [0m[38;5;245m(569µs)[0m
+provider status 403 maps safely ... [0m[32mok[0m [0m[38;5;245m(13ms)[0m
+provider status 429 maps safely ... [0m[32mok[0m [0m[38;5;245m(221µs)[0m
+provider status 503 maps safely ... [0m[32mok[0m [0m[38;5;245m(249µs)[0m
+provider request is one bounded call with fixed fields and types ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+specific restaurants request owns mixed-type normalization ... [0m[32mok[0m [0m[38;5;245m(162µs)[0m
+specific attractions request owns mixed-type normalization ... [0m[32mok[0m [0m[38;5;245m(53µs)[0m
+specific hotels request owns mixed-type normalization ... [0m[32mok[0m [0m[38;5;245m(42µs)[0m
+all uses primaryType before deterministic supported-type fallback ... [0m[32mok[0m [0m[38;5;245m(143µs)[0m
+specific request rejects a result outside its approved server-owned types ... [0m[32mok[0m [0m[38;5;245m(153µs)[0m
+provider timeout aborts once and maps safely without leaking credentials ... [0m[32mok[0m [0m[38;5;245m(14ms)[0m
+incoming cancellation aborts provider work and maps AbortError safely ... [0m[32mok[0m [0m[38;5;245m(660µs)[0m
+successful request clears timeout before it can abort the provider signal ... [0m[32mok[0m [0m[38;5;245m(13ms)[0m
+[0m[38;5;245mrunning 3 tests from ./supabase/functions/explore-places/handler_test.ts[0m
+authenticated request invokes bounded discovery ... [0m[32mok[0m [0m[38;5;245m(10ms)[0m
+anonymous request is rejected before discovery ... [0m[32mok[0m [0m[38;5;245m(595µs)[0m
+invalid input is rejected before provider call ... [0m[32mok[0m [0m[38;5;245m(445µs)[0m
+
+[0m[32mok[0m | 41 passed | 0 failed [0m[38;5;245m(277ms)[0m

@@ -1,0 +1,1 @@
+{"function_slugs":["discover-events"],"project_ref":"bvblyrzbkyhcreimuumu","message":"Downloaded Edge Function source."}

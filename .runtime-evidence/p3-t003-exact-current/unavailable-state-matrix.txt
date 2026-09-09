@@ -1,0 +1,20 @@
+# FX unavailable state matrix and behavior (FEATURE-P3-T003)
+
+| Reason Code | Trigger Scenario | Network Call Made? | Converted Amount | Original Amount/Currency | User Impact |
+|---|---|---|---|---|---|
+| `missingDestination` | `destinationCurrency === null` (trip destination has no trusted currency source) | No | `null` | Preserved exact text & currency | Original home budget and expense aggregates display normally. No crash, trip not blocked. |
+| `unsupportedCurrency` | Source or destination currency is not in 8 supported Settings currencies | No | `null` | Preserved exact text & currency | Displays original currency. No fake 1.0 or artificial conversion. |
+| `expired` | Cached or returned quote has observation/quote date > 7 days old | Yes (initial) | `null` | Preserved exact text & currency | Falls back to unavailable rather than showing stale rate. |
+| `timeout` | Public provider request exceeds 6,000ms timeout | Yes (1 attempt) | `null` | Preserved exact text & currency | Displays original amount. 60s failure cooldown prevents repeat hangs. |
+| `network` | Client is offline or transport fetch throws network error | Yes (1 attempt) | `null` | Preserved exact text & currency | Displays original amount. App remains usable offline. |
+| `providerUnavailable` | Provider returns HTTP 500, 502, 503, 504 | Yes (1 attempt) | `null` | Preserved exact text & currency | Displays original amount. 60s cooldown prevents request flood. |
+| `invalidResponse` | Provider returns HTTP 4xx, malformed JSON, or non-RBA contributor | Yes (1 attempt) | `null` | Preserved exact text & currency | Displays original amount. Raw error/HTML is masked from UI. |
+| `busy` | Provider returns HTTP 429 rate limit | Yes (1 attempt) | `null` | Preserved exact text & currency | Displays original amount. Backs off for 60s. |
+
+Core Invariants When FX Is Unavailable:
+1. Original trip budget remains fully readable from `get_trip_fx_context` RPC (`originalBudget.amount`, `originalBudget.currency`).
+2. T001 expense ledger entries remain fully readable and intact.
+3. T002 expense aggregate rows (`planned`, `actual`, `unplanned`, `variance`) remain exact in original currencies.
+4. Converted amount is explicitly `null` with `displayFractionDigits: null`.
+5. No fake rates (e.g. `1.0`) are invented for foreign currencies.
+6. The trip view is not blocked or broken.

@@ -1,0 +1,3 @@
+Uploading asset (discover-events): supabase/functions/discover-events/index.ts
+Uploading asset (discover-events): supabase/functions/discover-events/events.ts
+{"project_ref":"bvblyrzbkyhcreimuumu","functions":["discover-events"],"dashboard_url":"https://supabase.com/dashboard/project/bvblyrzbkyhcreimuumu/functions","message":"Deployed Functions."}

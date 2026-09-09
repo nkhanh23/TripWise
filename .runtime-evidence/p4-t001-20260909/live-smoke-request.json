@@ -1,0 +1,9 @@
+{
+  "center": {
+    "latitude": 13.7437,
+    "longitude": 100.4888
+  },
+  "radiusMeters": 1000,
+  "category": "attractions",
+  "limit": 3
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "cmd.exe",
+    "/d",
+    "/c",
+    "npm run lint"
+  ],
+  "cwd": "D:\\Dev\\TripWise\\mobile",
+  "started": "2026-09-08T11:27:13.574850+00:00",
+  "ended": "2026-09-08T11:27:23.329564+00:00",
+  "exit": 0
+}

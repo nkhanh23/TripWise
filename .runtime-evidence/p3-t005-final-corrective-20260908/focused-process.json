@@ -1,0 +1,12 @@
+{
+  "command": [
+    "cmd.exe",
+    "/d",
+    "/c",
+    "npm test -- --runInBand --verbose budget-validation planner-generation planner-persistence CreateTripWizardScreen StepBudgetGroup TripExpensesScreen useTripExpensesController expense-aggregate-contract budget-risk-contract budget-risk-service fx-contract fx-repository"
+  ],
+  "cwd": "D:\\Dev\\TripWise\\mobile",
+  "started": "2026-09-08T11:27:35.407660+00:00",
+  "ended": "2026-09-08T11:27:46.123345+00:00",
+  "exit": 0
+}

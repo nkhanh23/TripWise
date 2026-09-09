@@ -60,6 +60,8 @@ export type CreateTripWizardState = {
   selectedStyles: string[];
   pace: TravelPace;
   budget: BudgetTier;
+  budgetAmount?: string;
+  budgetCurrency?: string;
   groupType: GroupType;
   tripTitle: string;
 };

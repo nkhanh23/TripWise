@@ -112,3 +112,43 @@ do $$ begin
   if (select prosecdef from pg_proc where oid='public.get_trip_expense_aggregate(jsonb)'::regprocedure) then raise exception 'Invoker required'; end if;
 end $$;
 select 'expense_aggregate_contract_pass' as result;
+
+-- Bounded output with more than 50 original-currency groups and 3,000 rows.
+set role authenticated;
+select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+insert into public.trip_expenses(trip_id,category,origin,amount,currency,itinerary_item_id)
+select '82000000-0000-4000-8000-000000000003','food','actual',0.10,
+  'A'||chr(65+(n%60)/26)||chr(65+(n%60)%26),
+  null from generate_series(1,3000) n;
+do $$ declare r jsonb; second_page jsonb; begin
+  r := public.get_trip_expense_aggregate('{"tripId":"82000000-0000-4000-8000-000000000003","groupBy":"currency","limit":50}');
+  second_page := public.get_trip_expense_aggregate(jsonb_build_object('tripId','82000000-0000-4000-8000-000000000003','groupBy','currency','limit',50,'cursor',r->>'nextCursor'));
+  if jsonb_array_length(r->'items')<>50 or jsonb_array_length(second_page->'items')<>10
+     or second_page->'nextCursor'<>'null'::jsonb or r->'items'->0->>'actual'<>'5.00' then
+    raise exception 'Bounded 60-currency page failed';
+  end if;
+end $$;
+reset role;
+analyze public.trip_expenses;
+-- Extract the exact installed RPC aggregate statement, then EXPLAIN under owner RLS.
+-- No hand-maintained substitute query: same CTE, joins, aggregates and page limit.
+create temporary table expense_plan_sql(q text);
+insert into expense_plan_sql
+select replace(replace(replace(replace(
+  split_part(substr(def,strpos(def,'  with source as (')),'  into v_result from page;',1)||' from page',
+  'v_group',quote_literal('day')),'v_trip',quote_literal('82000000-0000-4000-8000-000000000003')||'::uuid'),
+  'v_cursor','null::text'),'v_limit','50')
+from (select pg_get_functiondef('public.get_trip_expense_aggregate(jsonb)'::regprocedure) def) f;
+grant select on expense_plan_sql to authenticated;
+set role authenticated;
+do $$ declare line record; q text; begin
+  select expense_plan_sql.q into q from expense_plan_sql;
+  raise notice 'EXPENSE_AGGREGATE_EXPLAIN_BEGIN: exact installed day query, 3000 ledger rows, authenticated RLS';
+  for line in execute 'explain (analyze, buffers, costs, timing off) '||q loop
+    raise notice '%',line."QUERY PLAN";
+  end loop;
+  raise notice 'EXPENSE_AGGREGATE_EXPLAIN_END';
+end $$;
+reset role;
+drop table expense_plan_sql;
+select 'expense_aggregate_bounded_plan_pass' as result;

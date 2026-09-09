@@ -1,0 +1,59 @@
+{
+  "endpoint": "https://open.er-api.com/v6/latest/USD",
+  "httpStatus": 200,
+  "result": "success",
+  "base": "USD",
+  "provider": "https://www.exchangerate-api.com",
+  "documentation": "https://www.exchangerate-api.com/docs/free",
+  "terms_of_use": "https://www.exchangerate-api.com/terms",
+  "quotedAt": "2026-09-08T00:02:31.000Z",
+  "timestampPrecision": "second",
+  "ratesPresent": {
+    "USD": {
+      "rate": "1",
+      "valid": true
+    },
+    "VND": {
+      "rate": "25969.409056",
+      "valid": true
+    },
+    "THB": {
+      "rate": "32.880758",
+      "valid": true
+    },
+    "JPY": {
+      "rate": "154.414743",
+      "valid": true
+    },
+    "EUR": {
+      "rate": "0.860364",
+      "valid": true
+    },
+    "GBP": {
+      "rate": "0.738631",
+      "valid": true
+    },
+    "SGD": {
+      "rate": "1.265814",
+      "valid": true
+    },
+    "KRW": {
+      "rate": "1345.378849",
+      "valid": true
+    }
+  },
+  "crossRateVerification": {
+    "pair": "EUR/VND",
+    "rate": "30184.211631356030703284",
+    "rateBasis": "usd-cross-half-up-18dp",
+    "state": "fresh"
+  },
+  "privacyAudit": {
+    "authSent": false,
+    "userIdSent": false,
+    "tripIdSent": false,
+    "budgetSent": false,
+    "expenseSent": false,
+    "jwtSent": false
+  }
+}

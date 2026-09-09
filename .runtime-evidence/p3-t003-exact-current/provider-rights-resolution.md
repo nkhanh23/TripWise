@@ -1,0 +1,15 @@
+# T003 provider rights assessment — 2026-09-08
+
+**PROVIDER_RIGHTS_RESOLVED for the narrowly defined commercial informational conversion/display use below.** This is a source-based engineering selection, not an executed paid subscription or a warranty about upstream data. Implementation and closure gates remain pending.
+
+Primary: **ExchangeRate-API Open Access**, supplied by AYR Tech (Pty) Ltd. No key, subscription purchase or paid contract is required for this endpoint. The applicable [endpoint documentation](https://www.exchangerate-api.com/docs/free) expressly permits commercial currency conversion and caching, subject to attribution and the linked terms. The [API licence and caching policy](https://www.exchangerate-api.com/terms) allow commercial end-use and storage/reuse, while prohibiting feed redistribution and programmatic FX-access products. TripWise's internal calculation and derived budget/expense display fit that stated purpose. No public FX API, raw-feed resale or syndication is proposed.
+
+The supplied product is the vendor's composite indicative midpoint, as explained in its [methodology](https://www.exchangerate-api.com/product/our-exchange-rate-data). Treat the vendor as the source of that composite; do not label it RBA, ECB, an executable trading rate or an individually traced upstream quote. The licence is assessed for the delivered vendor data; this task's revised standard does not require an independently negotiated licence to every undisclosed input. No explicit transfer of additional third-party licensing obligations was found in the reviewed ExchangeRate-API terms. Accuracy and availability warranties are disclaimed.
+
+Required output credit: linked `Rates By Exchange Rate API` on the eventual display surface. T003 adds no UI; T005 must implement this requirement before showing derived values to users. Retained fallback remains informational and visibly stale. Recheck terms before public rollout; this clearance is not evidence of unlimited capacity or permanent free service availability.
+
+All eight required currencies are individually listed in the [official supported codes](https://www.exchangerate-api.com/docs/supported-currencies). That is documentary coverage; live smoke is still NOT RUN. Last-update seconds identify vendor publication. Individual input ages remain undisclosed; freshness labels must describe publication age, never claim every upstream observation is new.
+
+Backup candidate: **Open Exchange Rates Developer**, paid and credential-dependent. Its [service agreement §8.1](https://openexchangerates.org/services-agreement) licenses necessary supplier/licensor rights; [FAQ](https://openexchangerates.org/faq) addresses paid commercial apps; [cache documentation](https://docs.openexchangerates.org/reference/etags) explicitly supports response storage. No automatic fallback to it and no purchase are authorised by this selection.
+
+This assessment supersedes the earlier ExchangeRate-API rejection based solely on needing a complete per-input rights chain. It does not revive RBA approval. See `provider-candidate-matrix.md` for alternatives and unresolved candidate-specific questions.

@@ -1,0 +1,7 @@
+AUDIT: Candidate owner-data mutation paths; current local source only
+mobile/src/integration/remote/supabaseCandidateDiscoveryRepository.ts : mutation/owner-table/service-role matches=0
+mobile/src/integration/remote/supabaseExplorePlacesRepository.ts : mutation/owner-table/service-role matches=0
+supabase/functions/explore-places/index.ts : mutation/owner-table/service-role matches=0
+supabase/functions/explore-places/handler.ts : mutation/owner-table/service-role matches=0
+supabase/functions/explore-places/googlePlaces.ts : mutation/owner-table/service-role matches=0
+supabase/functions/explore-places/boundedJson.ts : mutation/owner-table/service-role matches=0

@@ -1,0 +1,11 @@
+{
+  "edgeClientAttempts": 1,
+  "confirmedEdgeExecutions": 1,
+  "completedProviderCallsReportedByVerifiedServerSource": 1,
+  "providerHttpStatus": 200,
+  "providerIndependentAccessLog": "NOT_AVAILABLE",
+  "cancellationLiveTest": "NOT_RUN",
+  "automaticRetries": 0,
+  "paginationLoops": 0,
+  "perEventFanOut": 0
+}

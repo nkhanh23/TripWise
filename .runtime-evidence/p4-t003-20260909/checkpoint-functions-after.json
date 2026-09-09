@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "generate-trip",
+    "version": 18,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "resolve-place",
+    "version": 11,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "get-place-photo",
+    "version": 8,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "get-place-metadata",
+    "version": 6,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "get-wikimedia-image",
+    "version": 6,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "explore-places",
+    "version": 7,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "search-destinations",
+    "version": 4,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  },
+  {
+    "slug": "discover-events",
+    "version": 1,
+    "verify_jwt": true,
+    "status": "ACTIVE"
+  }
+]

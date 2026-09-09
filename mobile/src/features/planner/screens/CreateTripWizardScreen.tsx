@@ -27,6 +27,7 @@ import { StepSummary } from '../components/StepSummary';
 import { WizardProgressBar } from '../components/WizardProgressBar';
 import { useTripGeneration } from '../generation';
 import { useTripPersistence } from '../persistence';
+import { validateAccountingBudget } from '../budgetValidation';
 import { initialWizardState } from '../data/mockWizardData';
 import type {
   BudgetTier,
@@ -71,6 +72,10 @@ export function CreateTripWizardScreen({
   const [wizardState, setWizardState] = useState<CreateTripWizardState>(() => ({
     ...initialWizardState,
     ...initialState,
+    // A supplied amount must carry its own currency; only normal empty UI initialization defaults.
+    ...(initialState?.budgetAmount !== undefined && initialState.budgetAmount !== ''
+      ? { budgetCurrency: initialState.budgetCurrency }
+      : {}),
   }));
 
   useEffect(() => {
@@ -151,6 +156,16 @@ export function CreateTripWizardScreen({
     setWizardState((prev) => ({ ...prev, budget }));
   }, []);
 
+  const handleChangeBudgetAmount = useCallback((amount: string) => {
+    setWizardState((prev) => ({ ...prev, budgetAmount: amount }));
+    setStepError(null);
+  }, []);
+
+  const handleSelectBudgetCurrency = useCallback((currency: string) => {
+    setWizardState((prev) => ({ ...prev, budgetCurrency: currency }));
+    setStepError(null);
+  }, []);
+
   const handleSelectGroup = useCallback((groupType: GroupType) => {
     setWizardState((prev) => ({ ...prev, groupType }));
   }, []);
@@ -193,6 +208,12 @@ export function CreateTripWizardScreen({
         setStepError(t('planner.validation.preferencesRequired'));
         return;
       }
+    } else if (currentStep >= 4) {
+      const validated = validateAccountingBudget(wizardState.budgetAmount, wizardState.budgetCurrency);
+      if (!validated.valid) {
+        setStepError(t(validated.errorKey));
+        return;
+      }
     }
 
     setStepError(null);
@@ -215,10 +236,19 @@ export function CreateTripWizardScreen({
 
   const handleSaveTrip = useCallback(() => {
     if (generation.status !== 'success') return;
-    void save(generation.preview, wizardState.tripTitle).then((tripId) => {
+    const validated = validateAccountingBudget(wizardState.budgetAmount, wizardState.budgetCurrency);
+    if (!validated.valid) {
+      setStepError(t(validated.errorKey));
+      return;
+    }
+    const budgetConfig = validated.value !== null
+      ? { estimatedBudget: validated.value, currency: wizardState.budgetCurrency }
+      : { estimatedBudget: null, currency: null };
+
+    void save(generation.preview, wizardState.tripTitle, budgetConfig).then((tripId) => {
       if (tripId) navigation.navigate('TripDetail', { tripId });
     });
-  }, [generation, navigation, save, wizardState.tripTitle]);
+  }, [generation, navigation, save, wizardState.budgetAmount, wizardState.budgetCurrency, wizardState.tripTitle, t]);
 
   // Render Step Content
   const stepContent = useMemo(() => {
@@ -259,7 +289,12 @@ export function CreateTripWizardScreen({
       case 4:
         return (
           <StepBudgetGroup
+            budgetAmount={wizardState.budgetAmount ?? ''}
+            budgetCurrency={wizardState.budgetCurrency ?? ''}
+            budgetError={stepError}
+            onChangeBudgetAmount={handleChangeBudgetAmount}
             onSelectBudget={handleSelectBudget}
+            onSelectBudgetCurrency={handleSelectBudgetCurrency}
             onSelectGroup={handleSelectGroup}
             selectedBudget={wizardState.budget}
             selectedGroup={wizardState.groupType}
@@ -282,6 +317,8 @@ export function CreateTripWizardScreen({
     handleChangeStartDate,
     handleChangeTitle,
     handleSelectBudget,
+    handleChangeBudgetAmount,
+    handleSelectBudgetCurrency,
     handleSelectDestination,
     handleSelectGroup,
     handleSelectPace,
@@ -295,6 +332,7 @@ export function CreateTripWizardScreen({
   if (generation.status === 'success') {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background.surface, paddingTop: insets.top }]}>
+        {stepError ? <Text accessibilityRole="alert" style={{ color: colors.state.error }}>{stepError}</Text> : null}
         <CreateTripSuccessView
           onExplorePlaces={handleExplorePlaces}
           onSave={handleSaveTrip}
@@ -353,6 +391,10 @@ export function CreateTripWizardScreen({
 
       {/* Main Step Body */}
       <View style={styles.body}>{stepContent}</View>
+
+      {currentStep === 5 && stepError ? (
+        <Text accessibilityRole="alert" style={[styles.errorText, { color: colors.state.error }]}>{stepError}</Text>
+      ) : null}
 
       {generation.status === 'error' ? (
         <View accessibilityRole="alert" style={[styles.errorBanner, { backgroundColor: colors.background.surfaceVariant }]}>

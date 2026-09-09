@@ -1,0 +1,9 @@
+{
+  "status": "NOT_EXECUTED",
+  "blocker": "BLOCKED — SERVER_SIDE_PREFLIGHT_EXECUTION_PATH_REQUIRED",
+  "httpStatus": null,
+  "resultCount": null,
+  "events": null,
+  "pagination": null,
+  "credentialAccepted": "NOT_PROVEN"
+}

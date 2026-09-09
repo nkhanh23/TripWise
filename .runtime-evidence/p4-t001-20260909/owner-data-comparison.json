@@ -1,0 +1,10 @@
+{
+  "equal": true,
+  "resources": [
+    "trips",
+    "itinerary_days",
+    "itinerary_items",
+    "saved_places",
+    "trip_expenses"
+  ]
+}

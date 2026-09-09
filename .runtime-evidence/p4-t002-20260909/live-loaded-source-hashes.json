@@ -1,0 +1,6 @@
+{
+  "mobile\\src\\integration\\remote\\supabasePlaceMetadataRepository.ts": "7838e959da7f3f5067810824308b7dc66c82a109976fa9a3610fbcf5ca03ee3a",
+  "mobile\\src\\integration\\errors.ts": "e885d6b3bb922f50342391c78434aa2b5aca3d4ad4d336cb30c8ae66e60797dd",
+  "mobile\\src\\integration\\validation.ts": "b9fcb83f1a42b13789261915018d0b1e5d3bd4da92c1cac9541bbd19c466ae0b",
+  "mobile\\src\\integration\\placeIntelligenceContract.ts": "698051f0af9f60f4afb8d97cf479289eba5c642195b0d35a816deceb2274a665"
+}

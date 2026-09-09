@@ -245,7 +245,7 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 **Kiểm thử / Android / bằng chứng:** component/repository/RLS regression cùng Android evidence add/edit/reorder/move/skip/complete/reopen trên real data. **Điều kiện hoàn thành:** đủ bảy kind và các mutation đã liệt kê hoạt động end-to-end owner-safe. **Rủi ro rollback/regression:** ordering và mất stale mutation; phải chứng minh retry/conflict behavior. **Cổng phase tiếp theo:** P2 Android và regression matrix PASS.
 
-### [ ] FEATURE-P3 — Trí tuệ chi phí và ngân sách
+### [x] FEATURE-P3 — Trí tuệ chi phí và ngân sách
 
 **Mục tiêu / lý do:** làm thông tin expense và budget bền vững, đáng tin cậy trước khi companion advice sử dụng.
 
@@ -274,15 +274,28 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 - [x] Exact-current lint PASS (0 errors, 12 warnings), typecheck PASS; Expo Doctor 20/21 accepted baseline (5 patch mismatches), dependencies không đổi.
 - [x] Mobile contracts, validators, và `SupabaseTripExpenseLedgerRepository` hoàn chỉnh; 35/35 focused Jest PASS; full Jest 66 suites PASS, 1 skipped (516 tests PASS, 1 skipped).
 
-#### [ ] FEATURE-P3-T002 — So sánh ước tính và thực tế, phân bổ danh mục
+#### [x] FEATURE-P3-T002 — So sánh ước tính và thực tế, phân bổ danh mục
 
-- [ ] FEATURE-P3-T002-S001 — Server-side aggregation và category breakdown.
+- [x] FEATURE-P3-T002-S001 — Server-side aggregation và category breakdown.
 
-#### [ ] FEATURE-P3-T003 — Tiền tệ kép và FX quote provenance
+**T002 COMPLETE:** Original-currency PostgreSQL numeric aggregation, currency/category/day pages 1..50, exact decimal-string transport; daily attachment → UTC spent date → unassigned. Fresh/upgrade accounting, RLS và N+1/query-plan audit PASS. Focused Jest 45/45, full Jest 561 PASS + 1 skipped, lint/typecheck PASS, Expo Doctor 20/21 accepted baseline. DEV `20260907030000` aligned. Evidence: `.runtime-evidence/p3-t002-exact-current/REVIEWER_CLOSURE.md`. Android NOT RUN — deferred to FEATURE-P3-T005. Không FX/Budget Risk; T003 chưa bắt đầu.
 
-#### [ ] FEATURE-P3-T004 — Phân tích rủi ro ngân sách và cảnh báo vượt ngưỡng
+#### [x] FEATURE-P3-T003 — Tiền tệ kép và FX quote provenance
 
-#### [ ] FEATURE-P3-T005 — Giao diện Expense / Budget và xác minh runtime Android
+**T003 COMPLETE:** ExchangeRate-API Open Access composite USD snapshot, exact-decimal BigInt cross-rate derivation (half-up 18dp), TTL 1h, stale fallback <=7d, expired unavailable >7d, true LRU <=64, coalesced refresh, cancellation isolation, bounded body <=16KB. Nullable trips.currency preserved honestly (homeCurrency=null). Authoritative persistence fresh/upgrade PASS, live provider smoke PASS, provider rights recheck PASS, full Jest 69/70 PASS + 1 skipped (708/709 PASS), lint/typecheck PASS, Expo Doctor 20/21 baseline. DEV 20260907083901 aligned. Evidence: .runtime-evidence/p3-t003-exact-current/REVIEWER_FINAL_CLOSURE.md. Android NOT RUN — deferred to FEATURE-P3-T005. FX_ATTRIBUTION_UI_REQUIRED_IN_FEATURE-P3-T005. Không Budget Risk; T004/T005 chưa bắt đầu; motion PAUSED_BY_USER.
+
+**T004 COMPLETE:** Deterministic budget-risk engine and orchestration (`TRIPWISE_BUDGET_RISK_V1`), exact-decimal BigInt minor unit evaluation, 80%/100% threshold rules, zero-budget/not-configured handling, Defect 1 incomplete data fail-closed (`riskLevel = 'unavailable'`), Defect 2 activity eligibility fail-closed (`optionalPaidActivityReviewEligible: false`), Defect 3 independent dimensions without misleading projected spend, Defect 4 bounded 2-page category pagination (max 72 groups), Defect A exact string integer basis points representation (`fractionOfBudgetBasisPoints: string`, full numeric(24,2) range), Defect B exact 2-decimal accounting FX conversion (`convertToAccountingCents`), 2-decimal stored precision preserved for VND/JPY/KRW, full Jest 71/72 PASS + 1 skipped (748/749 tests PASS), lint/typecheck PASS, Expo Doctor 20/21 baseline (exit code 1), persistence harness PASS. Evidence: `.runtime-evidence/p3-t004-exact-current/REVIEWER_FINAL_CORRECTIVE_CLOSURE.md`. Android NOT RUN — deferred to FEATURE-P3-T005.
+
+#### [x] FEATURE-P3-T004 — Phân tích rủi ro ngân sách và cảnh báo vượt ngưỡng
+
+**T005 COMPLETE:** Corrective implementation for configured budget wiring in CreateTripWizard (`StepBudgetGroup`, `budgetValidation`, `mapPlannerPreviewToPersistenceGraph`, `useTripPersistence`). Persistence readback verified on Android (`emulator-5554`) with configured budget $1,000 USD. Multi-currency mutations, planned commitment invariants, dual-currency conversions (JPY -> USD, USD -> JPY), display currency preference toggles, FX attribution link, offline error state with retry, and online recovery all verified with live screenshots and UI dumps. Full Jest test suite 75/76 PASS (797 tests PASS, 1 skipped), lint PASS (0 errors, 11 warnings baseline), typecheck PASS (0 errors), Expo Doctor 20/21 baseline. Evidence: `.runtime-evidence/p3-t005-final-closure-current/CLOSURE_ASSESSMENT.md`. FEATURE-P4 NOT STARTED; motion PAUSED_BY_USER.
+
+#### [x] FEATURE-P3-T005 — Giao diện Expense / Budget và xác minh runtime Android
+
+- [x] FEATURE-P3-T005-S001 — Xác minh quick expense, refresh và hiển thị dual-currency trên Android
+- [x] Bằng chứng Android real-data và provider failure PASS
+
+**Final Corrective Closure (2026-09-08): PASS.** Provider-specific FX failure verified with controlled CONNECT proxy (`open.er-api.com` rejected 502, Supabase connected, original data preserved, no fake rates/attribution, fail-closed budget risk, online recovery). >50 ledger pagination verified (55 rows, Page 1 bounded to 50, nextCursor, Page 2 loads 5 rows with null nextCursor, 0 duplicate IDs, aggregate invariance, pull-to-refresh resets to 50). Stale-user and cross-owner isolation verified with legitimate dev accounts (User A financial state purged immediately on signout, User B sees zero foreign trips/expenses, foreign RPC requests fail safe with P0002). Full automated gates pass (`lint-exit.txt=0`, `typecheck-exit.txt=0`, `focused-exit.txt=0`, `full-exit.txt=0`, `persistence-exit.txt=0`, Expo Doctor 20/21 baseline). Evidence: `.runtime-evidence/p3-t005-final-corrective-20260908/FINAL_CORRECTIVE_CLOSURE.md`. FEATURE-P4 NOT STARTED. `CREATE_TRIP_GENERATION_MOTION = PAUSED_BY_USER`.
 
 ### [ ] FEATURE-P4 — Candidate và Live Intelligence
 
@@ -486,53 +499,57 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] RLS theo owner, category/origin validation và pagination PASS.
 
-#### [ ] FEATURE-P3-T002 — Chi phí ước tính/thực tế và breakdown
+#### [x] FEATURE-P3-T002 — Chi phí ước tính/thực tế và breakdown
 
-- [ ] FEATURE-P3-T002-S001 — Triển khai aggregation daily/category và estimated-versus-actual.
-
-##### Checklist hoàn thành
-
-- [ ] Decimal/accounting, N+1 và contract aggregate PASS.
-
-#### [ ] FEATURE-P3-T003 — Tiền tệ nhà/đích và FX provenance
-
-- [ ] FEATURE-P3-T003-S001 — Chọn trusted FX provider, quote freshness và dual-currency contract.
+- [x] FEATURE-P3-T002-S001 — Triển khai aggregation daily/category và estimated-versus-actual.
 
 ##### Checklist hoàn thành
 
-- [ ] Original home budget được bảo toàn; trạng thái FX unavailable PASS.
+- [x] Decimal/accounting, N+1 và contract aggregate PASS.
 
-#### [ ] FEATURE-P3-T004 — Budget Risk
+#### [x] FEATURE-P3-T003 — Tiền tệ nhà/đích và FX provenance
 
-- [ ] FEATURE-P3-T004-S001 — Tạo deterministic budget-risk signal không tự tăng ngân sách.
-
-##### Checklist hoàn thành
-
-- [ ] Rule risk, suggestion an toàn và privacy PASS.
-
-#### [ ] FEATURE-P3-T005 — Runtime ngân sách/chi phí
-
-- [ ] FEATURE-P3-T005-S001 — Xác minh quick expense, refresh và hiển thị dual-currency trên Android.
+- [x] FEATURE-P3-T003-S001 — Chọn trusted FX provider, quote freshness và dual-currency contract.
 
 ##### Checklist hoàn thành
 
-- [ ] Bằng chứng Android real-data và provider failure PASS.
+- [x] Original home budget được bảo toàn; trạng thái FX unavailable PASS.
 
-#### [ ] FEATURE-P4-T001 — Contract Candidate Discovery
+#### [x] FEATURE-P3-T004 — Budget Risk
 
-- [ ] FEATURE-P4-T001-S001 — Xây candidate discovery/ranking input contract có review boundary.
-
-##### Checklist hoàn thành
-
-- [ ] Query có giới hạn, cancellation và không auto-persist PASS.
-
-#### [ ] FEATURE-P4-T002 — Trí tuệ Place trực tiếp
-
-- [ ] FEATURE-P4-T002-S001 — Thêm trusted opening-hours/business-status provenance và freshness contract.
+- [x] FEATURE-P3-T004-S001 — Tạo deterministic budget-risk signal không tự tăng ngân sách.
 
 ##### Checklist hoàn thành
 
-- [ ] Parser provider, TTL và trạng thái unavailable PASS.
+- [x] Rule risk, suggestion an toàn và privacy PASS.
+
+#### [x] FEATURE-P3-T005 — Runtime ngân sách/chi phí
+
+- [x] FEATURE-P3-T005-S001 — Xác minh quick expense, refresh và hiển thị dual-currency trên Android.
+
+##### Checklist hoàn thành
+
+- [x] Bằng chứng Android real-data và provider failure PASS.
+
+#### [x] FEATURE-P4-T001 — Contract Candidate Discovery
+
+**Trạng thái:** PASS (ACCEPTED CANDIDATE FOR REVIEW) — DEV `explore-places` version 6 (ACTIVE, verify_jwt=true, 7/7 files byte-identical). Authenticated normal DEV user smoke (`signInWithPassword` Sarah operator) thành công. Provider path thực (`CandidateDiscoverySession` → `SupabaseCandidateDiscoveryRepository` → `SupabaseExplorePlacesRepository` → `explore-places` → Google Places Nearby Search) trả về 3 candidates thực (The Grand Palace, The Temple of the Emerald Buddha, Pak Khlong Talat) với status `DISCOVERED`, review `REVIEW_REQUIRED` và provenance `CLIENT_RECEIVED`. Live cancellation trả về mã `cancelled` và không lọt candidate. Owner data before/after snapshot trên 5 tables (`trips`, `itinerary_days`, `itinerary_items`, `saved_places`, `trip_expenses`) chứng minh `BEFORE == AFTER` hoàn toàn không có mutation/auto-persistence. Secret scan: `SECRET_PATTERN_MATCH_COUNT=0`. Production source/tests không đổi; automated gates không rerun. Evidence: `.runtime-evidence/p4-t001-20260909/T001_FINAL_LIVE_CLOSURE.md`. P4 parent chưa hoàn tất; T002–T005 chưa bắt đầu; motion PAUSED_BY_USER.
+
+- [x] FEATURE-P4-T001-S001 — Xây candidate discovery/ranking input contract có review boundary.
+
+##### Checklist hoàn thành
+
+- [x] Query có giới hạn, cancellation và không auto-persist PASS.
+
+#### [x] FEATURE-P4-T002 — Trí tuệ Place trực tiếp
+
+**Trạng thái:** PASS (QUALITY-GATE EVIDENCE CLOSURE COMPLETE) — 9/9 quality gates đã hoàn thành với full raw outputs và exit-code files (`gate-*-raw.txt`, `gate-*-exit.txt`). Toàn bộ unit/integration/lint/typecheck/Deno gates đều PASS (exit 0). Expo doctor trả về exit 1 tương ứng `20/21 BASELINE — EXIT 1 — NO T002 REGRESSION` (đúng 5 patch mismatches đã biết từ T001, không phát sinh regression). Source integrity kiểm chứng qua SHA256 cho 13 files mã nguồn và test: `source-hashes-comparison.json` (`allMatch: true`, BEFORE == AFTER hoàn toàn đồng nhất). Edge Function `get-place-metadata` trên DEV Supabase (version 5, active, verify_jwt=true) byte-identical với local. Không có code change ngoài evidence, không có auto-persistence. Báo cáo tổng hợp: `.runtime-evidence/p4-t002-20260909/GATE_EVIDENCE_CLOSURE.md` và `.runtime-evidence/p4-t002-20260909/T002_FINAL_LIVE_CLOSURE.md`.
+
+- [x] FEATURE-P4-T002-S001 — Thêm trusted opening-hours/business-status provenance và freshness contract.
+
+##### Checklist hoàn thành
+
+- [x] Parser provider, TTL và trạng thái unavailable PASS.
 
 #### [ ] FEATURE-P4-T003 — Trí tuệ Event trực tiếp
 

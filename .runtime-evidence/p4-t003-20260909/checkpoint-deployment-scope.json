@@ -1,0 +1,30 @@
+[
+  {
+    "slug": "generate-trip",
+    "unchanged": true
+  },
+  {
+    "slug": "resolve-place",
+    "unchanged": true
+  },
+  {
+    "slug": "get-place-photo",
+    "unchanged": true
+  },
+  {
+    "slug": "get-place-metadata",
+    "unchanged": true
+  },
+  {
+    "slug": "get-wikimedia-image",
+    "unchanged": true
+  },
+  {
+    "slug": "explore-places",
+    "unchanged": true
+  },
+  {
+    "slug": "search-destinations",
+    "unchanged": true
+  }
+]

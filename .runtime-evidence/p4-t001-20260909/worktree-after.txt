@@ -1,0 +1,84 @@
+ M .agents/skills/tripwise-performance/SKILL.md
+ M .agents/skills/tripwise-security-audit/SKILL.md
+ M mobile/src/features/planner/components/StepBudgetGroup.tsx
+ M mobile/src/features/planner/data/mockWizardData.ts
+ M mobile/src/features/planner/generationContracts.ts
+ M mobile/src/features/planner/persistence.ts
+ M mobile/src/features/planner/screens/CreateTripWizardScreen.tsx
+ M mobile/src/features/planner/types.ts
+ M mobile/src/features/trips/components/TripSummaryBentoCard.tsx
+ M mobile/src/features/trips/screens/TripDetailScreen.tsx
+ M mobile/src/i18n/en.ts
+ M mobile/src/i18n/vi.ts
+ M mobile/src/integration/expenseAggregate.ts
+ M mobile/src/lib/supabase/database.types.ts
+ M mobile/src/navigation/AppNavigator.tsx
+ M mobile/src/navigation/types.ts
+ M mobile/tests/CreateTripWizardScreen.test.tsx
+ M mobile/tests/planner-generation.test.ts
+ M phase_doc/PHASES_FEATURES.md
+ M supabase/.temp/cli-latest
+ M supabase/functions/explore-places/googlePlaces.ts
+ M supabase/functions/explore-places/handler.ts
+ M supabase/tests/persistence/expense_aggregate_contract.sql
+ M supabase/tests/persistence/run.ps1
+?? .runtime-evidence/p3-t002-exact-current/REVIEWER_CLOSURE.md
+?? .runtime-evidence/p3-t002-exact-current/accounting-exactness.txt
+?? .runtime-evidence/p3-t002-exact-current/changed-files.json
+?? .runtime-evidence/p3-t002-exact-current/expo-doctor-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/finalize.py
+?? .runtime-evidence/p3-t002-exact-current/focused-jest-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/full-jest-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/lint-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/migration-hash.txt
+?? .runtime-evidence/p3-t002-exact-current/persistence-attempt1-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/query-plan-raw.txt
+?? .runtime-evidence/p3-t002-exact-current/remote-apply-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/remote-before-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/remote-dry-run-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/remote-migration-list-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/source-hashes-after.json
+?? .runtime-evidence/p3-t002-exact-current/source-integrity.txt
+?? .runtime-evidence/p3-t002-exact-current/typecheck-exit.txt
+?? .runtime-evidence/p3-t002-exact-current/worktree-after.txt
+?? .runtime-evidence/p3-t003-exact-current/
+?? .runtime-evidence/p3-t004-exact-current/
+?? .runtime-evidence/p3-t005-corrective-current/
+?? .runtime-evidence/p3-t005-exact-current/
+?? .runtime-evidence/p3-t005-final-closure-current/
+?? .runtime-evidence/p3-t005-final-corrective-20260908/
+?? .runtime-evidence/p4-t001-20260909/
+?? docs/05-engineering/candidate-discovery-contract.md
+?? docs/05-engineering/expense-aggregate-contract.md
+?? mobile/src/features/planner/budgetValidation.ts
+?? mobile/src/features/trips/components/FxAttributionBanner.tsx
+?? mobile/src/features/trips/components/QuickExpenseModal.tsx
+?? mobile/src/features/trips/components/TripBudgetRiskBanner.tsx
+?? mobile/src/features/trips/components/TripBudgetSummaryCard.tsx
+?? mobile/src/features/trips/screens/TripExpensesScreen.tsx
+?? mobile/src/features/trips/useTripExpensesController.ts
+?? mobile/src/integration/budgetRiskContract.ts
+?? mobile/src/integration/candidateDiscoveryContract.ts
+?? mobile/src/integration/candidateDiscoverySession.ts
+?? mobile/src/integration/fxContract.ts
+?? mobile/src/integration/remote/budgetRiskService.ts
+?? mobile/src/integration/remote/exchangeRateFxRepository.ts
+?? mobile/src/integration/remote/frankfurterFxRepository.ts
+?? mobile/src/integration/remote/supabaseCandidateDiscoveryRepository.ts
+?? mobile/src/integration/remote/supabaseTripFxContextRepository.ts
+?? mobile/tests/StepBudgetGroup.test.tsx
+?? mobile/tests/TripExpensesScreen.test.tsx
+?? mobile/tests/budget-risk-contract.test.ts
+?? mobile/tests/budget-risk-service.test.ts
+?? mobile/tests/budget-validation.test.ts
+?? mobile/tests/candidate-discovery.test.ts
+?? mobile/tests/expense-aggregate-contract.test.ts
+?? mobile/tests/fx-contract.test.ts
+?? mobile/tests/fx-repository.test.ts
+?? mobile/tests/fxFixture.ts
+?? mobile/tests/planner-persistence.test.ts
+?? mobile/tests/useTripExpensesController.test.ts
+?? supabase/functions/explore-places/boundedJson.ts
+?? supabase/functions/explore-places/bounds_test.ts
+?? supabase/migrations/20260907083901_trip_fx_context.sql
+?? supabase/tests/persistence/trip_fx_context_contract.sql

@@ -379,6 +379,11 @@ export function TripDetailScreen({
     });
   }, [navigation, tripId, activeDay, effectiveSelectedDayId]);
 
+  const handleViewExpenses = useCallback(() => {
+    if (!tripId) return;
+    navigation.navigate('TripExpenses', { tripId });
+  }, [navigation, tripId]);
+
   const handleRetry = useCallback(() => {
     if (isRemoteTrip) {
       void loadRemoteDetail(true);
@@ -398,7 +403,7 @@ export function TripDetailScreen({
         initialDayId: activeDay?.id ?? effectiveSelectedDayId,
       });
     }
-  }, [onPressAddPlace, isFixture, navigation, tripId, activeDay, effectiveSelectedDayId, t]);
+  }, [onPressAddPlace, isFixture, navigation, tripId, activeDay, effectiveSelectedDayId]);
 
   // Header Component for Virtualized Itinerary FlatList
   const listHeader = useMemo(() => {
@@ -422,6 +427,7 @@ export function TripDetailScreen({
           budgetPercent={tripData.budgetPercent}
           budgetSpent={tripData.budgetSpent}
           budgetTotal={tripData.budgetTotal}
+          onPressBudget={handleViewExpenses}
           onViewMap={handleViewMap}
           savedPlacesCount={tripData.savedPlacesCount}
           travelers={tripData.travelers}
@@ -436,7 +442,7 @@ export function TripDetailScreen({
         />
       </View>
     );
-  }, [tripData, heroImage, heroPhotoUrl, insets.top, handleViewMap, handleSelectDay, activeDay, effectiveSelectedDayId, activeDayWeather]);
+  }, [tripData, heroImage, heroPhotoUrl, insets.top, handleViewExpenses, handleViewMap, handleSelectDay, activeDay, effectiveSelectedDayId, activeDayWeather]);
 
   // Render State 1: Loading
   if (status === 'loading') {

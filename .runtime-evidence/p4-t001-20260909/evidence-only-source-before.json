@@ -1,0 +1,42 @@
+[
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\candidateDiscoveryContract.ts",
+    "Hash": "803F2329EAF48C842FD21465E0D4CDCE481601460DB1B77966CCC14D19959CE7",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\candidateDiscoverySession.ts",
+    "Hash": "B68CCB1E12C6084FA9D791E560889A53295C577EF7C26ADD135FE667A3F652D9",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\remote\\supabaseCandidateDiscoveryRepository.ts",
+    "Hash": "3DE4015B27BE4358E5B03291D5D84551737919CFC7624D3E12C749577839845F",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\tests\\candidate-discovery.test.ts",
+    "Hash": "E61A0B7361081FEC10929097A15B34748367FAD39DD4B6EB6B355512D5558609",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\boundedJson.ts",
+    "Hash": "868A2637CFC90D24FEBA243BBB7E30666F24BD1C48A91521BCB7A63B188885BD",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\bounds_test.ts",
+    "Hash": "83B29B25B21773F7A78ACA12545B56717C49F9A9FB35F8BEDC984E6DCE990E91",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\googlePlaces.ts",
+    "Hash": "D0FEE95524450A78DD4FF744AC3DE40829ED9D263C5324B4FCE447A526606086",
+    "MatchesAccepted": true
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\supabase\\functions\\explore-places\\handler.ts",
+    "Hash": "3EE61485917C658829E6FEEC83A7B545ED8B19F37D00B8E81F7AF1B3DE615D20",
+    "MatchesAccepted": true
+  }
+]

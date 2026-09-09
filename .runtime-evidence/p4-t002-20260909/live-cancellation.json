@@ -1,0 +1,9 @@
+{
+  "resultReturned": false,
+  "code": "cancelled",
+  "method": "immediate abort after dispatch",
+  "clientRequestAttempts": 1,
+  "confirmedEdgeExecutions": 0,
+  "serverReceiptProven": false,
+  "exactUpstreamProviderTotal": "UNKNOWN"
+}

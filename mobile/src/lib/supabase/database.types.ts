@@ -15,7 +15,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_trip_expense_aggregate: { Args: { p_request: Json }; Returns: Json }
       graphql: {
         Args: {
           extensions?: Json
@@ -401,6 +400,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_trip_expense_aggregate: { Args: { p_request: Json }; Returns: Json }
+      get_trip_fx_context: { Args: { p_request: Json }; Returns: Json }
       create_trip_expense: { Args: { p_command: Json }; Returns: Json }
       delete_trip_expense: { Args: { p_trip_id: string; p_expense_id: string }; Returns: boolean }
       list_trip_expenses: {

@@ -1,0 +1,90 @@
+[
+  {
+    "created_at": 1787125621860,
+    "entrypoint_path": "file:///tmp/user_fn_bvblyrzbkyhcreimuumu_841befd2-ec7e-4a27-b1a3-56fd3e3b7d37_17/source/supabase/functions/generate-trip/index.ts",
+    "ezbr_sha256": "f74c98e37be143b26c18ec0a4b9dead2db95e99de83037f74708ce891660af51",
+    "id": "841befd2-ec7e-4a27-b1a3-56fd3e3b7d37",
+    "import_map": false,
+    "name": "generate-trip",
+    "slug": "generate-trip",
+    "status": "ACTIVE",
+    "updated_at": 1788154762763,
+    "verify_jwt": true,
+    "version": 17
+  },
+  {
+    "created_at": 1787191191950,
+    "entrypoint_path": "file:///Dev/TripWise/supabase/functions/resolve-place/index.ts",
+    "ezbr_sha256": "a103cc7ad19582e43fa66ebfad2144e759fe8d2ad24e823a0595daf38e52c6c5",
+    "id": "af9e2dd4-5707-4aeb-9684-b7d8061797ba",
+    "name": "resolve-place",
+    "slug": "resolve-place",
+    "status": "ACTIVE",
+    "updated_at": 1787195733319,
+    "verify_jwt": true,
+    "version": 10
+  },
+  {
+    "created_at": 1787377560000,
+    "entrypoint_path": "file:///Dev/TripWise/supabase/functions/get-place-photo/index.ts",
+    "ezbr_sha256": "159cd5ba9cc7c4b8d556e3b56934d56e9c1b2b94aafac9198617f832c2be6731",
+    "id": "11d30f08-903d-487b-8ec3-f268dfa487d7",
+    "name": "get-place-photo",
+    "slug": "get-place-photo",
+    "status": "ACTIVE",
+    "updated_at": 1787576122532,
+    "verify_jwt": true,
+    "version": 7
+  },
+  {
+    "created_at": 1787381696863,
+    "entrypoint_path": "file:///Dev/TripWise/supabase/functions/get-place-metadata/index.ts",
+    "ezbr_sha256": "8e24ff89c3129c5edf5da7a32d028ee68970beafa3d9ba41e4c9949aaed6f9d0",
+    "id": "19d7a568-f945-44ed-9615-f412babea0aa",
+    "name": "get-place-metadata",
+    "slug": "get-place-metadata",
+    "status": "ACTIVE",
+    "updated_at": 1787381696863,
+    "verify_jwt": true,
+    "version": 2
+  },
+  {
+    "created_at": 1787576130211,
+    "entrypoint_path": "file:///tmp/user_fn_bvblyrzbkyhcreimuumu_a63f0fed-2f8f-47f2-b2a3-7724ccaacc37_5/source/supabase/functions/get-wikimedia-image/index.ts",
+    "ezbr_sha256": "d9d98b80343d9a4281a63a5dc260c46994fd8c263f6303e7239f378a40a474a4",
+    "id": "a63f0fed-2f8f-47f2-b2a3-7724ccaacc37",
+    "import_map": false,
+    "name": "get-wikimedia-image",
+    "slug": "get-wikimedia-image",
+    "status": "ACTIVE",
+    "updated_at": 1788009253588,
+    "verify_jwt": true,
+    "version": 5
+  },
+  {
+    "created_at": 1787752587896,
+    "entrypoint_path": "file:///tmp/user_fn_bvblyrzbkyhcreimuumu_4479895e-98ce-429a-ac8f-a0cb34bc4c1e_6/source/supabase/functions/explore-places/index.ts",
+    "ezbr_sha256": "00c0a869f89973d4075919e2e5e9b2d811009325c39614435d7876805bbaa5f0",
+    "id": "4479895e-98ce-429a-ac8f-a0cb34bc4c1e",
+    "import_map": false,
+    "name": "explore-places",
+    "slug": "explore-places",
+    "status": "ACTIVE",
+    "updated_at": 1788921654859,
+    "verify_jwt": true,
+    "version": 6
+  },
+  {
+    "created_at": 1787897015733,
+    "entrypoint_path": "file:///tmp/user_fn_bvblyrzbkyhcreimuumu_18f2b888-8716-43f9-8c0d-fd5a8eddb2fb_3/source/supabase/functions/search-destinations/index.ts",
+    "ezbr_sha256": "07d92b02a8fb58ab8e9a33cde6789188978c14f157494dc073c039d34fa79e1e",
+    "id": "18f2b888-8716-43f9-8c0d-fd5a8eddb2fb",
+    "import_map": false,
+    "name": "search-destinations",
+    "slug": "search-destinations",
+    "status": "ACTIVE",
+    "updated_at": 1787979837606,
+    "verify_jwt": true,
+    "version": 3
+  }
+]

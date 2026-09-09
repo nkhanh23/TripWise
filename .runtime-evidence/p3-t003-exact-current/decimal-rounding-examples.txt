@@ -1,0 +1,102 @@
+# Exact decimal conversion and rounding examples (FEATURE-P3-T003)
+
+1. Mathematical Model:
+- Canonical formula: destinationAmount = sourceAmount × rate
+- Representation: Source amounts are read as exact decimal text with 2 decimal places. Rates are read as exact decimal text (up to 18 decimal places).
+- Minor-unit BigInt calculation:
+  amount = BigInt(sourceAmount.replace('-', '').replace('.', ''))  // in minor units
+  scale = rate.split('.')[1]?.length ?? 0
+  digits = ['VND', 'JPY', 'KRW'].includes(destinationCurrency) ? 0 : 2
+  numerator = amount * BigInt(rate.replace('.', '')) * (10n ** BigInt(digits))
+  denominator = 10n ** BigInt(2 + scale)
+  rounded = (numerator + denominator / 2n) / denominator  // Half-up rounding
+  convertedAmount = formatted string at `digits` scale
+
+2. Zero-Decimal Display Currencies (VND, JPY, KRW):
+- Example 1 (USD -> VND):
+  Source: 100.00 USD
+  Rate: 26048 (RBA quote 2026-09-07)
+  Digits: 0
+  Calculation: 10000n * 26048n * 1n / 100n = 2604800n
+  Result: 2604800 VND
+
+- Example 2 (Small USD -> VND fractional rounding):
+  Source: 0.05 USD
+  Rate: 26048
+  Digits: 0
+  Calculation: (5n * 26048n * 1n + 50n) / 100n = 130290n / 100n = 1302n
+  Result: 1302 VND
+
+- Example 3 (USD -> KRW):
+  Source: 1500.00 USD
+  Rate: 1344.62
+  Digits: 0
+  Calculation: (150000n * 134462n * 1n + 5000n) / 10000n = 20169300000n / 10000n = 2016930n
+  Result: 2016930 KRW
+
+- Example 4 (USD -> JPY):
+  Source: 10.00 USD
+  Rate: 155.81
+  Digits: 0
+  Calculation: (1000n * 15581n * 1n + 5000n) / 10000n = 15581000n / 10000n = 1558n
+  Result: 1558 JPY
+
+3. Standard Two-Decimal Display Currencies (EUR, GBP, SGD, THB):
+- Example 5 (USD -> EUR):
+  Source: 10.55 USD
+  Rate: 0.86101 (RBA quote 2026-09-07)
+  Digits: 2
+  Calculation: 1055n * 86101n * 100n = 9083655500n
+  Denominator: 10000000n
+  Rounded: (9083655500n + 5000000n) / 10000000n = 908n
+  Result: 9.08 EUR
+
+- Example 6 (USD -> GBP):
+  Source: 100.00 USD
+  Rate: 0.73963
+  Digits: 2
+  Result: 73.96 GBP
+
+- Example 7 (USD -> THB):
+  Source: 50.00 USD
+  Rate: 32.903
+  Digits: 2
+  Result: 1645.15 THB
+
+- Example 8 (USD -> SGD):
+  Source: 100.00 USD
+  Rate: 1.267
+  Digits: 2
+  Result: 126.70 SGD
+
+4. Identity Conversion:
+- Example 9 (USD -> USD):
+  Source: 150.25 USD
+  Rate: 1
+  Digits: 2
+  Result: 150.25 USD (lossless identity)
+
+- Example 10 (VND -> VND):
+  Source: 100.00 VND
+  Rate: 1
+  Digits: 0
+  Result: 100 VND
+
+5. Negative Amounts & No Negative Zero:
+- Example 11 (Negative spend):
+  Source: -50.00 USD
+  Rate: 0.86101
+  Digits: 2
+  Result: -43.05 EUR
+
+- Example 12 (Zero-rounding protection):
+  Source: -0.01 USD
+  Rate: 0.000000000000000001
+  Result: 0.00 EUR (condition: `negative && rounded !== 0n`, prevents `-0.00` or `-0`)
+
+6. High-Bound Numbers:
+- Example 13 (Maximum numeric scale):
+  Source: 9999999999999999999999.99 USD
+  Rate: 0.86101
+  Digits: 2
+  Result: 8610099999999999999999.99 EUR (no IEEE 754 precision loss)

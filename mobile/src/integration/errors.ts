@@ -187,18 +187,21 @@ export function mapAuthError(value: unknown): IntegrationError {
 export function mapUnknownTransportError(value: unknown): IntegrationError {
   if (value instanceof IntegrationError) return value;
   if (value instanceof ContractValidationError) return new IntegrationError('invalidResponse');
-  if (isRecord(value) && value.name === 'AbortError') return new IntegrationError('cancelled');
+  if (isRecord(value)) {
+    if (value.name === 'AbortError') return new IntegrationError('cancelled');
+    if (isRecord(value.context) && value.context.name === 'AbortError') return new IntegrationError('cancelled');
+  }
   if (value instanceof TypeError) return new IntegrationError('network', true);
   return new IntegrationError('unknown');
 }
 
 export async function readFunctionErrorPayload(value: unknown): Promise<unknown> {
   const context = isRecord(value) ? value.context : undefined;
-  if (!isRecord(context) || typeof context.clone !== 'function') return null;
+  if (!isRecord(context)) return null;
+  const target = typeof context.clone === 'function' ? (context.clone as () => unknown)() : context;
+  if (!isRecord(target) || typeof target.json !== 'function') return null;
   try {
-    const clone = (context.clone as () => unknown)();
-    if (!isRecord(clone) || typeof clone.json !== 'function') return null;
-    return await (clone.json as () => Promise<unknown>)();
+    return await (target.json as () => Promise<unknown>)();
   } catch {
     return null;
   }
@@ -231,3 +234,21 @@ export function mapWikimediaImageError(value: unknown): IntegrationError {
     default: return mapUnknownTransportError(value);
   }
 }
+
+export function mapPlaceMetadataError(value: unknown): IntegrationError {
+  const payload = isRecord(value) ? value.error : value;
+  const code = isRecord(payload) && typeof payload.code === 'string' ? payload.code : null;
+  switch (code) {
+    case 'INVALID_REQUEST':
+    case 'PLACE_INPUT_INVALID': return new IntegrationError('invalidRequest');
+    case 'UNAUTHORIZED': return new IntegrationError('unauthorized');
+    case 'FORBIDDEN': return new IntegrationError('forbidden');
+    case 'PLACE_NOT_FOUND': return new IntegrationError('notFound');
+    case 'PLACE_PROVIDER_AUTH': return new IntegrationError('providerUnavailable');
+    case 'PLACE_PROVIDER_RATE_LIMITED': return new IntegrationError('rateLimited');
+    case 'PLACE_PROVIDER_UNAVAILABLE': return new IntegrationError('providerUnavailable', true);
+    case 'PLACE_PROVIDER_INVALID_RESPONSE': return new IntegrationError('invalidResponse');
+    default: return mapUnknownTransportError(value);
+  }
+}
+

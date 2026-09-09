@@ -29,6 +29,9 @@ export type RootStackParamList = {
   TripDetail: {
     tripId: string;
   };
+  TripExpenses: {
+    tripId: string;
+  };
   AddPlace: {
     tripId: string;
     initialDayId?: string;

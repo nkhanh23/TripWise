@@ -1,0 +1,6 @@
+﻿DEVICE: emulator-5554 (Medium_Phone)
+ANDROID_VERSION: 17 (API 37)
+APP_PID: 5287
+ACTIVITY: com.anonymous.tripwisemobile/.MainActivity
+RESOLUTION: 1080 x 2400 (420 dpi)
+TIMESTAMP: 2026-09-08T14:05:47.6482251+07:00

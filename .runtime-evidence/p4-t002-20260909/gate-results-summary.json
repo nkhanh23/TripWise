@@ -1,0 +1,92 @@
+[
+  {
+    "name": "mobile-lint",
+    "command": "npm run lint",
+    "cwd": "mobile",
+    "rawFile": "gate-lint-raw.txt",
+    "exitFile": "gate-lint-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:19:11.698Z",
+    "completedAt": "2026-09-09T04:19:15.685Z"
+  },
+  {
+    "name": "mobile-typecheck",
+    "command": "npm run typecheck",
+    "cwd": "mobile",
+    "rawFile": "gate-typecheck-raw.txt",
+    "exitFile": "gate-typecheck-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:19:15.686Z",
+    "completedAt": "2026-09-09T04:19:23.817Z"
+  },
+  {
+    "name": "mobile-focused-jest",
+    "command": "npm test -- --runInBand place-intelligence.test.ts",
+    "cwd": "mobile",
+    "rawFile": "gate-focused-jest-raw.txt",
+    "exitFile": "gate-focused-jest-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:19:23.819Z",
+    "completedAt": "2026-09-09T04:19:26.227Z"
+  },
+  {
+    "name": "mobile-full-jest",
+    "command": "npm test -- --runInBand",
+    "cwd": "mobile",
+    "rawFile": "gate-full-jest-raw.txt",
+    "exitFile": "gate-full-jest-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:19:26.228Z",
+    "completedAt": "2026-09-09T04:20:28.559Z"
+  },
+  {
+    "name": "mobile-expo-doctor",
+    "command": "npx expo-doctor",
+    "cwd": "mobile",
+    "rawFile": "gate-expo-doctor-raw.txt",
+    "exitFile": "gate-expo-doctor-exit.txt",
+    "exitCode": 1,
+    "startedAt": "2026-09-09T04:20:28.561Z",
+    "completedAt": "2026-09-09T04:20:50.369Z"
+  },
+  {
+    "name": "edge-deno-check",
+    "command": "deno check supabase/functions/get-place-metadata/index.ts",
+    "cwd": ".",
+    "rawFile": "gate-deno-check-raw.txt",
+    "exitFile": "gate-deno-check-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:20:50.370Z",
+    "completedAt": "2026-09-09T04:20:51.247Z"
+  },
+  {
+    "name": "edge-deno-lint",
+    "command": "deno lint supabase/functions/get-place-metadata/",
+    "cwd": ".",
+    "rawFile": "gate-deno-lint-raw.txt",
+    "exitFile": "gate-deno-lint-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:20:51.248Z",
+    "completedAt": "2026-09-09T04:20:51.317Z"
+  },
+  {
+    "name": "edge-deno-test",
+    "command": "deno test --allow-env supabase/functions/get-place-metadata/",
+    "cwd": ".",
+    "rawFile": "gate-deno-test-raw.txt",
+    "exitFile": "gate-deno-test-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:20:51.318Z",
+    "completedAt": "2026-09-09T04:20:51.585Z"
+  },
+  {
+    "name": "edge-t001-regression",
+    "command": "deno test -A supabase/functions/explore-places/",
+    "cwd": ".",
+    "rawFile": "gate-t001-regression-raw.txt",
+    "exitFile": "gate-t001-regression-exit.txt",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T04:20:51.586Z",
+    "completedAt": "2026-09-09T04:20:52.059Z"
+  }
+]

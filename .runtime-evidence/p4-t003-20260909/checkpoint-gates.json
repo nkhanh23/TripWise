@@ -1,0 +1,22 @@
+[
+  {
+    "command": "deno check supabase/functions/discover-events/index.ts",
+    "exitCode": 0
+  },
+  {
+    "command": "deno lint supabase/functions/discover-events",
+    "exitCode": 0
+  },
+  {
+    "command": "deno test supabase/functions/discover-events",
+    "exitCode": 0
+  },
+  {
+    "command": "deno test --allow-env supabase/functions/explore-places",
+    "exitCode": 0
+  },
+  {
+    "command": "deno test --allow-env supabase/functions/get-place-metadata",
+    "exitCode": 0
+  }
+]

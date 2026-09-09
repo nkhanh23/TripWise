@@ -51,7 +51,7 @@ function validDate(value: unknown): value is string {
 }
 export function validateExpenseAggregateRequest(value: unknown): ExpenseAggregateRequest {
   const r = object(value, ['tripId', 'groupBy', 'limit', 'cursor']);
-  if (typeof r.tripId !== 'string' || !uuid.test(r.tripId) || !['currency', 'category', 'day'].includes(String(r.groupBy))) return fail();
+  if (typeof r.tripId !== 'string' || !uuid.test(r.tripId) || typeof r.groupBy !== 'string' || !['currency', 'category', 'day'].includes(r.groupBy)) return fail();
   const groupBy = r.groupBy as ExpenseAggregateRequest['groupBy'];
   const limit = r.limit === undefined ? 20 : r.limit;
   if (typeof limit !== 'number' || !Number.isInteger(limit) || limit < 1 || limit > 50) return fail();

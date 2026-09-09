@@ -423,3 +423,6 @@ enabled = true
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
 [functions.search-destinations]
 verify_jwt = true
+
+[functions.discover-events]
+verify_jwt = true

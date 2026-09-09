@@ -1,0 +1,14 @@
+{
+  "command": [
+    "powershell.exe",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "supabase/tests/persistence/run.ps1"
+  ],
+  "cwd": "D:\\Dev\\TripWise",
+  "started": "2026-09-08T11:30:07.327641+00:00",
+  "ended": "2026-09-08T11:30:47.256905+00:00",
+  "exit": 0
+}

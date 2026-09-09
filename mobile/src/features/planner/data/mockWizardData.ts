@@ -149,6 +149,8 @@ export const initialWizardState: CreateTripWizardState = {
   selectedStyles: ['culture', 'food'],
   pace: 'moderate',
   budget: 'moderate',
+  budgetAmount: '',
+  budgetCurrency: 'USD',
   groupType: 'couple',
   tripTitle: '',
 };

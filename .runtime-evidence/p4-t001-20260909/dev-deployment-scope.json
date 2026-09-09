@@ -1,0 +1,44 @@
+[
+  {
+    "Function": "generate-trip",
+    "BeforeVersion": 17,
+    "AfterVersion": 17,
+    "BundleUnchanged": true
+  },
+  {
+    "Function": "resolve-place",
+    "BeforeVersion": 10,
+    "AfterVersion": 10,
+    "BundleUnchanged": true
+  },
+  {
+    "Function": "get-place-photo",
+    "BeforeVersion": 7,
+    "AfterVersion": 7,
+    "BundleUnchanged": true
+  },
+  {
+    "Function": "get-place-metadata",
+    "BeforeVersion": 2,
+    "AfterVersion": 2,
+    "BundleUnchanged": true
+  },
+  {
+    "Function": "get-wikimedia-image",
+    "BeforeVersion": 5,
+    "AfterVersion": 5,
+    "BundleUnchanged": true
+  },
+  {
+    "Function": "explore-places",
+    "BeforeVersion": 5,
+    "AfterVersion": 6,
+    "BundleUnchanged": false
+  },
+  {
+    "Function": "search-destinations",
+    "BeforeVersion": 3,
+    "AfterVersion": 3,
+    "BundleUnchanged": true
+  }
+]

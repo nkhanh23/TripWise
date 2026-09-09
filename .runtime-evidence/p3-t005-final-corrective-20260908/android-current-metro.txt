@@ -1,0 +1,7 @@
+METRO_PORT: 8081
+METRO_PID: 12688 (Parent PID: 3368)
+METRO_ROOT: D:\Dev\TripWise\mobile
+METRO_STATUS: 200 OK
+BUNDLE_PROVENANCE: http://localhost:8081/index.bundle?platform=android&dev=true
+ADB_REVERSE: tcp:8081 -> tcp:8081
+CAPTURED_AT: 2026-09-08T22:42:11+07:00

@@ -1,0 +1,6 @@
+﻿DEVICE: emulator-5554          device product:sdk_gphone16k_x86_64 model:sdk_gphone16k_x86_64 device:emu64xa16k transport_id:1
+MODEL: sdk_gphone16k_x86_64
+ANDROID_VERSION: 17
+SDK_INT: 37
+DISPLAY_SIZE: Physical size: 1080x2400
+DISPLAY_DENSITY: Physical density: 420

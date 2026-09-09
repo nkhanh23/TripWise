@@ -1,0 +1,4 @@
+﻿Test Suites: 1 skipped, 69 passed, 69 of 70 total
+Tests:       1 skipped, 708 passed, 709 total
+Snapshots:   0 total
+Ran all test suites.

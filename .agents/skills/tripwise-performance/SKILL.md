@@ -33,8 +33,12 @@ This skill governs performance audits, latency reduction, render profiling, and 
 ### Cancellation & Lifecycles
 - **AbortController:** Always wire an `AbortController` signal to in-flight fetch/provider requests. Abort requests when the calling component unmounts or query parameters change.
 - **Unmounted State Updates:** Prevent React state updates on unmounted components by tracking active component lifecycle.
-- **Race Condition Guarding:** When multiple async operations resolve out of order, ensure stale responses do not overwrite newer user intent.
-- **Retry Amplification:** Limit network retries (max 2–3) with exponential backoff and jitter. Never retry 4xx client errors (400, 401, 403, 404).
+- **Retry Amplification & Provider Contracts:**
+  - **Inspect Live Contracts First:** Always inspect current LIVE LOCAL repository/provider contracts (`mobile/src/integration/reliability.ts`) before touching retry behavior. Never increase retries or attempts merely because a generic best practice suggests it.
+  - **Bounded Attempts, Not Blind Retries:** Preserve existing bounded retry semantics. For instance, where the public provider contract applies (OSRM & Open-Meteo), the policy enforces a maximum of **two TOTAL ATTEMPTS** (1 retry on transient network/timeout), not two or three retries.
+  - **Non-Retryable Errors:** Auth operations, mutations, schema validations, 4xx/client forbidden, deterministic not-found/ambiguity, and explicitly non-retryable errors (`retryable: false`) must strictly remain non-retryable (`maximumAttempts: 1`).
+  - **Audit Amplification:** Performance work must audit and eliminate retry amplification rather than introduce it.
+  - **Evidence Required for Changes:** Any modification to retry count or attempt budget requires concrete latency/reliability evidence and explicit task authorization.
 
 ### Public Providers (OSRM & Open-Meteo)
 - **Geometry Caching:** Cache route geometries by coordinate pairs. Do not re-request routes for micro-adjustments on the map.

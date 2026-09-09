@@ -11,6 +11,29 @@ async function press(target: ReturnType<typeof screen.getByText>) { await act(as
 
 describe('CreateTripWizardScreen destination search', () => {
   beforeEach(() => jest.useFakeTimers()); afterEach(() => { cleanup(); jest.useRealTimers(); });
+  it.each(['XYZ', 'usd', '', ' ', undefined, null])('blocks initial configured budget with currency %p on Step 4 and Step 5', async (currency) => {
+    const generate = jest.fn();
+    const initialState = { budgetAmount: '1000', budgetCurrency: currency as string };
+    const view = await render(<CreateTripWizardScreen initialStep={4} initialState={initialState} generationRepository={{ generate }} />);
+    await press(screen.getByText('Continue'));
+    expect(screen.getByText('Step 4 of 5')).toBeTruthy();
+    expect(screen.getByText('Select a supported currency for your budget.')).toBeTruthy();
+    await view.unmount();
+    await render(<CreateTripWizardScreen initialStep={5} initialState={initialState} generationRepository={{ generate }} />);
+    await press(screen.getByText('Generate Itinerary'));
+    expect(screen.getByText('Select a supported currency for your budget.')).toBeTruthy();
+    expect(generate).not.toHaveBeenCalled();
+  });
+
+  it('allows an explicit canonical UI selection to repair an invalid configured currency', async () => {
+    await render(<CreateTripWizardScreen initialStep={4} initialState={{ budgetAmount: '1000', budgetCurrency: 'XYZ' }} />);
+    await press(screen.getByText('Continue'));
+    await press(screen.getByLabelText('Budget currency JPY'));
+    expect(screen.queryByText('Select a supported currency for your budget.')).toBeNull();
+    expect(screen.getByDisplayValue('1000')).toBeTruthy();
+    await press(screen.getByText('Continue'));
+    expect(screen.getByText('Step 5 of 5')).toBeTruthy();
+  });
   it('uses the exact 500ms debounce before rendering provider results', async () => {
     const search = jest.fn().mockResolvedValue([tokyo]); await render(<CreateTripWizardScreen destinationSearchRepository={{ search }} />);
     await changeDestination('Tokyo');
@@ -72,5 +95,42 @@ describe('CreateTripWizardScreen destination search', () => {
     await render(<CreateTripWizardScreen initialStep={5} initialState={{ destination: tokyo, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 6 }} generationRepository={{ generate }} />);
     await press(screen.getByText('Generate Itinerary'));
     expect(generate).toHaveBeenCalledWith({ destination: 'Tokyo', startDate: '2026-10-15', endDate: '2026-10-20', preferences: ['Culture & History', 'Food & Dining'], notes: 'Travel pace: moderate; budget tier: moderate; group type: couple.' }, expect.any(AbortSignal));
+  });
+
+  it('rejects malformed budget input on Step 4 and blocks proceeding to Step 5', async () => {
+    await render(
+      <CreateTripWizardScreen
+        initialStep={4}
+        initialState={{
+          destination: tokyo,
+          startDate: '2026-10-15',
+          endDate: '2026-10-20',
+          durationDays: 6,
+          selectedStyles: ['culture'],
+        }}
+      />
+    );
+
+    expect(screen.getByText('Step 4 of 5')).toBeTruthy();
+    const budgetInput = screen.getByLabelText('Target Budget');
+    await act(async () => {
+      fireEvent.changeText(budgetInput, '1000abc');
+    });
+
+    await press(screen.getByText('Continue'));
+    // Remains on Step 4 and displays validation error
+    expect(screen.getByText('Step 4 of 5')).toBeTruthy();
+    expect(
+      screen.getByText('Please enter a valid positive number with up to 2 decimal places.')
+    ).toBeTruthy();
+
+    // Now enter valid budget amount
+    await act(async () => {
+      fireEvent.changeText(budgetInput, '1500.50');
+    });
+
+    await press(screen.getByText('Continue'));
+    // Successfully proceeds to Step 5
+    expect(screen.getByText('Step 5 of 5')).toBeTruthy();
   });
 });

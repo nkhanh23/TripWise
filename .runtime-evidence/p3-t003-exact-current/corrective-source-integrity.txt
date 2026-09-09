@@ -1,0 +1,5 @@
+Compared source files: 569
+Changed during corrective turn:
+phase_doc/PHASES_FEATURES.md
+Expected change: phase_doc/PHASES_FEATURES.md only
+T003 migration SHA256: C2DE7258BC382C151A0D9105ECCFDCDC316B90FB48AB4DFC0A9B2B571D321585

@@ -1,0 +1,65 @@
+[
+  {
+    "pair": "USD/EUR",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 0.86101,
+    "rateValid": true,
+    "secretRequired": false
+  },
+  {
+    "pair": "USD/GBP",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 0.73963,
+    "rateValid": true,
+    "secretRequired": false
+  },
+  {
+    "pair": "USD/JPY",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 155.81,
+    "rateValid": true,
+    "secretRequired": false
+  },
+  {
+    "pair": "USD/KRW",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 1344.62,
+    "rateValid": true,
+    "secretRequired": false
+  },
+  {
+    "pair": "USD/SGD",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 1.267,
+    "rateValid": true,
+    "secretRequired": false
+  },
+  {
+    "pair": "USD/THB",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 32.903,
+    "rateValid": true,
+    "secretRequired": false
+  },
+  {
+    "pair": "USD/VND",
+    "httpStatus": 200,
+    "providerKey": "RBA",
+    "referenceDate": "2026-09-07",
+    "rate": 26048,
+    "rateValid": true,
+    "secretRequired": false
+  }
+]

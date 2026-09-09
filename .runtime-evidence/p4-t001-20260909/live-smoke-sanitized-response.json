@@ -1,0 +1,64 @@
+{
+  "count": 3,
+  "candidates": [
+    {
+      "kind": "google-place-candidate",
+      "status": "DISCOVERED",
+      "review": "REVIEW_REQUIRED",
+      "googlePlaceId": "ChIJPzZsMU6Z4jARQUzvk913bCo",
+      "name": "The Grand Palace",
+      "coordinate": {
+        "latitude": 13.7498558,
+        "longitude": 100.4915765
+      },
+      "category": "attractions",
+      "address": "Phra Borom Maha Ratchawang, Phra Nakhon, Bangkok 10200, Thailand",
+      "provenance": {
+        "provider": "google-places",
+        "boundary": "explore-places",
+        "observation": "CLIENT_RECEIVED",
+        "receivedAt": "2026-09-09T03:15:36.524Z"
+      }
+    },
+    {
+      "kind": "google-place-candidate",
+      "status": "DISCOVERED",
+      "review": "REVIEW_REQUIRED",
+      "googlePlaceId": "ChIJ5Wl37g6Z4jARiP4itarBPDQ",
+      "name": "The Temple of the Emerald Buddha",
+      "coordinate": {
+        "latitude": 13.7516435,
+        "longitude": 100.4927041
+      },
+      "category": "attractions",
+      "address": "Na Phra Lan Rd, Khwaeng Phra Borom Maha Ratchawang, Khet Phra Nakhon, Krung Thep Maha Nakhon 10200, Thailand",
+      "provenance": {
+        "provider": "google-places",
+        "boundary": "explore-places",
+        "observation": "CLIENT_RECEIVED",
+        "receivedAt": "2026-09-09T03:15:36.524Z"
+      }
+    },
+    {
+      "kind": "google-place-candidate",
+      "status": "DISCOVERED",
+      "review": "REVIEW_REQUIRED",
+      "googlePlaceId": "ChIJL-UmnhyZ4jARuwY-UTadgnI",
+      "name": "Pak Khlong Talat",
+      "coordinate": {
+        "latitude": 13.7416831,
+        "longitude": 100.4963788
+      },
+      "category": "attractions",
+      "address": "สน พระราชวัง ปาก คลองตลาด - วัดกัลยาณมิตร, Khwaeng Wang Burapha Phirom, Khet Phra Nakhon, Krung Thep Maha Nakhon 10200, Thailand",
+      "provenance": {
+        "provider": "google-places",
+        "boundary": "explore-places",
+        "observation": "CLIENT_RECEIVED",
+        "receivedAt": "2026-09-09T03:15:36.524Z"
+      }
+    }
+  ],
+  "rankingInputVersion": "TRIPWISE_CANDIDATE_RANKING_INPUT_V1",
+  "review": "REVIEW_REQUIRED"
+}

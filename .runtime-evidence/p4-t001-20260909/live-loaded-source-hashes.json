@@ -1,0 +1,9 @@
+{
+  "mobile\\src\\integration\\remote\\supabaseCandidateDiscoveryRepository.ts": "3de4015b27be4358e5b03291d5d84551737919cfc7624d3e12c749577839845f",
+  "mobile\\src\\integration\\candidateDiscoveryContract.ts": "803f2329eaf48c842fd21465e0d4cdce481601460db1b77966ccc14d19959ce7",
+  "mobile\\src\\integration\\validation.ts": "b9fcb83f1a42b13789261915018d0b1e5d3bd4da92c1cac9541bbd19c466ae0b",
+  "mobile\\src\\integration\\errors.ts": "3a32335f8efbdff43b0b4d501427eb264802a1229d53dacf544561b380a6b5fb",
+  "mobile\\src\\integration\\remote\\supabaseExplorePlacesRepository.ts": "5bafba27ecf7bb836fcdeddab52c678188ea15c6b6b16a24078802d94bffe586",
+  "mobile\\src\\integration\\reliability.ts": "40261f63761bbfebb41f320358ee8a9a4933ca1fa63f54b8fa2f08c05af5c244",
+  "mobile\\src\\integration\\candidateDiscoverySession.ts": "b68ccb1e12c6084fa9d791e560889a53295c577ef7c26add135fe667a3f652d9"
+}

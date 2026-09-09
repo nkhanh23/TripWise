@@ -1,0 +1,5 @@
+﻿METRO_PID: 8696
+PORT: 8081
+ROOT: D:\Dev\TripWise\mobile
+COMMAND: "node" "D:\Dev\TripWise\mobile\node_modules\.bin\..\expo\bin\cli" start --dev-client
+STATUS: running

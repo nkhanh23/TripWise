@@ -1,0 +1,15 @@
+{
+  "modified": [
+    "mobile/src/lib/supabase/database.types.ts",
+    "phase_doc/PHASES_FEATURES.md",
+    "supabase/tests/persistence/run.ps1"
+  ],
+  "created": [
+    "supabase/migrations/20260907030000_expense_aggregate.sql",
+    "supabase/tests/persistence/expense_aggregate_contract.sql",
+    "mobile/src/integration/expenseAggregate.ts",
+    "mobile/src/integration/remote/supabaseTripExpenseAggregateRepository.ts",
+    "mobile/tests/expense-aggregate-contract.test.ts",
+    "docs/05-engineering/expense-aggregate-contract.md"
+  ]
+}

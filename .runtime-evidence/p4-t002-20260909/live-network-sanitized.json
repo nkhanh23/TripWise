@@ -1,0 +1,129 @@
+[
+  {
+    "phase": "auth",
+    "method": "POST",
+    "path": "/auth/v1/token",
+    "startedAt": "2026-09-09T04:09:51.123Z",
+    "status": 200,
+    "requestId": "01a0845b-b41a-7cc4-8412-c980861fb064",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:09:53.365Z"
+  },
+  {
+    "phase": "before",
+    "method": "GET",
+    "path": "/rest/v1/trips",
+    "startedAt": "2026-09-09T04:09:53.567Z",
+    "status": 200,
+    "requestId": "01a0845b-b9eb-7391-bb65-d0203d5a7251",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:09:55.351Z"
+  },
+  {
+    "phase": "before",
+    "method": "GET",
+    "path": "/rest/v1/itinerary_days",
+    "startedAt": "2026-09-09T04:09:55.353Z",
+    "status": 200,
+    "requestId": "01a0845b-c0ed-7fd2-b4f5-163f77d65972",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:09:56.029Z"
+  },
+  {
+    "phase": "before",
+    "method": "GET",
+    "path": "/rest/v1/itinerary_items",
+    "startedAt": "2026-09-09T04:09:56.031Z",
+    "status": 200,
+    "requestId": "01a0845b-c38b-76df-8288-1e63e5fbbb0a",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:09:56.855Z"
+  },
+  {
+    "phase": "before",
+    "method": "GET",
+    "path": "/rest/v1/saved_places",
+    "startedAt": "2026-09-09T04:09:56.860Z",
+    "status": 200,
+    "requestId": "01a0845b-c6d9-7464-8349-74fe1eaf43fc",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:09:57.687Z"
+  },
+  {
+    "phase": "before",
+    "method": "GET",
+    "path": "/rest/v1/trip_expenses",
+    "startedAt": "2026-09-09T04:09:57.688Z",
+    "status": 200,
+    "requestId": "01a0845b-ca09-792f-9bf9-c5c60c524919",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:09:58.091Z"
+  },
+  {
+    "phase": "intelligence",
+    "method": "POST",
+    "path": "/functions/v1/get-place-metadata",
+    "startedAt": "2026-09-09T04:09:58.110Z",
+    "status": 200,
+    "requestId": "01a0845b-cbac-77b9-a154-860408a912f6",
+    "executionId": "9d52e086-34df-4924-9cee-eb066c8bcde7",
+    "completedAt": "2026-09-09T04:10:00.923Z"
+  },
+  {
+    "phase": "cancellation",
+    "method": "POST",
+    "path": "/functions/v1/get-place-metadata",
+    "startedAt": "2026-09-09T04:10:00.925Z",
+    "outcome": "ABORTED"
+  },
+  {
+    "phase": "after",
+    "method": "GET",
+    "path": "/rest/v1/trips",
+    "startedAt": "2026-09-09T04:10:00.926Z",
+    "status": 200,
+    "requestId": "01a0845b-d6a8-77f0-aa41-33d5e93880c0",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:10:01.641Z"
+  },
+  {
+    "phase": "after",
+    "method": "GET",
+    "path": "/rest/v1/itinerary_days",
+    "startedAt": "2026-09-09T04:10:01.642Z",
+    "status": 200,
+    "requestId": "01a0845b-d9a1-7375-8486-b66f53703422",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:10:02.253Z"
+  },
+  {
+    "phase": "after",
+    "method": "GET",
+    "path": "/rest/v1/itinerary_items",
+    "startedAt": "2026-09-09T04:10:02.256Z",
+    "status": 200,
+    "requestId": "01a0845b-dbe1-7b87-a7d2-fe247c6473d3",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:10:02.739Z"
+  },
+  {
+    "phase": "after",
+    "method": "GET",
+    "path": "/rest/v1/saved_places",
+    "startedAt": "2026-09-09T04:10:02.761Z",
+    "status": 200,
+    "requestId": "01a0845b-dde1-7cc5-8b9b-db4c47713152",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:10:03.459Z"
+  },
+  {
+    "phase": "after",
+    "method": "GET",
+    "path": "/rest/v1/trip_expenses",
+    "startedAt": "2026-09-09T04:10:03.460Z",
+    "status": 200,
+    "requestId": "01a0845b-e09f-799b-ac9c-6dab3d39aa74",
+    "executionId": null,
+    "completedAt": "2026-09-09T04:10:04.112Z"
+  }
+]

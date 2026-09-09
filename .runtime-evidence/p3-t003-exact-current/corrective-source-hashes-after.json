@@ -1,0 +1,2278 @@
+[
+  {
+    "path": ".agents/skills/code-to-design/SKILL.md",
+    "sha256": "76BE219A58CA55ADB0DBBB3D4C2B307AD61BC5E7407D1B99B96E36ADFE8A0D9B"
+  },
+  {
+    "path": ".agents/skills/design-md/examples/DESIGN.md",
+    "sha256": "4ADE07BB2AAD1A6DD6732FF1E374B40BA2DD411933CAC22CC9B5A7C0ACEE5234"
+  },
+  {
+    "path": ".agents/skills/design-md/README.md",
+    "sha256": "E41393A2F5962BDB7467E85EBCF15CEB8B4C6BE8BA8F8D10F74D80DB97F9526F"
+  },
+  {
+    "path": ".agents/skills/design-md/SKILL.md",
+    "sha256": "580D3345A30178BF5EBEE8F552030D1CFFE0F927818CCD27073D15D646E03887"
+  },
+  {
+    "path": ".agents/skills/enhance-prompt/README.md",
+    "sha256": "122C4AFED16962AE51F314B33253648913E0B89AAC30A971C91F678F19E78DBE"
+  },
+  {
+    "path": ".agents/skills/enhance-prompt/references/KEYWORDS.md",
+    "sha256": "DA82D2179F1F196DFE62F6E25FB461FD8CB5895A7FF5D621286F47C176B00E1F"
+  },
+  {
+    "path": ".agents/skills/enhance-prompt/SKILL.md",
+    "sha256": "822E45444F6190B71FD095BFE9D36285167B22896E5E3EA01F7494EEE50867AA"
+  },
+  {
+    "path": ".agents/skills/expo-data-fetching/agents/openai.yaml",
+    "sha256": "A17910DBD49A651278449E612D6AF573A1165870CBDFA86B82F32EF537CDDD88"
+  },
+  {
+    "path": ".agents/skills/expo-data-fetching/references/expo-router-loaders.md",
+    "sha256": "4FB443D7BF0F9586B277E152C7532B995D10027FEF1CAE44BF87C085230B0911"
+  },
+  {
+    "path": ".agents/skills/expo-data-fetching/references/offline-and-cancellation.md",
+    "sha256": "BDEF8684B76A203CE9FFB7F4DE5936EECBA5483D2E75A2DCD452E5B35BF7830D"
+  },
+  {
+    "path": ".agents/skills/expo-data-fetching/SKILL.md",
+    "sha256": "2584C3D99F5E84F86AA24F3FCAF7408A68CA64B72F19459A2EFB359F7051997C"
+  },
+  {
+    "path": ".agents/skills/expo-design-system/agents/openai.yaml",
+    "sha256": "3E3B789C5AC82DABA3F80F76EDB2530816D6C3A936D490BA38FC269F758DE231"
+  },
+  {
+    "path": ".agents/skills/expo-design-system/references/audit.md",
+    "sha256": "40CC1681ED135056FC79C0CC811F7B0C1F1924C43F86CCDC0CAC296F5B27FFA0"
+  },
+  {
+    "path": ".agents/skills/expo-design-system/SKILL.md",
+    "sha256": "F07834E29619649C24C191BFA810B74FD36040389017DE3D7E6A92F05D925A5B"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/examples/DESIGN.md",
+    "sha256": "F98E9F8964B6574E0D20EA971EA8636D038093C00F6B2626770E46AE0557CF3E"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/references/angular.md",
+    "sha256": "6F2EFD0540B9B6598D09E2FFCBBAB6D3C304F3261D7E240ED6C6DAFE1CF6BDF1"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/references/plain-css.md",
+    "sha256": "1A9617873C75E02EE662DAE9276CAE1B84C73435ABF53CBFBE96533ADAEE0594"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/references/react-tailwind.md",
+    "sha256": "53C78046DFE12B2E215113DF48E90C1340C7A0A5B2140ACD2D341063C5909466"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/references/svelte.md",
+    "sha256": "776C4C8DCB9052ACE38D3A5D24354E48F6FFEB5C229593A79B33760EEE57084E"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/references/vue.md",
+    "sha256": "6FAA5D83DD221D307B6A5307822640A71EDF0E1943576961BBED4F93316DFC19"
+  },
+  {
+    "path": ".agents/skills/extract-design-md/SKILL.md",
+    "sha256": "2A5F91B312E6CDCD3BAC8158BCC85C40A7F6259B65C2AD98CA970857DBB0EF53"
+  },
+  {
+    "path": ".agents/skills/extract-static-html/scripts/extract_inline_html.ts",
+    "sha256": "02C4445BAEECB494346BDBEC089F451DAC64BA7DCD89E97CF3004B22FD54E077"
+  },
+  {
+    "path": ".agents/skills/extract-static-html/scripts/post_process.ts",
+    "sha256": "80B01412AC6DF15A66E4F0739E448FBA7CD2DF0D1B95075B476DE7FD282895A9"
+  },
+  {
+    "path": ".agents/skills/extract-static-html/scripts/snapshot.ts",
+    "sha256": "E6492BBC131DFD780B3B06116B72CC824DBAC9F2B3C059AFDB49D3EFD6135A83"
+  },
+  {
+    "path": ".agents/skills/extract-static-html/SKILL.md",
+    "sha256": "6E1FE796F7178E548F099959646915AD179F52D2DB0E628AB7E61E14863B1891"
+  },
+  {
+    "path": ".agents/skills/generate-design/examples/enhanced-prompt.md",
+    "sha256": "7F02A918D83C44E5FBC0BC3341FCD964998E30A12D818D37D7CBD51222DA50F8"
+  },
+  {
+    "path": ".agents/skills/generate-design/references/design-mappings.md",
+    "sha256": "5D7740177B05A4CAD2401D5D3AC7565131EEA70500697D9913197492A705AF72"
+  },
+  {
+    "path": ".agents/skills/generate-design/references/prompt-keywords.md",
+    "sha256": "789D29B4D6E2DC24639CB5E867746D47F57EB78119893A82FAA52FD7B72DCDB2"
+  },
+  {
+    "path": ".agents/skills/generate-design/SKILL.md",
+    "sha256": "CDA92E2DF63BEC22D3AE93AA42233A02398F10D08890A48FC86637293A525D28"
+  },
+  {
+    "path": ".agents/skills/manage-design-system/examples/metadata.json",
+    "sha256": "CAE971046FBA0829AB694BC350FE9D6F80E0A8B549FA9F48B65D53BEFE2D6E0E"
+  },
+  {
+    "path": ".agents/skills/manage-design-system/reference/tool-schema.md",
+    "sha256": "406265B48628F0824F303B6A0D4F48E3ECFA49B7B6DD18D1F916FAD4ECA0B58C"
+  },
+  {
+    "path": ".agents/skills/manage-design-system/SKILL.md",
+    "sha256": "729E353B2E420243ADFE21DC1E07C3A69A5EAE1A434CFF1DD5A71A0F676FB70C"
+  },
+  {
+    "path": ".agents/skills/react-components/examples/gold-standard-card.tsx",
+    "sha256": "6C3189325FCB32318524F08C7BE337ABFD193C850C0B198408A2C2FF43632739"
+  },
+  {
+    "path": ".agents/skills/react-components/package-lock.json",
+    "sha256": "71970EA98C078C9B178093AF0CCDC90ADB48977444710258710E9D60DD12D8F7"
+  },
+  {
+    "path": ".agents/skills/react-components/package.json",
+    "sha256": "95D6145B3ED9334581D99D76332DC067680D239A1E620EF30DA75D009A050823"
+  },
+  {
+    "path": ".agents/skills/react-components/README.md",
+    "sha256": "602EE46A8F0EDB721DE9A8457E7C3F58913773189C0042F95D839FB15AEDB292"
+  },
+  {
+    "path": ".agents/skills/react-components/resources/architecture-checklist.md",
+    "sha256": "7791BEEE070BA74F7A43A57C12807A93AEA3908E809B30786139A586C0B51B15"
+  },
+  {
+    "path": ".agents/skills/react-components/resources/component-template.tsx",
+    "sha256": "939DB4CE0CEC69ED97DE53190876D8E75D2C2FC0298EA768D14ED44E790506BC"
+  },
+  {
+    "path": ".agents/skills/react-components/resources/stitch-api-reference.md",
+    "sha256": "53CAA43FC731E7D17B4697D0820B504DE302309000ADD7015F73E8A7A2174D88"
+  },
+  {
+    "path": ".agents/skills/react-components/resources/style-guide.json",
+    "sha256": "551D310E43EC11EDD94B6CFFB460A280FF41421B6AFA37955C6246841AD35F02"
+  },
+  {
+    "path": ".agents/skills/react-components/scripts/fetch-stitch.sh",
+    "sha256": "7273D9CBFEEDC815E1A7564E0C67A175D56B2CBE7515577E31386D3AFB79CA10"
+  },
+  {
+    "path": ".agents/skills/react-components/scripts/validate.js",
+    "sha256": "D4D1CE224767C5397CD99AAB7659B6A450DAFE54ACD56A8B5382199410FF1C44"
+  },
+  {
+    "path": ".agents/skills/react-components/SKILL.md",
+    "sha256": "18AF5C0556DA52765AA9EB5A899805BB6A94831011A4800EE221DE02617B3F0E"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/AGENTS.md",
+    "sha256": "72996343B8260800FBEB9AF63DDAED91F14B65DC547E0922F9F8E9BD72076CBF"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/metadata.json",
+    "sha256": "59EE2274CADBD95B2220727028F0DBC26D3E0251E7937226EDC9E7640756BA21"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/README.md",
+    "sha256": "D60D7623005A833B928BE6A109ED9D14DEA43D7217FB534E8F2E4DE5FC1F0DDF"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/_sections.md",
+    "sha256": "21D7445E92BD7D393B420118C3FB9EBBF30AAF123A15143AFB6C0B1B562CFDFD"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/_template.md",
+    "sha256": "99DF2A3EA088C6C22DE2484DDC7E964D0E9923846F44C63380343ECC64455442"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/animation-derived-value.md",
+    "sha256": "689228E9D59227934F296563963951AA9368BE0AFB2A188F650DE161203B1862"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/animation-gesture-detector-press.md",
+    "sha256": "69408D4BE669E74689D865C5F50A22FC3A802D521FE493371761ABD20526E58E"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/animation-gpu-properties.md",
+    "sha256": "F885E4179445DA27CBC225E0A4AA3ED9016FC3507CA6F864392BA7A9D0BD7516"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/design-system-compound-components.md",
+    "sha256": "DCB10900A58FCF57CCA2E27C062D02DF2325A7949E08FB45E9E05CC2B132B1A6"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/fonts-config-plugin.md",
+    "sha256": "B92568774064A604E7A479D4C8D7263AED5609740E9161D2F2764BFFF761905D"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/imports-design-system-folder.md",
+    "sha256": "AA6337F7F2869A46A9141EC65E02C3DA5C3BF051023899B82E0F0AEF5BFF8423"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/js-hoist-intl.md",
+    "sha256": "B4B08622465FFCD5E5961878EB8C6D7359AA242D16C990B59941C9111962FE46"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-callbacks.md",
+    "sha256": "DB800E9DFE0080EB4954B96E2A362EE8344D08E08B1ED06BC8059450F3E6F0DD"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-function-references.md",
+    "sha256": "B54470E41D578B207EE3223F6853EFB7FBF8E5F83D9AECF8DA16989072F99544"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-images.md",
+    "sha256": "E88F16AC113C29230D674B7AA2C66C31D5772A74B1EA378D48A97B1143FE6C19"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-inline-objects.md",
+    "sha256": "E2A80AAC0F29C6ABAF0163C1CC273D09CC8A0030EC077CA2022BBF5C309E4625"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-item-expensive.md",
+    "sha256": "A68CC8EC5DBA3C55761BD5DF9DFD3D98485F63076868D3E03AF15F1E58907CE3"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-item-memo.md",
+    "sha256": "38EC1D149EE485434D11C2B9E2101DFC914AFADAE4A0738CA905F26B05F708C1"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-item-types.md",
+    "sha256": "EED225F4E9E504BFA7DB01F5395D1402545CC47DE8ADF1829A9408CD5D158CF6"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/list-performance-virtualize.md",
+    "sha256": "98CAD308118ACB4D6E8E975C0168CE56E2D48CA52ED47F23BC9A30667C066ADA"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/monorepo-native-deps-in-app.md",
+    "sha256": "8368B109027FCEC1B8A81BFB99718AEF2B64EDABA77107F73D7C465CC5A14217"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/monorepo-single-dependency-versions.md",
+    "sha256": "61C01B9EAAB1E319BF078204231FB573BDFEA3C43A6EB99E7EF73EE95D474CCC"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/navigation-native-navigators.md",
+    "sha256": "6642DEDB57E72F0B56DF5FBC3D5B8AAA91FC4456932C12712CFD076D393F32C6"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/react-compiler-destructure-functions.md",
+    "sha256": "8048926A4FA3FBD28FC0ECF4BA4C383A2F0ED06C2FD7330DD4A15D7F4E548044"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/react-compiler-reanimated-shared-values.md",
+    "sha256": "3174303A72B6849FF0EDA5CD9F9650F26BAA5F31ED28D35A75076AF714FB2FFC"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/react-state-dispatcher.md",
+    "sha256": "7EC5B653E3FF8D9CA97D8D66981CCE5590C0E49FA79AB708FD6324542B588870"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/react-state-fallback.md",
+    "sha256": "EB76E386D71680BFDFC0AB64DBA1221F4D3D0FDCB4980BB4A871381D58E9E58B"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/react-state-minimize.md",
+    "sha256": "31B989DE61DEFDA1C61D8578C4700EFD64A427218C3F3DBB7062A1666E1CBE43"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/rendering-no-falsy-and.md",
+    "sha256": "7300FA45AC3A4968DB144727A21052421BC62DE9B5E9F6F59E28BD16D2FFF001"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/rendering-text-in-text-component.md",
+    "sha256": "FC67897B6126B6B5574F4D284A6C5B2282528FE89DE8EC08E6CFD2A86AB5B235"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/scroll-position-no-state.md",
+    "sha256": "70AA1EE679E755556D7B01B326431FE898D3C23DDBA40D0DA6BDAC23C87A1525"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/state-ground-truth.md",
+    "sha256": "9F3EFC73D2E66A5DEB3199C9774F42524CD6A0F69784AF38301946BE5D747CB5"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-expo-image.md",
+    "sha256": "C3C13CCE3DD2CC7F8A9B4861E5743AF98F62E28F5699F72F492E79A335CFAE55"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-image-gallery.md",
+    "sha256": "B34D1BA03710ED9622187716541AE618968E7D03BC28895C2AC918D3CC5853F1"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-measure-views.md",
+    "sha256": "170D058ABC4900EA9E851E54F5E8B437FFFFC2C9D3847AE35E30A515C8990C3D"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-menus.md",
+    "sha256": "5964ADBECFE9AEB28D736A4EAACEC6469A1C4CA3F48779D243EB38B6D181CFE9"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-native-modals.md",
+    "sha256": "D803493B3046AD31CBB2C189F1FFFB948FD0055050E3C322589BD548421E23A8"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-pressable.md",
+    "sha256": "52CDBAD127D713D7D32C59EF74AB1BBD6DCA211EDC9B25993453F7F4545E79FA"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-safe-area-scroll.md",
+    "sha256": "3DD776CAEF2344D73529010940B50042861D06D31A192122A4DF64BC06AED0E8"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-scrollview-content-inset.md",
+    "sha256": "89E4BBE5E9A602660F4155E9D4C0DEE09DB1ADF21C73F47213CD67EC896E5A13"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/rules/ui-styling.md",
+    "sha256": "CDEF4D8B1A097B844E5992AB78E66A2DC604FAF1E90F8D325A0EB116E8EF6A7E"
+  },
+  {
+    "path": ".agents/skills/react-native-skills/SKILL.md",
+    "sha256": "6D4133D2C2E80642E1F08BACB53E884FE1D9BF52C35D6CD557DD730E81D7391B"
+  },
+  {
+    "path": ".agents/skills/react-native/examples/gold-standard-card.tsx",
+    "sha256": "1CC6D7A1B58AF1A6FC9E577488A0BCB6CB530218854835C5731BAEB90EFA78F7"
+  },
+  {
+    "path": ".agents/skills/react-native/package.json",
+    "sha256": "65103179B2BEED262AB8AFCA2492E876E19F5500538C3851369998CD3A4F2DF8"
+  },
+  {
+    "path": ".agents/skills/react-native/README.md",
+    "sha256": "0DC83F9D2F4B0FDABE29688897D4F3ACA0CBFA78803A179CA029C154CEFFE7D5"
+  },
+  {
+    "path": ".agents/skills/react-native/resources/architecture-checklist.md",
+    "sha256": "F6A0501758A9597725523CA446604DD4C12070082A9B317FCB11FCE7C5A6D5AE"
+  },
+  {
+    "path": ".agents/skills/react-native/resources/component-template.tsx",
+    "sha256": "09CB710582300DFDDD059EF6B5FCB7C5835276490F85B9B3E2E86BDBB8EAF712"
+  },
+  {
+    "path": ".agents/skills/react-native/scripts/fetch-stitch.sh",
+    "sha256": "90EC0D6346ACED5BFF8E8A84399ABBDDDBAEEF438ED3B6D7766DFA9249BC1272"
+  },
+  {
+    "path": ".agents/skills/react-native/scripts/validate.js",
+    "sha256": "D7C21C32C7C1614FA0A0AAC5C7618E3CD72C6D1053791110A65757A11F4772BB"
+  },
+  {
+    "path": ".agents/skills/react-native/SKILL.md",
+    "sha256": "9CB0371D8B45FC90BCA53FAB2C5B525B12A3CFA099E2C06308184E2738BD1FD1"
+  },
+  {
+    "path": ".agents/skills/remotion/examples/screens.json",
+    "sha256": "AA8E29BB8AE7B255347AA1894C975922ACDA27289B403D541E0BB625196F5C41"
+  },
+  {
+    "path": ".agents/skills/remotion/examples/WalkthroughComposition.tsx",
+    "sha256": "BD7D1D07EEFB6C1BA7333423B482F67985BDDDDC201E1D6229CB0CDE89820BF5"
+  },
+  {
+    "path": ".agents/skills/remotion/README.md",
+    "sha256": "D35F4734DFA963E2BF53BBC8851CD01DE9FB5C502B9D4FB9692E5AEA92038F20"
+  },
+  {
+    "path": ".agents/skills/remotion/resources/composition-checklist.md",
+    "sha256": "3BA434318D1084E0DB1F0DD58DA144B17A1317BF2AD7515BBA6DFB240F0A03AF"
+  },
+  {
+    "path": ".agents/skills/remotion/resources/screen-slide-template.tsx",
+    "sha256": "9AEC0FAF4FDB453A36EBD7FFBB0E128BC319F5F3D99F865BA28B9030CB947B9D"
+  },
+  {
+    "path": ".agents/skills/remotion/scripts/download-stitch-asset.sh",
+    "sha256": "CE0F8FE865714DB1738553A5E1AF14135DF4CFE3A80C6AB0750025B869D49FF4"
+  },
+  {
+    "path": ".agents/skills/remotion/SKILL.md",
+    "sha256": "BF3E280EE4A88132C4ED8E16A1BA6A3CE1B8AF38977F6907CE11D22E5D2A4C3D"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/examples/auth-layout.tsx",
+    "sha256": "9AF66C8947902E69CA5B11B5F22184FF0E1982BAEED3EBCB70B21D0A357499C9"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/examples/data-table.tsx",
+    "sha256": "382AF6F4232F0EE075AC2936F58CB28BC4B1237BF0D5BDD7C813324A1DB2BBF1"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/examples/form-pattern.tsx",
+    "sha256": "C333FFC2683B43C56A9A8AD062EB33D45231447BA4CF8CCAF7B1497455090ACB"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/README.md",
+    "sha256": "9D1450E931683DE359C8AC0B2E47C0A7614EC87669D97EB932A08DE0FA2CDABC"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/resources/component-catalog.md",
+    "sha256": "399D1FD046C3FAB70B689F4D23454EE7C0F1211C4393C7162466C1C3B2D77053"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/resources/customization-guide.md",
+    "sha256": "B1C3F4EFED9A5123E5DDA77AA7F4AED57505F001590009B93FC761E7BDEE121E"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/resources/migration-guide.md",
+    "sha256": "E0473A2FC9F72609557CBDFFA1E3AC7924C33350908320D6D41E599297FFF6E2"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/resources/setup-guide.md",
+    "sha256": "A153FB4CF48D5C92E514FB292BB1F463EE43D8057798CF322FDBCF3B5324DE66"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/scripts/verify-setup.sh",
+    "sha256": "B25A8AE1CE84FD7E7659BEEFDA1A84C19EA3626A86D553EED57A7A3273974D52"
+  },
+  {
+    "path": ".agents/skills/shadcn-ui/SKILL.md",
+    "sha256": "D4D76696C3ECEAD8FFB6D03FB0D8905391BC621337A547C4781A8C4986AD5C18"
+  },
+  {
+    "path": ".agents/skills/stitch-loop/examples/next-prompt.md",
+    "sha256": "203E367561C1AB99EA4575357C66C2CBFE79D7EE127007383FEEA623C6A1E4D6"
+  },
+  {
+    "path": ".agents/skills/stitch-loop/examples/SITE.md",
+    "sha256": "45FAEBDBD62C813639355B1C11C15D089C6903F3CC4C882ED9505CFD279BC2BB"
+  },
+  {
+    "path": ".agents/skills/stitch-loop/README.md",
+    "sha256": "EC60CF08112943AA3DB4312DC5707A025623040CE73EB33E30053D2F237389B5"
+  },
+  {
+    "path": ".agents/skills/stitch-loop/resources/baton-schema.md",
+    "sha256": "02E1E1EF02784FEAAE18E285FB90DBCC04F40BF099B724CB038A1B35D9B654F9"
+  },
+  {
+    "path": ".agents/skills/stitch-loop/resources/site-template.md",
+    "sha256": "95FCF4B3DFEB564B075A46151B9607C09905ADD055D23D81D5EB7D31A34632CE"
+  },
+  {
+    "path": ".agents/skills/stitch-loop/SKILL.md",
+    "sha256": "5DF1B0BB98AE27E70A8F06A5EC4BE34FFA927F88608BE207B10ACC1E4E84D4B2"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/CHANGELOG.md",
+    "sha256": "849D982843672C2C7796CF3488B20C29538CDD304C1D64A60AEC2500138059E9"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/_contributing.md",
+    "sha256": "B851DE03355EA919862B637FDC14FEFAB648149CF1013B0194A17108B2D8AF4C"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/_sections.md",
+    "sha256": "AD2D6F6B0938FF844F7F8971153AB6D08A03EF6511B02FB9CEE9336C7B209E93"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/_template.md",
+    "sha256": "39E9FCE3C6AE1AF110F689E018D4417F3547ED0417A7B6198B207285E60BF9B8"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/advanced-full-text-search.md",
+    "sha256": "0682B713263C5B6B9638A31F810BAD07AA179BC4F79BBB787B92ED287E00FE76"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/advanced-jsonb-indexing.md",
+    "sha256": "9BCBF7DA33F6FE6FA9525680CA26D4E3412B534104CFFB5F8529596D76631E4F"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/conn-idle-timeout.md",
+    "sha256": "CD4386D0B5A2BD6D0148975F0F379016B47C7CF139B9483C4F24619C6A89F5E3"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/conn-limits.md",
+    "sha256": "9ED6E5E3A45458A52F2863A60324A05D80DA1D9F3E23BCB83B06F464F6A3CEE7"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/conn-pooling.md",
+    "sha256": "60CD5F7942C44BDF6D8622A49A2E9F0F7FD01DAF8E62BD1BD66B195CD6942975"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/conn-prepared-statements.md",
+    "sha256": "5CE48FF1E426C9B90C75C5733817FC2DD8FEEA9E4DB3298EC9373B9CD0CF3BF8"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/data-batch-inserts.md",
+    "sha256": "98251B608BB6CFEFD28828C9E5FFFC705A155F1212FA0CB82904C5BC2E417572"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/data-n-plus-one.md",
+    "sha256": "F5C60F85F208161CD7567BB7CFF0F559618814216A4426BB1351B51F75EC334D"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/data-pagination.md",
+    "sha256": "C0BFFEB6880C1F5B961E7C2FF36FD16686EBB09E5E49ED17499654BEABEA3E60"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/data-upsert.md",
+    "sha256": "B366AA7DA1E7929FBA3011F99D949B2593967920D0C3C8572E07C0407C367054"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/lock-advisory.md",
+    "sha256": "6D6B50C5EC9F85EB7AEBBB1466E642E427C1732EFA558488A9CAE7EF9903FEBD"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/lock-deadlock-prevention.md",
+    "sha256": "55F2074581D4DB4996FC3EA1D3C120295209A70115F773E2C54F6B312405B293"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/lock-short-transactions.md",
+    "sha256": "2538A22231C0DFDE9967812B6BD5FB347287B671F72806495F89D0D0764E5FE6"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/lock-skip-locked.md",
+    "sha256": "42C7492BA7F5D2C8EDE9A5AF072EA63DEACF71E5695E022CAE15B46B1CE4DF13"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/monitor-explain-analyze.md",
+    "sha256": "94881B47194CB164B1D2A004E79F181370AF44EC830B9263E990E2710BD02B76"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/monitor-pg-stat-statements.md",
+    "sha256": "812BF181876BACAC5A2F914E7FFCF2A0A215B6D18DDA752E65E75D926CBBCEF4"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/monitor-vacuum-analyze.md",
+    "sha256": "8D35221E676F13B122865D5DF947A008C41367BD180010E52FDE3C429E8552A9"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/query-composite-indexes.md",
+    "sha256": "7E75D1B4D4431CB874ECC28710E95B7D2D7364511DAA5D2C8E9D7DE7CE1D0054"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/query-covering-indexes.md",
+    "sha256": "028770393DE8C0BE6DCC7B9FB017F8209761D1854EBF433F036367E602F2D04D"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/query-index-types.md",
+    "sha256": "5F054CE4F835091BB5FF89875DEB5F8ADE9E447E2EA62D1CA07382D104AF0F2D"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/query-missing-indexes.md",
+    "sha256": "15DDF120C86020612D2713225C850E0E4F022B38021F40F45E5BBE58F245DCC3"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/query-partial-indexes.md",
+    "sha256": "106E2B88FF64115EFA0A6B5F448D31788681493EEEC05AD373F7C2CE6C8E0381"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/schema-constraints.md",
+    "sha256": "D6E16D565C9832B70F8B1D472F7DC86DAFA1351A44E8DA72C88B48D337F73D7F"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/schema-data-types.md",
+    "sha256": "DF3197B3393F37B065396C2D3D2035D870D5D572CEAF6562E7C85559DCD11871"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/schema-foreign-key-indexes.md",
+    "sha256": "B49A4E74DED6DD2A2BCF82D21FD22470C403B54CC526DC387F95C001C005C5D2"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/schema-lowercase-identifiers.md",
+    "sha256": "E7E3E073DF2FD787CC4E58DBFE1B7EB1F80439326042C5E73A69AE8A3B1DD734"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/schema-partitioning.md",
+    "sha256": "D940EE09551E970F97C629E816502989C37F7DCEA1DF94B4B52F79F6EEFC9971"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/schema-primary-keys.md",
+    "sha256": "8E4350D0C4B0034FA843EF74716978729329543FF57FE9FAD1D22E31A86AE0C5"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/security-privileges.md",
+    "sha256": "079B20ABA6CE8DBEA81678FAFDD95B4F9785440E91D07EB96029104597CB9693"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/security-rls-basics.md",
+    "sha256": "E1B419AE752D06F6180A0DD61FA21CFDC2B19E34902495BD2827D3E6E350DFE3"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/references/security-rls-performance.md",
+    "sha256": "B9DEFA5E5815A5DADF792B7C9AD7941EEAA1034082B3B06C9CD56083184022AD"
+  },
+  {
+    "path": ".agents/skills/supabase-postgres-best-practices/SKILL.md",
+    "sha256": "4D7D1BD60F2AD7FD0D510269279519059DCC630D832F4C241D90735244C70525"
+  },
+  {
+    "path": ".agents/skills/supabase/assets/feedback-issue-template.md",
+    "sha256": "74B5DFA3A8F7D6584AF059A12BAE4CD6BB66D1F3205DC306BF31D4F4AE2A13B1"
+  },
+  {
+    "path": ".agents/skills/supabase/CHANGELOG.md",
+    "sha256": "705AAA261B58C4AA257C2E0589CA0D3A771DE8F4E4D525A2F18D7F4ADE8F2823"
+  },
+  {
+    "path": ".agents/skills/supabase/references/skill-feedback.md",
+    "sha256": "85E688B56623F9250D23B60EA950DEE740FD537980FC72178FE185EAB76742B7"
+  },
+  {
+    "path": ".agents/skills/supabase/SKILL.md",
+    "sha256": "DF6748D6360A2CFDA72D2D607A6F2D2FDE730A03247EAFB457421089B93E2D78"
+  },
+  {
+    "path": ".agents/skills/taste-design/resources/DESIGN.md",
+    "sha256": "E52BF37404E43A0C9053AA351A94EF8AACDC77B4EFD3447451F8E26B43E51F2B"
+  },
+  {
+    "path": ".agents/skills/taste-design/SKILL.md",
+    "sha256": "B8D06276272DE59118801915EF8121519756273162534BBA0C84F8A0D9B5E0CC"
+  },
+  {
+    "path": ".agents/skills/tripwise-performance/SKILL.md",
+    "sha256": "DAB82E5C77C4680F8D1CACDC66A6F0224EF19FC8BC6C2C4D98D3D6454F293050"
+  },
+  {
+    "path": ".agents/skills/tripwise-production/SKILL.md",
+    "sha256": "B389F19D51E0D222D8E0DF9BFB95F90D0482CBE2DC58484988735E947CAC2413"
+  },
+  {
+    "path": ".agents/skills/tripwise-runtime-closure/SKILL.md",
+    "sha256": "0D46E17C0955025F8E8FDFD5FEFB02D967FF0360DD6B0FBB2F3EE601FCBC677A"
+  },
+  {
+    "path": ".agents/skills/tripwise-security-audit/SKILL.md",
+    "sha256": "0DDECF427EEB6540828B92D8DF299680FCF6D4BAF9DF8B0837262209F6E865CC"
+  },
+  {
+    "path": ".agents/skills/upload-to-stitch/scripts/upload_to_stitch.py",
+    "sha256": "3C98F53B50255BFB4E9A7BD877D7A9CB72F635EA330265AB540702D74A434AD5"
+  },
+  {
+    "path": ".agents/skills/upload-to-stitch/SKILL.md",
+    "sha256": "9CCE46E2ECE8FFCAB6BBC5CADE89F9EA749070987E28E520C5067DE1D9394A7B"
+  },
+  {
+    "path": "mobile/src/api/client.ts",
+    "sha256": "31C934382AC176B323B57E88F07B9A26B1226305B5752D7C2D2F1D12D4431301"
+  },
+  {
+    "path": "mobile/src/api/config.ts",
+    "sha256": "7B09A482EA58C37B7B496D73E73528BA1CCC241B44D53AAFC88475FD725A34D6"
+  },
+  {
+    "path": "mobile/src/api/contracts.ts",
+    "sha256": "B9C3AD09A09D7562EB8BCCAE918126FDE2EFE0234CB1C97D5AAE125C75436098"
+  },
+  {
+    "path": "mobile/src/api/errors.ts",
+    "sha256": "E328C3A6C49DB554E89CEB61C292D2AF410D10FB4B74CB1CDD1B4F5EF431BDD1"
+  },
+  {
+    "path": "mobile/src/app/AppRoot.tsx",
+    "sha256": "F724E1A52AAC19E7541959FB056A95BB4F6CB10736FBB875A6578DA754B72579"
+  },
+  {
+    "path": "mobile/src/components/AppText.tsx",
+    "sha256": "4A151EC59343D4A656E25CA377C198BE88B08F0D8E73D9DA74DF0B10F0803683"
+  },
+  {
+    "path": "mobile/src/components/PlaceholderScreen.tsx",
+    "sha256": "59B0A2AB8A5EAEB6D582F2B1B6C678752FEFE97047F10026C18E62226F7EEE93"
+  },
+  {
+    "path": "mobile/src/components/Screen.tsx",
+    "sha256": "CF343AECBF16D683E6C553B5F2D6F3DEBAB6A448C3C4F8B7C528B4DE92B40BA1"
+  },
+  {
+    "path": "mobile/src/features/auth/authErrors.ts",
+    "sha256": "9E7137734C82E1E1843FEFA5ED7520964D18EE6A335F415EC4741ABC11B4307D"
+  },
+  {
+    "path": "mobile/src/features/auth/AuthProvider.tsx",
+    "sha256": "5F5087FE3F01A145079E43C8F198596BD74D93070F0AC341E074962B40A78A46"
+  },
+  {
+    "path": "mobile/src/features/auth/screens/AuthScreenLayout.tsx",
+    "sha256": "25539F60233F399F2AFB647F01EFD853DE823105DD8A8ADE0DD0B3E6DE776D3A"
+  },
+  {
+    "path": "mobile/src/features/auth/screens/ForgotPasswordScreen.tsx",
+    "sha256": "B840F43A41D3F1BC240A854875A6068139FC6737039F89516EFB936D1337CB70"
+  },
+  {
+    "path": "mobile/src/features/auth/screens/LoginScreen.tsx",
+    "sha256": "E92D30801647ED672892A6ABF718D8490A9A54CE2A96C98D97FD6697CD25400C"
+  },
+  {
+    "path": "mobile/src/features/auth/screens/RegisterScreen.tsx",
+    "sha256": "F03BBE5685363AA0C704C878F32885563EDB366A27144B28FD85348CE5097A88"
+  },
+  {
+    "path": "mobile/src/features/auth/screens/WelcomeScreen.tsx",
+    "sha256": "154FB1D78076C0B37F4A786B234A80AE3E7E0E2F9906E823FD53EA3E699369E5"
+  },
+  {
+    "path": "mobile/src/features/auth/types.ts",
+    "sha256": "FF3BAED5F44E3CAEA4444A7DA306330C4B0C429C1576EBDC49327055605A5928"
+  },
+  {
+    "path": "mobile/src/features/auth/validation.ts",
+    "sha256": "B7FC1A08E59AE1C9B29AED2CCE754DA6565C43362CE6A7B480C319395C507B63"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreCategoryChips.tsx",
+    "sha256": "58090DB644BAE8EF366FCF587A3A225C722769EB9739C037093680F69A1C226E"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreClusterMarker.tsx",
+    "sha256": "55261FD6CA106C006B5B53675779C05138C43ECE0D60AA3F2C6F81BABC565768"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreEmptyState.tsx",
+    "sha256": "8D06C5F192EE8BDB45F18C752CE4240DE61C7C3F1F7E2785379A3B85608BBB0A"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreErrorState.tsx",
+    "sha256": "3A132DF2D3831FDDAD937CDE146B3B01D872074FA2526FEC30A0796D98DAD397"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreMapCanvas.tsx",
+    "sha256": "9B6783CD755E4D0DE93697C1134159DB32E267CF2A8624D9B1E191CD8D8D911F"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreMarker.tsx",
+    "sha256": "3223D90E0CD6D85696694438A8CEEB6BED37FEA6C55CA53336AD2BD956BB57F3"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreMotionHint.tsx",
+    "sha256": "B8AD4C7BA7EB423D0F24470E228A6B419CCFF6EF850D624205729ADFC079B8B4"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExplorePlaceList.tsx",
+    "sha256": "85B069CC25062C2BDCC2F5FF0675F98345272D20635AC8C5381270049074EDF8"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExplorePlaceListItem.tsx",
+    "sha256": "899A01E0DF07F39440BB9867B5680AC2EECB4FD3E0EEC6C5F5741E78050DE965"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExplorePlacePreview.tsx",
+    "sha256": "46A2C1B6BA06E9F9F7007787173022074BECDE289F3B742475EDDA44AE4CEA76"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreSearchBar.tsx",
+    "sha256": "D2085BEF45891BA2958E5CF0BA7D2CE58FB74B41C44229DED99CA30652187679"
+  },
+  {
+    "path": "mobile/src/features/explore/components/ExploreViewToggle.tsx",
+    "sha256": "18DEECE64BE331A19F49DD9EBB6D5167FD330C77A403A846BAF8B438F023A1B6"
+  },
+  {
+    "path": "mobile/src/features/explore/data/categories.ts",
+    "sha256": "EFDBF78CD0AB4DE9F4CE835B7ED0F5F585E3476111423E04ADEF6D3DE6A6C35C"
+  },
+  {
+    "path": "mobile/src/features/explore/data/mockPlaces.ts",
+    "sha256": "A84AF81CB845C09D56E1DEF821E474E21D618A2F2D091553FDEE38D05B49151D"
+  },
+  {
+    "path": "mobile/src/features/explore/ExploreScreen.tsx",
+    "sha256": "7E48FF9538BD0BDACC2CBCD9DBB05AEE3066B4349B3BA81DE255B317A1AC99B4"
+  },
+  {
+    "path": "mobile/src/features/explore/helpers/clustering.ts",
+    "sha256": "8DEAC07B1345ABE674F9390C45B0B2B235D481496B8877C460462852277D64A1"
+  },
+  {
+    "path": "mobile/src/features/explore/hooks/useExploreDiscovery.ts",
+    "sha256": "FA2003C04146A55F521E2862855C4FB3C62AE6E423FC667D10A78FB710FF1713"
+  },
+  {
+    "path": "mobile/src/features/explore/types.ts",
+    "sha256": "2F0D79283EC196AF51C5010ECB48A0CE972DB1BE9AC0A84BA626770FBC77F3BD"
+  },
+  {
+    "path": "mobile/src/features/explore/utils/exploreMapUtils.ts",
+    "sha256": "0E90EDE8AA1B1CC85E25703DE53EA2CAA3F8D926A422B0EBE31F6A259A209FAB"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeContinuePlanningCard.tsx",
+    "sha256": "93CCCA8C538067CE65C163E54EA5C5B16EE9460806F4C87CDF751935F414C171"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeEmptyHero.tsx",
+    "sha256": "24F5395EB3F34E3211901D139DEC3965FFFED324938E135E95E192DEC867F30F"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeExplorePreview.tsx",
+    "sha256": "3075B00C513FABEB279BAF1F96DDB123C1AAD251BEEB46434D6AA20A15093561"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeLoadingSkeleton.tsx",
+    "sha256": "BDAAF6F652F84ADD214689B857EEE07689DA1FE67F58070A8AE719BB85BD0A2A"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeQuickActions.tsx",
+    "sha256": "AE52105A03867F17FC6055C0526131508AE58BDAC7C58A5DDA745234258F4F3A"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeSavedSection.tsx",
+    "sha256": "9F63C9297958921D4F94CD6AC000EBBB389451ACF370AFC7F47E31A3106F85C7"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeTopBar.tsx",
+    "sha256": "9981BAC39CDBFFAB573B7C791CC81919FAACD41688ADAB002A3DC13D6369BC1F"
+  },
+  {
+    "path": "mobile/src/features/home/components/HomeUpcomingCard.tsx",
+    "sha256": "9E8440105C5404038E7B8782272185418BC2D7239F2D0FCE067CF051B8EE3DC8"
+  },
+  {
+    "path": "mobile/src/features/home/data/mockHome.ts",
+    "sha256": "004863E4AE689B53E2A5AF8F5E5067900FEAB933393705D98F3E83D472670E22"
+  },
+  {
+    "path": "mobile/src/features/home/HomeScreen.tsx",
+    "sha256": "D7DBC8C711464965B8D06775D324E1877138F9D761EF53CFAA4AB2530505866F"
+  },
+  {
+    "path": "mobile/src/features/home/types.ts",
+    "sha256": "0A96F0DABD2868A1FF3FC38682628FA67FB5C8213BE7160088C78D8401A922E6"
+  },
+  {
+    "path": "mobile/src/features/images/components/ImageAttribution.tsx",
+    "sha256": "45BD6BE847DB75FCA20A16E7739BF5EA07FFF551EA5C0C3DD5B3B9109594CD8A"
+  },
+  {
+    "path": "mobile/src/features/images/resolvedImageSource.ts",
+    "sha256": "D814888F2FF76B89642B927CB3624A4BF7F5C9732432B1245E4DCE00BBA04A2C"
+  },
+  {
+    "path": "mobile/src/features/place/components/PlaceGallery.tsx",
+    "sha256": "F01D7FDAFB4D2945C812361EF6B49BE4506ED8758FF6E6913010CBC13DB9586A"
+  },
+  {
+    "path": "mobile/src/features/place/components/PlaceHeader.tsx",
+    "sha256": "5EC4A4FF6BD1746BA01C2EC309F04A70CE4FA513CE25B25D2E6FE96E158FF530"
+  },
+  {
+    "path": "mobile/src/features/place/components/PlaceQuickActions.tsx",
+    "sha256": "25F39E6488DB97C0680F409D01316ABEDA07E1F23FF6382B51097BE62BC2C523"
+  },
+  {
+    "path": "mobile/src/features/place/components/TWPlaceCard.tsx",
+    "sha256": "58B62556B64CE251DDA88D31E67D96EEDA334C9FD3ABB3ECAB3B6AEE1C684288"
+  },
+  {
+    "path": "mobile/src/features/place/data/mockPlaceDetail.ts",
+    "sha256": "90FC9B6B931B70F56A477B2492F5BF3C59D53BFFFCD11E68390CD03543979A02"
+  },
+  {
+    "path": "mobile/src/features/place/screens/PlaceDetailScreen.tsx",
+    "sha256": "36D297BDEDF988486D1FBE9DDC02074BAF8D7003FD1FEEF0E5499D53CBBDF53E"
+  },
+  {
+    "path": "mobile/src/features/place/types.ts",
+    "sha256": "D0E97984F44FF19EA13115BB21B791CCAD0A171CCBF4FB44FEE44FEC128E5F41"
+  },
+  {
+    "path": "mobile/src/features/planner/components/CreateTripSuccessView.tsx",
+    "sha256": "C1F59BFAF0ED5DFBAFF12F927F73DFCF669CFB49C789BC95BCA5CD43CDB3D478"
+  },
+  {
+    "path": "mobile/src/features/planner/components/StepBudgetGroup.tsx",
+    "sha256": "4831EA1BE1767C087F2CBC057B355ACC06789B42EA9E51660EBCED4EA72630BC"
+  },
+  {
+    "path": "mobile/src/features/planner/components/StepDates.tsx",
+    "sha256": "296E3E76C0DCEBEC943EBD56124F6EB943D42E04E13209EA48B36D2B3B26B86C"
+  },
+  {
+    "path": "mobile/src/features/planner/components/StepDestination.tsx",
+    "sha256": "697B03324AE37077A71AB034AA94F5F6DD45ADFB0D70F3B0609D006E18CFCFF7"
+  },
+  {
+    "path": "mobile/src/features/planner/components/StepPreferences.tsx",
+    "sha256": "53AD74C5E76F1C2CAC3733F65B75573BC023E0059F882EA933491588FEFC3304"
+  },
+  {
+    "path": "mobile/src/features/planner/components/StepSummary.tsx",
+    "sha256": "B027BD5733B94990A25165E1CE0CD468DFD1342AC71F7E654C215F9280006116"
+  },
+  {
+    "path": "mobile/src/features/planner/components/WizardProgressBar.tsx",
+    "sha256": "AAB450F2D4B8A9202524F85DBEC88B0C853143021C8ED27A715847DAFBABEC37"
+  },
+  {
+    "path": "mobile/src/features/planner/data/contract.ts",
+    "sha256": "2696A663F620E418EF3B666E9D4C4F5237A87C8AC8EEE63E4037F69056023040"
+  },
+  {
+    "path": "mobile/src/features/planner/data/generateTrip.ts",
+    "sha256": "433844B95A81E050B7621C4B5BC99C72FDB0F1306C957A580DCFEC76C0DB15F1"
+  },
+  {
+    "path": "mobile/src/features/planner/data/mockWizardData.ts",
+    "sha256": "1EAD17E316C507086E23D6531B93FBC9C79C5E105ABA446DB5DC924DDB23D556"
+  },
+  {
+    "path": "mobile/src/features/planner/data/types.ts",
+    "sha256": "4C6BE8186CA82F611D6BE2A4E384D91FE4DB62F49ED9D5B0BBD7096933A61B03"
+  },
+  {
+    "path": "mobile/src/features/planner/destinationImageLoader.ts",
+    "sha256": "E48269B756C11D3D788B71566DFFC0ACA2653E4F75702A58C0CD90E0AB3AA7A4"
+  },
+  {
+    "path": "mobile/src/features/planner/destinationSearch.ts",
+    "sha256": "BB7EDEFEA233056DF1DE56A2D660B6740A0ECA5188A544347538454849473729"
+  },
+  {
+    "path": "mobile/src/features/planner/generation.ts",
+    "sha256": "1BE358B3EA081A92269BE0708F2304FC2A2BA99F4B184F920EBF361A96CDB0C1"
+  },
+  {
+    "path": "mobile/src/features/planner/generationContracts.ts",
+    "sha256": "4303A80346D27890C0CBF48BE03D876BC9E6827A19D5E595720EA4FBADA4D9FC"
+  },
+  {
+    "path": "mobile/src/features/planner/persistence.ts",
+    "sha256": "DE5267AF627D6BB85B632AD961DD53533DD8205D691EA64BC03A927208B76606"
+  },
+  {
+    "path": "mobile/src/features/planner/PlanScreen.tsx",
+    "sha256": "F5C8BF7CD8EBF7D8ED2CD33199587DE31DC54E6F45C172CDF5950F0D013038A9"
+  },
+  {
+    "path": "mobile/src/features/planner/screens/CreateTripWizardScreen.tsx",
+    "sha256": "99CA9BB93A345010AA1A6951CC059B8F985CCC1B1374CDA5676149B4C49D11C2"
+  },
+  {
+    "path": "mobile/src/features/planner/types.ts",
+    "sha256": "F28B9AD2D03A6AFA376C907963C8477AE90C0286CBB3EA5808CB1A06CC5CD287"
+  },
+  {
+    "path": "mobile/src/features/profile/components/ProfileDestructiveDialog.tsx",
+    "sha256": "1B474741B2FEF1C791F3213AD2756C3C16CE6DD3346F2F281633BCBFF604A904"
+  },
+  {
+    "path": "mobile/src/features/profile/components/ProfileHeader.tsx",
+    "sha256": "480F4CE893836CAF4407757C5806CA5B3FF925FD8F561C46CA9B9CC3E515AE39"
+  },
+  {
+    "path": "mobile/src/features/profile/components/ProfileMenuSection.tsx",
+    "sha256": "02502D846BE4F50A63AD3968A2FEA0249863C6F9456A117A92B3EB3F76290DAF"
+  },
+  {
+    "path": "mobile/src/features/profile/data/avatarOptions.ts",
+    "sha256": "B4D7007CBBFDF01A6D0902AA6E0FB0842700735F269C6283DECDEF307AE1F270"
+  },
+  {
+    "path": "mobile/src/features/profile/data/mockProfile.ts",
+    "sha256": "70E108A2DB8DE71259F0633F2C48838C73A2D393798A221CDE1B63F327711D23"
+  },
+  {
+    "path": "mobile/src/features/profile/hooks/useProfile.ts",
+    "sha256": "6A19306C949AA3BAC0150D9E63BB04D2411416552B551BABF098B16021593BE2"
+  },
+  {
+    "path": "mobile/src/features/profile/index.ts",
+    "sha256": "66FBD0872BF749FC3A9142301CF9BAB1C3CBEC559FBC24CD56302E1BB57EAFD5"
+  },
+  {
+    "path": "mobile/src/features/profile/ProfileScreen.tsx",
+    "sha256": "64E941ACE195AB427F06B3294446EF8790BAA2B479118ED581CA20D6D1FEEF90"
+  },
+  {
+    "path": "mobile/src/features/profile/screens/EditProfileScreen.tsx",
+    "sha256": "F4803CAC17FD7AB92CE706DA053EEA1D5E78115842A9F5DC4D39DC6BBF42D429"
+  },
+  {
+    "path": "mobile/src/features/profile/screens/ProfileScreen.tsx",
+    "sha256": "01F4E6C0BCC114419210E3C298CA6A038AECBC46913BBF2FE6C5269AB7BE4D95"
+  },
+  {
+    "path": "mobile/src/features/profile/types.ts",
+    "sha256": "124F49566237E90A71636C3953DBFAD260821E65B868DCD1BE8EFF06D01A78BA"
+  },
+  {
+    "path": "mobile/src/features/route/components/RouteMapCanvas.tsx",
+    "sha256": "F41306696A2C54053A8C418E836497BA375554376BDCB22DD2F0E69FA21BC259"
+  },
+  {
+    "path": "mobile/src/features/route/components/RouteStepItem.tsx",
+    "sha256": "72D374F79DDF22E8DD931DB58925A43CDA1CA07323513FDA52DF410D91D71810"
+  },
+  {
+    "path": "mobile/src/features/route/components/RouteStepList.tsx",
+    "sha256": "CBD7F2BC7A1F6881B4EA02E62316BE9332159B205C576274F929C1B7A6B0E43B"
+  },
+  {
+    "path": "mobile/src/features/route/components/RouteSummaryCard.tsx",
+    "sha256": "EBD734B94518F1F6EB0BA8A010A289849733DAF612E08563F41C6735BD12FDB9"
+  },
+  {
+    "path": "mobile/src/features/route/components/RouteUnavailableState.tsx",
+    "sha256": "D308C21DF270F7206B991CFF6D93E70C4911733F5B304A0F7960AB0B1D46A784"
+  },
+  {
+    "path": "mobile/src/features/route/components/TWTransportSelector.tsx",
+    "sha256": "A13EF971D91BFEE37A17229040BA0E940427D9BFCC80E8E54F8367DDF790AE69"
+  },
+  {
+    "path": "mobile/src/features/route/components/VerifiedRoutePreviewMap.tsx",
+    "sha256": "DB9B58AFCDD3EBBEBCB3FD90F1B7AA809AC135A63C3A78F93FA5DC2024570CC7"
+  },
+  {
+    "path": "mobile/src/features/route/data/mockRoutes.ts",
+    "sha256": "5D774F3C7FF68D43E5865FE7C0E90491923D1825B31DA966249F96EBF597729E"
+  },
+  {
+    "path": "mobile/src/features/route/screens/RoutePreviewScreen.tsx",
+    "sha256": "E8DC4A2776867415F21382330EA0C48B99124140F43BC59A276010248887D19A"
+  },
+  {
+    "path": "mobile/src/features/route/types.ts",
+    "sha256": "B9B1F8DE23CE55690A501617AF1A2AFC45C6BF312FEBFD365A33810390EB6289"
+  },
+  {
+    "path": "mobile/src/features/saved/components/SavedCategoryChips.tsx",
+    "sha256": "E987B8E7AA8A3CC6DF74EE17E6CE7C9015B6CA5254D57B097A72595BA3B2E4F5"
+  },
+  {
+    "path": "mobile/src/features/saved/components/SavedEmptyState.tsx",
+    "sha256": "CC9B00FFC9E4310BEA293C4A00A42437B2BBAF86133F169A52AD90C1F423546E"
+  },
+  {
+    "path": "mobile/src/features/saved/components/SavedPlaceCard.tsx",
+    "sha256": "54DD7D425A7F5C6B601AA506692ABAFB201329A06E28172E97B4BD65B2994BD5"
+  },
+  {
+    "path": "mobile/src/features/saved/components/SavedUndoBar.tsx",
+    "sha256": "769746C8553D542B8319169C4B9051B92683AF5AAC6F56FD3D81714FB663CAE4"
+  },
+  {
+    "path": "mobile/src/features/saved/data/savedPlacesStore.ts",
+    "sha256": "E893C54A4348B98E6633DFB9A0DE7EE84F9D497A15CED9B021795A64AEACE568"
+  },
+  {
+    "path": "mobile/src/features/saved/hooks/useSavedPlaces.ts",
+    "sha256": "E2A555F310BB8CC7D68CF54E1E22ABEEF6E4D0D4CB8636CDD75E798531DFB9DA"
+  },
+  {
+    "path": "mobile/src/features/saved/index.ts",
+    "sha256": "19F146F5A8F14C78546EEAB4BDD9D34662CCE78385457D920AB90569874B9AED"
+  },
+  {
+    "path": "mobile/src/features/saved/integrationMappers.ts",
+    "sha256": "08734D93ED01657B7880F83D49A3F687B62BF5EFF395E350A03ACD67731732D1"
+  },
+  {
+    "path": "mobile/src/features/saved/screens/SavedPlacesScreen.tsx",
+    "sha256": "00DABC5899324949E45E4373C30FFF0C73BB556F013066C36FB2A7917E49151F"
+  },
+  {
+    "path": "mobile/src/features/saved/types.ts",
+    "sha256": "30E3BB69DEFC251BD9F53DBA3C25B5A8DAFF1098A4F55225521769BB4F54B2FC"
+  },
+  {
+    "path": "mobile/src/features/settings/components/SettingsRow.tsx",
+    "sha256": "2EB74F196A9AFA1DDA7C08ECBDAE7B794404876A889C26678ED58338EF2A12A6"
+  },
+  {
+    "path": "mobile/src/features/settings/components/SettingsSection.tsx",
+    "sha256": "1779DB722F5C8C61B2D91A5FA4B6EBD61345799CD46745863F8133FB67F41025"
+  },
+  {
+    "path": "mobile/src/features/settings/components/SettingsSwitchRow.tsx",
+    "sha256": "68E500402556BF667556779AFB6974ECA7651506283C1FBE5050146B77E2DE0F"
+  },
+  {
+    "path": "mobile/src/features/settings/data/settingsStore.ts",
+    "sha256": "06F8A94EBF678DCB80E3BCBA6F8BB647DCAE1E0497FD69337D3157B24E21350A"
+  },
+  {
+    "path": "mobile/src/features/settings/hooks/useSettings.ts",
+    "sha256": "C9562D728156B8616D07EDD4713B33F591A451E3835D15C5859A2FE973ECDB5B"
+  },
+  {
+    "path": "mobile/src/features/settings/index.ts",
+    "sha256": "29F7181F65A65FF18FBDB72CABA6967F40ADDC0BCDA246CF80F701BB83CDAAFB"
+  },
+  {
+    "path": "mobile/src/features/settings/screens/AppearanceSettingsScreen.tsx",
+    "sha256": "CD3B8928D6000A83E2490EF922A4A514ABE96FDECB548C671DC1C72103592E36"
+  },
+  {
+    "path": "mobile/src/features/settings/screens/CurrencySettingsScreen.tsx",
+    "sha256": "825A7F539CDA087AC7CF78DBD5CAC06708F2C11518E975C917509706158C189F"
+  },
+  {
+    "path": "mobile/src/features/settings/screens/HelpSupportScreen.tsx",
+    "sha256": "2BE21695318DF1ACACB4C79DFE2563883A240E64A0BDC5F8811692C0C263253D"
+  },
+  {
+    "path": "mobile/src/features/settings/screens/LanguageSettingsScreen.tsx",
+    "sha256": "411FA63B4C309B9ED45123ECEC630136D87ACA9F14BABE77670C5BB5539E6667"
+  },
+  {
+    "path": "mobile/src/features/settings/screens/SettingsScreen.tsx",
+    "sha256": "E6F91650C95428BF55035C0C1B06A2309AF6E98DA53821181DB752547B3C9CE6"
+  },
+  {
+    "path": "mobile/src/features/settings/types.ts",
+    "sha256": "2058AAA0B30D8BB3DE99D59DB065EBC4E861E41B6D3BF76899B1A9CC572D668D"
+  },
+  {
+    "path": "mobile/src/features/trips/components/AddPlaceConfirmationSheet.tsx",
+    "sha256": "01BA4869D1938501D741ED8D72E1CEAD34F42CF804670B35092B839046D3E1D0"
+  },
+  {
+    "path": "mobile/src/features/trips/components/AddPlaceResultCard.tsx",
+    "sha256": "4476651990B698900D1630E5730753DB200017BC112DBA9E54559B80CCADA2AE"
+  },
+  {
+    "path": "mobile/src/features/trips/components/ItineraryCard.tsx",
+    "sha256": "EBBF66676EE2E80ECA9CFFE975A7B142B03AAFF70E3DC1D5E0A5472DCF1CD75A"
+  },
+  {
+    "path": "mobile/src/features/trips/components/PastTripCard.tsx",
+    "sha256": "A4B408FACC5FA09AA5131590E9778095A1DBB17FB9633607CC1147C4D9B6AA50"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripDaySelector.tsx",
+    "sha256": "083ECE159FCCAD667FB9CDBCDFC1070CD71A4C748EBD850FF2B45E73E84B90A6"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripDetailHero.tsx",
+    "sha256": "06168AD3B6F83C67575F1B3184B867D43B246C7FBE35F83730CA5D52834F2A9E"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripDetailTopBar.tsx",
+    "sha256": "29F1BFA7855DF3C9FCC0654F352A8D3721C95A10432BE603DFEB17200452121C"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripEmptyDayState.tsx",
+    "sha256": "18EFC62EB3B19FE92F5A178AD914A7E20A1E3C353196EB2208585B68EDF24BE9"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripFAB.tsx",
+    "sha256": "BE6126839CAB700CC3DD8E3A458EBC9BE6194856E1E84829A5FEC3E57E5FB525"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripMapCanvas.tsx",
+    "sha256": "DD1EA9CD2F971D0DC3F63E87B5EE3C9E5553B6E9B609D1D1C08983086E07BE28"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripMapDaySelector.tsx",
+    "sha256": "A61A1F7F9996BB4605CFBFADEE2FF5A1DD03CE0074C3AAF9E06547F9279AF9E1"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripMapPlacePreview.tsx",
+    "sha256": "AB702A010242B7B4D9F7D0A94106F8B81A1311076D75375D94E456F8237730CF"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripsEmptyState.tsx",
+    "sha256": "113B9135D0DEA0F952D581102A51E6344A8664F8D1CF06DE4F122926841A2AE1"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TripSummaryBentoCard.tsx",
+    "sha256": "41C52788A37F3AFD5F8D30901EC5DD32013509A50FD47CADABE895C67FD4B8E2"
+  },
+  {
+    "path": "mobile/src/features/trips/components/TWTripCard.tsx",
+    "sha256": "16ACDD07F827381591BA498CDB5CB81000E2AEF254AAF0A0B38AAB3EF99F9CAA"
+  },
+  {
+    "path": "mobile/src/features/trips/components/VerifiedRouteMap.tsx",
+    "sha256": "6E5884DB68D913ED2A068CC41F22BA5773A6AE92BD5D77BBBB23ACAB4C3B03ED"
+  },
+  {
+    "path": "mobile/src/features/trips/components/WorkspaceMetadataForm.tsx",
+    "sha256": "909093FA0C7D5709C46DFA3F1626B246BDE516517F68F99CDA0E37851F31BDF3"
+  },
+  {
+    "path": "mobile/src/features/trips/components/WorkspaceMoveSheet.tsx",
+    "sha256": "A2EC8593E250261D342B1EF9194078B2500D3DD5C8F7F3B92796E5AC1E5D6294"
+  },
+  {
+    "path": "mobile/src/features/trips/data/mockTripDetail.ts",
+    "sha256": "6CCF5C0EE75890C57DFC087280F3238BBA847E95EBA1B89BDE136D03D729A5FD"
+  },
+  {
+    "path": "mobile/src/features/trips/data/mockTrips.ts",
+    "sha256": "4B304A0912CE17EC1AD9AB863BEB2AAAC96641D6CF111DD4EBE3CE8755FDA963"
+  },
+  {
+    "path": "mobile/src/features/trips/data/tripRepository.ts",
+    "sha256": "4D3CF1192B97682B35E92A7E95C579C4C1D6B9E1ADA041E072A30BAE6307C3D5"
+  },
+  {
+    "path": "mobile/src/features/trips/hooks/useTripCoverPhotos.ts",
+    "sha256": "2DD7EB0AA41705B4B5AC3C109C549ED0865A5167188F16CF816EF169824CACA0"
+  },
+  {
+    "path": "mobile/src/features/trips/integrationMappers.ts",
+    "sha256": "717D78FD015BA3C1C6ED5CC4EF03AD7DF8D795A2A908BF7FF668AB0A1E780055"
+  },
+  {
+    "path": "mobile/src/features/trips/placePhotos.ts",
+    "sha256": "8A0CEA2E84E0D9D6C63D9361A595E7B456772E641DC3D16B1382D11C8D9A1492"
+  },
+  {
+    "path": "mobile/src/features/trips/placeResolution.ts",
+    "sha256": "0C1EA595B043F064638D14D332C60790A7E9ECAC6FCBD6A75AF6B6A24C4F1EDD"
+  },
+  {
+    "path": "mobile/src/features/trips/screens/ActivityEditorScreen.tsx",
+    "sha256": "FF7D12859FBBF69391F8CBDD24A0F5B60D66127BCEAA69E2B0DAD04C0DE08B93"
+  },
+  {
+    "path": "mobile/src/features/trips/screens/AddPlaceScreen.tsx",
+    "sha256": "2ACADA9494566AA5242A9D8459915FD28E0013A6444A9F334021F7D0AE77A49C"
+  },
+  {
+    "path": "mobile/src/features/trips/screens/MyTripsScreen.tsx",
+    "sha256": "C909028E436F82CEF119CDF31A62EF879E75B26B1A9C93CAA13F9ACE98F19039"
+  },
+  {
+    "path": "mobile/src/features/trips/screens/TripDetailScreen.tsx",
+    "sha256": "3EA34B8A7F3091F43CE9DC663EB94BAB2E6CF688BF5FF2028A0C40C1EFF98344"
+  },
+  {
+    "path": "mobile/src/features/trips/screens/TripMapScreen.tsx",
+    "sha256": "5EA746C1B8D320273310BE2EFC6297AE55393D2DE9A0028D474865110C787F98"
+  },
+  {
+    "path": "mobile/src/features/trips/travelWorkspace.ts",
+    "sha256": "B815DDB4316D5B78263083D576A01E80E3A75E952E368824DF149AF52A72F481"
+  },
+  {
+    "path": "mobile/src/features/trips/TripsScreen.tsx",
+    "sha256": "4AB30D8FC4CDED2EA4F2DC4DD813D28475D2BE5C8B913FCADE9656B536B44E05"
+  },
+  {
+    "path": "mobile/src/features/trips/types.ts",
+    "sha256": "1E5C64EFC7AF90DC7A702E7D338188DA38CE15C7FF849EF6CA42AAEE14EFB358"
+  },
+  {
+    "path": "mobile/src/features/trips/useActivityEditorController.ts",
+    "sha256": "D4487FCDFE8CE69F5A95A77330C1AAD42E80BCEC684EF2BCEC615A881404CAC6"
+  },
+  {
+    "path": "mobile/src/features/trips/useWorkspaceMoveController.ts",
+    "sha256": "C5A78D7EB3299AA50FC4919A1E806FEC180937B21FED88F96CE5A7B603A04398"
+  },
+  {
+    "path": "mobile/src/features/trips/utils/tripMapUtils.ts",
+    "sha256": "7B0AF7CB292052CDC92909A3D94C5462BED095128669BF59117C158D9D108D10"
+  },
+  {
+    "path": "mobile/src/features/trips/weather.ts",
+    "sha256": "AAA3D4E2E8B98280A2FFAF6269D71A74A7D58EE425AF637CFFB4D3157A359999"
+  },
+  {
+    "path": "mobile/src/i18n/en.ts",
+    "sha256": "10EAD9BA4DA26B306A9CA060A9F470032D39101981B5794A70E99FCC82F63D89"
+  },
+  {
+    "path": "mobile/src/i18n/formatters/currencyFormatter.ts",
+    "sha256": "F417D466F9838066A6109CD7E4B506BD104E16452322DB8CCCFE8F61D1CDB781"
+  },
+  {
+    "path": "mobile/src/i18n/formatters/dateFormatter.ts",
+    "sha256": "6A86CF16577BAAFDA680E2E7E73444AD951F32A90A16AAE485E11146DAA72DC1"
+  },
+  {
+    "path": "mobile/src/i18n/formatters/index.ts",
+    "sha256": "7626037B8BAF7C25EDDAF5D85244F0C25017A2AED81C0E684BBE9935EA042DE9"
+  },
+  {
+    "path": "mobile/src/i18n/formatters/numberFormatter.ts",
+    "sha256": "5847EFDA99A7C98830F15634D9DE6863962A559E8E2A415C8DDEC4BEEE99B1A8"
+  },
+  {
+    "path": "mobile/src/i18n/index.ts",
+    "sha256": "C149C9EB0BF2D6844D8037932658FDF24BF2FD157E25A7059B5CED7E5F90C974"
+  },
+  {
+    "path": "mobile/src/i18n/TranslationProvider.tsx",
+    "sha256": "D692DEFD049F837BBDE2A39D6C2146F46D685CD03AE6C57B784787651414D5FD"
+  },
+  {
+    "path": "mobile/src/i18n/types.ts",
+    "sha256": "B7932646D9BAB0200AA31127D55A5EB6C3AFCBF83CE2F68935A66FD3649F8193"
+  },
+  {
+    "path": "mobile/src/i18n/useTranslation.ts",
+    "sha256": "D89B1E5CC7B5E4CFDB98C88B536FF41B7451898572EB7EB61AEE1AF8D4C47141"
+  },
+  {
+    "path": "mobile/src/i18n/vi.ts",
+    "sha256": "20D523F9D4F83A4EBC3672EF719A11C9659C3FD8BBE7789C7E99CD72CFC6DD23"
+  },
+  {
+    "path": "mobile/src/integration/contracts.ts",
+    "sha256": "94084B0BDAA84495338A07FF71BD6FE2DFD1A2EAB1C5D3B4DBE7FA6656CCA15A"
+  },
+  {
+    "path": "mobile/src/integration/errors.ts",
+    "sha256": "3A32335F8EFBDFF43B0B4D501427EB264802A1229D53DACF544561B380A6B5FB"
+  },
+  {
+    "path": "mobile/src/integration/expenseAggregate.ts",
+    "sha256": "1F63E61E5E68511787846739E28CFFBD1489553AD75CEF8FD1EF5162E6BD6D2D"
+  },
+  {
+    "path": "mobile/src/integration/fxContract.ts",
+    "sha256": "D01829E7F6D83246B8AA4503F5926F7A62ED97A0042F0924D559573008D703E6"
+  },
+  {
+    "path": "mobile/src/integration/idempotency.ts",
+    "sha256": "80338DC6144B64D05FBA4D58980B372A5E7397FF8C3D914C02C9F3D3FF85A207"
+  },
+  {
+    "path": "mobile/src/integration/imageResolution.ts",
+    "sha256": "9E0287A8B5B5B6444405DEFDCEB09ED2E0F91AE373B0384036BEB0CA0F0DF2CF"
+  },
+  {
+    "path": "mobile/src/integration/index.ts",
+    "sha256": "F125B030F7CF009AAF65D36DAEF0C3BE2C06A645FCEA3AF5ED5952FDF6CF2533"
+  },
+  {
+    "path": "mobile/src/integration/mappers.ts",
+    "sha256": "6727A8FDD1A38D3E95549CA9C1BA5F60E706C5769C4FD33EE5EC2D83296BAA2C"
+  },
+  {
+    "path": "mobile/src/integration/reliability.ts",
+    "sha256": "40261F63761BBFEBB41F320358EE8A9A4933CA1FA63F54B8FA2F08C05AF5C244"
+  },
+  {
+    "path": "mobile/src/integration/remote/frankfurterFxRepository.ts",
+    "sha256": "AEF4328A2988835CBC0F37C4C919B054020EA249EAEF6AA311501EAC024FC095"
+  },
+  {
+    "path": "mobile/src/integration/remote/publicProviderRepositories.ts",
+    "sha256": "ED8779EA5B68357F91B4FB1BDCD9580D956E0A8F6EFACEE402CAA175BFFE94AF"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseAuthRepository.ts",
+    "sha256": "3A43A6D46D06001DDB2F68A896B3A93A097FD2F9A0AAD2BC444967EA91640F6C"
+  },
+  {
+    "path": "mobile/src/integration/remote/SupabaseDestinationSearchRepository.ts",
+    "sha256": "20EA804FC59A0357184B05F51D07703849CC63E5F0073416794F3EC8999395DE"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseExplorePlacesRepository.ts",
+    "sha256": "5BAFBA27ECF7BB836FCDEDDAB52C678188EA15C6B6B16A24078802D94BFFE586"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabasePlaceMetadataRepository.ts",
+    "sha256": "810562350203B1E186636EE8DBEFF6F23B446055F29869D02364CFA12ADEB3E5"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabasePlacePhotoRepository.ts",
+    "sha256": "7E18E369536D26CF9639C1A48C55A875A841AA536AECC2F8404EC0E14EA55B4F"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabasePlaceResolutionRepository.ts",
+    "sha256": "7260687DD3D69ECB45B6AE44A54B69453CD14B97933B0B286C29474C14D6F3CE"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseProfileRepository.ts",
+    "sha256": "99C559CA9C9838B549085728CC97FC030F585726495FE1FF98DC5C852908DF04"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseSavedPlacesRepository.ts",
+    "sha256": "F50390F065D87E7AF9D7892C0052D3D8919C79F1909F67E6B833E7E810DCB55E"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseTripExpenseAggregateRepository.ts",
+    "sha256": "1AD5D796936040E2513A13236223D1A58AFABDAF5A834A814FEAC3C37E4A7609"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseTripExpenseRepository.ts",
+    "sha256": "16214807685502F795EB28703E111E09CE1702CC21548B29C332D777DD530857"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseTripFxContextRepository.ts",
+    "sha256": "8C53B88725BBC51AB35B0F8584C6C6E08627F058FE58A4E4C55B97D097F0EE19"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseTripRepositories.ts",
+    "sha256": "9BC2E4E271CBF3B369F894D82C3D563A5A0785DDC18C30DE71F425A2E95EEFDE"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseWikimediaImageRepository.ts",
+    "sha256": "AFF4A74E82C508B9F650B2B6628D1D370C4AE99921D9641D180435A338AACAFD"
+  },
+  {
+    "path": "mobile/src/integration/repositories.ts",
+    "sha256": "AE7892EA35C9F39EE7B40F0054870D696F3C55105FC9D39CC97C3875797D749B"
+  },
+  {
+    "path": "mobile/src/integration/repositories/DestinationSearchRepository.ts",
+    "sha256": "D8DCC605763E00E53A371417EE93B773CCB918EDADD0107448260176356811D0"
+  },
+  {
+    "path": "mobile/src/integration/routePlanning.ts",
+    "sha256": "C4AAAFBD47699AC74C64F4431961227EC890A8E1CFB1213CF08466B68A29BF94"
+  },
+  {
+    "path": "mobile/src/integration/savedTripMappers.ts",
+    "sha256": "CA862D3843A67D975D28A620CCE45839EAB1B31B40EE4A500591F44729741BCA"
+  },
+  {
+    "path": "mobile/src/integration/validation.ts",
+    "sha256": "B9FCB83F1A42B13789261915018D0B1E5D3BD4DA92C1CAC9541BBD19C466AE0B"
+  },
+  {
+    "path": "mobile/src/lib/supabase/client.ts",
+    "sha256": "88834C74DCC8A9E6CBFB1629571136CE908E558AF6DA5384D085C04AD42DB564"
+  },
+  {
+    "path": "mobile/src/lib/supabase/config.ts",
+    "sha256": "361F6DD6509A7EEC3FDF150CA2D851091EACAF56D32F279CD08DFB7A9CF85FE5"
+  },
+  {
+    "path": "mobile/src/lib/supabase/database.types.ts",
+    "sha256": "2F4563816EE69E5126F90C42A8F061803394658A3446CE513F449F6D9346924E"
+  },
+  {
+    "path": "mobile/src/lib/supabase/secureStoreAdapter.ts",
+    "sha256": "3F07A273C988BDD06EE62C266C333A354280D7A4F23B95DE42D1CE8C217386DB"
+  },
+  {
+    "path": "mobile/src/navigation/AppNavigator.tsx",
+    "sha256": "755436983E1837BBBB6323C92E1465986356BB449CCE4C0C4512826DC42C3247"
+  },
+  {
+    "path": "mobile/src/navigation/authNavigation.ts",
+    "sha256": "CD876BB8248AE13811B4C47ED3E67B018C74670F67D4844DC2081CAE907A5495"
+  },
+  {
+    "path": "mobile/src/navigation/MainTabs.tsx",
+    "sha256": "D7972E4421C78080BD36CC74332414B8B6BE8BF0F53F7C57FA37965F89DEDC7A"
+  },
+  {
+    "path": "mobile/src/navigation/types.ts",
+    "sha256": "7603DC291074E4EBF6C06315560B89E4BC52ED6E8CD4541427193BD133A31789"
+  },
+  {
+    "path": "mobile/src/theme/index.ts",
+    "sha256": "74474F032CAEE7D0C2DC7EB4C8DC2C88EB295D35736ACD8358BD3ACC5CD9B268"
+  },
+  {
+    "path": "mobile/src/theme/navigationTheme.ts",
+    "sha256": "5AB1E2B5E8D8256270CBE1DC15001C60D3FE4D6A5DCC699F3B813EF9F3C58B04"
+  },
+  {
+    "path": "mobile/src/theme/palettes.ts",
+    "sha256": "B5A4EAEEBCE3E12E6CED8FF3FCBC130883D4AE0D5A36D8B08FD70A8919C50833"
+  },
+  {
+    "path": "mobile/src/theme/ThemeProvider.tsx",
+    "sha256": "E0FDA16ED5948B202F68B1E5184D456DE1E10627E7DD7FBF5F4BCD6C8F86A02B"
+  },
+  {
+    "path": "mobile/src/theme/tokens.ts",
+    "sha256": "9BA055126B3D85341688707E4AF0B105135064B51E0E29943230F5E6E32B415A"
+  },
+  {
+    "path": "mobile/src/theme/types.ts",
+    "sha256": "6D13810780C94ED5380E2F70E5E178A7177FB82484957D7FFA0EAA3E89B50EE4"
+  },
+  {
+    "path": "mobile/src/theme/useTheme.ts",
+    "sha256": "41BA266C251FBF68FF91C19B6C145D4C0AE1B37FBE5881CAD404DB03803034B4"
+  },
+  {
+    "path": "mobile/tests/AccessibilityBaseline.test.tsx",
+    "sha256": "53CDA390202171495679F6AE9330139F735BDB1EDD532503E892FD4BE5B784A5"
+  },
+  {
+    "path": "mobile/tests/ActivityEditorConflictAndSubmit.test.tsx",
+    "sha256": "4D4CDD2C57D76376AB32E252CA67329C2670987702568A3EE301E24817DCFD46"
+  },
+  {
+    "path": "mobile/tests/ActivityEditorScreen.test.tsx",
+    "sha256": "10FFC8EC74AD2B041ABD6B02339BAE8CAA804967CB1C6AA2A7D674887269D951"
+  },
+  {
+    "path": "mobile/tests/ActivityEditorStaleUser.test.tsx",
+    "sha256": "D901E88AD382F6BB43097A59346CF0B7291AB09D14EAFC2DA0C357BDF9BEBE34"
+  },
+  {
+    "path": "mobile/tests/AddPlaceScreen.test.tsx",
+    "sha256": "BEB5555A3A39C7E76DE8461D6534DB4D4EEA1C7D9EF7075E6F147BB665D4D844"
+  },
+  {
+    "path": "mobile/tests/api-config.test.ts",
+    "sha256": "A061BECB70D3CE8797803EC79A04E9A3A17A8CC4C845BF421FAA5EDFB8B5954F"
+  },
+  {
+    "path": "mobile/tests/api-errors.test.ts",
+    "sha256": "C809A290A08665131572033C70CE48744E4990AC14756F76D43EBABEEF863939"
+  },
+  {
+    "path": "mobile/tests/AppText.test.tsx",
+    "sha256": "7E15D5F5D7567CED7CF48B4E550F4055E0A5BABCF835BBBA42F10A71A4B7B058"
+  },
+  {
+    "path": "mobile/tests/auth-errors.test.ts",
+    "sha256": "65DD8EF9D1AAAE5169AF4DA18EA9A78518892E84BF1A27C66DD11141306423DE"
+  },
+  {
+    "path": "mobile/tests/auth-navigation.test.ts",
+    "sha256": "FAA649CFD9C46EB242177F9B621086973B8CF6123F91B4E7D759179EF8022D73"
+  },
+  {
+    "path": "mobile/tests/auth-profile-repositories.test.ts",
+    "sha256": "78E75A1287500FF9335F9F2C81939FC965624A07F0DBF219DB913E5A2DA65EB7"
+  },
+  {
+    "path": "mobile/tests/auth-validation.test.ts",
+    "sha256": "65E9C81D6E003C41D2BE1DB548C240BB18B246E905431892676E54111F607DA8"
+  },
+  {
+    "path": "mobile/tests/AuthProvider.test.tsx",
+    "sha256": "4AB703DB8DDC802DE7D310875F21AE7492DF234FB2E492A714E67523A19FBF6A"
+  },
+  {
+    "path": "mobile/tests/CreateTripWizardScreen.test.tsx",
+    "sha256": "EEEB233F0D2635B837776377CBE56AE75BFBDC1389C281F0055E6443BFDFDBFF"
+  },
+  {
+    "path": "mobile/tests/debug.test.tsx",
+    "sha256": "CDE415763649A06FF5520DFCC284D08EECA89B0FF6ED1958B30B05727421694A"
+  },
+  {
+    "path": "mobile/tests/DesignConsistencyAudit.test.tsx",
+    "sha256": "698BCAB770ECC28C0ADB0D4E8E3444106FD2970500F8CDA54A2FC32F39E0C625"
+  },
+  {
+    "path": "mobile/tests/destinationImageLoader.test.ts",
+    "sha256": "AEC96349BC0E36CBCEAE6E6C9B386E418EE5D0DF09213D12868C1296C5DB68DA"
+  },
+  {
+    "path": "mobile/tests/destinationSearch.test.tsx",
+    "sha256": "64905947868FDCA49CDB62F2ADA54CF8137A1D2B8EB4E1F28E8E741199DA8DA9"
+  },
+  {
+    "path": "mobile/tests/expense-aggregate-contract.test.ts",
+    "sha256": "1E9AF149E87DD208AE9D18A3E7512EEA1DECFDD3187DB70B02386292F72D695C"
+  },
+  {
+    "path": "mobile/tests/expense-ledger-contract.test.ts",
+    "sha256": "D5DE8A7DD2E14B490925CABA29C1F7833C788C15A84D326360C0C6CF758B46CE"
+  },
+  {
+    "path": "mobile/tests/explore-map-utils.test.ts",
+    "sha256": "2873C73B6FB5DE9650033D6CF1878D1EA9CD1767E827E95DD60A1DC683358BC1"
+  },
+  {
+    "path": "mobile/tests/ExploreMapCanvas.test.tsx",
+    "sha256": "B50BB7B1B36C770F6600A2E9621F73D70F27F1ECD2E38D3EA393D5B85350E43F"
+  },
+  {
+    "path": "mobile/tests/ExploreProductionScreen.test.tsx",
+    "sha256": "AB82947D313BF51E7E4761DD6478B2C01FE085239E8A793E6DCF4895860C6855"
+  },
+  {
+    "path": "mobile/tests/ExploreProductionScreen.test.tsx.orig",
+    "sha256": "7C5841D93D81709930681514E9D4E4058F237C59C4665099C432E823B6682032"
+  },
+  {
+    "path": "mobile/tests/ExploreScreen.test.tsx",
+    "sha256": "E91D5C7A95C2FF7D9ACACA7EEB4076F7B8495D9800FFDFD92D2C462348B86E8A"
+  },
+  {
+    "path": "mobile/tests/fixtures/rpc-shape.json",
+    "sha256": "A16763C4B78FA28C1232F6B36190EAF6AFA8C9DDC3519B1C114F6621F2E913B9"
+  },
+  {
+    "path": "mobile/tests/ForgotPasswordScreen.test.tsx",
+    "sha256": "40B38EC4040FB04D9848AAFFE5325B1FB52D6481400D2FFA99CB630617DD2760"
+  },
+  {
+    "path": "mobile/tests/fx-contract.test.ts",
+    "sha256": "C3B166F40583FA9BC0686E357D2F8BE028F56620B6335A4876DD65112577F139"
+  },
+  {
+    "path": "mobile/tests/fx-repository.test.ts",
+    "sha256": "36A54BC200F976C77ED4709AFDA0547CC5310487E4D46DE6BD30147680AD08E7"
+  },
+  {
+    "path": "mobile/tests/generate-trip-client.test.ts",
+    "sha256": "CEC0550C22E8B73141BD968B15F2B5C142910174FA8AF4446098395B15BD53C6"
+  },
+  {
+    "path": "mobile/tests/get-place-photo-index-source.test.ts",
+    "sha256": "F1A61E55F2A61AC93B0798BCC9E10E26C134DDE1759BDA5BA3208A98DEE9CEB4"
+  },
+  {
+    "path": "mobile/tests/HomeScreen.test.tsx",
+    "sha256": "B1A0B0B3DE0C59BA964D10A063EED864D83A6F4228C8C587738D0CBAB0590EC2"
+  },
+  {
+    "path": "mobile/tests/image-resolution.test.ts",
+    "sha256": "ACC2F6C75CB3508389A4A23183E43BCB833E2FE369518521C3290754EB7E977F"
+  },
+  {
+    "path": "mobile/tests/integration-errors.test.ts",
+    "sha256": "1C1D9AF02CA40689D94C927A1C12C13ED45F603F93E314C9CE96E143D410392D"
+  },
+  {
+    "path": "mobile/tests/integration-explore.test.ts",
+    "sha256": "60050223A24F157A7A394205760209617064C96D78E94F4DADE0D4EA3CB5BFC5"
+  },
+  {
+    "path": "mobile/tests/integration-mappers.test.ts",
+    "sha256": "33D8D4E97A42EE92EC9E441DB4D3A73407D8B8B1E280393FF052DBAB5AF5F05B"
+  },
+  {
+    "path": "mobile/tests/integration-place-photos.test.ts",
+    "sha256": "EDE35B1C31CA4AF8531B31B5FDEC3D15A417041257796CD4DD41CDA0F009277D"
+  },
+  {
+    "path": "mobile/tests/integration-reliability.test.ts",
+    "sha256": "8BE176AFFEFCA722C2FBB9DBB52D2A94FDE11B02442C7FD994CC192BEDC5A64D"
+  },
+  {
+    "path": "mobile/tests/integration-remote-repositories.test.ts",
+    "sha256": "C65F6A56C0CE950A85624F0E145354EE21593241BAF5208A4942C93A1B5C5CFB"
+  },
+  {
+    "path": "mobile/tests/integration-saved-places.test.ts",
+    "sha256": "333623DB7571B7DC46A8A67C57FC346252ECA99DA904D32A6963D29B3EB3EC56"
+  },
+  {
+    "path": "mobile/tests/integration-validation.test.ts",
+    "sha256": "2871308EDF7422FA67A628478288E7BBC08B6F050B768D5D0CAB3EEEB89DA106"
+  },
+  {
+    "path": "mobile/tests/integration-weather.test.ts",
+    "sha256": "EBBB71B5B7A5B3A59F7F90E16ECD47AD96E32AF4A264633170A2EE4E4BDAB33E"
+  },
+  {
+    "path": "mobile/tests/ItineraryCardStatus.test.tsx",
+    "sha256": "2D4868EB33881C227AE8D5A4CEF8920EE70487CF09D098CF96D99D547DC11537"
+  },
+  {
+    "path": "mobile/tests/live-generate-trip.test.ts",
+    "sha256": "796664281FBDE5CE012BBFCD1C61087B32DBD5BC1F0900C28F5B450F51214076"
+  },
+  {
+    "path": "mobile/tests/LoginScreen.test.tsx",
+    "sha256": "02D0BD7CB22341D8C59246368261AD291A055A76D18DEE5F6F456F610693AA97"
+  },
+  {
+    "path": "mobile/tests/mapper-regression.test.ts",
+    "sha256": "F01E568D37C741F17B2C901DB85F8922BE765AA01D2289183C83448BA163167D"
+  },
+  {
+    "path": "mobile/tests/MyTripsScreen.test.tsx",
+    "sha256": "70DB1BB8A645BC1B076F2EE8D240B1515B92CE7BEBFABE2C170ACCCFD6D301A4"
+  },
+  {
+    "path": "mobile/tests/P2T001LegacyTripDetail.test.tsx",
+    "sha256": "118754B5C2CA3ACF68719C9C1AAEFD3F6271FEB01B3183AC5339691E2312D0C5"
+  },
+  {
+    "path": "mobile/tests/PlaceDetailScreen.test.tsx",
+    "sha256": "ABB4927511BB09F06570502CA5383BF4AC4164ED4B5919B4A2258F13E38CAB09"
+  },
+  {
+    "path": "mobile/tests/planner-generation.test.ts",
+    "sha256": "2264348A8A750D64DCB10C1F156B74962884795BADBDCA8CD3CD7998ED8C6396"
+  },
+  {
+    "path": "mobile/tests/ProfileScreen.test.tsx",
+    "sha256": "92B31A556903EA6E207FCCDD3E66CD6A77B7D3D5D21424577AE49551CAF213C8"
+  },
+  {
+    "path": "mobile/tests/RegisterScreen.test.tsx",
+    "sha256": "C4A5641CDE59CF6CE611771661D7ED2BA8E34717BCB55A5691693D0302DEC799"
+  },
+  {
+    "path": "mobile/tests/resolved-image-source.test.ts",
+    "sha256": "82F177FB1EE910A6F323AFDEBD7097C7BD2808CA5A57FA7AAF711A631C23DEF8"
+  },
+  {
+    "path": "mobile/tests/ResponsiveAndPerformanceAudit.test.tsx",
+    "sha256": "7F45F35BACF4728CED49CE6FAC0A48F351BD659F8296EC82A60E60E642E8E70A"
+  },
+  {
+    "path": "mobile/tests/route-planning.test.ts",
+    "sha256": "F1A56C47155779CD4292EE5937E5F37A097B550836C635DFD99A243CC7FB6606"
+  },
+  {
+    "path": "mobile/tests/RouteScreen.test.tsx",
+    "sha256": "A23566B59DE15AF04F40B348C7C8000DB5E0E800DCF9C7426A0895AD877AAE99"
+  },
+  {
+    "path": "mobile/tests/saved-trip-cover-contract-source.test.ts",
+    "sha256": "EAEBAF200F800FE391EEFE625D39C989593D6E7902A2C83B7670FA8B20324416"
+  },
+  {
+    "path": "mobile/tests/SavedPlacesScreen.test.tsx",
+    "sha256": "3850F0B0AC4DACAD64C3595D4CE02E7F7113071F823AB6B1DE736DC945A7F8DA"
+  },
+  {
+    "path": "mobile/tests/SettingsScreen.test.tsx",
+    "sha256": "C0C066F932D78D748E87B87F516F71BF68B077D3B14B4A12A89126F1370A4098"
+  },
+  {
+    "path": "mobile/tests/SharedComponentPolish.test.tsx",
+    "sha256": "624734DD3FDFA4A041C695130892096E1C1C8988806EBB5867AD1545ADA9F7EB"
+  },
+  {
+    "path": "mobile/tests/StepDestination.attribution.test.tsx",
+    "sha256": "AF378878FF6DE445A55B4BA18895745AFB0D99ED9C67C12DAD1F5DA9812051C4"
+  },
+  {
+    "path": "mobile/tests/supabase-config.test.ts",
+    "sha256": "C878B137B125871396D4E2C1DFEE756B13B0AB19E9BBAD9C38D16D6D9401D11B"
+  },
+  {
+    "path": "mobile/tests/SupabaseDestinationSearchRepository.test.ts",
+    "sha256": "3EDFB12EC6039F392500B3A19F6F854C161D5DA04406E2D2E84BF985DDAA539A"
+  },
+  {
+    "path": "mobile/tests/ThemeAndLocalization.test.tsx",
+    "sha256": "A13F82837B7CE90E0B4454B52AD61A11075B28D700ED34C45D87862B32123EF9"
+  },
+  {
+    "path": "mobile/tests/travel-workspace.test.ts",
+    "sha256": "6493257982B3E3465F3E60632A68480202151FBEBB5CA6D5FDFE04384D2738D0"
+  },
+  {
+    "path": "mobile/tests/TripDetailScreen.test.tsx",
+    "sha256": "EDB2241EB730A827E73F8589EC474C2806F94BF540D9EF8D079FB5F9EA9629E1"
+  },
+  {
+    "path": "mobile/tests/TripMapScreen.test.tsx",
+    "sha256": "BACE4A82F22D0EA059EE81CDEB7DE8B73D96CE1CAB80A2751CE10154AE83973C"
+  },
+  {
+    "path": "mobile/tests/trips-runtime-regression.test.tsx",
+    "sha256": "25A8C46FDF8357775E2BA3E29DEC2CE686874963454812FFC3EE1F0D4DD55DC3"
+  },
+  {
+    "path": "mobile/tests/WelcomeScreen.test.tsx",
+    "sha256": "FE2EC8B56B7FB0E296B51B05EFFE7FB8FF20287538010846B923E0DA00BBB6FD"
+  },
+  {
+    "path": "mobile/tests/workspace-mutation-contract.test.ts",
+    "sha256": "2E09DC967964D81EA6A28247E259F1CFD706962372DA8A034DD0EB4C692F17B8"
+  },
+  {
+    "path": "mobile/tests/WorkspaceMetadataForm.test.tsx",
+    "sha256": "3C8D9367782491A6346295D25C37ECE8A6FB132EFC20C923ED0DC4C71530B5D9"
+  },
+  {
+    "path": "mobile/tests/WorkspaceMoveController.test.tsx",
+    "sha256": "4AE56FCF6627BEBD836E30712B7BA1DF31EBC3D38B54EE71BECD8B8A47A045AB"
+  },
+  {
+    "path": "phase_doc/PHASES_BE.md",
+    "sha256": "D21EB83E351F08371C01F247534242419D5E4608B4F284140147CCD7CE5B1B32"
+  },
+  {
+    "path": "phase_doc/PHASES_FE.md",
+    "sha256": "8BD9C53EE6E868A7391941E41DFB5D0AA5303A14CDF67A441F72FAB3C7358F92"
+  },
+  {
+    "path": "phase_doc/PHASES_FEATURES.md",
+    "sha256": "620CBFFEC8BB5BA79617FB3957CD496263FB103E2D0A6B29B96F7B19517D72FB"
+  },
+  {
+    "path": "supabase/.gitignore",
+    "sha256": "507699EB91144818EDF61D3A079212CACF31D8DB520EAE428E3B48FCF0D6919C"
+  },
+  {
+    "path": "supabase/.temp/cli-latest",
+    "sha256": "777FD6D651101226CF5D67775D803518C5E94912772C3F936A458353B58EC9D1"
+  },
+  {
+    "path": "supabase/.temp/gotrue-version",
+    "sha256": "165691A635C13B4E2094D17132E0E710BD0C2C1FED3219F6487D2262C7031DEC"
+  },
+  {
+    "path": "supabase/.temp/linked-project.json",
+    "sha256": "EE05F2A4F0C6D41A40B018173CDD01FFECD2CA767852DBCB6DE6913363435A4A"
+  },
+  {
+    "path": "supabase/.temp/pooler-url",
+    "sha256": "128489B8564B4695EFA3E8AF7FE56B491D23283A733DDBA37B7B62A0D51D7871"
+  },
+  {
+    "path": "supabase/.temp/postgres-version",
+    "sha256": "F95768BBC674ABB5D20DC080654A38DBCD402DFCCA93B95EA307B64CC6050376"
+  },
+  {
+    "path": "supabase/.temp/project-ref",
+    "sha256": "22DA3ECC86B44D0DE0723F099CD5C6C6C83C578FCC48D4D294F7278FF2959FB5"
+  },
+  {
+    "path": "supabase/.temp/rest-version",
+    "sha256": "8F17BFFD259458AFECA267F0C76C560A35EE9503690E41A3637D6E4DF03726B0"
+  },
+  {
+    "path": "supabase/.temp/storage-migration",
+    "sha256": "406E7056BF17F39ABF84C29572D33403F904C2F5F3109A5E347D0A84084286C9"
+  },
+  {
+    "path": "supabase/.temp/storage-version",
+    "sha256": "9F57A503EDA239194BB814F8896EDA7FBC47649065203DD2098F69ACF36A1265"
+  },
+  {
+    "path": "supabase/config.toml",
+    "sha256": "EED94AC7764E6AD816F2562452FC8AF07BDFD746C1F9F5B7FC7BBCB7C3CC56B6"
+  },
+  {
+    "path": "supabase/contracts/public-providers/routing.ts",
+    "sha256": "C1C08BC8A8E2D78A0942D690FF25DD8A2B8530DD397F09DAADCADFDA4D2F0E43"
+  },
+  {
+    "path": "supabase/contracts/public-providers/weather.ts",
+    "sha256": "1B88CF74C97F930FE4793A2000D625CD4CBBAA0B2BACB572586BE23C98CD2849"
+  },
+  {
+    "path": "supabase/functions/.env.example",
+    "sha256": "2E421529EC27AD6F1AE03AC0D6833F3E43A01A3291679C25FDE904E45FEF8B21"
+  },
+  {
+    "path": "supabase/functions/explore-places/contract_test.ts",
+    "sha256": "B4BC041F843722D055E880750C17901068510CE0C7895FDCD889EE4B31DCAC1E"
+  },
+  {
+    "path": "supabase/functions/explore-places/contract.ts",
+    "sha256": "CD2C49886A5B035A65B4ACF212BE3DC8222E43BDEF03E5C9C6B207EF10B2F186"
+  },
+  {
+    "path": "supabase/functions/explore-places/errors.ts",
+    "sha256": "D852BDC4DBE5BBD9FE13D58972A48A50565E8EBB34582DA8E026361AD8CB20FC"
+  },
+  {
+    "path": "supabase/functions/explore-places/googlePlaces_test.ts",
+    "sha256": "C28902DFD58DB20042F6627D53D55F160E147046B81210B5611027CE8679A543"
+  },
+  {
+    "path": "supabase/functions/explore-places/googlePlaces.ts",
+    "sha256": "C7F008595CF1C6CA19843C714775E51EB4071DA0CDCF9C4B8EA641EB5DB0D047"
+  },
+  {
+    "path": "supabase/functions/explore-places/handler_test.ts",
+    "sha256": "4CE0EB489E7CA3AFE07B196D3C85FCBBA86ABF9E55C011D2C6403EAA3B6763D1"
+  },
+  {
+    "path": "supabase/functions/explore-places/handler.ts",
+    "sha256": "0305F83A413BD3D86C45DAB5027AC2500E724A4799974B44ED7EC6138F7A221E"
+  },
+  {
+    "path": "supabase/functions/explore-places/index.ts",
+    "sha256": "72612E2823B5B5FD395861243824204F57F264DAA4E12F7716EB8490E5FED366"
+  },
+  {
+    "path": "supabase/functions/explore-places/types.ts",
+    "sha256": "6215E9E3C3C3E5B4281F5150D57A4BCB420377983D93801E3B07FC176D4B8943"
+  },
+  {
+    "path": "supabase/functions/generate-trip/contract_test.ts",
+    "sha256": "4CDA835850EA24CA642122A5BA0DA0234F7482B08A35E23C052F4CC1F36310EA"
+  },
+  {
+    "path": "supabase/functions/generate-trip/contract.ts",
+    "sha256": "3A192C46E49F29B7431B21BEAB3D95214829B5EB04F92E6E8FCCC76F7C25E881"
+  },
+  {
+    "path": "supabase/functions/generate-trip/errors.ts",
+    "sha256": "5046C3F06D243EBA8BE8C99A0CCE4AE47F42AE1014A007E9487B040F06CCD8AF"
+  },
+  {
+    "path": "supabase/functions/generate-trip/gemini_test.ts",
+    "sha256": "ED27792817DC534847F149D94B303981D3CAF671652473B8A0EE5865E9B7C276"
+  },
+  {
+    "path": "supabase/functions/generate-trip/gemini.ts",
+    "sha256": "B0610C150CE82726B468C6A300ADB2100EDD53336D683261402652019DB77C56"
+  },
+  {
+    "path": "supabase/functions/generate-trip/handler_test.ts",
+    "sha256": "47AA4212E1107AA6BA4FDC0A43FA97B527165E5F8C49424D06D0F6C9D64B4602"
+  },
+  {
+    "path": "supabase/functions/generate-trip/handler.ts",
+    "sha256": "A9BA4AF3781C9E0D29AB55BF6FE6A0DE06421F059BC0D5B613E3C63DFD0CE7F3"
+  },
+  {
+    "path": "supabase/functions/generate-trip/index.ts",
+    "sha256": "9B6EA80B5511F611DCF74EA90D1F34C51C2A89E1A786EAA2E0B82524460620C8"
+  },
+  {
+    "path": "supabase/functions/generate-trip/prompt_test.ts",
+    "sha256": "276780BD151B3A3F8D6F03886CF91D0047835688ACEEC6C6345AE27D121C5904"
+  },
+  {
+    "path": "supabase/functions/generate-trip/prompt.ts",
+    "sha256": "AAA79E77674EE60FF6BE1E923E935B5D78217F61FFD451A32A56CCCC508243F7"
+  },
+  {
+    "path": "supabase/functions/generate-trip/README.md",
+    "sha256": "3665616CDABBD7E9807BD58488F2B18113C89F9B0EC168A370BAE04D10982689"
+  },
+  {
+    "path": "supabase/functions/generate-trip/types.ts",
+    "sha256": "C9AD18CB3CA1CB8FB9DAFBFF8DE268A25306398C421C7C86D6FA8EE9CD500759"
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/errors.ts",
+    "sha256": "86406903C49794756B4FD00EA6F47C62274754AF7629E2468A4B2DF0BF36BC4E"
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/handler.test.ts",
+    "sha256": "DE1115A9E5B38531079818EF6E65F6B59492561C5D4D4CE93145C966AC92FEE6"
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/handler.ts",
+    "sha256": "00D8BB54EAD4BC78D7A34EF76EC7DD860326C515CE7E6672FF4FFAADF51E51F1"
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/index.ts",
+    "sha256": "4759000A99E83C53BAE147380D06FA85D8DC8295338962B10C0DEC9E7D0F59AF"
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/metadata_test.ts",
+    "sha256": "A70F6361DA950BCDA72408DEECD862B69A23D5142BBB1A94A00CE8B0484DBAFA"
+  },
+  {
+    "path": "supabase/functions/get-place-metadata/metadata.ts",
+    "sha256": "DAD24F665831B76DE2B4174709F5B2B3A18F0674597F8512F4DB71BF27715078"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/contract.ts",
+    "sha256": "FD82C315E63C0FAE2B6939BE64189F77ADE95AAC517149715758A8A5D51C1FA9"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/errors.ts",
+    "sha256": "E136E690861DB9979B662C514B69FC8C452DC8D75626E8C48466E2BEE6CF9BD7"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/handler_test.ts",
+    "sha256": "5850BA88CD20DCABF3866F50CAD3675DA8AEF13586DF2F1E6DF0AFA25C04BE85"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/handler.ts",
+    "sha256": "F3C017029C946AF051D35B6B98440AE73DF9AAE082F8A3B9EBFE2E53F758BFEA"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/index.ts",
+    "sha256": "C38D0BC02B339C968E032A12A771B69097B77FA36C3004724347BCF76FE9203B"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/photos_test.ts",
+    "sha256": "C799E924258234F2F431C7FF0A917B5C244CD70BCD8A617368CEEBA04162308E"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/photos.ts",
+    "sha256": "6DD2A155760A100871394434B691D7A8DFF9403001008B1BF9AA91C34C21B62B"
+  },
+  {
+    "path": "supabase/functions/get-place-photo/types.ts",
+    "sha256": "303583D0D87F1A840FDEB235F6FC1914FAF82A5B5623D5D80AD08D1124E8895A"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/contract.ts",
+    "sha256": "18CCBD166224184BA7732043A86D1AF4C142E360773DEB01F65AA83D6646E4FB"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/errors.ts",
+    "sha256": "0D98C8ACA820C7A3914464E3F2AEAA6287904AE238F9F76A70CFAD96D6AD7D41"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/handler_test.ts",
+    "sha256": "99C2B166DB6832700B7D862C3E1E1D425ECC3B8710B7C7BE8F70BEF0DCF0ED40"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/handler.ts",
+    "sha256": "AEA8EA0B005F0942C0E4CC48B2C28A7A48504EB6A6079F8689CF8694752D4E59"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/index.ts",
+    "sha256": "F9A6A039AB795A00C720C260B71A80DD1545D5866C057EDAFCD0A77DF3F0ED87"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/types.ts",
+    "sha256": "F15B126BD86FF7C1DDCAF7BBD0CF12DCBC27AD47283DCE576CD24E6FEEFF55ED"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/wikimedia_test.ts",
+    "sha256": "6E8936A0CCA06DDA87AE90AFB9398FD70BB611CA890DB6BC6790C9CB04C666BE"
+  },
+  {
+    "path": "supabase/functions/get-wikimedia-image/wikimedia.ts",
+    "sha256": "8B161A5D244A2A782D702F2E1AD38D50E08501E2A9384D9EAC01F8C7C6809A76"
+  },
+  {
+    "path": "supabase/functions/resolve-place/contract.ts",
+    "sha256": "CE9D1620E59CD54018D2141A23A7155AA84EE449EE85A75847EB9F1B4F57828C"
+  },
+  {
+    "path": "supabase/functions/resolve-place/errors.ts",
+    "sha256": "FA0D1BDFD09BCDE8FACF3B261EF2BF169437C0B7E8C9C2C3288029FAA68AEC76"
+  },
+  {
+    "path": "supabase/functions/resolve-place/handler_test.ts",
+    "sha256": "E1CB2A9FB3CCAF5355E3EAD7DCE56263C0A45CE98CBDC84143846626055FF7CF"
+  },
+  {
+    "path": "supabase/functions/resolve-place/handler.ts",
+    "sha256": "5833FA1DB2BE7B4DE05E0627E87A1F06E567A4E5CF49A78D211B692F6537BFF6"
+  },
+  {
+    "path": "supabase/functions/resolve-place/index.ts",
+    "sha256": "F5C3D832896D75396840EAAE76AFFF036E45B9AB21A3B3A9CC9642275AD005AC"
+  },
+  {
+    "path": "supabase/functions/resolve-place/places_test.ts",
+    "sha256": "79804224EF9EC84B2B29AF2A1E7AE09AF5AC0C8C5BABBEFEA53A5C998030AF9B"
+  },
+  {
+    "path": "supabase/functions/resolve-place/places.ts",
+    "sha256": "D7272E12AF48DDE20122B5609B287F8D4D2D393C4ABAE2D7B586B2B9C5B8723C"
+  },
+  {
+    "path": "supabase/functions/resolve-place/README.md",
+    "sha256": "A5EA8DE180E49DEB78D0E3B209E25474B03450A5C163C56A3AFDE414D6C7B4C9"
+  },
+  {
+    "path": "supabase/functions/resolve-place/types.ts",
+    "sha256": "BB01A4E21E73654941D7D27B397401BFEDFAB3321083E9F17A9D21054E92DE7B"
+  },
+  {
+    "path": "supabase/functions/search-destinations/errors.ts",
+    "sha256": "06093B52DA4E940F3BDEDC98AECDBC4A7F0FBAAEB42EEFF40D94B3A7D57350FF"
+  },
+  {
+    "path": "supabase/functions/search-destinations/handler_test.ts",
+    "sha256": "E5AB3FCC3376E0ABEB4050437B5EB86575E7021F2017D1AEDE84534C52D56425"
+  },
+  {
+    "path": "supabase/functions/search-destinations/handler.ts",
+    "sha256": "CA7C8DA6DAA4A81682BAD31945273DC566B927C7F36A56FB7B72F088C5E2FA03"
+  },
+  {
+    "path": "supabase/functions/search-destinations/index.ts",
+    "sha256": "9E1718678176CC5237E44BFC0519B99533866ACCD7D66E306007155B137C449F"
+  },
+  {
+    "path": "supabase/functions/search-destinations/places_test.ts",
+    "sha256": "FC129003405934C3E838691A396E55749473D43BFA45719130EF39DE03EF6247"
+  },
+  {
+    "path": "supabase/functions/search-destinations/places.ts",
+    "sha256": "FF5F26722FBB4659A05DA6CC8FB8D8607D4D3B4F4C5697D23D6D9E120E9483C4"
+  },
+  {
+    "path": "supabase/functions/search-destinations/types.ts",
+    "sha256": "5C2F2CD6185744E7D9F842EDD3AB91ADC692CAAC22637CE600A00BB0EAC2CD87"
+  },
+  {
+    "path": "supabase/migrations/20260819000000_supabase_personal_app_foundation.sql",
+    "sha256": "8C76345D210A1C50CE6086664E52772AEC114FFBDEF379D20BDF7A4B094884D4"
+  },
+  {
+    "path": "supabase/migrations/20260819010000_auth_profile_foundation.sql",
+    "sha256": "FAB98A0A4DC8A6A562421D0571995CAA5AE57636ADF66558F85970E5C26FA495"
+  },
+  {
+    "path": "supabase/migrations/20260819020000_itinerary_item_resolution_contract.sql",
+    "sha256": "78A6191FC79F79D02DE5D99422C26A09EF6F7C9FB0E468F30C46069F0EF615B7"
+  },
+  {
+    "path": "supabase/migrations/20260819030000_create_trip_graph_transaction.sql",
+    "sha256": "A70647ED125B49B56263D3BCFA97666F9CBE8F2F0E7C4B35EE8D58EAB34177E4"
+  },
+  {
+    "path": "supabase/migrations/20260819040000_harden_create_trip_graph_contract.sql",
+    "sha256": "7269A7DF611EB348A8CB7A13A62F8B8C0E21790AF4CBFF013BF87A90E2A3F053"
+  },
+  {
+    "path": "supabase/migrations/20260819050000_add_trip_creation_idempotency.sql",
+    "sha256": "00C851E410E62846B3735BF17FC252E4B286A3608721D1E4930540811A36D147"
+  },
+  {
+    "path": "supabase/migrations/20260819060000_add_stable_trip_persistence_errors.sql",
+    "sha256": "CBD693085DF365E769FBE2D1E15BCCBAB1B002D19A03CE05FA698BB8D8BE4006"
+  },
+  {
+    "path": "supabase/migrations/20260820000000_harden_place_snapshot_provenance.sql",
+    "sha256": "800472825257D33330C0231F039FA620A4C240F5B913479E62D5565ABB16378F"
+  },
+  {
+    "path": "supabase/migrations/20260820010000_saved_trip_query_mutation_contracts.sql",
+    "sha256": "73AC566D8DB02735985DB47ED4670253E4E6F06DDF846B8DFE41A16772850AE1"
+  },
+  {
+    "path": "supabase/migrations/20260822000000_saved_places_contract.sql",
+    "sha256": "560C41C616E09C9A23EC2499C54639D6E89AE855686C75F2A54C378C07FB6A31"
+  },
+  {
+    "path": "supabase/migrations/20260822010000_add_saved_places_update_policy.sql",
+    "sha256": "5BD09B013FB9055D375F012C656791383952E92FFA50D6034A2493AC874C8D81"
+  },
+  {
+    "path": "supabase/migrations/20260822020000_profile_stats_and_deletion.sql",
+    "sha256": "C35D29C0F5FDF406ED9BCA516F32D4E91DACF62383CB753EB8056D0AC5FADC0B"
+  },
+  {
+    "path": "supabase/migrations/20260823000000_harden_profile_stats_and_deletion.sql",
+    "sha256": "F4AFF3AF21EB75058DBF0D8C817A448A4757CD2A88E5C8C6E3CC4E01FC9EF674"
+  },
+  {
+    "path": "supabase/migrations/20260824010000_add_saved_trip_cover_place_ids.sql",
+    "sha256": "77D2C25067AB02D093DAEF33C4D2757348707461AD426E2619E2840D7AA1CD69"
+  },
+  {
+    "path": "supabase/migrations/20260903000000_workspace_persistence_foundation.sql",
+    "sha256": "74F7D2CDB3B36C09F9B06A96E1ED8510E164A6E242C76F4D99911594555824E4"
+  },
+  {
+    "path": "supabase/migrations/20260903010000_workspace_owner_scoped_mutation_contract.sql",
+    "sha256": "7FD533BF6B784418AC0EA96A0CCD4D0678C28DD57195A2F1ECECEE9ADAAD9497"
+  },
+  {
+    "path": "supabase/migrations/20260903020000_workspace_ordering_contiguity.sql",
+    "sha256": "4A897A40F47DF6DE5F1AC0E4E49D65684E520044FC38216A0E0E77D43BFA3C02"
+  },
+  {
+    "path": "supabase/migrations/20260903030000_workspace_p2_t001_read_and_create.sql",
+    "sha256": "22177865E3CE7D513258A053995A1ABC75436FF527B2A47B3A26666630C8B9FF"
+  },
+  {
+    "path": "supabase/migrations/20260904000000_workspace_p2_t002_atomic_move.sql",
+    "sha256": "828093D02D9BB67F2578B53514D3B2D02A8BA38C4126B4646EE33A2EAD63129B"
+  },
+  {
+    "path": "supabase/migrations/20260905000000_workspace_create_item_lock_corrective.sql",
+    "sha256": "BB1A23EB1E4BFE465BD2C76D0977EB82022B7145DD7E685125B3C989E262B9BA"
+  },
+  {
+    "path": "supabase/migrations/20260907000000_workspace_p2_t004_read_metadata.sql",
+    "sha256": "35BE49DF9207AD550C3A682E5D52A3E8FC6A1C36FE025BE97E372B4C29A54936"
+  },
+  {
+    "path": "supabase/migrations/20260907010000_expense_ledger_foundation.sql",
+    "sha256": "5933F8376DF12904D01F847223BE416BA8959A13AC8B3A981779B8D5316697BD"
+  },
+  {
+    "path": "supabase/migrations/20260907020000_expense_ledger_contract_corrective.sql",
+    "sha256": "677CD9AA97525E41B51D9321D38C7511A30006FB92D72C99078E65FBB55AD89A"
+  },
+  {
+    "path": "supabase/migrations/20260907030000_expense_aggregate.sql",
+    "sha256": "405805254454C45804319A3EF67A363F09EC738AA3864C85747BE5DE92346107"
+  },
+  {
+    "path": "supabase/migrations/20260907083901_trip_fx_context.sql",
+    "sha256": "C2DE7258BC382C151A0D9105ECCFDCDC316B90FB48AB4DFC0A9B2B571D321585"
+  },
+  {
+    "path": "supabase/README.md",
+    "sha256": "7B3DBE5B203D495F8722144E4B5E34E89CF447634F59A1CF3BD41D9522056E67"
+  },
+  {
+    "path": "supabase/tests/architecture/public_provider_contract_test.ts",
+    "sha256": "CD0AE993738B1FF14E3B340CAF8A092EE4456FC70EDA5255EA2A393220EA1CDA"
+  },
+  {
+    "path": "supabase/tests/persistence/bootstrap.sql",
+    "sha256": "57CA5C3944C60B6AE2D5ED3754F46885B1D03E46868A534613110EA1D176C204"
+  },
+  {
+    "path": "supabase/tests/persistence/contract.sql",
+    "sha256": "27759FAA34575582282778B335A82E53227AF22BA8D175F839347546F0082506"
+  },
+  {
+    "path": "supabase/tests/persistence/expense_aggregate_contract.sql",
+    "sha256": "B93C8939AF1969B947B609002BA788889376AA02AA5DECB05E6AEC6531FCF4E1"
+  },
+  {
+    "path": "supabase/tests/persistence/expense_ledger_contract.sql",
+    "sha256": "ABF573CEE434124CD0DF45B0B5DC7A5FF2A799A4DFAE72D69B0D22DD48EBE252"
+  },
+  {
+    "path": "supabase/tests/persistence/README.md",
+    "sha256": "4948594D8ED2B698C13C8078B1D84B0A4CD5D777605ED7EC28B9CFD85EEF3BE4"
+  },
+  {
+    "path": "supabase/tests/persistence/remote-smoke.ps1",
+    "sha256": "8FBAF5824FFB8C3D25B7C1E243F68A877BDB49621FE71A8A50A44814A1F2B129"
+  },
+  {
+    "path": "supabase/tests/persistence/run.ps1",
+    "sha256": "0A1CD8AAB2B0C48F142A0656648EB8152858227782D7E302C1E150AB8FE49802"
+  },
+  {
+    "path": "supabase/tests/persistence/trip_fx_context_contract.sql",
+    "sha256": "5E62EC7CC4BB430004424E973E236D3FA3A061FEEE47F80B2799D2F3D74253F7"
+  },
+  {
+    "path": "supabase/tests/persistence/upgrade_seed.sql",
+    "sha256": "FB294558315CF34EA5214465AD897BB3A9676D6E23C0F6D7AC3EB54FC42C1FD6"
+  },
+  {
+    "path": "supabase/tests/persistence/upgrade_verify.sql",
+    "sha256": "6AB2EB4BAA52B34060275EB8F3FD334590FDDD10342FF0A5E5DE4C0178FCD366"
+  },
+  {
+    "path": "supabase/tests/persistence/workspace_direct_writer_concurrency.ps1",
+    "sha256": "E6EAA119868247FDA9743E56706BE4849313D39BAE6F37673F955BA94491A1AE"
+  },
+  {
+    "path": "supabase/tests/persistence/workspace_move_contract.sql",
+    "sha256": "BBFBE7AA28184F3D4A651A74B4CC7A77A95CF1CB3288A62017B4E3FBFF817B5D"
+  },
+  {
+    "path": "supabase/tests/persistence/workspace_mutation_contract.sql",
+    "sha256": "B0E53827E7098FCA4426F842A6B55067509DAAB778741878FCF025B0EDD08B9F"
+  },
+  {
+    "path": "supabase/tests/persistence/workspace_security_matrix.sql",
+    "sha256": "4DFB8261FCCFC3B0D74EADC44ECD5E8CD70193B122B81C9FCA8C191747E5A9D6"
+  },
+  {
+    "path": "supabase/tests/place-resolution/remote-live-smoke.ps1",
+    "sha256": "909CA9048D0570ED992DDCA2ACD2E57A6256A37398DC6FD5A40AB8E7EDD1EA88"
+  },
+  {
+    "path": "supabase/tests/profile-settings/contract.sql",
+    "sha256": "3AF6C49DA73E524E62A865D66B862F1FAB420151102A2926FEA657C9807874B1"
+  },
+  {
+    "path": "supabase/tests/profile-settings/README.md",
+    "sha256": "C177AD195385CD8EA1E9EF83F64737718750181506AC7587420D86CAFC002C54"
+  },
+  {
+    "path": "supabase/tests/profile-settings/run.ps1",
+    "sha256": "24F4BB83966E8AB15DB7133E8ECC6DE05B98F11E40B1F89EAFC195922A29860E"
+  },
+  {
+    "path": "supabase/tests/profile-settings/upgrade_seed.sql",
+    "sha256": "D881DA1A876393BBF71C351E6EF9B29E7A82E5A1D6C1CDD5E660563C9EEF3F50"
+  },
+  {
+    "path": "supabase/tests/profile-settings/upgrade_verify.sql",
+    "sha256": "AB4D072F61A6D2B8B34B28CFCB131C0434B1E12EAC75BC96E15636016541BA45"
+  },
+  {
+    "path": "supabase/tests/saved-trips/contract.sql",
+    "sha256": "3EFBCE4A55F277EE042F5142B22984573F561CAACEE591768531D4D23D0CDBB5"
+  }
+]
