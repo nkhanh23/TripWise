@@ -96,21 +96,25 @@ export function usePlaceIntelligence(
 
   useEffect(() => {
     activePlaceIdRef.current = placeId;
-    if (!placeId) {
-      return;
-    }
+
 
     const controller = new AbortController();
     activeControllerRef.current = controller;
 
     Promise.resolve().then(() => {
       if (!controller.signal.aborted) {
-        void fetchIntelligence(placeId, controller.signal);
+        setIntelligence(null);
+        setFreshness(null);
+        setIsFallback(false);
+        setError(null);
+        setStatus('idle');
+        if (placeId) void fetchIntelligence(placeId, controller.signal);
       }
     });
 
     return () => {
       controller.abort();
+      activeControllerRef.current?.abort();
     };
   }, [fetchIntelligence, placeId]);
 
@@ -121,7 +125,7 @@ export function usePlaceIntelligence(
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         activeControllerRef.current?.abort();
         setIntelligence(null);
         setFreshness(null);

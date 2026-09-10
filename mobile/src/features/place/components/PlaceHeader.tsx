@@ -21,7 +21,7 @@ export const PlaceHeader = memo(function PlaceHeader({
   onShare,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const { colors, effectiveTheme } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -37,9 +37,7 @@ export const PlaceHeader = memo(function PlaceHeader({
           styles.circleButton,
           {
             backgroundColor:
-              effectiveTheme === 'dark'
-                ? 'rgba(30, 31, 36, 0.9)'
-                : 'rgba(255, 255, 255, 0.9)',
+              colors.background.surface,
           },
           pressed && styles.pressed,
         ]}>
@@ -50,8 +48,8 @@ export const PlaceHeader = memo(function PlaceHeader({
       <View style={styles.rightGroup}>
         {onShare ? (
           <Pressable
-            accessibilityHint="Chia sẻ địa điểm này"
-            accessibilityLabel="Chia sẻ"
+            accessibilityHint={t('common.share')}
+            accessibilityLabel={t('common.share')}
             accessibilityRole="button"
             hitSlop={8}
             onPress={onShare}
@@ -59,9 +57,7 @@ export const PlaceHeader = memo(function PlaceHeader({
               styles.circleButton,
               {
                 backgroundColor:
-                  effectiveTheme === 'dark'
-                    ? 'rgba(30, 31, 36, 0.9)'
-                    : 'rgba(255, 255, 255, 0.9)',
+                  colors.background.surface,
               },
               pressed && styles.pressed,
             ]}>
@@ -70,8 +66,8 @@ export const PlaceHeader = memo(function PlaceHeader({
         ) : null}
 
         <Pressable
-          accessibilityHint="Lưu hoặc bỏ lưu địa điểm này"
-          accessibilityLabel={isSaved ? 'Đã lưu địa điểm' : 'Lưu địa điểm'}
+          accessibilityHint={t('common.save')}
+          accessibilityLabel={t(isSaved ? 'place.savedLabel' : 'common.save')}
           accessibilityRole="button"
           accessibilityState={{ selected: isSaved }}
           hitSlop={8}
@@ -80,9 +76,7 @@ export const PlaceHeader = memo(function PlaceHeader({
             styles.circleButton,
             {
               backgroundColor:
-                effectiveTheme === 'dark'
-                  ? 'rgba(30, 31, 36, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                colors.background.surface,
             },
             isSaved && [
               styles.savedCircleButton,
@@ -122,13 +116,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: radius.pill,
     elevation: 4,
-    height: 40,
+    height: 44,
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
-    width: 40,
+    width: 44,
   },
   savedCircleButton: {
     borderWidth: 1.5,

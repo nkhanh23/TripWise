@@ -1,0 +1,1 @@
+JSON.stringify({dev: __DEV__, modules: Array.from(__r.getModules()).filter(([id,m]) => /ExploreScreen|ThemeProvider|TranslationProvider|lib.supabase.client|PlaceDetailScreen|intelligenceComposition/.test(m.verboseName || '')).map(([id,m]) => ({id, name:m.verboseName})), hook: typeof __REACT_DEVTOOLS_GLOBAL_HOOK__})

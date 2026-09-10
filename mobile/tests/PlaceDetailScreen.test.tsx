@@ -64,7 +64,7 @@ describe('PlaceDetailScreen', () => {
 
     // Reviews
     expect(screen.getByText('Reviews')).toBeTruthy();
-    expect(screen.getByText('See all (12,450)')).toBeTruthy();
+    expect(screen.getByText('12,450 reviews')).toBeTruthy();
     expect(screen.getByText('Sarah Jenkins')).toBeTruthy();
     expect(screen.getByText(/Highly recommend going near sunset/)).toBeTruthy();
 
@@ -80,18 +80,18 @@ describe('PlaceDetailScreen', () => {
 
     await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
-    const saveButton = screen.getByLabelText('Lưu địa điểm');
+    const saveButton = screen.getByLabelText('Save');
     expect(saveButton).toBeTruthy();
 
     // Press save
     await user.press(saveButton);
 
     // Label changes to saved
-    expect(screen.getByLabelText('Đã lưu địa điểm')).toBeTruthy();
+    expect(screen.getByLabelText('Saved place')).toBeTruthy();
 
     // Press again to unsave
-    await user.press(screen.getByLabelText('Đã lưu địa điểm'));
-    expect(screen.getByLabelText('Lưu địa điểm')).toBeTruthy();
+    await user.press(screen.getByLabelText('Saved place'));
+    expect(screen.getByLabelText('Save')).toBeTruthy();
   });
 
   it('triggers navigation goBack when back button is pressed', async () => {
@@ -113,7 +113,7 @@ describe('PlaceDetailScreen', () => {
       params: { placeId: 'unknown_place_xyz' },
     };
 
-    await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
+    await render(<PlaceDetailScreen initialStatus="not-found" navigation={mockNavigation} route={route} />);
 
     expect(screen.getByText('Place not found')).toBeTruthy();
     expect(screen.getByText('The requested place does not exist in our directory.')).toBeTruthy();
@@ -165,10 +165,10 @@ describe('PlaceDetailScreen', () => {
 
     expect(screen.getByText('Read more')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Xem thêm'));
+    await user.press(screen.getByLabelText('Read more'));
     expect(screen.getByText('Show less')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Thu gọn'));
+    await user.press(screen.getByLabelText('Show less'));
     expect(screen.getByText('Read more')).toBeTruthy();
   });
 
@@ -210,7 +210,7 @@ describe('PlaceDetailScreen', () => {
     const route: any = { params: { placeId: 'place_wat_arun' } };
     await render(<PlaceDetailScreen fixtureMode navigation={mockNavigation} route={route} />);
 
-    for (const label of ['Trang web', 'Gọi điện', 'Thêm vào chuyến đi', 'Chia sẻ']) {
+    for (const label of ['Website', 'Call', 'Add', 'Share']) {
       await user.press(screen.getByLabelText(label));
     }
 
@@ -225,7 +225,7 @@ describe('PlaceDetailScreen', () => {
     await render(<PlaceDetailScreen navigation={mockNavigation} route={route} />);
 
     expect(getMockPlaceDetailSpy).not.toHaveBeenCalled();
-    expect(screen.getByText('Place not found')).toBeTruthy();
+    await waitFor(() => expect(screen.getByText('Unable to load place details')).toBeTruthy());
     expect(screen.queryByText('Sarah Jenkins')).toBeNull();
     expect(screen.queryByText('100 THB per foreigner')).toBeNull();
   });

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "lint",
+    "command": "npm run lint",
+    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "exitCode": 0,
+    "startedAt": "2026-09-10T02:13:22.499Z",
+    "finishedAt": "2026-09-10T02:13:33.293Z"
+  },
+  {
+    "name": "typecheck",
+    "command": "npm run typecheck",
+    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "exitCode": 2,
+    "startedAt": "2026-09-10T02:13:33.296Z",
+    "finishedAt": "2026-09-10T02:13:45.476Z"
+  },
+  {
+    "name": "focused",
+    "command": "npm test -- --runInBand intelligence-ui-review.test.tsx",
+    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "exitCode": 0,
+    "startedAt": "2026-09-10T02:13:45.477Z",
+    "finishedAt": "2026-09-10T02:13:55.906Z"
+  },
+  {
+    "name": "full-jest",
+    "command": "npm test -- --runInBand",
+    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "exitCode": 1,
+    "startedAt": "2026-09-10T02:13:55.906Z",
+    "finishedAt": "2026-09-10T02:15:28.443Z"
+  }
+]

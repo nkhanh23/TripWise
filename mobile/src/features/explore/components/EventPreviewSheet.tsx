@@ -19,7 +19,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
   onClose,
 }: Props) {
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const venue = event.venues?.[0];
   const hasCoordinates = venue?.location !== undefined;
@@ -32,7 +32,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
     if (start.kind === 'UTC') {
       try {
         const d = new Date(start.dateTime);
-        const dateStr = d.toLocaleDateString(undefined, {
+        const dateStr = d.toLocaleDateString(locale, {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -40,7 +40,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
         });
         const timeStr = start.timeTBA
           ? t('intelligence.events.timeTBA')
-          : d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+          : d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
         return `${dateStr} • ${timeStr}`;
       } catch {
         return start.dateTime;
@@ -53,7 +53,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
       const timePart = timeStr ? ` • ${timeStr}` : '';
       return `${start.localDate}${timePart} ${localLabel}`;
     }
-  }, [event.start, t]);
+  }, [event.start, t, locale]);
 
   return (
     <View
@@ -74,9 +74,9 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
           <View
             accessibilityLabel={t('intelligence.reviewRequired')}
             accessibilityRole="text"
-            style={[styles.reviewBadge, { backgroundColor: '#FFF3CD', borderColor: '#FFEEBA' }]}>
-            <MaterialIcons color="#856404" name="rate-review" size={13} />
-            <Text style={[styles.reviewBadgeText, { color: '#856404' }]}>
+            style={[styles.reviewBadge, { backgroundColor: colors.background.surfaceVariant, borderColor: colors.border.default }]}>
+            <MaterialIcons color={colors.text.secondary} name="rate-review" size={13} />
+            <Text style={[styles.reviewBadgeText, { color: colors.text.secondary }]}>
               {t('intelligence.reviewRequired')}
             </Text>
           </View>
@@ -94,19 +94,19 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
             </View>
           ) : null}
 
-          {/* Ticketmaster Official Attribution */}
+          {/* Textual provider disclosure */}
           <View
             accessibilityLabel={t('intelligence.events.attribution')}
             accessibilityRole="text"
-            style={[styles.tmBadge, { backgroundColor: '#024DDF' }]}>
-            <Text style={styles.tmBadgeText}>Ticketmaster</Text>
+            style={[styles.tmBadge, { backgroundColor: colors.brand.primary }]}>
+            <Text style={[styles.tmBadgeText, { color: colors.text.inverse }]}>Ticketmaster</Text>
           </View>
         </View>
 
         {/* Close Button */}
         <Pressable
-          accessibilityHint="Đóng khung xem trước sự kiện"
-          accessibilityLabel="Đóng"
+          accessibilityHint={t('intelligence.events.closeHint')}
+          accessibilityLabel={t('common.close')}
           accessibilityRole="button"
           hitSlop={8}
           onPress={onClose}
@@ -135,7 +135,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
           <MaterialIcons color={colors.brand.primary} name="event" size={18} />
           <View style={styles.factContent}>
             <Text style={[styles.factLabel, { color: colors.text.muted }]}>
-              {t('place.openingHours')}
+              {t('intelligence.events.dateTime')}
             </Text>
             <Text style={[styles.factValue, { color: colors.text.primary }]}>
               {formattedTime}
@@ -152,7 +152,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
           />
           <View style={styles.factContent}>
             <Text style={[styles.factLabel, { color: colors.text.muted }]}>
-              {t('place.address')}
+              {t('intelligence.events.venue')}
             </Text>
             <Text style={[styles.factValue, { color: colors.text.primary }]}>
               {venue?.name ?? t('intelligence.events.venueUnavailable')}
@@ -178,7 +178,7 @@ export const EventPreviewSheet = memo(function EventPreviewSheet({
       </View>
 
       {/* Attribution Footer */}
-      <View style={styles.footerRow}>
+      <View style={[styles.footerRow, { borderTopColor: colors.border.subtle }]}>
         <Text style={[styles.footerText, { color: colors.text.muted }]}>
           {t('intelligence.events.attribution')}
         </Text>
@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     position: 'absolute',
     right: 0,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.12,
     shadowRadius: 12,
@@ -219,6 +218,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headerBadges: {
+    flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -256,16 +256,15 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   tmBadgeText: {
-    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: typography.fontWeight.bold,
   },
   closeButton: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 32,
+    height: 44,
     justifyContent: 'center',
-    width: 32,
+    width: 44,
   },
   closeButtonPressed: {
     opacity: 0.7,

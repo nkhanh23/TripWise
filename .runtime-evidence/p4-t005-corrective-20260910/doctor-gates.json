@@ -1,0 +1,10 @@
+[
+  {
+    "name": "doctor",
+    "command": "npx expo-doctor",
+    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "exitCode": 1,
+    "startedAt": "2026-09-10T02:17:17.264Z",
+    "finishedAt": "2026-09-10T02:18:29.851Z"
+  }
+]

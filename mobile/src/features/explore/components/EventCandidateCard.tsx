@@ -19,7 +19,7 @@ export const EventCandidateCard = memo(function EventCandidateCard({
   onPress,
 }: Props) {
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const venue = event.venues?.[0];
   const hasCoordinates = venue?.location !== undefined;
@@ -33,14 +33,14 @@ export const EventCandidateCard = memo(function EventCandidateCard({
     if (start.kind === 'UTC') {
       try {
         const d = new Date(start.dateTime);
-        const dateStr = d.toLocaleDateString(undefined, {
+        const dateStr = d.toLocaleDateString(locale, {
           weekday: 'short',
           month: 'short',
           day: 'numeric',
         });
         const timeStr = start.timeTBA
           ? t('intelligence.events.timeTBA')
-          : d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+          : d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
         return `${dateStr} • ${timeStr}`;
       } catch {
         return start.dateTime;
@@ -54,12 +54,12 @@ export const EventCandidateCard = memo(function EventCandidateCard({
       const timePart = timeStr ? ` • ${timeStr}` : '';
       return `${start.localDate}${timePart} ${localLabel}`;
     }
-  }, [event.start, t]);
+  }, [event.start, t, locale]);
 
   return (
     <Pressable
       accessibilityHint={t('intelligence.events.viewDetails')}
-      accessibilityLabel={`${event.title}, ${formattedTime}, ${venue?.name ?? ''}`}
+      accessibilityLabel={`${event.title}, ${formattedTime}, ${venue?.name ?? ''}, ${t('intelligence.reviewRequired')}, ${t('intelligence.events.attribution')}${isFallback ? `, ${t('intelligence.stale')}` : ''}`}
       accessibilityRole="button"
       onPress={() => onPress?.(event)}
       style={({ pressed }) => [
@@ -77,9 +77,9 @@ export const EventCandidateCard = memo(function EventCandidateCard({
           <View
             accessibilityLabel={t('intelligence.reviewRequired')}
             accessibilityRole="text"
-            style={[styles.reviewBadge, { backgroundColor: '#FFF3CD', borderColor: '#FFEEBA' }]}>
-            <MaterialIcons color="#856404" name="rate-review" size={12} />
-            <Text style={[styles.reviewBadgeText, { color: '#856404' }]}>
+            style={[styles.reviewBadge, { backgroundColor: colors.background.surfaceVariant, borderColor: colors.border.default }]}>
+            <MaterialIcons color={colors.text.secondary} name="rate-review" size={12} />
+            <Text style={[styles.reviewBadgeText, { color: colors.text.secondary }]}>
               {t('intelligence.reviewRequired')}
             </Text>
           </View>
@@ -98,12 +98,12 @@ export const EventCandidateCard = memo(function EventCandidateCard({
           ) : null}
         </View>
 
-        {/* Ticketmaster Official Attribution Badge */}
+        {/* Textual provider disclosure */}
         <View
           accessibilityLabel={t('intelligence.events.attribution')}
           accessibilityRole="text"
-          style={[styles.tmBadge, { backgroundColor: '#024DDF' }]}>
-          <Text style={styles.tmBadgeText}>Ticketmaster</Text>
+          style={[styles.tmBadge, { backgroundColor: colors.brand.primary }]}>
+          <Text style={[styles.tmBadgeText, { color: colors.text.inverse }]}>Ticketmaster</Text>
         </View>
       </View>
 
@@ -134,7 +134,7 @@ export const EventCandidateCard = memo(function EventCandidateCard({
       </View>
 
       {/* Source disclosure */}
-      <View style={styles.footerRow}>
+      <View style={[styles.footerRow, { borderTopColor: colors.border.subtle }]}>
         <Text style={[styles.sourceText, { color: colors.text.muted }]}>
           {t('intelligence.events.attribution')}
         </Text>
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.lg,
     marginVertical: spacing.xs,
     padding: spacing.md,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 3,
@@ -204,7 +203,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   tmBadgeText: {
-    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: typography.fontWeight.bold,
     letterSpacing: 0.3,
@@ -224,7 +222,6 @@ const styles = StyleSheet.create({
     fontSize: typography.bodySmall,
   },
   footerRow: {
-    borderTopColor: '#EEEEEE',
     borderTopWidth: 0.5,
     marginTop: 4,
     paddingTop: 4,

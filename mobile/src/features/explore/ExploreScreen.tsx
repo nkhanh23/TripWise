@@ -7,6 +7,7 @@ import { useTheme } from '../../theme';
 import { radius, spacing, typography } from '../../theme/tokens';
 import { useTranslation } from '../../i18n';
 import type { EventCandidate, EventIntelligenceRepository, EventIntelligenceRequest } from '../../integration/eventIntelligenceContract';
+import { validateEventIntelligenceRequest } from '../../integration/eventIntelligenceContract';
 import type { ExplorePlacesRepository } from '../../integration/repositories';
 import { EventCandidateCard } from './components/EventCandidateCard';
 import { EventEmptyState } from './components/EventEmptyState';
@@ -78,21 +79,15 @@ export function ExploreScreen({
     retry,
   } = useExploreDiscovery(repository, initialPlaces, initialStatus);
 
-  // Default Event Discovery request: upcoming 7-day window
+  // Navigation currently supplies no factual city/country. Only explicit validated context is usable.
   const eventRequest: EventIntelligenceRequest | null = useMemo(() => {
     if (exploreMode !== 'events') return null;
-    if (initialEventRequest) return initialEventRequest;
-
-    const now = new Date();
-    const startDateTime = new Date(now.getTime() + 86400000).toISOString().replace(/\.\d{3}Z$/, 'Z');
-    const endDateTime = new Date(now.getTime() + 7 * 86400000).toISOString().replace(/\.\d{3}Z$/, 'Z');
-    return {
-      city: 'London',
-      countryCode: 'GB',
-      startDateTime,
-      endDateTime,
-      limit: 3,
-    };
+    if (!initialEventRequest) return null;
+    try {
+      return validateEventIntelligenceRequest(initialEventRequest);
+    } catch {
+      return null;
+    }
   }, [exploreMode, initialEventRequest]);
 
   // Live Event Intelligence
@@ -115,7 +110,7 @@ export function ExploreScreen({
     (normalizedStatus === 'refreshing' || hasBackgroundError);
 
   // Top header height calculation for List mode padding
-  const topControlsHeight = Math.max(insets.top, spacing.md) + 50 + 46 + 40;
+  const topControlsHeight = Math.max(insets.top, spacing.md) + 50 + 46 + 50;
 
   // Filter places based on category and search query
   const filteredPlaces = useMemo(() => {
@@ -237,7 +232,12 @@ export function ExploreScreen({
         <ScrollView
           contentContainerStyle={[styles.eventsListContent, { paddingTop: topControlsHeight }]}
           showsVerticalScrollIndicator={false}>
-          {filteredEvents.map((ev) => (
+          {!eventRequest ? <EventEmptyState locationUnavailable /> : null}
+          {eventRequest && eventStatus === 'empty' ? <EventEmptyState /> : null}
+          {eventRequest && eventStatus === 'error' ? (
+            <EventErrorState isRateLimited={isRateLimited} onRetry={handleRetry} />
+          ) : null}
+          {(eventRequest ? filteredEvents : []).map((ev) => (
             <EventCandidateCard
               event={ev}
               isFallback={isEventFallback}
@@ -253,8 +253,8 @@ export function ExploreScreen({
         {/* Mode Switcher: Places vs Live Events */}
         <View style={styles.modeSwitcherWrap}>
           <Pressable
-            accessibilityHint="Chuyển sang xem các địa điểm du lịch"
-            accessibilityLabel="Địa điểm"
+            accessibilityHint={t('explore.placesModeHint')}
+            accessibilityLabel={t('explore.modePlaces')}
             accessibilityRole="button"
             accessibilityState={{ selected: exploreMode === 'places' }}
             onPress={() => {
@@ -265,7 +265,7 @@ export function ExploreScreen({
               styles.modeTab,
               exploreMode === 'places'
                 ? [styles.modeTabActive, { backgroundColor: colors.brand.primary }]
-                : [styles.modeTabInactive, { backgroundColor: colors.background.surface }],
+                : [styles.modeTabInactive, { backgroundColor: colors.background.surface, borderColor: colors.border.default }],
             ]}>
             <MaterialIcons
               color={exploreMode === 'places' ? colors.text.inverse : colors.text.secondary}
@@ -282,8 +282,8 @@ export function ExploreScreen({
           </Pressable>
 
           <Pressable
-            accessibilityHint="Chuyển sang xem sự kiện trực tiếp Ticketmaster"
-            accessibilityLabel="Sự kiện trực tiếp"
+            accessibilityHint={t('explore.eventsModeHint')}
+            accessibilityLabel={t('intelligence.events.title')}
             accessibilityRole="button"
             accessibilityState={{ selected: exploreMode === 'events' }}
             onPress={() => {
@@ -293,8 +293,8 @@ export function ExploreScreen({
             style={[
               styles.modeTab,
               exploreMode === 'events'
-                ? [styles.modeTabActive, { backgroundColor: '#024DDF' }]
-                : [styles.modeTabInactive, { backgroundColor: colors.background.surface }],
+                ? [styles.modeTabActive, { backgroundColor: colors.brand.primary }]
+                : [styles.modeTabInactive, { backgroundColor: colors.background.surface, borderColor: colors.border.default }],
             ]}>
             <MaterialIcons
               color={exploreMode === 'events' ? colors.text.inverse : colors.text.secondary}
@@ -336,7 +336,7 @@ export function ExploreScreen({
       {(exploreMode === 'places' && normalizedStatus === 'initial-loading') ||
       (exploreMode === 'events' && eventStatus === 'loading') ? (
         <View
-          accessibilityLabel={exploreMode === 'events' ? 'Đang tải dữ liệu sự kiện' : 'Đang tải dữ liệu bản đồ'}
+          accessibilityLabel={t(exploreMode === 'events' ? 'intelligence.events.loading' : 'explore.loading')}
           accessibilityRole="progressbar"
           style={[styles.loadingOverlay, { backgroundColor: colors.overlay.scrim }]}>
           <ActivityIndicator color={colors.brand.primary} size="large" />
@@ -348,15 +348,12 @@ export function ExploreScreen({
         <ExploreErrorState onRetry={handleRetry} />
       ) : null}
 
-      {exploreMode === 'events' && eventStatus === 'error' ? (
-        <EventErrorState isRateLimited={isRateLimited} onRetry={handleRetry} />
-      ) : null}
 
       {exploreMode === 'places' && hasBackgroundError && hasUsablePlaces ? (
         <View style={styles.backgroundErrorWrap}>
           <Pressable
-            accessibilityHint="Thử tải lại dữ liệu địa điểm"
-            accessibilityLabel="Thử lại tải dữ liệu bản đồ"
+            accessibilityHint={t('explore.retryHint')}
+            accessibilityLabel={t('common.retry')}
             accessibilityRole="button"
             onPress={handleRetry}
             style={[
@@ -379,9 +376,6 @@ export function ExploreScreen({
         <ExploreEmptyState onReset={handleResetFilters} />
       ) : null}
 
-      {exploreMode === 'events' && eventStatus === 'empty' ? (
-        <EventEmptyState />
-      ) : null}
 
       {/* 7. Selected Place Bottom Preview Sheet */}
       {exploreMode === 'places' && normalizedStatus === 'ready' && selectedPlace ? (
@@ -393,7 +387,7 @@ export function ExploreScreen({
       ) : null}
 
       {/* 8. Selected Event Bottom Preview Sheet */}
-      {exploreMode === 'events' && selectedEvent ? (
+      {exploreMode === 'events' && eventRequest && selectedEvent && events.includes(selectedEvent) ? (
         <EventPreviewSheet
           event={selectedEvent}
           isFallback={isEventFallback}
@@ -428,10 +422,9 @@ const styles = StyleSheet.create({
     elevation: 2,
     flexDirection: 'row',
     gap: 5,
-    height: 34,
+    minHeight: 44,
     justifyContent: 'center',
     paddingHorizontal: spacing.md,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -439,7 +432,6 @@ const styles = StyleSheet.create({
   modeTabActive: {},
   modeTabInactive: {
     borderWidth: 0.5,
-    borderColor: '#E0E0E0',
   },
   modeTabText: {
     fontSize: typography.bodySmall,
@@ -460,9 +452,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
     elevation: 3,
-    height: 36,
+    height: 44,
     justifyContent: 'center',
-    width: 36,
+    width: 44,
   },
   loadingOverlay: {
     alignItems: 'center',

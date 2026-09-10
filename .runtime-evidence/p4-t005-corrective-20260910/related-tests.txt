@@ -1,0 +1,458 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand ExploreScreen.test.tsx ExploreProductionScreen.test.tsx PlaceDetailScreen.test.tsx SharedComponentPolish.test.tsx
+
+PASS tests/ExploreScreen.test.tsx (8.773 s)
+  ● Console
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 2, validCoordinates: 2, visiblePlaces: 2 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 2, validCoordinates: 2, visiblePlaces: 2 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 6, validCoordinates: 6, visiblePlaces: 6 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 32, validCoordinates: 32, visiblePlaces: 50 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 32, validCoordinates: 32, visiblePlaces: 50 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 1, validCoordinates: 1, visiblePlaces: 1 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 7, validCoordinates: 7, visiblePlaces: 7 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+    console.info
+      [ExploreMapCanvas] marker diagnostics { renderedMarkers: 0, validCoordinates: 0, visiblePlaces: 0 }
+
+      at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
+
+PASS tests/PlaceDetailScreen.test.tsx
+PASS tests/SharedComponentPolish.test.tsx
+PASS tests/ExploreProductionScreen.test.tsx
+  ● Console
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 2 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'restaurants', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'restaurants', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+    console.info
+      [ExploreDiscovery] request { category: 'all', limit: 12 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:124:28)
+
+    console.info
+      [ExploreDiscovery] success { category: 'all', places: 1 }
+
+      at info (src/features/explore/hooks/useExploreDiscovery.ts:135:30)
+
+
+Test Suites: 4 passed, 4 total
+Tests:       60 passed, 60 total
+Snapshots:   0 total
+Time:        14.909 s
+Ran all test suites matching /ExploreScreen.test.tsx|ExploreProductionScreen.test.tsx|PlaceDetailScreen.test.tsx|SharedComponentPolish.test.tsx/i.

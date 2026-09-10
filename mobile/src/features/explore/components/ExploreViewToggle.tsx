@@ -26,7 +26,7 @@ export const ExploreViewToggle = memo(function ExploreViewToggle({ viewMode, onT
             : 'Chuyển sang chế độ xem bản đồ tương tác'
         }
         accessibilityLabel={
-          isMap ? 'Chuyển sang chế độ danh sách' : 'Chuyển sang chế độ bản đồ'
+          t(isMap ? 'explore.switchToList' : 'explore.switchToMap')
         }
         accessibilityRole="button"
         onPress={onToggle}
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     elevation: 6,
     flexDirection: 'row',
     gap: spacing.xs,
-    height: 42,
+    height: 44,
     paddingHorizontal: spacing.lg,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },

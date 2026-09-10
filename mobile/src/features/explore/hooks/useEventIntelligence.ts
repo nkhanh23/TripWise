@@ -84,21 +84,25 @@ export function useEventIntelligence(
   }, [fetchEvents, request]);
 
   useEffect(() => {
-    if (!request) {
-      return;
-    }
+
 
     const controller = new AbortController();
     activeControllerRef.current = controller;
 
     Promise.resolve().then(() => {
       if (!controller.signal.aborted) {
-        void fetchEvents(request, controller.signal);
+        setEvents([]);
+        setFreshness(null);
+        setIsFallback(false);
+        setError(null);
+        setStatus('idle');
+        if (request) void fetchEvents(request, controller.signal);
       }
     });
 
     return () => {
       controller.abort();
+      activeControllerRef.current?.abort();
     };
   }, [fetchEvents, request]);
 
@@ -109,7 +113,7 @@ export function useEventIntelligence(
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         activeControllerRef.current?.abort();
         setEvents([]);
         setFreshness(null);

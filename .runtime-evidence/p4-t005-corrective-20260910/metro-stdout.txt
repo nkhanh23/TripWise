@@ -1,0 +1,30 @@
+env: load .env.local .env
+env: export EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+Starting project at D:\Dev\TripWise\mobile
+Logs: D:\Dev\TripWise\mobile\.expo\dev\logs\start.log
+Using src/app as the root directory for Expo Router.
+Metro is running in CI mode, reloads are disabled. Remove CI=true to enable watch mode.
+Starting Metro Bundler
+
+Waiting on http://localhost:8081
+
+Logs for your project will appear below.
+| (node:10672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:10672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:10672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:10672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:10672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:10672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+Android Bundled 3335ms index.ts (1337 modules)
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 0, "validCoordinates": 0, "visiblePlaces": 0}
+ INFO  [ExploreDiscovery] request {"category": "all", "limit": 12}
+ INFO  [ExploreDiscovery] success {"category": "all", "places": 12}
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
+ INFO  [ExploreMapCanvas] layout ready
+ INFO  [ExploreMapCanvas] map ready

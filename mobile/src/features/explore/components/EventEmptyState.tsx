@@ -6,7 +6,7 @@ import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 
-export function EventEmptyState() {
+export function EventEmptyState({ locationUnavailable = false }: { locationUnavailable?: boolean }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -21,10 +21,10 @@ export function EventEmptyState() {
       ]}>
       <MaterialIcons color={colors.text.muted} name="event-busy" size={32} />
       <Text style={[styles.title, { color: colors.text.primary }]}>
-        {t('intelligence.events.emptyTitle')}
+        {t(locationUnavailable ? 'intelligence.events.locationUnavailableTitle' : 'intelligence.events.emptyTitle')}
       </Text>
       <AppText style={styles.subtitle}>
-        {t('intelligence.events.emptySubtitle')}
+        {t(locationUnavailable ? 'intelligence.events.locationUnavailableSubtitle' : 'intelligence.events.emptySubtitle')}
       </AppText>
     </View>
   );
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.lg,
     marginTop: spacing.xl,
     padding: spacing.xl,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,

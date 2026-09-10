@@ -49,9 +49,9 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           <View
             accessibilityLabel={t('intelligence.reviewRequired')}
             accessibilityRole="text"
-            style={[styles.reviewBadge, { backgroundColor: '#FFF3CD', borderColor: '#FFEEBA' }]}>
-            <MaterialIcons color="#856404" name="rate-review" size={12} />
-            <Text style={[styles.reviewBadgeText, { color: '#856404' }]}>
+            style={[styles.reviewBadge, { backgroundColor: colors.background.surfaceVariant, borderColor: colors.border.default }]}>
+            <MaterialIcons color={colors.text.secondary} name="rate-review" size={12} />
+            <Text style={[styles.reviewBadgeText, { color: colors.text.secondary }]}>
               {t('intelligence.reviewRequired')}
             </Text>
           </View>
@@ -68,7 +68,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
                 </Text>
                 {place.reviewCount !== undefined ? (
                   <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
-                    ({place.reviewCount.toLocaleString()} reviews)
+                    {t('place.reviewCount', { count: place.reviewCount.toLocaleString() })}
                   </Text>
                 ) : null}
                 <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
@@ -82,8 +82,8 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
 
         {/* Close Button */}
         <Pressable
-          accessibilityHint="Đóng khung xem trước địa điểm"
-          accessibilityLabel="Đóng"
+          accessibilityHint={t('explore.closePreviewHint')}
+          accessibilityLabel={t('common.close')}
           accessibilityRole="button"
           hitSlop={8}
           onPress={onClose}
@@ -112,7 +112,7 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           />
         ) : (
           <View
-            accessibilityLabel="No place image available"
+            accessibilityLabel={t('place.imageUnavailable')}
             style={[
               styles.thumbnail,
               styles.thumbnailPlaceholder,
@@ -144,8 +144,8 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
       {/* Quick Action Buttons */}
       <View style={styles.actionsRow}>
         <Pressable
-          accessibilityHint="Xem tuyến đường và chỉ đường tới địa điểm"
-          accessibilityLabel="Chỉ đường"
+          accessibilityHint={t('place.directionsHint')}
+          accessibilityLabel={t('place.getDirections')}
           accessibilityRole="button"
           onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
@@ -158,8 +158,8 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
         </Pressable>
 
         <Pressable
-          accessibilityHint="Lưu địa điểm này vào danh sách yêu thích"
-          accessibilityLabel="Lưu địa điểm"
+          accessibilityHint={t('common.unavailableMessage')}
+          accessibilityLabel={t('common.save')}
           accessibilityRole="button"
           onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
@@ -176,8 +176,8 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
         </Pressable>
 
         <Pressable
-          accessibilityHint="Xem thông tin giá vé tham quan"
-          accessibilityLabel="Vé tham quan"
+          accessibilityHint={t('common.unavailableMessage')}
+          accessibilityLabel={t('place.entryFee')}
           accessibilityRole="button"
           onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
@@ -194,8 +194,8 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
         </Pressable>
 
         <Pressable
-          accessibilityHint="Chia sẻ địa điểm này cho bạn bè"
-          accessibilityLabel="Chia sẻ địa điểm"
+          accessibilityHint={t('common.unavailableMessage')}
+          accessibilityLabel={t('common.share')}
           accessibilityRole="button"
           onPress={handleUnavailableAction}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}>
@@ -237,7 +237,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     position: 'absolute',
     right: 0,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -303,9 +302,9 @@ const styles = StyleSheet.create({
   closeButton: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 32,
+    height: 44,
     justifyContent: 'center',
-    width: 32,
+    width: 44,
   },
   closeButtonPressed: {
     opacity: 0.7,

@@ -171,7 +171,7 @@ describe('production Explore discovery', () => {
 
     const view = await render(<ExploreScreen repository={repo} />);
 
-    expect(view.getByLabelText('Đang tải dữ liệu bản đồ')).toBeTruthy();
+    expect(view.getByLabelText('Loading map data')).toBeTruthy();
     expect(repo.discover).toHaveBeenCalledTimes(1);
 
     await resolveDeferred(initialRequest, [attraction]);
@@ -183,7 +183,7 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={repo} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    expect(view.queryByLabelText('Đang tải dữ liệu bản đồ')).toBeNull();
+    expect(view.queryByLabelText('Loading map data')).toBeNull();
     expect(repo.discover).toHaveBeenCalledTimes(1);
   });
 
@@ -192,9 +192,9 @@ describe('production Explore discovery', () => {
     const view = await render(<ExploreScreen repository={repo} />);
 
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
-    await fireEvent.changeText(view.getByLabelText('Tìm kiếm địa điểm'), 'Real');
+    await fireEvent.changeText(view.getByLabelText('Search'), 'Real');
     await waitFor(() => expect(view.queryByText('Wat Arun')).toBeNull());
-    await fireEvent.changeText(view.getByLabelText('Tìm kiếm địa điểm'), '');
+    await fireEvent.changeText(view.getByLabelText('Search'), '');
     await waitFor(() => expect(view.getByText('Wat Arun')).toBeTruthy());
     expect(repo.discover).toHaveBeenCalledTimes(1);
   });
@@ -208,7 +208,7 @@ describe('production Explore discovery', () => {
 
     await waitFor(() => expect(view.getByTestId('mock-map-status').props.children).toBe('moving'));
     expect(view.getByText('Wat Arun')).toBeTruthy();
-    expect(view.queryByLabelText('Đang tải dữ liệu bản đồ')).toBeNull();
+    expect(view.queryByLabelText('Loading map data')).toBeNull();
     expect(repo.discover).toHaveBeenCalledTimes(1);
   });
 
@@ -327,7 +327,7 @@ describe('production Explore discovery', () => {
     await fireEvent.press(view.getByLabelText('Restaurants'));
 
     await waitFor(() => expect(discover).toHaveBeenCalledTimes(2));
-    expect(view.queryByLabelText('Đang tải dữ liệu bản đồ')).toBeNull();
+    expect(view.queryByLabelText('Loading map data')).toBeNull();
     expect(view.getByTestId('mock-markers-dimmed').props.children).toBe('dimmed');
     expect(view.getByText('Wat Arun')).toBeTruthy();
 
@@ -355,7 +355,7 @@ describe('production Explore discovery', () => {
 
     jest.useRealTimers();
     await rejectDeferred(backgroundRefresh, new Error('network'));
-    await waitFor(() => expect(view.getByLabelText('Thử lại tải dữ liệu bản đồ')).toBeTruthy());
+    await waitFor(() => expect(view.getByLabelText('Retry')).toBeTruthy());
 
     expect(view.getByText('Wat Arun')).toBeTruthy();
     expect(view.queryByText('Unable to load map')).toBeNull();
@@ -389,7 +389,7 @@ describe('production Explore discovery', () => {
     await advanceTimers(400);
 
     expect(discover).toHaveBeenCalledTimes(2);
-    expect(view.queryByLabelText('Đang tải dữ liệu bản đồ')).toBeNull();
+    expect(view.queryByLabelText('Loading map data')).toBeNull();
     expect(view.getByText('Wat Arun')).toBeTruthy();
 
     jest.useRealTimers();

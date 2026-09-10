@@ -32,8 +32,8 @@ export function ExploreSearchBar({ searchQuery, onSearchChange, onClear }: Props
           style={styles.searchIcon}
         />
         <TextInput
-          accessibilityHint="Tìm kiếm địa điểm theo tên hoặc khu vực"
-          accessibilityLabel="Tìm kiếm địa điểm"
+          accessibilityHint={t('explore.searchHint')}
+          accessibilityLabel={t('common.search')}
           autoCapitalize="none"
           autoCorrect={false}
           clearButtonMode="while-editing"
@@ -46,8 +46,8 @@ export function ExploreSearchBar({ searchQuery, onSearchChange, onClear }: Props
         />
         {searchQuery.length > 0 ? (
           <Pressable
-            accessibilityHint="Xóa nội dung đang tìm kiếm"
-            accessibilityLabel="Xóa tìm kiếm"
+            accessibilityHint={t('explore.clearSearch')}
+            accessibilityLabel={t('explore.clearSearch')}
             accessibilityRole="button"
             hitSlop={8}
             onPress={onClear}
@@ -56,8 +56,8 @@ export function ExploreSearchBar({ searchQuery, onSearchChange, onClear }: Props
           </Pressable>
         ) : null}
         <Pressable
-          accessibilityHint="Mở bộ lọc tìm kiếm"
-          accessibilityLabel="Bộ lọc"
+          accessibilityHint={t('explore.filters')}
+          accessibilityLabel={t('explore.filters')}
           accessibilityRole="button"
           hitSlop={8}
           style={[
@@ -103,17 +103,17 @@ const styles = StyleSheet.create({
   clearButton: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 24,
+    height: 44,
     justifyContent: 'center',
     marginRight: spacing.xs,
-    width: 24,
+    width: 44,
   },
   filterButton: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 32,
+    height: 44,
     justifyContent: 'center',
     marginLeft: spacing.xs,
-    width: 32,
+    width: 44,
   },
 });

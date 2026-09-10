@@ -1,5 +1,10 @@
 import { cleanup, fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
+import { StyleSheet } from 'react-native';
+import { TranslationProvider } from '../src/i18n';
+import { ThemeProvider } from '../src/theme';
+import { darkPalette, lightPalette } from '../src/theme/palettes';
+import { ExploreScreen } from '../src/features/explore/ExploreScreen';
 import { enTranslations } from '../src/i18n/en';
 import { viTranslations } from '../src/i18n/vi';
 import type { DiscoveryCandidate } from '../src/integration/candidateDiscoveryContract';
@@ -253,7 +258,7 @@ describe('FEATURE-P4-T005: Intelligence UI Review & Verification Suite', () => {
   });
 
   // 5. Ticketmaster attribution
-  it('5. resolves displayRequirement to official Ticketmaster attribution badge with accessible role and label', async () => {
+  it('5. discloses Ticketmaster as provider with accessible role and label', async () => {
     await render(<EventCandidateCard event={mockUtcEvent} />);
 
     expect(screen.getByText('Ticketmaster')).toBeTruthy();
@@ -401,7 +406,7 @@ describe('FEATURE-P4-T005: Intelligence UI Review & Verification Suite', () => {
 
     expect(screen.getByText('Unable to load events')).toBeTruthy();
     const retryBtn = screen.getByText('Retry');
-    fireEvent.press(retryBtn);
+    await fireEvent.press(retryBtn);
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
@@ -534,8 +539,8 @@ describe('FEATURE-P4-T005: Intelligence UI Review & Verification Suite', () => {
     expect(screen.getByText('London Symphony Orchestra Special')).toBeTruthy();
     expect(screen.getByText('Live provider fact. Review before adding to itinerary.')).toBeTruthy();
 
-    const closeBtn = screen.getByLabelText('Đóng');
-    fireEvent.press(closeBtn);
+    const closeBtn = screen.getByLabelText('Close');
+    await fireEvent.press(closeBtn);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -587,7 +592,7 @@ describe('FEATURE-P4-T005: Intelligence UI Review & Verification Suite', () => {
   });
 
   // 27. Light theme colors
-  it('27. renders Ticketmaster badge with official brand blue (#024DDF)', async () => {
+  it('27. renders textual Ticketmaster disclosure', async () => {
     await render(<EventCandidateCard event={mockUtcEvent} />);
     const tmBadge = screen.getByLabelText('Events powered by Ticketmaster');
     expect(tmBadge).toBeTruthy();
@@ -641,5 +646,80 @@ describe('FEATURE-P4-T005: Intelligence UI Review & Verification Suite', () => {
     expect(cache.size).toBe(2);
     cache.clear();
     expect(cache.size).toBe(0);
+  });
+});
+
+
+describe('T005 corrective context and rendered locale/theme matrix', () => {
+  const request = { city: 'London', countryCode: 'GB', startDateTime: '2026-09-10T00:00:00Z', endDateTime: '2026-09-17T00:00:00Z', limit: 3 };
+  const result = { events: [mockUtcEvent], pagination: { size: 1, number: 0, totalElements: 1, totalPages: 1 }, providerAccess: { httpStatus: 200, completedProviderCalls: 1, rateLimitHeaders: {} } };
+  afterEach(() => cleanup());
+  it.each([undefined, { ...request, city: '' }, { ...request, countryCode: 'invalid' }])('no valid context invokes zero event requests (%j)', async context => {
+    const repo = { discover: jest.fn().mockResolvedValue(result), cancel: jest.fn() };
+    await render(<ExploreScreen initialPlaces={[]} initialExploreMode="events" initialEventRequest={context} eventRepository={repo} />);
+    expect(screen.getByText('Event location unavailable')).toBeTruthy();
+    expect(repo.discover).not.toHaveBeenCalled();
+    await fireEvent.press(screen.getByLabelText('Places'));
+    await fireEvent.press(screen.getByLabelText('Live Events'));
+    expect(repo.discover).not.toHaveBeenCalled();
+  });
+  it.each([['London', 'GB'], ['Paris', 'FR']])('uses explicit %s/%s without a fallback', async (city, countryCode) => {
+    const repo = { discover: jest.fn().mockResolvedValue(result), cancel: jest.fn() };
+    const context = { ...request, city, countryCode };
+    await render(<ExploreScreen initialPlaces={[]} initialExploreMode="events" initialEventRequest={context} eventRepository={repo} />);
+    await waitFor(() => expect(repo.discover).toHaveBeenCalledTimes(1));
+    expect(repo.discover.mock.calls[0][0]).toEqual(context);
+    expect(screen.queryByText('Event location unavailable')).toBeNull();
+  });
+  it('mode switches reuse the bounded cached repository without duplicate provider calls', async () => {
+    const delegate = { discover: jest.fn().mockResolvedValue(result), cancel: jest.fn() };
+    const repo = new CachedEventIntelligenceRepository(delegate);
+    await render(<ExploreScreen initialPlaces={[]} initialExploreMode="events" initialEventRequest={request} eventRepository={repo} />);
+    await waitFor(() => expect(screen.getByText(mockUtcEvent.title)).toBeTruthy());
+    await fireEvent.press(screen.getByLabelText('Places'));
+    await fireEvent.press(screen.getByLabelText('Live Events'));
+    await waitFor(() => expect(screen.getByText(mockUtcEvent.title)).toBeTruthy());
+    expect(delegate.discover).toHaveBeenCalledTimes(1);
+    repo.dispose();
+  });
+  it.each(['en', 'vi'] as const)('renders actual %s accessibility text in both palettes', async locale => {
+    const d = locale === 'en' ? enTranslations : viTranslations;
+    for (const preference of ['light', 'dark'] as const) {
+      const palette = preference === 'light' ? lightPalette : darkPalette;
+      const wrap = (child: React.ReactNode) => <TranslationProvider initialLocale={locale}><ThemeProvider initialPreference={preference}>{child}</ThemeProvider></TranslationProvider>;
+      await render(wrap(<EventPreviewSheet event={mockUtcEvent} isFallback onClose={jest.fn()} />));
+      expect(screen.getByLabelText(d['common.close']).props.accessibilityHint).toBe(d['intelligence.events.closeHint']);
+      expect(screen.getByRole('button', { name: d['common.close'] })).toBeTruthy();
+      expect(screen.getByText(d['intelligence.events.dateTime'])).toBeTruthy();
+      expect(screen.getByText(d['intelligence.events.venue'])).toBeTruthy();
+      expect(screen.queryByText(d['place.openingHours'])).toBeNull();
+      expect(screen.queryByText(d['place.address'])).toBeNull();
+      expect(StyleSheet.flatten(screen.getByLabelText(d['intelligence.events.attribution']).props.style).backgroundColor).toBe(palette.brand.primary);
+      expect(StyleSheet.flatten(screen.getByLabelText(d['intelligence.reviewRequired']).props.style).backgroundColor).toBe(palette.background.surfaceVariant);
+      expect(screen.getByLabelText(d['intelligence.stale'])).toBeTruthy();
+      await cleanup();
+      await render(wrap(<EventErrorState isRateLimited onRetry={jest.fn()} />));
+      expect(screen.getByRole('button', { name: d['common.retry'] }).props.accessibilityHint).toBe(d['common.retry']);
+      expect(screen.getByText(d['intelligence.events.rateLimitedTitle'])).toBeTruthy();
+      await cleanup();
+      await render(wrap(<ExploreScreen initialPlaces={[]} initialExploreMode="events" />));
+      expect(screen.getByLabelText(d['explore.modePlaces']).props.accessibilityHint).toBe(d['explore.placesModeHint']);
+      expect(screen.getByLabelText(d['intelligence.events.title']).props.accessibilityHint).toBe(d['explore.eventsModeHint']);
+      expect(screen.getByText(d['intelligence.events.locationUnavailableTitle'])).toBeTruthy();
+      await cleanup();
+      await render(wrap(<ExplorePlacePreview place={{ id: 'test-place', googlePlaceId: 'test-place', name: 'Test place', category: 'attractions', categoryLabel: 'Attraction', coordinate: { latitude: 1, longitude: 1 }, iconName: 'place' }} onClose={jest.fn()} />));
+      expect(screen.getByLabelText(d['common.close']).props.accessibilityHint).toBe(d['explore.closePreviewHint']);
+      for(const key of ['common.save', 'common.share', 'place.getDirections', 'place.entryFee']) expect(screen.getByRole('button', { name: d[key] })).toBeTruthy();
+      await cleanup();
+      const repo = { getIntelligence: jest.fn().mockResolvedValue(mockOperationalPlace), getIntelligenceWithFreshness: jest.fn().mockResolvedValue({ data: mockOperationalPlace, state: 'STALE', isFallback: true }) };
+      await render(wrap(<PlaceDetailScreen route={{ params: { placeId: mockPlaceId } } as any} navigation={{ canGoBack: () => true, goBack: jest.fn(), navigate: jest.fn() } as any} intelligenceRepository={repo} />));
+      await waitFor(() => expect(screen.getByLabelText(d['intelligence.sourceGooglePlaces'])).toBeTruthy());
+      expect(screen.getByLabelText(d['intelligence.staleFallback']).props.accessibilityHint).toBe(d['intelligence.refreshHint']);
+      expect(screen.getByLabelText(d['place.weeklySchedule']).props.accessibilityHint).toBe(d['place.weeklyScheduleHint']);
+      expect(screen.getByLabelText(d['common.share'])).toBeTruthy();
+      expect(screen.getByText(d['intelligence.unavailable'])).toBeTruthy();
+      expect(screen.queryByText('Free admission')).toBeNull();
+      await cleanup();
+    }
   });
 });

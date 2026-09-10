@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.lg,
     marginTop: spacing.xl,
     padding: spacing.xl,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
   retryButton: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 38,
+    minHeight: 44,
     justifyContent: 'center',
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xl,

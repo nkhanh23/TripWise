@@ -39,7 +39,7 @@ export function PlaceDetailScreen({
   fixtureMode = false,
   intelligenceRepository,
 }: Props) {
-  const { colors, effectiveTheme } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const placeId = route?.params?.placeId ?? '';
 
@@ -65,9 +65,9 @@ export function PlaceDetailScreen({
     if (intelligence) {
       return {
         id: placeId,
-        name: `Place (${placeId.slice(0, 8)}…)`,
+        name: t('place.detailTitle'),
         category: 'attractions' as const,
-        categoryLabel: 'Point of Interest',
+        categoryLabel: t('place.detailTitle'),
         subtitle: undefined,
         rating: intelligence.rating ?? 0,
         reviewCount: intelligence.userRatingCount ?? 0,
@@ -75,19 +75,17 @@ export function PlaceDetailScreen({
         openStatus: '',
         openingHours: '',
         closingNotice: '',
-        entryFee: 'Free admission',
+        entryFee: t('intelligence.unavailable'),
         entryFeeNote: undefined,
-        description: 'Explore verified facts and details for this location.',
+        description: t('intelligence.reviewDescription'),
         heroImageUrl: '',
         galleryImageUrls: [],
-        tags: [
-          { label: 'Verified Place', iconName: 'verified' as const },
-        ],
+        tags: [],
         reviews: [],
       };
     }
     return null;
-  }, [customData, fixtureMode, intelligence, placeId]);
+  }, [customData, fixtureMode, intelligence, placeId, t]);
 
   const effectiveRating = intelligence?.rating ?? placeData?.rating ?? 0;
   const effectiveReviewCount = intelligence?.userRatingCount ?? placeData?.reviewCount ?? 0;
@@ -123,7 +121,7 @@ export function PlaceDetailScreen({
   }, [t]);
 
   // 1. Loading State
-  if (status === 'loading') {
+  if (status === 'loading' || (!customData && !fixtureMode && (intelStatus === 'loading'))) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background.surface }]}>
         <ActivityIndicator
@@ -136,7 +134,7 @@ export function PlaceDetailScreen({
   }
 
   // 2. Error State
-  if (status === 'error') {
+  if (status === 'error' || (status !== 'not-found' && !placeData && intelStatus === 'error')) {
     return (
       <View
         accessibilityRole="alert"
@@ -201,9 +199,9 @@ export function PlaceDetailScreen({
 
   const businessStatusColor = intelligence
     ? intelligence.businessStatus === 'OPERATIONAL'
-      ? '#28A745'
+      ? colors.state.success
       : intelligence.businessStatus === 'CLOSED_TEMPORARILY'
-      ? '#E0A800'
+      ? colors.state.warning
       : intelligence.businessStatus === 'CLOSED_PERMANENTLY'
       ? colors.state.error
       : colors.text.muted
@@ -233,16 +231,15 @@ export function PlaceDetailScreen({
             styles.contentSheet,
             {
               backgroundColor: colors.background.surface,
-              shadowColor: '#000',
-            },
+                      },
           ]}>
           {/* Intelligence Transient Error Banner with Retry */}
           {intelStatus === 'error' ? (
             <View
               accessibilityRole="alert"
-              style={[styles.intelAlertBanner, { backgroundColor: '#FFF3CD', borderColor: '#FFEEBA' }]}>
-              <MaterialIcons color="#856404" name="warning" size={16} />
-              <Text style={[styles.intelAlertText, { color: '#856404' }]}>
+              style={[styles.intelAlertBanner, { backgroundColor: colors.background.surfaceVariant, borderColor: colors.border.default }]}>
+              <MaterialIcons color={colors.text.secondary} name="warning" size={16} />
+              <Text style={[styles.intelAlertText, { color: colors.text.secondary }]}>
                 {t('place.errorSubtitle')}
               </Text>
               <Pressable
@@ -251,7 +248,7 @@ export function PlaceDetailScreen({
                 accessibilityRole="button"
                 onPress={() => refetchIntel()}
                 style={styles.alertRetryBtn}>
-                <Text style={styles.alertRetryText}>{t('common.retry')}</Text>
+                <Text style={[styles.alertRetryText, { color: colors.text.secondary }]}>{t('common.retry')}</Text>
               </Pressable>
             </View>
           ) : null}
@@ -259,7 +256,7 @@ export function PlaceDetailScreen({
           {/* Stale Fallback Notice */}
           {isFallback || freshness === 'STALE' ? (
             <Pressable
-              accessibilityHint="Nhấn để cập nhật dữ liệu mới"
+              accessibilityHint={t('intelligence.refreshHint')}
               accessibilityLabel={t('intelligence.staleFallback')}
               accessibilityRole="button"
               onPress={() => refetchIntel()}
@@ -283,7 +280,7 @@ export function PlaceDetailScreen({
                 <View
                   accessibilityLabel={businessStatusText}
                   accessibilityRole="text"
-                  style={[styles.statusBadge, { backgroundColor: `${businessStatusColor}20` }]}>
+                  style={[styles.statusBadge, { backgroundColor: colors.background.surfaceVariant }]}>
                   <View style={[styles.statusDot, { backgroundColor: businessStatusColor }]} />
                   <Text style={[styles.statusText, { color: businessStatusColor }]}>
                     {businessStatusText}
@@ -301,19 +298,19 @@ export function PlaceDetailScreen({
                     {
                       backgroundColor:
                         freshness === 'FRESH'
-                          ? '#E8F5E9'
+                          ? colors.background.surfaceVariant
                           : colors.background.surfaceVariant,
                     },
                   ]}>
                   <MaterialIcons
-                    color={freshness === 'FRESH' ? '#2E7D32' : colors.text.muted}
+                    color={freshness === 'FRESH' ? colors.state.success : colors.text.muted}
                     name={freshness === 'FRESH' ? 'bolt' : 'cached'}
                     size={12}
                   />
                   <Text
                     style={[
                       styles.freshnessText,
-                      { color: freshness === 'FRESH' ? '#2E7D32' : colors.text.muted },
+                      { color: freshness === 'FRESH' ? colors.state.success : colors.text.muted },
                     ]}>
                     {freshness === 'FRESH' ? t('intelligence.fresh') : t('intelligence.stale')}
                   </Text>
@@ -339,7 +336,7 @@ export function PlaceDetailScreen({
                 <View
                   style={[
                     styles.ratingBadge,
-                    { backgroundColor: effectiveTheme === 'dark' ? '#332914' : '#FFF4E5' },
+                    { backgroundColor: colors.background.surfaceVariant },
                   ]}>
                   <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
                   <Text style={[styles.ratingValue, { color: colors.brand.yellow }]}>
@@ -390,12 +387,13 @@ export function PlaceDetailScreen({
               {placeData.description}
             </AppText>
             <Pressable
-              accessibilityHint={showFullAbout ? 'Thu gọn phần giới thiệu' : 'Xem toàn bộ phần giới thiệu'}
-              accessibilityLabel={showFullAbout ? 'Thu gọn' : 'Xem thêm'}
+              accessibilityHint={t(showFullAbout ? 'place.showLess' : 'place.readMore')}
+              accessibilityLabel={t(showFullAbout ? 'place.showLess' : 'place.readMore')}
               accessibilityRole="button"
+              style={{ minHeight: 44, justifyContent: 'center' }}
               onPress={() => setShowFullAbout((prev) => !prev)}>
               <Text style={[styles.readMoreText, { color: colors.brand.primary }]}>
-                {showFullAbout ? 'Show less' : 'Read more'}
+                {t(showFullAbout ? 'place.showLess' : 'place.readMore')}
               </Text>
             </Pressable>
           </View>
@@ -431,12 +429,13 @@ export function PlaceDetailScreen({
                     {intelligence.openingHours.weekdayDescriptions &&
                     intelligence.openingHours.weekdayDescriptions.length > 0 ? (
                       <Pressable
-                        accessibilityHint="Xem lịch mở cửa đầy đủ trong tuần"
-                        accessibilityLabel="Xem giờ mở cửa"
+                        accessibilityHint={t('place.weeklyScheduleHint')}
+                        accessibilityLabel={t('place.weeklySchedule')}
                         accessibilityRole="button"
+                        style={{ minHeight: 44, justifyContent: 'center' }}
                         onPress={() => setShowAllHours((prev) => !prev)}>
                         <Text style={[styles.detailSub, { color: colors.brand.primary }]}>
-                          {showAllHours ? 'Hide schedule' : 'View weekly schedule'}
+                          {t(showAllHours ? 'place.hideSchedule' : 'place.weeklySchedule')}
                         </Text>
                       </Pressable>
                     ) : null}
@@ -537,7 +536,7 @@ export function PlaceDetailScreen({
               </Text>
               {effectiveReviewCount > 0 ? (
                 <Text style={[styles.seeAllText, { color: colors.brand.primary }]}>
-                  See all ({effectiveReviewCount.toLocaleString()})
+                  {t('place.reviewCount', { count: effectiveReviewCount.toLocaleString() })}
                 </Text>
               ) : null}
             </View>
@@ -597,8 +596,8 @@ export function PlaceDetailScreen({
           },
         ]}>
         <Pressable
-          accessibilityHint="Mở bản đồ xem lộ trình di chuyển tới địa điểm"
-          accessibilityLabel="Chỉ đường"
+          accessibilityHint={t('place.directionsHint')}
+          accessibilityLabel={t('place.getDirections')}
           accessibilityRole="button"
           onPress={handleDirections}
           style={({ pressed }) => [
@@ -649,15 +648,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   alertRetryBtn: {
+    minHeight: 44,
+    minWidth: 44,
+    justifyContent: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   alertRetryText: {
-    color: '#856404',
     fontSize: 12,
     fontWeight: typography.fontWeight.bold,
   },
   staleNotice: {
+    minHeight: 44,
     alignItems: 'center',
     borderRadius: radius.card,
     borderWidth: 1,
@@ -849,13 +851,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: radius.pill,
     elevation: 3,
-    height: 36,
+    height: 44,
     justifyContent: 'center',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
-    width: 36,
+    width: 44,
   },
   reviewsHeader: {
     alignItems: 'center',
@@ -883,9 +884,9 @@ const styles = StyleSheet.create({
   avatar: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 32,
+    height: 44,
     justifyContent: 'center',
-    width: 32,
+    width: 44,
   },
   avatarText: {
     fontSize: typography.bodySmall,
@@ -956,7 +957,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     flexDirection: 'row',
     gap: 6,
-    height: 42,
+    minHeight: 44,
     justifyContent: 'center',
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xl,

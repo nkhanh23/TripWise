@@ -19,14 +19,14 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
   onCall,
   onAdd,
 }: Props) {
-  const { colors, effectiveTheme } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
     <View style={styles.gridContainer}>
       <Pressable
-        accessibilityHint="Xem tuyến đường di chuyển tới địa điểm"
-        accessibilityLabel="Chỉ đường"
+        accessibilityHint={t('place.directionsHint')}
+        accessibilityLabel={t('place.getDirections')}
         accessibilityRole="button"
         onPress={onRoute}
         style={({ pressed }) => [
@@ -37,7 +37,7 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
         <View
           style={[
             styles.iconCircle,
-            { backgroundColor: effectiveTheme === 'dark' ? '#1E3A5F' : '#D8E2FF' },
+            { backgroundColor: colors.background.surface },
           ]}>
           <MaterialIcons color={colors.brand.primary} name="directions" size={22} />
         </View>
@@ -47,8 +47,8 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
       </Pressable>
 
       <Pressable
-        accessibilityHint="Truy cập trang web chính thức của địa điểm"
-        accessibilityLabel="Trang web"
+        accessibilityHint={t('common.unavailableMessage')}
+        accessibilityLabel={t('place.website')}
         accessibilityRole="button"
         onPress={onWebsite}
         style={({ pressed }) => [
@@ -69,8 +69,8 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
       </Pressable>
 
       <Pressable
-        accessibilityHint="Gọi điện thoại liên hệ địa điểm"
-        accessibilityLabel="Gọi điện"
+        accessibilityHint={t('common.unavailableMessage')}
+        accessibilityLabel={t('place.call')}
         accessibilityRole="button"
         onPress={onCall}
         style={({ pressed }) => [
@@ -91,8 +91,8 @@ export const PlaceQuickActions = memo(function PlaceQuickActions({
       </Pressable>
 
       <Pressable
-        accessibilityHint="Thêm địa điểm này vào lịch trình chuyến đi của bạn"
-        accessibilityLabel="Thêm vào chuyến đi"
+        accessibilityHint={t('common.unavailableMessage')}
+        accessibilityLabel={t('place.addToTrip')}
         accessibilityRole="button"
         onPress={onAdd}
         style={({ pressed }) => [
@@ -132,9 +132,9 @@ const styles = StyleSheet.create({
   iconCircle: {
     alignItems: 'center',
     borderRadius: radius.pill,
-    height: 40,
+    height: 44,
     justifyContent: 'center',
-    width: 40,
+    width: 44,
   },
   actionLabel: {
     fontSize: 12,

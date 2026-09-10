@@ -127,7 +127,7 @@ describe('ExploreScreen', () => {
     await user.press(screen.getByLabelText('Wat Arun'));
     expect(screen.getByText('Bangkok Yai, Bangkok')).toBeTruthy();
 
-    await user.press(screen.getByLabelText('Đóng'));
+    await user.press(screen.getByLabelText('Close'));
     expect(screen.queryByText('Bangkok Yai, Bangkok')).toBeNull();
   });
 
@@ -140,7 +140,7 @@ describe('ExploreScreen', () => {
     expect(screen.getByText('List')).toBeTruthy();
 
     // Switch to List view
-    await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
+    await user.press(screen.getByLabelText('Switch to list view'));
 
     // Map canvas disappears, FlatList rows appear
     expect(screen.queryByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeNull();
@@ -149,7 +149,7 @@ describe('ExploreScreen', () => {
     expect(screen.getByText('Map')).toBeTruthy();
 
     // Switch back to Map view
-    await user.press(screen.getByLabelText('Chuyển sang chế độ bản đồ'));
+    await user.press(screen.getByLabelText('Switch to map view'));
     expect(screen.getByLabelText(/Interactive Map|Bản đồ tương tác/)).toBeTruthy();
   });
 
@@ -158,7 +158,7 @@ describe('ExploreScreen', () => {
     await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Switch to List mode
-    await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
+    await user.press(screen.getByLabelText('Switch to list view'));
 
     // Select Wat Arun row in List mode
     await user.press(screen.getByLabelText('Wat Arun, Buddhist Temple, đánh giá 4.8 sao'));
@@ -167,7 +167,7 @@ describe('ExploreScreen', () => {
     expect(screen.getAllByText('Bangkok Yai, Bangkok').length).toBeGreaterThanOrEqual(1);
 
     // Switch back to Map mode
-    await user.press(screen.getByLabelText('Chuyển sang chế độ bản đồ'));
+    await user.press(screen.getByLabelText('Switch to map view'));
 
     // Wat Arun marker and preview remain active
     expect(screen.getAllByText('Wat Arun').length).toBeGreaterThanOrEqual(2);
@@ -179,7 +179,7 @@ describe('ExploreScreen', () => {
     await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     // Switch to List mode
-    await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
+    await user.press(screen.getByLabelText('Switch to list view'));
 
     // Filter by Coffee category
     await user.press(screen.getByLabelText('Coffee'));
@@ -198,7 +198,7 @@ describe('ExploreScreen', () => {
     await render(<ExploreScreen initialPlaces={largeMockExplorePlaces} />);
 
     // Switch to List mode
-    await user.press(screen.getByLabelText('Chuyển sang chế độ danh sách'));
+    await user.press(screen.getByLabelText('Switch to list view'));
 
     // First items render cleanly
     expect(screen.getByText('Wat Arun')).toBeTruthy();
@@ -231,7 +231,7 @@ describe('ExploreScreen', () => {
   it('renders loading overlay when initialStatus is loading', async () => {
     await render(<ExploreScreen initialStatus="loading" />);
 
-    expect(screen.getByLabelText('Đang tải dữ liệu bản đồ')).toBeTruthy();
+    expect(screen.getByLabelText('Loading map data')).toBeTruthy();
   });
 
   it('renders error state and recovers on retry', async () => {
@@ -266,7 +266,7 @@ describe('ExploreScreen', () => {
     await render(<ExploreScreen initialPlaces={mockExplorePlaces} />);
 
     await user.press(screen.getByLabelText('Wat Arun'));
-    for (const label of ['Chỉ đường', 'Lưu địa điểm', 'Vé tham quan', 'Chia sẻ địa điểm']) {
+    for (const label of ['Get Directions', 'Save', 'Entry Fee', 'Share']) {
       await user.press(screen.getByLabelText(label));
     }
 
@@ -277,7 +277,7 @@ describe('ExploreScreen', () => {
   it('does not silently restore fixture places when no dependency is supplied', async () => {
     await render(<ExploreScreen />);
 
-    expect(screen.getByLabelText('Đang tải dữ liệu bản đồ')).toBeTruthy();
+    expect(screen.getByLabelText('Loading map data')).toBeTruthy();
     expect(screen.queryByLabelText('Wat Arun')).toBeNull();
     expect(screen.queryByLabelText('The Grand Palace')).toBeNull();
     expect(screen.queryByLabelText('Blue Whale Cafe')).toBeNull();

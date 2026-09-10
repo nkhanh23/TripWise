@@ -297,7 +297,7 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 **Final Corrective Closure (2026-09-08): PASS.** Provider-specific FX failure verified with controlled CONNECT proxy (`open.er-api.com` rejected 502, Supabase connected, original data preserved, no fake rates/attribution, fail-closed budget risk, online recovery). >50 ledger pagination verified (55 rows, Page 1 bounded to 50, nextCursor, Page 2 loads 5 rows with null nextCursor, 0 duplicate IDs, aggregate invariance, pull-to-refresh resets to 50). Stale-user and cross-owner isolation verified with legitimate dev accounts (User A financial state purged immediately on signout, User B sees zero foreign trips/expenses, foreign RPC requests fail safe with P0002). Full automated gates pass (`lint-exit.txt=0`, `typecheck-exit.txt=0`, `focused-exit.txt=0`, `full-exit.txt=0`, `persistence-exit.txt=0`, Expo Doctor 20/21 baseline). Evidence: `.runtime-evidence/p3-t005-final-corrective-20260908/FINAL_CORRECTIVE_CLOSURE.md`. FEATURE-P4 NOT STARTED. `CREATE_TRIP_GENERATION_MOTION = PAUSED_BY_USER`.
 
-### [x] FEATURE-P4 — Candidate và Live Intelligence
+### [ ] FEATURE-P4 — Candidate và Live Intelligence
 
 **Mục tiêu / lý do:** cung cấp factual input đáng tin cậy, có giới hạn cho deterministic planning ở phase sau.
 
@@ -569,15 +569,15 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Không có retry amplification/fan-out regression PASS.
 
-#### [x] FEATURE-P4-T005 — UI review cho intelligence
+#### [ ] FEATURE-P4-T005 — UI review cho intelligence
 
-**Trạng thái:** PASS (FULL IMPLEMENTATION & LIVE RUNTIME REVIEW CLOSURE COMPLETE) — Toàn bộ UI review components theo Stitch đã hoàn thành: `EventCandidateCard.tsx` (huy hiệu `REVIEW_REQUIRED`, attribution chính thức Ticketmaster, hiển thị thời gian UTC/PROVIDER_LOCAL trung thực kèm nhãn `(Local time)`, xử lý TBA/TBD, venue name và cảnh báo `Venue location unavailable` khi thiếu tọa độ), `EventPreviewSheet.tsx` (preview sheet draggable hiển thị đầy đủ facts, opening hours, attribution, review notice, 0 uncommitted writes), `EventEmptyState.tsx`, `EventErrorState.tsx` (phân biệt rate-limited 429 và provider failure kèm nút Retry có thể truy cập), `ExplorePlacePreview.tsx` (huy hiệu `REVIEW_REQUIRED`, giờ mở cửa/đánh giá thật từ Google Places), `ExploreScreen.tsx` (chuyển đổi chế độ `Places` và `Live Events`, danh sách sự kiện, view toggle Map/List, không auto-persist), `PlaceDetailScreen.tsx` (huy hiệu trạng thái hoạt động trực tiếp `OPERATIONAL`/`CLOSED_TEMPORARILY`/`CLOSED_PERMANENTLY`/`UNKNOWN`, giờ mở cửa trung thực hoặc `Hours not available`, huy hiệu độ tươi `FRESH`/`STALE`, thông báo dữ liệu dự phòng stale kèm retry, nhãn nguồn gốc Google Places, banner lỗi tạm thời kèm retry). Live Android emulator (`emulator-5554`, Android 17) đã xác minh giao diện, chụp ảnh màn hình và dump cấu trúc UI: `android-explore-screen.png`, `android-live-events-screen.png`, `android-place-list-screen.png`, `android-place-preview-sheet.png`. Live smoke với tài khoản DEV operator xác nhận lấy 3 sự kiện Ticketmaster trực tiếp tại London (`FRESH`, attribution đầy đủ), lấy metadata trực tiếp Wat Arun từ Google Places (`OPERATIONAL`, rating 4.7, 45,218 reviews, provenance hợp lệ), tuyệt đối 0 database mutations (`mutationAttempts = 0`). Secret scan 33 files đạt `SECRET_PATTERN_MATCH_COUNT=0`. Toàn bộ quality gates đạt chuẩn (lint 0 errors, typecheck 0 errors, focused test 34/34 PASS, full Jest 81 suites / 1119 tests PASS, Expo doctor 20/21 baseline, Deno Edge gates PASS). Toàn bộ Phase 4 đã hoàn tất và đóng. `FEATURE-P5` và các task thuộc P5 CHƯA BẮT ĐẦU. Evidence: `.runtime-evidence/p4-t005-20260909/final/T005_FINAL_CLOSURE.md`.
+**Trạng thái:** NEEDS_FIX — Corrective T005 đang thực hiện; chưa có closure Android/a11y mới cho current source. T001–T004 giữ ACCEPTED. Bằng chứng cũ không đủ đóng T005/P4. FEATURE-P5 NOT STARTED.
 
-- [x] FEATURE-P4-T005-S001 — Triển khai trạng thái review/empty/error theo Stitch được duyệt.
+- [ ] FEATURE-P4-T005-S001 — Triển khai trạng thái review/empty/error theo Stitch được duyệt.
 
 ##### Checklist hoàn thành
 
-- [x] Bằng chứng Android discovery/detail và a11y PASS.
+- [ ] Bằng chứng Android discovery/detail và a11y PASS.
 
 #### [ ] FEATURE-P5-T001 — Constraint engine tất định
 

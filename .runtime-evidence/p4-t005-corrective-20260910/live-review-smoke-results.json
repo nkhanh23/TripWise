@@ -1,0 +1,238 @@
+{
+  "timestamp": "2026-09-10T02:15:23.274Z",
+  "eventDiscovery": {
+    "query": {
+      "city": "London",
+      "countryCode": "GB",
+      "startDateTime": "2026-09-11T02:15:18Z",
+      "endDateTime": "2026-09-17T02:15:18Z",
+      "limit": 3
+    },
+    "freshness": "FRESH",
+    "isFallback": false,
+    "eventCount": 3,
+    "sampleEvents": [
+      {
+        "title": "London Eye - Standard Experience",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6CLhYfEw",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-11T09:00:00Z",
+          "localDate": "2026-09-11",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "name": "The London Eye",
+            "hasLocation": true
+          }
+        ]
+      },
+      {
+        "title": "Madame Tussauds London - Standard Entry",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6GEpgIzG",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-11T09:00:00Z",
+          "localDate": "2026-09-11",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "name": "Madame Tussauds London",
+            "hasLocation": true
+          }
+        ]
+      },
+      {
+        "title": "London Dungeon - Standard Entry",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6uhjrBfw",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-11T09:00:00Z",
+          "localDate": "2026-09-11",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "name": "The London Dungeon",
+            "hasLocation": true
+          }
+        ]
+      }
+    ],
+    "providerIdentityValid": true,
+    "attributionCompliance": "NOT_ESTABLISHED_BY_PROVIDER_SMOKE; see branding-review.md",
+    "eventTransportCalls": 1,
+    "repeatedIdenticalRequests": 2,
+    "providerAccess": {
+      "completedProviderCalls": 1
+    }
+  },
+  "placeIntelligence": {
+    "googlePlaceId": "ChIJaSv_6gaZ4jARnbiUVn6Z_YY",
+    "businessStatus": "OPERATIONAL",
+    "rating": 4.7,
+    "userRatingCount": 45220,
+    "hasOpeningHours": true,
+    "openingHours": {
+      "periods": [
+        {
+          "open": {
+            "day": 0,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 0,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 1,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 1,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 2,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 2,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 3,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 3,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 4,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 4,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 5,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 5,
+            "hour": 18,
+            "minute": 0
+          }
+        },
+        {
+          "open": {
+            "day": 6,
+            "hour": 8,
+            "minute": 0
+          },
+          "close": {
+            "day": 6,
+            "hour": 18,
+            "minute": 0
+          }
+        }
+      ],
+      "weekdayDescriptions": [
+        "Monday: 8:00 AM – 6:00 PM",
+        "Tuesday: 8:00 AM – 6:00 PM",
+        "Wednesday: 8:00 AM – 6:00 PM",
+        "Thursday: 8:00 AM – 6:00 PM",
+        "Friday: 8:00 AM – 6:00 PM",
+        "Saturday: 8:00 AM – 6:00 PM",
+        "Sunday: 8:00 AM – 6:00 PM"
+      ],
+      "openNow": true
+    },
+    "provenance": {
+      "provider": "google-places",
+      "boundary": "get-place-metadata",
+      "observation": "CLIENT_RECEIVED",
+      "fetchedAt": "2026-09-10T02:15:22.652Z",
+      "receivedAt": "2026-09-10T02:15:23.271Z"
+    },
+    "freshness": "FRESH",
+    "isFallback": false,
+    "provenanceValid": true
+  },
+  "zeroPersistenceVerification": {
+    "mutationAttempts": 0,
+    "clientForbiddenCalls": 0,
+    "networkMutationAttempts": 0,
+    "uncommittedSaves": 0,
+    "itineraryWrites": 0
+  },
+  "networkTrace": [
+    {
+      "phase": "auth",
+      "path": "/auth/v1/token",
+      "method": "POST",
+      "httpStatus": 200,
+      "executionId": null,
+      "requestId": "01a08919-12fd-7f13-88a4-8424505249a2"
+    },
+    {
+      "phase": "event-discovery",
+      "path": "/functions/v1/discover-events",
+      "method": "POST",
+      "httpStatus": 200,
+      "executionId": "fedda46f-db92-467d-b43d-21b100cf6c34",
+      "requestId": "01a08919-19f5-777b-ad04-2e462a16a8c0"
+    },
+    {
+      "phase": "place-metadata",
+      "path": "/functions/v1/get-place-metadata",
+      "method": "POST",
+      "httpStatus": 200,
+      "executionId": "f61f7c0a-3000-4f05-91d8-b9b4305af22d",
+      "requestId": "01a08919-2416-7fa0-8f18-20d6937e040f"
+    }
+  ]
+}
