@@ -1,34 +1,47 @@
-[
+﻿[
   {
     "name": "lint",
     "command": "npm run lint",
-    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "cwd": "d:\\Dev\\TripWise\\mobile",
     "exitCode": 0,
-    "startedAt": "2026-09-10T02:53:40.981Z",
-    "finishedAt": "2026-09-10T02:53:47.801Z"
+    "startedAt": "2026-09-10T03:32:06.000Z",
+    "finishedAt": "2026-09-10T03:32:34.000Z",
+    "summary": "0 errors, 9 warnings"
   },
   {
     "name": "typecheck",
     "command": "npm run typecheck",
-    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "cwd": "d:\\Dev\\TripWise\\mobile",
     "exitCode": 0,
-    "startedAt": "2026-09-10T02:53:47.803Z",
-    "finishedAt": "2026-09-10T02:53:58.566Z"
+    "startedAt": "2026-09-10T03:32:46.000Z",
+    "finishedAt": "2026-09-10T03:33:15.000Z",
+    "summary": "tsc --noEmit passed cleanly"
   },
   {
     "name": "focused",
     "command": "npm test -- --runInBand intelligence-ui-review.test.tsx",
-    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "cwd": "d:\\Dev\\TripWise\\mobile",
     "exitCode": 0,
-    "startedAt": "2026-09-10T02:53:58.567Z",
-    "finishedAt": "2026-09-10T02:54:06.461Z"
+    "startedAt": "2026-09-10T03:33:21.000Z",
+    "finishedAt": "2026-09-10T03:33:46.000Z",
+    "summary": "46 passed, 46 total, 1 suite passed"
   },
   {
     "name": "full-jest",
     "command": "npm test -- --runInBand",
-    "cwd": "D:\\Dev\\TripWise\\mobile",
+    "cwd": "d:\\Dev\\TripWise\\mobile",
     "exitCode": 0,
-    "startedAt": "2026-09-10T02:54:06.461Z",
-    "finishedAt": "2026-09-10T02:55:14.187Z"
+    "startedAt": "2026-09-10T03:33:57.000Z",
+    "finishedAt": "2026-09-10T03:35:44.000Z",
+    "summary": "81 passed, 1 skipped, 1131 passed, 1 skipped"
+  },
+  {
+    "name": "expo-doctor",
+    "command": "npx expo-doctor",
+    "cwd": "d:\\Dev\\TripWise\\mobile",
+    "exitCode": 1,
+    "startedAt": "2026-09-10T03:35:50.000Z",
+    "finishedAt": "2026-09-10T03:36:28.000Z",
+    "summary": "20/21 BASELINE — EXIT 1 — NO T005 REGRESSION"
   }
 ]

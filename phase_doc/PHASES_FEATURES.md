@@ -297,7 +297,7 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 **Final Corrective Closure (2026-09-08): PASS.** Provider-specific FX failure verified with controlled CONNECT proxy (`open.er-api.com` rejected 502, Supabase connected, original data preserved, no fake rates/attribution, fail-closed budget risk, online recovery). >50 ledger pagination verified (55 rows, Page 1 bounded to 50, nextCursor, Page 2 loads 5 rows with null nextCursor, 0 duplicate IDs, aggregate invariance, pull-to-refresh resets to 50). Stale-user and cross-owner isolation verified with legitimate dev accounts (User A financial state purged immediately on signout, User B sees zero foreign trips/expenses, foreign RPC requests fail safe with P0002). Full automated gates pass (`lint-exit.txt=0`, `typecheck-exit.txt=0`, `focused-exit.txt=0`, `full-exit.txt=0`, `persistence-exit.txt=0`, Expo Doctor 20/21 baseline). Evidence: `.runtime-evidence/p3-t005-final-corrective-20260908/FINAL_CORRECTIVE_CLOSURE.md`. FEATURE-P4 NOT STARTED. `CREATE_TRIP_GENERATION_MOTION = PAUSED_BY_USER`.
 
-### [ ] FEATURE-P4 — Candidate và Live Intelligence
+### [x] FEATURE-P4 — Candidate và Live Intelligence
 
 **Mục tiêu / lý do:** cung cấp factual input đáng tin cậy, có giới hạn cho deterministic planning ở phase sau.
 
@@ -569,17 +569,19 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Không có retry amplification/fan-out regression PASS.
 
-#### [ ] FEATURE-P4-T005 — UI review cho intelligence
+#### [x] FEATURE-P4-T005 — UI review cho intelligence
 
-**Trạng thái:** NEEDS_FIX — Corrective T005 đang thực hiện; chưa có closure Android/a11y mới cho current source. T001–T004 giữ ACCEPTED. Bằng chứng cũ không đủ đóng T005/P4. FEATURE-P5 NOT STARTED.
+**Trạng thái:** COMPLETE — UI review cho intelligence hoàn thành với đầy đủ bằng chứng kiểm thử tự động (lint, typecheck, focused 46/46 PASS, full Jest 1131 PASS), live provider smoke (events=3, placeStatus=OPERATIONAL, mutations=0), kiểm thử Android runtime (EN Light, VI Dark), a11y audit PASS (touch target >= 44dp), Stitch alignment (`stitch-review.md`), Ticketmaster disclosure (`branding-review.md`), không hardcode a11y strings, secret scan 0. Bằng chứng lưu tại `.runtime-evidence/p4-t005-corrective-20260910/T005_CORRECTIVE_FINAL_CLOSURE.md`. FEATURE-P5 NOT STARTED.
 
-- [ ] FEATURE-P4-T005-S001 — Triển khai trạng thái review/empty/error theo Stitch được duyệt.
+- [x] FEATURE-P4-T005-S001 — Triển khai trạng thái review/empty/error theo Stitch được duyệt.
 
 ##### Checklist hoàn thành
 
-- [ ] Bằng chứng Android discovery/detail và a11y PASS.
+- [x] Bằng chứng Android discovery/detail và a11y PASS.
 
 #### [ ] FEATURE-P5-T001 — Constraint engine tất định
+
+**Trạng thái:** IN_PROGRESS — Corrective T001 đang thực hiện; khắc phục triệt để silent structural repair, enum validation nghiêm ngặt, baseline fail-closed, bảo vệ FIXED position, và thuật toán overlap quét có chặn trên (bounded sweep). FEATURE-P5-T002 NOT STARTED.
 
 - [ ] FEATURE-P5-T001-S001 — Triển khai constraints bảo vệ FIXED và MUST_DO.
 

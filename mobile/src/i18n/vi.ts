@@ -674,4 +674,10 @@ export const viTranslations: Record<string, string> = {
   'explore.filters': "Bộ lọc",
   'explore.switchToList': "Chuyển sang chế độ danh sách",
   'explore.switchToMap': "Chuyển sang chế độ bản đồ",
+  'place.route': 'Đường đi',
+  'place.call': 'Gọi điện',
+  'place.addToTrip': 'Thêm',
+  'place.openNow': 'Đang mở cửa',
+  'place.closed': 'Đã đóng cửa',
+  'place.ratingLabel': 'Đánh giá {rating} sao',
 };

@@ -1,4 +1,6 @@
-import { cleanup, fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
+import { useEventIntelligence } from '../src/features/explore/hooks/useEventIntelligence';
+import { supabase } from '../src/lib/supabase/client';
+import { act, renderHook, cleanup, fireEvent, render, screen, userEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { TranslationProvider } from '../src/i18n';
@@ -721,5 +723,39 @@ describe('T005 corrective context and rendered locale/theme matrix', () => {
       expect(screen.queryByText('Free admission')).toBeNull();
       await cleanup();
     }
+  });
+});
+
+
+describe('T005 event hook isolation', () => {
+  const request = {city:'London',countryCode:'GB',startDateTime:'2026-09-10T00:00:00Z',endDateTime:'2026-09-17T00:00:00Z',limit:3};
+  const response = (title: string) => ({events:[{...mockUtcEvent,title}],pagination:{size:1,number:0 as const,totalElements:1,totalPages:1},providerAccess:{httpStatus:200,completedProviderCalls:1 as const,rateLimitHeaders:{}}});
+  afterEach(async()=>{await cleanup();jest.restoreAllMocks();});
+  it('aborts superseded requests and ignores their late success, then purges missing context', async()=>{
+    let resolveFirst!: (value: ReturnType<typeof response>)=>void;
+    const repo={discover:jest.fn().mockImplementationOnce(()=>new Promise(resolve=>{resolveFirst=resolve;})).mockResolvedValue(response('Paris result')),cancel:jest.fn()};
+    const hook=await renderHook(({context}:{context:typeof request|null})=>useEventIntelligence(context,repo),{initialProps:{context:request as typeof request|null}});
+    await waitFor(()=>expect(repo.discover).toHaveBeenCalledTimes(1));
+    const signal=repo.discover.mock.calls[0][1];
+    await hook.rerender({context:{...request,city:'Paris',countryCode:'FR'}});
+    await waitFor(()=>expect(hook.result.current.events[0]?.title).toBe('Paris result'));
+    expect(signal.aborted).toBe(true);
+    await act(async()=>{resolveFirst(response('Old London result'));});
+    expect(hook.result.current.events[0]?.title).toBe('Paris result');
+    await hook.rerender({context:null});
+    await waitFor(()=>expect(hook.result.current.events).toEqual([]));
+    expect(repo.discover).toHaveBeenCalledTimes(2);
+  });
+  it.each(['SIGNED_OUT','SIGNED_IN','USER_UPDATED'] as const)('purges rendered hook state on %s',async event=>{
+    let callback: (...args:any[])=>void=()=>{};
+    jest.spyOn(supabase.auth,'onAuthStateChange').mockImplementation(cb=>{callback=cb;return {data:{subscription:{unsubscribe:jest.fn()} as any}};});
+    const repo={discover:jest.fn().mockResolvedValue(response('Live result')),cancel:jest.fn()};
+    const hook=await renderHook(()=>useEventIntelligence(request,repo));
+    await waitFor(()=>expect(hook.result.current.events).toHaveLength(1));
+    await act(async()=>callback(event,null));
+    expect(hook.result.current.events).toEqual([]);
+    expect(hook.result.current.status).toBe('idle');
+    expect(hook.result.current.freshness).toBeNull();
+    expect(repo.discover.mock.calls[0][1].aborted).toBe(true);
   });
 });

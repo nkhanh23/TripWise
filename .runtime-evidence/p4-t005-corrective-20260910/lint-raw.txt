@@ -1,5 +1,4 @@
-
-> tripwise-mobile@1.0.0 lint
+﻿> tripwise-mobile@1.0.0 lint
 > expo lint
 
 env: load .env.local .env
@@ -26,4 +25,3 @@ D:\Dev\TripWise\mobile\src\features\trips\screens\TripDetailScreen.tsx
 
 ✖ 9 problems (0 errors, 9 warnings)
   0 errors and 5 warnings potentially fixable with the `--fix` option.
-

@@ -21,9 +21,7 @@ export const ExploreViewToggle = memo(function ExploreViewToggle({ viewMode, onT
     <View pointerEvents="box-none" style={styles.floatingWrapper}>
       <Pressable
         accessibilityHint={
-          isMap
-            ? 'Chuyển sang chế độ danh sách các địa điểm'
-            : 'Chuyển sang chế độ xem bản đồ tương tác'
+          t(isMap ? 'explore.switchToList' : 'explore.switchToMap')
         }
         accessibilityLabel={
           t(isMap ? 'explore.switchToList' : 'explore.switchToMap')

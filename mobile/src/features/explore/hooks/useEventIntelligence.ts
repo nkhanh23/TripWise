@@ -84,8 +84,6 @@ export function useEventIntelligence(
   }, [fetchEvents, request]);
 
   useEffect(() => {
-
-
     const controller = new AbortController();
     activeControllerRef.current = controller;
 
@@ -106,7 +104,7 @@ export function useEventIntelligence(
     };
   }, [fetchEvents, request]);
 
-  // Purge UI state immediately on user sign-out
+  // Purge review state across auth identity changes.
   useEffect(() => {
     if (!supabase?.auth?.onAuthStateChange) return;
 

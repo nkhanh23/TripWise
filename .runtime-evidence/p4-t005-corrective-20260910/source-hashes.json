@@ -1,0 +1,98 @@
+{
+  "timestamp": "2026-09-10T03:44:10.838Z",
+  "algorithm": "sha256",
+  "files": {
+    "mobile/src/features/explore/ExploreScreen.tsx": {
+      "sha256": "1141d18c3821d0efe8b40248bfa6b084292aaf454c973e2075d43fd563022611",
+      "sizeBytes": 16352
+    },
+    "mobile/src/features/explore/components/EventCandidateCard.tsx": {
+      "sha256": "c37b661434670c3975bec8c33e995af1c74ae73fc68b8fd1c1f069bdc87fc630",
+      "sizeBytes": 7129
+    },
+    "mobile/src/features/explore/components/EventPreviewSheet.tsx": {
+      "sha256": "ddc73c9f8008233ada6f109b32bc1e776c07ea6d01ff2ba430adf5574d728513",
+      "sizeBytes": 9512
+    },
+    "mobile/src/features/explore/components/EventEmptyState.tsx": {
+      "sha256": "42a7f3c6a9565f862530a1d30febd5e208dfeeb2b6730c685807ac2a12544a9e",
+      "sizeBytes": 1761
+    },
+    "mobile/src/features/explore/components/EventErrorState.tsx": {
+      "sha256": "964035b32900756fb602828d643d7fe6380e8c5435f7480f43e025b0f8ceb5d6",
+      "sizeBytes": 2957
+    },
+    "mobile/src/features/explore/components/ExplorePlacePreview.tsx": {
+      "sha256": "a720ed5406f58c0fa48df752de87319c23c43eefd7147060811ca7b9aa81e3d5",
+      "sizeBytes": 11635
+    },
+    "mobile/src/features/explore/components/ExplorePlaceListItem.tsx": {
+      "sha256": "dcffa3dee68a7d258f97c62f8d586a63932a94aca29bdbad00110a90b47cd37e",
+      "sizeBytes": 5204
+    },
+    "mobile/src/features/explore/components/ExploreSearchBar.tsx": {
+      "sha256": "c22c3fbb3b5a1503bac9c43cf28a1178600b9b4769b7ac977c18ce46115814d3",
+      "sizeBytes": 3412
+    },
+    "mobile/src/features/explore/components/ExploreViewToggle.tsx": {
+      "sha256": "4d13731c2e433b456d6e3fc9f02f728600f0c7345396aacd1c056793de24ec43",
+      "sizeBytes": 2353
+    },
+    "mobile/src/features/explore/hooks/useEventIntelligence.ts": {
+      "sha256": "62213f04e2787c8d4f06619c931e0c5ca4cfb033241e80297539d0fc55951702",
+      "sizeBytes": 4459
+    },
+    "mobile/src/features/place/screens/PlaceDetailScreen.tsx": {
+      "sha256": "b606ee937927b4f2018850e850d875e5d97561afaf2bad37bd33d2a79369cd92",
+      "sizeBytes": 31614
+    },
+    "mobile/src/features/place/components/PlaceHeader.tsx": {
+      "sha256": "a2c9e265698cdd598ccfe917b48e03290387585eb2f4a78cce2cea1c0a063213",
+      "sizeBytes": 3831
+    },
+    "mobile/src/features/place/components/PlaceQuickActions.tsx": {
+      "sha256": "0f8e8ccfb6634182db575b8676422c1729c207be9d506a345a7bd00a6dfc0333",
+      "sizeBytes": 4425
+    },
+    "mobile/src/features/place/hooks/usePlaceIntelligence.ts": {
+      "sha256": "7d33a0ca552e64db1e3f5457b52779bf0b7cd9f269fcae7e6f466e0984da6902",
+      "sizeBytes": 4951
+    },
+    "mobile/src/integration/intelligenceComposition.ts": {
+      "sha256": "19acf1348036c94272982ccc6f34c740a4725b980b295fc8970e3bfadb2deda6",
+      "sizeBytes": 3543
+    },
+    "mobile/src/navigation/MainTabs.tsx": {
+      "sha256": "d7972e4421c78080bd36cc74332414b8b6be8bf0f53f7c57fa37965f89dedc7a",
+      "sizeBytes": 4103
+    },
+    "mobile/src/navigation/AppNavigator.tsx": {
+      "sha256": "4edc7608eac9f3a0a2ae56f0d6604e814d01e0e574597b3b4b44d685da28c354",
+      "sizeBytes": 4968
+    },
+    "mobile/src/i18n/en.ts": {
+      "sha256": "362d83a7d8ed0ad811713140914fccee7b6532f8ec338a654b61eaf7a0492a4e",
+      "sizeBytes": 34279
+    },
+    "mobile/src/i18n/vi.ts": {
+      "sha256": "535d6f4b578231b76e12b3984b39418c186d38d97927910f875b5339096c525c",
+      "sizeBytes": 40424
+    },
+    "mobile/tests/intelligence-ui-review.test.tsx": {
+      "sha256": "96419145ce8b37d374acc161cae12fae0189a52ba3b6752ffa1db09ad9f336a6",
+      "sizeBytes": 32293
+    },
+    "mobile/tests/ExploreScreen.test.tsx": {
+      "sha256": "132deb5982a2dea520cbed35f5a013fcfc9c4218b665a332d27b13506ba2cb57",
+      "sizeBytes": 11698
+    },
+    "mobile/tests/PlaceDetailScreen.test.tsx": {
+      "sha256": "585453760b9d9ac404870c80b3b551ee4d09f4c4f383e5ca77f0ffbbf3e1fca9",
+      "sizeBytes": 8745
+    },
+    "mobile/tests/ExploreProductionScreen.test.tsx": {
+      "sha256": "8a80ced719448300c442f1dc9bcf16fbafcbbc466d8f88c3c4d0a408781248c1",
+      "sizeBytes": 15195
+    }
+  }
+}

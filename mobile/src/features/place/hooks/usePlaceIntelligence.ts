@@ -118,7 +118,7 @@ export function usePlaceIntelligence(
     };
   }, [fetchIntelligence, placeId]);
 
-  // Purge UI state immediately on user sign-out
+  // Purge review state across auth identity changes.
   useEffect(() => {
     if (!supabase?.auth?.onAuthStateChange) return;
 

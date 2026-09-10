@@ -1,4 +1,4 @@
-
+﻿
 > tripwise-mobile@1.0.0 test
 > jest --runInBand intelligence-ui-review.test.tsx
 
@@ -22,54 +22,59 @@
 
       at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
 
-PASS tests/intelligence-ui-review.test.tsx (5.426 s)
+PASS tests/intelligence-ui-review.test.tsx (18.803 s)
   FEATURE-P4-T005: Intelligence UI Review & Verification Suite
-    √ 1. renders REVIEW_REQUIRED badge on candidate place preview without auto-saving (168 ms)
-    √ 2. renders live place facts including business status and opening hours on PlaceDetailScreen (358 ms)
-    √ 3. honestly renders "Hours not available" when provider openingHours is null without inventing hours (14 ms)
-    √ 4. renders EventCandidateCard with review badge, event title, and venue (11 ms)
-    √ 5. discloses Ticketmaster as provider with accessible role and label (5 ms)
-    √ 6. honestly displays "Venue location unavailable" when event venue lacks coordinates (4 ms)
-    √ 7. formats UTC event time accurately (4 ms)
-    √ 8. formats PROVIDER_LOCAL event with explicit "(Local time)" indicator without guessing UTC offset (3 ms)
-    √ 9. renders live freshness badge when classified as FRESH (15 ms)
-    √ 10. renders stale notice and Cached badge when classified as STALE fallback (16 ms)
-    √ 11. classifies expired cache entries as EXPIRED
-    √ 12. handles UNAVAILABLE classification gracefully
-    √ 13. handles empty candidates without crashing (1 ms)
-    √ 14. renders EventEmptyState with clear informative messaging (2 ms)
-    √ 15. renders EventErrorState with functional retry action for transient errors (4 ms)
-    √ 16. renders EventErrorState with rate limit notice when isRateLimited is true (2 ms)
-    √ 17. renders error alert in PlaceDetailScreen on provider error (149 ms)
-    √ 18. purges caches and active UI state on SIGNED_OUT auth transition (1 ms)
-    √ 19. abort signal cancels in-flight operation cleanly without error flash (10 ms)
-    √ 20. in-flight coalescer ensures same request shares single call without duplication (24 ms)
-    √ 21. inspects EventPreviewSheet ensuring zero auto-saving or database writes occur (7 ms)
-    √ 22. getCachedPlaceIntelligenceRepository returns an instance of CachedPlaceIntelligenceRepository (1 ms)
-    √ 23. getCachedEventIntelligenceRepository returns an instance of CachedEventIntelligenceRepository (1 ms)
-    √ 24. repository factory getters return stable identical instances on repeated access (1 ms)
-    √ 25. contains all required EN intelligence and review localization keys
-    √ 26. contains all required VI intelligence and review localization keys (1 ms)
-    √ 27. renders textual Ticketmaster disclosure (4 ms)
-    √ 28. renders EventPreviewSheet with review badge and attribution (6 ms)
-    √ 29. verifies accessibilityRole and accessibilityLabel on review elements (3 ms)
-    √ 30. verifies attribution badge is accessible to assistive technologies (4 ms)
-    √ 31. preserves accepted T001 CandidateDiscovery contract validation (1 ms)
-    √ 32. preserves accepted T002 PlaceIntelligence validation and operational status contracts
-    √ 33. preserves accepted T003 EventIntelligence contract structure and bounds
-    √ 34. preserves accepted T004 cache freshness transitions and zero fan-out guarantee
+    âˆš 1. renders REVIEW_REQUIRED badge on candidate place preview without auto-saving (704 ms)
+    âˆš 2. renders live place facts including business status and opening hours on PlaceDetailScreen (1278 ms)
+    âˆš 3. honestly renders "Hours not available" when provider openingHours is null without inventing hours (138 ms)
+    âˆš 4. renders EventCandidateCard with review badge, event title, and venue (48 ms)
+    âˆš 5. discloses Ticketmaster as provider with accessible role and label (34 ms)
+    âˆš 6. honestly displays "Venue location unavailable" when event venue lacks coordinates (22 ms)
+    âˆš 7. formats UTC event time accurately (13 ms)
+    âˆš 8. formats PROVIDER_LOCAL event with explicit "(Local time)" indicator without guessing UTC offset (6 ms)
+    âˆš 9. renders live freshness badge when classified as FRESH (29 ms)
+    âˆš 10. renders stale notice and Cached badge when classified as STALE fallback (65 ms)
+    âˆš 11. classifies expired cache entries as EXPIRED (3 ms)
+    âˆš 12. handles UNAVAILABLE classification gracefully (1 ms)
+    âˆš 13. handles empty candidates without crashing (3 ms)
+    âˆš 14. renders EventEmptyState with clear informative messaging (7 ms)
+    âˆš 15. renders EventErrorState with functional retry action for transient errors (12 ms)
+    âˆš 16. renders EventErrorState with rate limit notice when isRateLimited is true (5 ms)
+    âˆš 17. renders error alert in PlaceDetailScreen on provider error (521 ms)
+    âˆš 18. purges caches and active UI state on SIGNED_OUT auth transition (8 ms)
+    âˆš 19. abort signal cancels in-flight operation cleanly without error flash (72 ms)
+    âˆš 20. in-flight coalescer ensures same request shares single call without duplication (27 ms)
+    âˆš 21. inspects EventPreviewSheet ensuring zero auto-saving or database writes occur (54 ms)
+    âˆš 22. getCachedPlaceIntelligenceRepository returns an instance of CachedPlaceIntelligenceRepository (2 ms)
+    âˆš 23. getCachedEventIntelligenceRepository returns an instance of CachedEventIntelligenceRepository (2 ms)
+    âˆš 24. repository factory getters return stable identical instances on repeated access (7 ms)
+    âˆš 25. contains all required EN intelligence and review localization keys (1 ms)
+    âˆš 26. contains all required VI intelligence and review localization keys (1 ms)
+    âˆš 27. renders textual Ticketmaster disclosure (18 ms)
+    âˆš 28. renders EventPreviewSheet with review badge and attribution (18 ms)
+    âˆš 29. verifies accessibilityRole and accessibilityLabel on review elements (19 ms)
+    âˆš 30. verifies attribution badge is accessible to assistive technologies (12 ms)
+    âˆš 31. preserves accepted T001 CandidateDiscovery contract validation (1 ms)
+    âˆš 32. preserves accepted T002 PlaceIntelligence validation and operational status contracts
+    âˆš 33. preserves accepted T003 EventIntelligence contract structure and bounds (2 ms)
+    âˆš 34. preserves accepted T004 cache freshness transitions and zero fan-out guarantee (6 ms)
   T005 corrective context and rendered locale/theme matrix
-    √ no valid context invokes zero event requests (undefined) (65 ms)
-    √ no valid context invokes zero event requests ({"city":"","countryCode":"GB","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (41 ms)
-    √ no valid context invokes zero event requests ({"city":"London","countryCode":"invalid","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (37 ms)
-    √ uses explicit London/GB without a fallback (15 ms)
-    √ uses explicit Paris/FR without a fallback (13 ms)
-    √ mode switches reuse the bounded cached repository without duplicate provider calls (40 ms)
-    √ renders actual en accessibility text in both palettes (80 ms)
-    √ renders actual vi accessibility text in both palettes (74 ms)
+    âˆš no valid context invokes zero event requests (undefined) (294 ms)
+    âˆš no valid context invokes zero event requests ({"city":"","countryCode":"GB","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (158 ms)
+    âˆš no valid context invokes zero event requests ({"city":"London","countryCode":"invalid","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (247 ms)
+    âˆš uses explicit London/GB without a fallback (70 ms)
+    âˆš uses explicit Paris/FR without a fallback (119 ms)
+    âˆš mode switches reuse the bounded cached repository without duplicate provider calls (215 ms)
+    âˆš renders actual en accessibility text in both palettes (725 ms)
+    âˆš renders actual vi accessibility text in both palettes (336 ms)
+  T005 event hook isolation
+    âˆš aborts superseded requests and ignores their late success, then purges missing context (14 ms)
+    âˆš purges rendered hook state on SIGNED_OUT (9 ms)
+    âˆš purges rendered hook state on SIGNED_IN (6 ms)
+    âˆš purges rendered hook state on USER_UPDATED (9 ms)
 
 Test Suites: 1 passed, 1 total
-Tests:       42 passed, 42 total
+Tests:       46 passed, 46 total
 Snapshots:   0 total
-Time:        5.74 s
+Time:        19.831 s
 Ran all test suites matching /intelligence-ui-review.test.tsx/i.

@@ -161,7 +161,7 @@ describe('ExploreScreen', () => {
     await user.press(screen.getByLabelText('Switch to list view'));
 
     // Select Wat Arun row in List mode
-    await user.press(screen.getByLabelText('Wat Arun, Buddhist Temple, đánh giá 4.8 sao'));
+    await user.press(screen.getByLabelText('Wat Arun, Buddhist Temple, Rated 4.8 stars'));
 
     // Preview bottom sheet opens (address appears in list item and preview sheet)
     expect(screen.getAllByText('Bangkok Yai, Bangkok').length).toBeGreaterThanOrEqual(1);

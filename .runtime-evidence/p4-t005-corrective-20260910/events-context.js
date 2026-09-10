@@ -1,0 +1,1 @@
+(() => {const request={city:'London',countryCode:'GB',startDateTime:new Date(Date.now()+86400000).toISOString().replace(/\.\d{3}Z$/,'Z'),endDateTime:new Date(Date.now()+7*86400000).toISOString().replace(/\.\d{3}Z$/,'Z'),limit:3};__t005.request=request;__t005.prop('ExploreScreen','initialEventRequest',request);return {request};})()

@@ -18,3 +18,4 @@ export * from './remote/supabasePlaceResolutionRepository';
 export * from './remote/supabaseProfileRepository';
 export * from './remote/supabaseTripRepositories';
 export * from './remote/supabaseWikimediaImageRepository';
+export * from './deterministicConstraintEngine';

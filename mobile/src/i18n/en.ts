@@ -667,4 +667,5 @@ export const enTranslations: Record<string, string> = {
   'explore.filters': "Filters",
   'explore.switchToList': "Switch to list view",
   'explore.switchToMap': "Switch to map view",
+  'place.ratingLabel': 'Rated {rating} stars',
 };

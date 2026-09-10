@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppText } from '../../../components/AppText';
+import { useTranslation } from '../../../i18n';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
 import type { ExploreMapPlace } from '../types';
@@ -18,12 +19,13 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
   isSelected,
   onSelect,
 }: Props) {
-  const { colors, effectiveTheme } = useTheme();
+  const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Pressable
-      accessibilityHint={`Xem chi tiết địa điểm ${place.name}`}
-      accessibilityLabel={`${place.name}, ${place.categoryLabel}${place.rating === undefined ? '' : `, đánh giá ${place.rating} sao`}`}
+      accessibilityHint={t('explore.viewDetails')}
+      accessibilityLabel={`${place.name}, ${place.categoryLabel}${place.rating === undefined ? '' : `, ${t('place.ratingLabel', { rating: place.rating })}`}`}
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
       onPress={() => onSelect(place)}
@@ -36,7 +38,7 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
         isSelected && [
           styles.selectedCard,
           {
-            backgroundColor: effectiveTheme === 'dark' ? '#1A2E44' : '#F3F8FF',
+            backgroundColor: colors.background.surfaceVariant,
             borderColor: colors.brand.primary,
           },
         ],
@@ -46,7 +48,7 @@ export const ExplorePlaceListItem = memo(function ExplorePlaceListItem({
       {place.imageUrl ? (
         <Image accessibilityLabel={place.name} accessibilityRole="image" source={{ uri: place.imageUrl }} style={[styles.thumbnail, { backgroundColor: colors.background.surfaceVariant }]} />
       ) : (
-        <View accessibilityLabel="No place image available" style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.background.surfaceVariant }]}>
+        <View accessibilityLabel={t('place.imageUnavailable')} style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.background.surfaceVariant }]}>
           <MaterialIcons color={colors.text.muted} name="place" size={28} />
         </View>
       )}

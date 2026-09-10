@@ -25,3 +25,20 @@ Android Bundled 2619ms index.ts (1337 modules)
  INFO  [ExploreDiscovery] success {"category": "all", "places": 12}
  INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
  INFO  [ExploreMapCanvas] map ready
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
+ INFO  [ExploreMapCanvas] layout ready
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 0, "validCoordinates": 0, "visiblePlaces": 0}
+ INFO  [ExploreDiscovery] request {"category": "all", "limit": 12}
+ INFO  [ExploreMapCanvas] layout ready
+ INFO  [ExploreMapCanvas] map ready
+ INFO  [ExploreDiscovery] success {"category": "all", "places": 12}
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
+ INFO  [ExploreMapCanvas] layout ready
+ INFO  [ExploreMapCanvas] map ready
+ INFO  [ExploreDiscovery] request {"category": "all", "limit": 12}
+ INFO  [ExploreDiscovery] success {"category": "all", "places": 12}
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
+ INFO  [ExploreMapCanvas] marker diagnostics {"renderedMarkers": 12, "validCoordinates": 12, "visiblePlaces": 12}
+ INFO  [ExploreMapCanvas] layout ready
+ INFO  [ExploreMapCanvas] map ready

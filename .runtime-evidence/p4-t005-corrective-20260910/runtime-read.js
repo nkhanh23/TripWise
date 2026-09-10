@@ -1,0 +1,1 @@
+(() => {const f=__t005.find('ExploreScreen');let states=[];for(let h=f?.memoizedState;h;h=h.next){if(typeof h.memoizedState==='string')states.push(h.memoizedState);if(Array.isArray(h.memoizedState)&&h.memoizedState[0]?.kind==='live-event-candidate')__t005.liveEvents=h.memoizedState;}return {calls:__t005.calls,states,eventCount:__t005.liveEvents?.length};})()
