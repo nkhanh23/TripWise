@@ -1,0 +1,109 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand event-intelligence.test.ts
+
+PASS tests/event-intelligence.test.ts
+  √ exact valid request copied (4 ms)
+  √ invalid request {"extra":true} (15 ms)
+  √ invalid request {"userId":"private"} (1 ms)
+  √ invalid request {"url":"https://invalid.example"}
+  √ invalid request {"city":""} (1 ms)
+  √ invalid request {"city":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+  √ invalid request {"city":" London"} (1 ms)
+  √ invalid request {"city":"a&apikey=x"} (1 ms)
+  √ invalid request {"countryCode":"gb"}
+  √ invalid request {"countryCode":"GBR"} (1 ms)
+  √ invalid request {"startDateTime":"2026-02-30T00:00:00Z"}
+  √ invalid request {"startDateTime":"2026-09-10T00:00:00+00:00"} (1 ms)
+  √ invalid request {"endDateTime":"2026-09-10T00:00:00Z"}
+  √ invalid request {"endDateTime":"2026-09-18T00:00:00Z"} (1 ms)
+  √ invalid request {"limit":0}
+  √ invalid request {"limit":4} (1 ms)
+  √ invalid request {"limit":1.5}
+  √ invalid request {} (1 ms)
+  √ valid UTC attribution provenance optional fields preserved and copied (1 ms)
+  √ time facts preserved without timezone invention {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","localTime":"10:00:00"} (1 ms)
+  √ time facts preserved without timezone invention {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","timezone":"Europe/London","noSpecificTime":true} (15 ms)
+  √ time facts preserved without timezone invention {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","dateTBD":true,"dateTBA":false,"timeTBA":true} (1 ms)
+  √ time facts preserved without timezone invention {"kind":"UTC","dateTime":"2026-09-12T09:00:00Z","localDate":"2026-09-12","localTime":"10:00:00","timezone":"Europe/London"}
+  √ malformed time rejected {"kind":"LOCAL","localDate":"2026-09-12"} (1 ms)
+  √ malformed time rejected {"kind":"UTC"} (1 ms)
+  √ malformed time rejected {"kind":"UTC","dateTime":"2026-02-30T00:00:00Z"} (1 ms)
+  √ malformed time rejected {"kind":"UTC","dateTime":"2026-09-12T24:00:00Z"}
+  √ malformed time rejected {"kind":"UTC","dateTime":"2026-09-12T09:00:00"} (1 ms)
+  √ malformed time rejected {"kind":"UTC","dateTime":"2026-09-12T09:00:00Z","timeTBA":true}
+  √ malformed time rejected {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","dateTime":"2026-09-12T09:00:00Z"} (1 ms)
+  √ malformed time rejected {"kind":"PROVIDER_LOCAL","localDate":"2026-02-30"}
+  √ malformed time rejected {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","localTime":"25:00:00"} (1 ms)
+  √ malformed time rejected {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","timezone":"Imaginary/Zone"}
+  √ malformed time rejected {"kind":"PROVIDER_LOCAL","localDate":"2026-09-12","timeTBA":"true"} (1 ms)
+  √ malformed time rejected {"kind":"UTC","dateTime":"2026-09-12T09:00:00Z","deviceTimezone":"UTC"}
+  √ chronology checked where comparable; valid optional end (1 ms)
+  √ identity/title/attribution/provenance poisoning fails {}
+  √ identity/title/attribution/provenance poisoning fails {"providerEventId":""}
+  √ identity/title/attribution/provenance poisoning fails {"providerEventId":"../bad"} (1 ms)
+  √ identity/title/attribution/provenance poisoning fails {"providerEventId":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+  √ identity/title/attribution/provenance poisoning fails {"title":""} (1 ms)
+  √ identity/title/attribution/provenance poisoning fails {"title":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+  √ identity/title/attribution/provenance poisoning fails {"provider":"google"}
+  √ identity/title/attribution/provenance poisoning fails {"kind":"poison"} (1 ms)
+  √ identity/title/attribution/provenance poisoning fails {"review":"ACCEPTED"}
+  √ identity/title/attribution/provenance poisoning fails {"sourceUrl":"https://bad"}
+  √ identity/title/attribution/provenance poisoning fails {"attribution":{"providerName":"TripWise","displayRequirement":"REQUIRES_FINAL_T005_REVIEW"}} (1 ms)
+  √ identity/title/attribution/provenance poisoning fails {"attribution":{"providerName":"Ticketmaster","displayRequirement":"REQUIRES_FINAL_T005_REVIEW","logo":"bad"}}
+  √ identity/title/attribution/provenance poisoning fails {"provenance":{"provider":"ticketmaster","providerEventId":"other","boundary":"discover-events","observation":"SERVER_RECEIVED","observedAt":"2026-09-09T12:00:00.000Z"}} (1 ms)
+  √ identity/title/attribution/provenance poisoning fails {"provenance":{"provider":"ticketmaster","providerEventId":"test-event","boundary":"discover-events","observation":"UPDATED_AT","observedAt":"2026-09-09T12:00:00.000Z"}}
+  √ identity/title/attribution/provenance poisoning fails {"provenance":{"provider":"ticketmaster","providerEventId":"test-event","boundary":"discover-events","observation":"SERVER_RECEIVED","observedAt":"2026-02-30T00:00:00.000Z"}}
+  √ identity/title/attribution/provenance poisoning fails {"provenance":{"provider":"ticketmaster","providerEventId":"test-event","boundary":"discover-events","observation":"SERVER_RECEIVED","observedAt":"2026-09-09T12:00:00.000Z","raw":"poison"}} (1 ms)
+  √ venue identity and unavailable location
+  √ invalid venue {"providerVenueId":"../bad"} (1 ms)
+  √ invalid venue {"providerVenueId":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+  √ invalid venue {"name":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} (1 ms)
+  √ invalid venue {"googlePlaceId":"fake"}
+  √ invalid venue {"location":{"latitude":91,"longitude":0}}
+  √ invalid venue {"location":{"latitude":0,"longitude":-181}} (1 ms)
+  √ invalid venue {"location":{"latitude":null,"longitude":0}}
+  √ invalid venue {"location":{"latitude":"51","longitude":0}} (1 ms)
+  √ invalid venue {"location":{"latitude":0,"longitude":0,"verified":true}}
+  √ invalid venue {"location":null}
+  √ counts and duplicate IDs; empty valid (2 ms)
+  √ pagination validation {"number":1}
+  √ pagination validation {"size":4}
+  √ pagination validation {"size":0}
+  √ pagination validation {"totalElements":-1}
+  √ pagination validation {"totalElements":0} (1 ms)
+  √ pagination validation {"totalPages":0}
+  √ pagination validation {"totalPages":1.5} (1 ms)
+  √ pagination validation {"cursor":"poison"}
+  √ strict outer/access envelope and bounded metadata (2 ms)
+  √ safe mapping EVENT_INPUT_INVALID (1 ms)
+  √ safe mapping UNAUTHORIZED
+  √ safe mapping EVENT_PROVIDER_CONFIG_MISSING
+  √ safe mapping EVENT_PROVIDER_AUTH
+  √ safe mapping EVENT_PROVIDER_RATE_LIMITED
+  √ safe mapping EVENT_PROVIDER_UNAVAILABLE
+  √ safe mapping EVENT_PROVIDER_TIMEOUT (1 ms)
+  √ safe mapping EVENT_CANCELLED
+  √ safe mapping EVENT_PROVIDER_INVALID_RESPONSE
+  √ HTTP mapping 401
+  √ HTTP mapping 403
+  √ HTTP mapping 429 (1 ms)
+  √ HTTP mapping 500
+  √ HTTP mapping 504
+  √ repository invokes normalized path once per call, no cache or persistence (2 ms)
+  √ invalid request and pre-abort avoid network (1 ms)
+  √ malformed success fails safely
+  √ provider error envelope via invoke safely mapped once (1 ms)
+  √ timeout settles non-cooperative transport and never retries (3 ms)
+  √ session invalidation rejects late result SIGNED_OUT (1 ms)
+  √ session invalidation rejects late result SIGNED_IN (1 ms)
+  √ session invalidation rejects late result USER_UPDATED (1 ms)
+  √ supersession cancels old operation without cancelling new one (2 ms)
+  √ explicit external cancellation and repository cancel (2 ms)
+  √ token refresh does not invalidate same-owner request (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       98 passed, 98 total
+Snapshots:   0 total
+Time:        0.899 s, estimated 2 s
+Ran all test suites matching /event-intelligence.test.ts/i.

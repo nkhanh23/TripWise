@@ -121,6 +121,38 @@ export const viTranslations: Record<string, string> = {
   'explore.viewDetails': 'Xem chi tiết',
   'explore.errorTitle': 'Không thể tải địa điểm',
   'explore.errorSubtitle': 'Vui lòng kiểm tra kết nối mạng và thử lại.',
+  'explore.categories.events': 'Sự kiện',
+  'explore.modePlaces': 'Địa điểm',
+
+  // Intelligence & Review UI
+  'intelligence.reviewRequired': 'Chờ xem xét',
+  'intelligence.reviewDescription': 'Dữ liệu trực tiếp từ đối tác. Vui lòng kiểm tra trước khi thêm vào lịch trình.',
+  'intelligence.fresh': 'Trực tiếp',
+  'intelligence.stale': 'Lưu tạm',
+  'intelligence.staleFallback': 'Đang hiển thị dữ liệu lưu tạm gần nhất. Nhấn để làm mới.',
+  'intelligence.expired': 'Hết hạn',
+  'intelligence.unavailable': 'Không khả dụng',
+  'intelligence.hoursUnavailable': 'Chưa có thông tin giờ mở cửa',
+  'intelligence.sourceGooglePlaces': 'Nguồn: Google Places',
+  'intelligence.businessStatus.operational': 'Đang hoạt động',
+  'intelligence.businessStatus.closedTemporarily': 'Tạm thời đóng cửa',
+  'intelligence.businessStatus.closedPermanently': 'Đã đóng cửa vĩnh viễn',
+  'intelligence.businessStatus.unknown': 'Chưa rõ trạng thái',
+
+  // Event Intelligence
+  'intelligence.events.title': 'Sự kiện trực tiếp',
+  'intelligence.events.attribution': 'Sự kiện cung cấp bởi Ticketmaster',
+  'intelligence.events.localTime': '(Giờ địa phương)',
+  'intelligence.events.timeTBA': 'Chưa xác định giờ',
+  'intelligence.events.dateTBD': 'Chưa xác định ngày',
+  'intelligence.events.venueUnavailable': 'Địa điểm chưa có tọa độ',
+  'intelligence.events.emptyTitle': 'Không tìm thấy sự kiện',
+  'intelligence.events.emptySubtitle': 'Không có sự kiện nào được lên lịch cho địa điểm và thời gian này.',
+  'intelligence.events.errorTitle': 'Không thể tải sự kiện',
+  'intelligence.events.errorSubtitle': 'Không thể kết nối với dịch vụ sự kiện. Vui lòng kiểm tra kết nối và thử lại.',
+  'intelligence.events.rateLimitedTitle': 'Quá nhiều yêu cầu',
+  'intelligence.events.rateLimitedSubtitle': 'Đã đạt giới hạn tìm kiếm sự kiện. Vui lòng đợi trong giây lát rồi thử lại.',
+  'intelligence.events.viewDetails': 'Xem chi tiết sự kiện',
 
   // Place Detail
   'place.getDirections': 'Chỉ đường',

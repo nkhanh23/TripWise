@@ -1,0 +1,19 @@
+{
+  "mobile/src/integration/intelligenceFreshnessPolicy.ts": "27e0c4f22249527928794aaced70d88116e6ae1ad68940498327a6885567d510",
+  "mobile/src/integration/eventIntelligenceContract.ts": "ca9df94faa657a6e4da93cc32d6329651b575f2eac49c2a32e176d1d14159065",
+  "mobile/src/integration/remote/supabaseEventIntelligenceRepository.ts": "92a10a812f76b390853d01525a5ac7f49b314ad1cab9506554b3b6437c2ef5b5",
+  "mobile/src/integration/placeIntelligenceContract.ts": "698051f0af9f60f4afb8d97cf479289eba5c642195b0d35a816deceb2274a665",
+  "mobile/src/integration/remote/supabasePlaceMetadataRepository.ts": "b9f9906422f5710e698d9d212f8a9848fbda815383e2f50041062efa04fdd3a2",
+  "mobile/src/integration/candidateDiscoveryContract.ts": "803f2329eaf48c842fd21465e0d4cdce481601460db1b77966ccc14d19959ce7",
+  "mobile/src/integration/candidateDiscoverySession.ts": "b68ccb1e12c6084fa9d791e560889a53295c577ef7c26add135fe667a3f652d9",
+  "mobile/src/integration/remote/supabaseCandidateDiscoveryRepository.ts": "3de4015b27be4358e5b03291d5d84551737919cfc7624d3e12c749577839845f",
+  "mobile/src/integration/index.ts": "e4cc55370ec68c027415e2ad7e0a7e636a9e05dff8bb1e8f9736b0ba549e83c3",
+  "mobile/tests/intelligence-freshness-policy.test.ts": "396491ecf342bf6cda1e41972ba67eb9bd51eead240c9842755dae73182c4d3f",
+  "mobile/tests/place-intelligence.test.ts": "8c74f034864645cbddda42e11c738be8c5815be9c45ecc2aba026dc5c8b40a8b",
+  "mobile/tests/event-intelligence.test.ts": "ba3137830869a77d4625b39a243d0a155019b7a1d19eace902a2ca793d2a191a",
+  "mobile/tests/candidate-discovery.test.ts": "e61a0b7361081fec10929097a15b34748367fad39dd4b6eb6b355512d5558609",
+  "supabase/functions/discover-events/index.ts": "f85161a596f2aac1b2961f415ec4deccd99bb6d720ec3b4a22dc42fc29a720ba",
+  "supabase/functions/discover-events/events.ts": "f3966c6454e578adf3b6e66d43644ac5b2eaabb415b4437b4e69b31d77e1e996",
+  "supabase/functions/get-place-metadata/index.ts": "68403bc0e0f2ce212b4da46dd91b0eb55835572241ecb303e61e50122eaea09e",
+  "supabase/functions/explore-places/index.ts": "72612e2823b5b5fd395861243824204f57f264daa4e12f7716eb8490e5fed366"
+}

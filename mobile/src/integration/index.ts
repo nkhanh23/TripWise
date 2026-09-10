@@ -1,5 +1,9 @@
 export * from './contracts';
 export * from './errors';
+export { EVENT_BOUNDS, parseEventIntelligenceResponse, validateEventIntelligenceRequest } from './eventIntelligenceContract';
+export type { EventCandidate, EventIntelligenceRequest, EventIntelligenceResult, EventTime, EventVenue } from './eventIntelligenceContract';
+export * from './remote/supabaseEventIntelligenceRepository';
+export * from './intelligenceFreshnessPolicy';
 export * from './idempotency';
 export * from './imageResolution';
 export * from './mappers';

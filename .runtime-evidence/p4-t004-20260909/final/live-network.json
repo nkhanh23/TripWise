@@ -1,0 +1,34 @@
+[
+  {
+    "phase": "auth",
+    "path": "/auth/v1/token",
+    "method": "POST",
+    "httpStatus": 200,
+    "requestId": "01a0866f-98cb-7c00-9486-8a5f2abeed78",
+    "executionId": null
+  },
+  {
+    "phase": "miss",
+    "path": "/functions/v1/discover-events",
+    "method": "POST",
+    "httpStatus": 200,
+    "requestId": "01a0866f-9cbd-7206-b4db-0771a20ef8ad",
+    "executionId": "9d0f6e43-6fac-4e24-a855-e49bf6f52c5f"
+  },
+  {
+    "phase": "stale-evaluation",
+    "path": "/functions/v1/discover-events",
+    "method": "POST",
+    "httpStatus": 200,
+    "requestId": "01a0866f-a15b-7cc5-b7e7-fa2a816db5eb",
+    "executionId": "38db828a-835e-4df9-9fe9-6697a11cc4d6"
+  },
+  {
+    "phase": "auth-invalidation",
+    "path": "/auth/v1/logout",
+    "method": "POST",
+    "httpStatus": 204,
+    "requestId": "01a0866f-a519-78b1-b36e-624d15c10a2d",
+    "executionId": null
+  }
+]

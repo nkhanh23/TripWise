@@ -1,0 +1,126 @@
+{
+  "timestamp": "2026-09-09T14:22:54.514Z",
+  "eventDiscovery": {
+    "query": {
+      "city": "London",
+      "countryCode": "GB",
+      "limit": 3
+    },
+    "freshness": "FRESH",
+    "isFallback": false,
+    "eventCount": 3,
+    "sampleEvents": [
+      {
+        "title": "London Eye - Standard Experience",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6CLhx0EA",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-10T09:00:00Z",
+          "localDate": "2026-09-10",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "name": "The London Eye",
+            "hasLocation": true
+          }
+        ]
+      },
+      {
+        "title": "Madame Tussauds London - Standard Entry",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6GEptIVX",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-10T09:00:00Z",
+          "localDate": "2026-09-10",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "name": "Madame Tussauds London",
+            "hasLocation": true
+          }
+        ]
+      },
+      {
+        "title": "London Dungeon - Standard Entry",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6uhjo1KI",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-10T09:00:00Z",
+          "localDate": "2026-09-10",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "name": "The London Dungeon",
+            "hasLocation": true
+          }
+        ]
+      }
+    ],
+    "attributionCompliant": true,
+    "reviewRequiredBadge": true,
+    "providerAccess": {
+      "completedProviderCalls": 1
+    }
+  },
+  "placeIntelligence": {
+    "googlePlaceId": "ChIJaSv_6gaZ4jARnbiUVn6Z_YY",
+    "businessStatus": "OPERATIONAL",
+    "rating": 4.7,
+    "userRatingCount": 45218,
+    "hasOpeningHours": true,
+    "freshness": "FRESH",
+    "isFallback": false,
+    "provenanceValid": true
+  },
+  "zeroPersistenceVerification": {
+    "mutationAttempts": 0,
+    "clientForbiddenCalls": 0,
+    "databaseMutations": 0,
+    "uncommittedSaves": 0,
+    "itineraryWrites": 0
+  },
+  "networkTrace": [
+    {
+      "phase": "auth",
+      "path": "/auth/v1/token",
+      "method": "POST",
+      "httpStatus": 200,
+      "hasExecutionId": false
+    },
+    {
+      "phase": "event-discovery",
+      "path": "/functions/v1/discover-events",
+      "method": "POST",
+      "httpStatus": 200,
+      "hasExecutionId": true
+    },
+    {
+      "phase": "place-metadata",
+      "path": "/functions/v1/get-place-metadata",
+      "method": "POST",
+      "httpStatus": 200,
+      "hasExecutionId": true
+    }
+  ]
+}

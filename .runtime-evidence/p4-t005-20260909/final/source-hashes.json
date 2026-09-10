@@ -1,0 +1,19 @@
+{
+  "mobile/src/integration/intelligenceComposition.ts": "19acf1348036c94272982ccc6f34c740a4725b980b295fc8970e3bfadb2deda6",
+  "mobile/src/integration/intelligenceFreshnessPolicy.ts": "6e670e1c6cfceefa1070decaaf17b221fa70f951fd70f65742a289b35a2b84de",
+  "mobile/src/integration/eventIntelligenceContract.ts": "ca9df94faa657a6e4da93cc32d6329651b575f2eac49c2a32e176d1d14159065",
+  "mobile/src/integration/placeIntelligenceContract.ts": "698051f0af9f60f4afb8d97cf479289eba5c642195b0d35a816deceb2274a665",
+  "mobile/src/integration/candidateDiscoveryContract.ts": "803f2329eaf48c842fd21465e0d4cdce481601460db1b77966ccc14d19959ce7",
+  "mobile/src/features/place/hooks/usePlaceIntelligence.ts": "d3294a089181a0b25c81a8cbc347fc5c7f5d0b89a04826d28700660c59bcf521",
+  "mobile/src/features/place/screens/PlaceDetailScreen.tsx": "0dc72f4ce8c2da9dd131009c096da6a26cbe2784234d6f0cabc178d4b288479d",
+  "mobile/src/features/explore/hooks/useEventIntelligence.ts": "3032570ea313185ef6ad286f7f223d6cf04c5b21e09d007931fcf8c4b79b5f77",
+  "mobile/src/features/explore/components/EventCandidateCard.tsx": "bf0644213cb97e26e3eacfa12f1e11f2bf6d76466c17c6c998ef2b1fc422fd55",
+  "mobile/src/features/explore/components/EventPreviewSheet.tsx": "7870e7dc6456af95f29a6353f13d9e0a13f4e5e030f29d3c0790866a7e9e2d41",
+  "mobile/src/features/explore/components/EventEmptyState.tsx": "18939f4e4db6409109e01e1253c3b9f4e59ad2833a6fbdb4b3db524723fb9ab7",
+  "mobile/src/features/explore/components/EventErrorState.tsx": "49088a5d2f6cb25a89a659dd8d999f3a340f417c59497491a005b6079c96a417",
+  "mobile/src/features/explore/components/ExplorePlacePreview.tsx": "044daadd4dcfdf105216f01377e038bfe4db1b4a32ba75c3ab365dd3d65fba11",
+  "mobile/src/features/explore/ExploreScreen.tsx": "0e9fd29125fded8d13a579f564f9f64d5e7d26b3b722e0506541f1d4dccb58fe",
+  "mobile/src/i18n/en.ts": "17255f076edb114210590bbd8a85eea908cd6b49fb688984ea99f695647581bc",
+  "mobile/src/i18n/vi.ts": "c8d2c358f5f809e8a927c5a3bc35fda78f9362f08cde8c436003e23d06be2fef",
+  "mobile/tests/intelligence-ui-review.test.tsx": "957e63c078477cc0c588a723e42bbcdfc62e60b78dace41dc8429da192f82e0b"
+}

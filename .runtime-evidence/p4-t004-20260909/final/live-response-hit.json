@@ -1,0 +1,145 @@
+{
+  "state": "FRESH",
+  "cachedAt": 1788961851581,
+  "freshUntil": 1788962751581,
+  "staleUntil": 1788965451581,
+  "ageMs": 0,
+  "data": {
+    "events": [
+      {
+        "kind": "live-event-candidate",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6CLhx0EA",
+        "title": "London Eye - Standard Experience",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-10T09:00:00Z",
+          "localDate": "2026-09-10",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "providerVenueId": "KovZ9177wO7",
+            "name": "The London Eye",
+            "location": {
+              "latitude": 51.500992,
+              "longitude": -0.11735
+            }
+          }
+        ],
+        "review": "REVIEW_REQUIRED",
+        "attribution": {
+          "providerName": "Ticketmaster",
+          "displayRequirement": "REQUIRES_FINAL_T005_REVIEW"
+        },
+        "provenance": {
+          "provider": "ticketmaster",
+          "providerEventId": "17uOv0G6CLhx0EA",
+          "boundary": "discover-events",
+          "observation": "SERVER_RECEIVED",
+          "observedAt": "2026-09-09T13:50:57.382Z"
+        }
+      },
+      {
+        "kind": "live-event-candidate",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6GEptIVX",
+        "title": "Madame Tussauds London - Standard Entry",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-10T09:00:00Z",
+          "localDate": "2026-09-10",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "providerVenueId": "KovZ9177YW0",
+            "name": "Madame Tussauds London",
+            "location": {
+              "latitude": 51.52248,
+              "longitude": -0.15526
+            }
+          }
+        ],
+        "review": "REVIEW_REQUIRED",
+        "attribution": {
+          "providerName": "Ticketmaster",
+          "displayRequirement": "REQUIRES_FINAL_T005_REVIEW"
+        },
+        "provenance": {
+          "provider": "ticketmaster",
+          "providerEventId": "17uOv0G6GEptIVX",
+          "boundary": "discover-events",
+          "observation": "SERVER_RECEIVED",
+          "observedAt": "2026-09-09T13:50:57.382Z"
+        }
+      },
+      {
+        "kind": "live-event-candidate",
+        "provider": "ticketmaster",
+        "providerEventId": "17uOv0G6uhjo1KI",
+        "title": "London Dungeon - Standard Entry",
+        "start": {
+          "kind": "UTC",
+          "dateTime": "2026-09-10T09:00:00Z",
+          "localDate": "2026-09-10",
+          "localTime": "10:00:00",
+          "timezone": "Europe/London",
+          "dateTBD": false,
+          "dateTBA": false,
+          "timeTBA": false,
+          "noSpecificTime": false
+        },
+        "venues": [
+          {
+            "providerVenueId": "KovZ9177wuf",
+            "name": "The London Dungeon",
+            "location": {
+              "latitude": 51.500992,
+              "longitude": -0.11735
+            }
+          }
+        ],
+        "review": "REVIEW_REQUIRED",
+        "attribution": {
+          "providerName": "Ticketmaster",
+          "displayRequirement": "REQUIRES_FINAL_T005_REVIEW"
+        },
+        "provenance": {
+          "provider": "ticketmaster",
+          "providerEventId": "17uOv0G6uhjo1KI",
+          "boundary": "discover-events",
+          "observation": "SERVER_RECEIVED",
+          "observedAt": "2026-09-09T13:50:57.382Z"
+        }
+      }
+    ],
+    "pagination": {
+      "size": 3,
+      "number": 0,
+      "totalElements": 1183,
+      "totalPages": 395
+    },
+    "providerAccess": {
+      "httpStatus": 200,
+      "completedProviderCalls": 1,
+      "rateLimitHeaders": {
+        "rate-limit": "5000",
+        "rate-limit-available": "4995",
+        "rate-limit-over": "0",
+        "rate-limit-reset": "1789044739634"
+      }
+    }
+  },
+  "isFallback": false
+}

@@ -118,6 +118,38 @@ export const enTranslations: Record<string, string> = {
   'explore.categories.cafe': 'Coffee',
   'explore.categories.coffee': 'Coffee',
   'explore.categories.shopping': 'Shopping',
+  'explore.categories.events': 'Events',
+  'explore.modePlaces': 'Places',
+
+  // Intelligence & Review UI
+  'intelligence.reviewRequired': 'Review required',
+  'intelligence.reviewDescription': 'Live provider fact. Review before adding to itinerary.',
+  'intelligence.fresh': 'Live',
+  'intelligence.stale': 'Cached',
+  'intelligence.staleFallback': 'Showing recent cached data. Tap to refresh.',
+  'intelligence.expired': 'Outdated',
+  'intelligence.unavailable': 'Unavailable',
+  'intelligence.hoursUnavailable': 'Hours not available',
+  'intelligence.sourceGooglePlaces': 'Source: Google Places',
+  'intelligence.businessStatus.operational': 'Operational',
+  'intelligence.businessStatus.closedTemporarily': 'Closed temporarily',
+  'intelligence.businessStatus.closedPermanently': 'Permanently closed',
+  'intelligence.businessStatus.unknown': 'Status unknown',
+
+  // Event Intelligence
+  'intelligence.events.title': 'Live Events',
+  'intelligence.events.attribution': 'Events powered by Ticketmaster',
+  'intelligence.events.localTime': '(Local time)',
+  'intelligence.events.timeTBA': 'Time TBA',
+  'intelligence.events.dateTBD': 'Date TBD',
+  'intelligence.events.venueUnavailable': 'Venue location unavailable',
+  'intelligence.events.emptyTitle': 'No events found',
+  'intelligence.events.emptySubtitle': 'No scheduled events found for this location and timeframe.',
+  'intelligence.events.errorTitle': 'Unable to load events',
+  'intelligence.events.errorSubtitle': 'Could not connect to event service. Please check your connection and try again.',
+  'intelligence.events.rateLimitedTitle': 'Too many requests',
+  'intelligence.events.rateLimitedSubtitle': 'Event search rate limit reached. Please wait a moment before retrying.',
+  'intelligence.events.viewDetails': 'View event details',
 
   // Place
   'place.overview': 'About',

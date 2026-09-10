@@ -1,0 +1,7 @@
+{
+  "mobile\\src\\integration\\remote\\supabaseEventIntelligenceRepository.ts": "653319f9f34fa66eed8ffa29d144c91e888dd6076d7fd46b2211306fbe51544d",
+  "mobile\\src\\integration\\eventIntelligenceContract.ts": "ca9df94faa657a6e4da93cc32d6329651b575f2eac49c2a32e176d1d14159065",
+  "mobile\\src\\integration\\validation.ts": "b9fcb83f1a42b13789261915018d0b1e5d3bd4da92c1cac9541bbd19c466ae0b",
+  "mobile\\src\\integration\\errors.ts": "e885d6b3bb922f50342391c78434aa2b5aca3d4ad4d336cb30c8ae66e60797dd",
+  "mobile\\src\\integration\\reliability.ts": "40261f63761bbfebb41f320358ee8a9a4933ca1fa63f54b8fa2f08c05af5c244"
+}

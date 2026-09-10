@@ -1,0 +1,42 @@
+[
+  {
+    "name": "edge-check",
+    "command": "deno check supabase/functions/discover-events/index.ts",
+    "cwd": "D:\\Dev\\TripWise",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T13:09:17.978Z",
+    "finishedAt": "2026-09-09T13:09:19.451Z"
+  },
+  {
+    "name": "edge-lint",
+    "command": "deno lint supabase/functions/discover-events/",
+    "cwd": "D:\\Dev\\TripWise",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T13:09:19.454Z",
+    "finishedAt": "2026-09-09T13:09:19.579Z"
+  },
+  {
+    "name": "edge-test",
+    "command": "deno test supabase/functions/discover-events/",
+    "cwd": "D:\\Dev\\TripWise",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T13:09:19.579Z",
+    "finishedAt": "2026-09-09T13:09:21.182Z"
+  },
+  {
+    "name": "edge-t001",
+    "command": "deno test -A supabase/functions/explore-places/",
+    "cwd": "D:\\Dev\\TripWise",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T13:09:21.182Z",
+    "finishedAt": "2026-09-09T13:09:21.737Z"
+  },
+  {
+    "name": "edge-t002",
+    "command": "deno test --allow-env supabase/functions/get-place-metadata/",
+    "cwd": "D:\\Dev\\TripWise",
+    "exitCode": 0,
+    "startedAt": "2026-09-09T13:09:21.738Z",
+    "finishedAt": "2026-09-09T13:09:21.991Z"
+  }
+]

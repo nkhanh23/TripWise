@@ -1,0 +1,52 @@
+running 15 tests from ./supabase/functions/explore-places/bounds_test.ts
+actual bytes bound rejects oversized chunked body and multibyte payload ... ok (9ms)
+handler rejects oversized missing/lying length and URL before provider ... ok (3ms)
+bounded provider fields id 12 ... ok (744µs)
+bounded provider fields id 210 ... ok (78µs)
+bounded provider fields displayName 228 ... ok (89µs)
+bounded provider fields formattedAddress 524 ... ok (183µs)
+bounded provider fields types 368 ... ok (67µs)
+bounded provider fields types 115 ... ok (48µs)
+bounded provider fields primaryType 119 ... ok (53µs)
+bounded provider fields rating 13 ... ok (59µs)
+bounded provider fields userRatingCount 36 ... ok (117µs)
+raw provider extras are scrubbed; absent ratings are not invented ... ok (139µs)
+provider bounds actual body, result count, requested limit and duplicates ... ok (10ms)
+handler protects result count and sanitizes unknown provider error ...
+------- output -------
+Unhandled explore-places error
+----- output end -----
+handler protects result count and sanitizes unknown provider error ... ok (1ms)
+pre-cancelled discovery never contacts provider ... ok (1ms)
+running 7 tests from ./supabase/functions/explore-places/contract_test.ts
+accepts the bounded discovery contract ... ok (1ms)
+invalid latitude ... ok (566µs)
+invalid longitude ... ok (78µs)
+invalid radius ... ok (55µs)
+invalid category ... ok (65µs)
+unbounded limit ... ok (63µs)
+unknown field ... ok (55µs)
+running 16 tests from ./supabase/functions/explore-places/googlePlaces_test.ts
+category map is the approved bounded Google type set ... ok (923µs)
+valid provider response is normalized and preserves identity and coordinates ... ok (634µs)
+provider ratings remain optional and normalize when supplied ... ok (174µs)
+malformed provider response fails safely ... ok (546µs)
+provider status 403 maps safely ... ok (17ms)
+provider status 429 maps safely ... ok (231µs)
+provider status 503 maps safely ... ok (265µs)
+provider request is one bounded call with fixed fields and types ... ok (2ms)
+specific restaurants request owns mixed-type normalization ... ok (135µs)
+specific attractions request owns mixed-type normalization ... ok (66µs)
+specific hotels request owns mixed-type normalization ... ok (85µs)
+all uses primaryType before deterministic supported-type fallback ... ok (169µs)
+specific request rejects a result outside its approved server-owned types ... ok (247µs)
+provider timeout aborts once and maps safely without leaking credentials ... ok (16ms)
+incoming cancellation aborts provider work and maps AbortError safely ... ok (653µs)
+successful request clears timeout before it can abort the provider signal ... ok (13ms)
+running 3 tests from ./supabase/functions/explore-places/handler_test.ts
+authenticated request invokes bounded discovery ... ok (11ms)
+anonymous request is rejected before discovery ... ok (674µs)
+invalid input is rejected before provider call ... ok (493µs)
+
+ok | 41 passed | 0 failed (316ms)
+

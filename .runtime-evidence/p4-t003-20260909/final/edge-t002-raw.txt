@@ -1,0 +1,22 @@
+running 8 tests from ./supabase/functions/get-place-metadata/handler.test.ts
+handleGetPlaceMetadata - OPTIONS returns CORS headers ... ok (9ms)
+handleGetPlaceMetadata - returns 405 for GET ... ok (816µs)
+handleGetPlaceMetadata - returns 401 for unauthenticated request ... ok (2ms)
+handleGetPlaceMetadata - returns 400 for invalid, malformed, or extra fields in request body ... ok (2ms)
+handleGetPlaceMetadata - rejects oversized request body (>2KB) ... ok (544µs)
+handleGetPlaceMetadata - returns 403 for unowned place ... ok (391µs)
+handleGetPlaceMetadata - returns full live intelligence metadata on success ... ok (434µs)
+handleGetPlaceMetadata - handles unavailable hours and unknown status honestly ... ok (299µs)
+running 9 tests from ./supabase/functions/get-place-metadata/metadata_test.ts
+parseBusinessStatus - maps supported statuses and unknown accurately ... ok (507µs)
+parseBusinessStatus - fails closed on unsupported or malformed provider status ... ok (700µs)
+parseOpeningHours - normalizes valid regularOpeningHours ... ok (762µs)
+parseOpeningHours - returns null for missing or null hours ... ok (82µs)
+parseOpeningHours - handles openNow field variations ... ok (526µs)
+parseOpeningHours - fails closed on malformed hours structure ... ok (442µs)
+parseGooglePlaceDetailsResponse - validates provider identity binding ... ok (1ms)
+parseGooglePlaceDetailsResponse - parses complete place details ... ok (181µs)
+maps provider failure without reading or logging the raw provider body ... ok (3ms)
+
+ok | 17 passed | 0 failed (111ms)
+

@@ -1,0 +1,58 @@
+[0m[38;5;245mrunning 54 tests from ./supabase/functions/discover-events/events_test.ts[0m
+strict valid query ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+reject query unknown ... [0m[32mok[0m [0m[38;5;245m(642µs)[0m
+reject query user ... [0m[32mok[0m [0m[38;5;245m(109µs)[0m
+reject query city ... [0m[32mok[0m [0m[38;5;245m(130µs)[0m
+reject query country ... [0m[32mok[0m [0m[38;5;245m(147µs)[0m
+reject query reversed ... [0m[32mok[0m [0m[38;5;245m(102µs)[0m
+reject query window ... [0m[32mok[0m [0m[38;5;245m(101µs)[0m
+reject query invalidDate ... [0m[32mok[0m [0m[38;5;245m(123µs)[0m
+reject query offset ... [0m[32mok[0m [0m[38;5;245m(91µs)[0m
+reject query zero ... [0m[32mok[0m [0m[38;5;245m(138µs)[0m
+reject query high ... [0m[32mok[0m [0m[38;5;245m(93µs)[0m
+reject query fractional ... [0m[32mok[0m [0m[38;5;245m(94µs)[0m
+missing credential makes zero calls ... [0m[32mok[0m [0m[38;5;245m(512µs)[0m
+safe provider HTTP 401 ... [0m[32mok[0m [0m[38;5;245m(7ms)[0m
+safe provider HTTP 403 ... [0m[32mok[0m [0m[38;5;245m(299µs)[0m
+safe provider HTTP 429 ... [0m[32mok[0m [0m[38;5;245m(288µs)[0m
+safe provider HTTP 500 ... [0m[32mok[0m [0m[38;5;245m(346µs)[0m
+safe provider HTTP 503 ... [0m[32mok[0m [0m[38;5;245m(229µs)[0m
+one fixed request; no pagination or fan out; safe rate headers ... [0m[32mok[0m [0m[38;5;245m(15ms)[0m
+timeout aborts provider ... [0m[32mok[0m [0m[38;5;245m(17ms)[0m
+pre cancellation zero calls ... [0m[32mok[0m [0m[38;5;245m(235µs)[0m
+inflight cancellation ... [0m[32mok[0m [0m[38;5;245m(519µs)[0m
+body read timeout cancels stream ... [0m[32mok[0m [0m[38;5;245m(13ms)[0m
+oversized fails closed ... [0m[32mok[0m [0m[38;5;245m(712µs)[0m
+malformed JSON fails closed ... [0m[32mok[0m [0m[38;5;245m(400µs)[0m
+invalid structure fails closed ... [0m[32mok[0m [0m[38;5;245m(603µs)[0m
+valid empty response ... [0m[32mok[0m [0m[38;5;245m(131µs)[0m
+missing events with nonzero total rejected ... [0m[32mok[0m [0m[38;5;245m(172µs)[0m
+count and duplicate bounds ... [0m[32mok[0m [0m[38;5;245m(667µs)[0m
+invalid identity undefined ... [0m[32mok[0m [0m[38;5;245m(247µs)[0m
+invalid identity  ... [0m[32mok[0m [0m[38;5;245m(69µs)[0m
+invalid identity id with space ... [0m[32mok[0m [0m[38;5;245m(100µs)[0m
+invalid identity ../bad ... [0m[32mok[0m [0m[38;5;245m(74µs)[0m
+invalid identity 5 ... [0m[32mok[0m [0m[38;5;245m(99µs)[0m
+invalid identity xxxxxxxxxxxxxxx ... [0m[32mok[0m [0m[38;5;245m(91µs)[0m
+valid UTC, provenance, attribution, optional end/venue ... [0m[32mok[0m [0m[38;5;245m(282µs)[0m
+invalid time 2026-02-30T18:00:00Z ... [0m[32mok[0m [0m[38;5;245m(299µs)[0m
+invalid time 2026-09-12T24:00:00Z ... [0m[32mok[0m [0m[38;5;245m(107µs)[0m
+invalid time 2026-09-12T18:00:00 ... [0m[32mok[0m [0m[38;5;245m(88µs)[0m
+invalid time nonsense ... [0m[32mok[0m [0m[38;5;245m(63µs)[0m
+local time retains missing timezone without guessing ... [0m[32mok[0m [0m[38;5;245m(789µs)[0m
+date only and non-specific clock semantics ... [0m[32mok[0m [0m[38;5;245m(344µs)[0m
+bad time flags/timezone and reverse chronology rejected ... [0m[32mok[0m [0m[38;5;245m(655µs)[0m
+venue identity and coordinates retained ... [0m[32mok[0m [0m[38;5;245m(429µs)[0m
+venue without coordinates remains unavailable ... [0m[32mok[0m [0m[38;5;245m(207µs)[0m
+bad coordinate NaN ... [0m[32mok[0m [0m[38;5;245m(326µs)[0m
+bad coordinate  ... [0m[32mok[0m [0m[38;5;245m(159µs)[0m
+bad coordinate 91 ... [0m[32mok[0m [0m[38;5;245m(209µs)[0m
+bad coordinate Infinity ... [0m[32mok[0m [0m[38;5;245m(220µs)[0m
+bad coordinate null ... [0m[32mok[0m [0m[38;5;245m(203µs)[0m
+unsupported type and malformed title rejected ... [0m[32mok[0m [0m[38;5;245m(243µs)[0m
+provider secret echoed in output fails closed ... [0m[32mok[0m [0m[38;5;245m(837µs)[0m
+handler unauthorized and invalid requests never call provider ... [0m[32mok[0m [0m[38;5;245m(2ms)[0m
+handler bounded normalized success and sanitized unexpected errors ... [0m[32mok[0m [0m[38;5;245m(1ms)[0m
+
+[0m[32mok[0m | 54 passed | 0 failed [0m[38;5;245m(79ms)[0m
+

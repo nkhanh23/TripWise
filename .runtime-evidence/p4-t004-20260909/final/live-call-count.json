@@ -1,0 +1,39 @@
+{
+  "repositoryRequests": 4,
+  "cacheHits": 1,
+  "cacheMisses": 2,
+  "cancelledRequests": 1,
+  "edgeClientAttempts": 2,
+  "confirmedEdgeExecutionIds": [
+    "9d0f6e43-6fac-4e24-a855-e49bf6f52c5f",
+    "38db828a-835e-4df9-9fe9-6697a11cc4d6"
+  ],
+  "requests": [
+    {
+      "scenario": "miss",
+      "edgeExecutionId": "9d0f6e43-6fac-4e24-a855-e49bf6f52c5f",
+      "completedProviderCalls": 1
+    },
+    {
+      "scenario": "hit",
+      "edgeExecutionId": null,
+      "completedProviderCalls": 0
+    },
+    {
+      "scenario": "stale-evaluation-refresh",
+      "edgeExecutionId": "38db828a-835e-4df9-9fe9-6697a11cc4d6",
+      "completedProviderCalls": 1
+    },
+    {
+      "scenario": "pre-cancelled",
+      "edgeExecutionId": null,
+      "completedProviderCalls": 0
+    }
+  ],
+  "serverReportedCompletedProviderCalls": 1,
+  "totalServerReportedCompletedProviderCalls": 2,
+  "independentTicketmasterLogs": "NOT_AVAILABLE",
+  "retries": 0,
+  "paginationFollow": 0,
+  "fanOut": 0
+}

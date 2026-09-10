@@ -1,0 +1,18 @@
+[
+  {
+    "phase": "auth",
+    "path": "/auth/v1/token",
+    "method": "POST",
+    "httpStatus": 200,
+    "requestId": "01a08652-91f2-70fd-acd1-8450a8c2b931",
+    "executionId": null
+  },
+  {
+    "phase": "primary",
+    "path": "/functions/v1/discover-events",
+    "method": "POST",
+    "httpStatus": 200,
+    "requestId": "01a08652-95ab-7651-a4ab-4d3dfbe334d4",
+    "executionId": "eab88572-2726-4fc4-aff9-21a8bfe20a44"
+  }
+]

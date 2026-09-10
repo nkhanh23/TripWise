@@ -13,6 +13,7 @@ import {
 
 import { AppText } from '../../../components/AppText';
 import { useTranslation } from '../../../i18n';
+import type { PlaceIntelligenceRepository } from '../../../integration/placeIntelligenceContract';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useTheme } from '../../../theme';
 import { radius, spacing, typography } from '../../../theme/tokens';
@@ -20,12 +21,14 @@ import { PlaceGallery } from '../components/PlaceGallery';
 import { PlaceHeader } from '../components/PlaceHeader';
 import { PlaceQuickActions } from '../components/PlaceQuickActions';
 import { getMockPlaceDetail } from '../data/mockPlaceDetail';
+import { usePlaceIntelligence } from '../hooks/usePlaceIntelligence';
 import type { PlaceDetailData, PlaceDetailStatus } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PlaceDetail'> & {
   initialStatus?: PlaceDetailStatus;
   customData?: PlaceDetailData;
   fixtureMode?: boolean;
+  intelligenceRepository?: PlaceIntelligenceRepository;
 };
 
 export function PlaceDetailScreen({
@@ -34,6 +37,7 @@ export function PlaceDetailScreen({
   initialStatus = 'ready',
   customData,
   fixtureMode = false,
+  intelligenceRepository,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
   const { t } = useTranslation();
@@ -42,11 +46,51 @@ export function PlaceDetailScreen({
   const [status, setStatus] = useState<PlaceDetailStatus>(initialStatus);
   const [isSaved, setIsSaved] = useState(false);
   const [showFullAbout, setShowFullAbout] = useState(false);
+  const [showAllHours, setShowAllHours] = useState(false);
+
+  // Hook into live place intelligence facts
+  const {
+    status: intelStatus,
+    intelligence,
+    freshness,
+    isFallback,
+    refetch: refetchIntel,
+  } = usePlaceIntelligence(placeId, intelligenceRepository);
 
   const placeData = useMemo(() => {
     if (customData) return customData;
-    return fixtureMode ? getMockPlaceDetail(placeId) : null;
-  }, [customData, fixtureMode, placeId]);
+    if (fixtureMode) return getMockPlaceDetail(placeId);
+
+    // In live mode, construct a base PlaceDetailData only if intelligence facts have arrived
+    if (intelligence) {
+      return {
+        id: placeId,
+        name: `Place (${placeId.slice(0, 8)}…)`,
+        category: 'attractions' as const,
+        categoryLabel: 'Point of Interest',
+        subtitle: undefined,
+        rating: intelligence.rating ?? 0,
+        reviewCount: intelligence.userRatingCount ?? 0,
+        address: '',
+        openStatus: '',
+        openingHours: '',
+        closingNotice: '',
+        entryFee: 'Free admission',
+        entryFeeNote: undefined,
+        description: 'Explore verified facts and details for this location.',
+        heroImageUrl: '',
+        galleryImageUrls: [],
+        tags: [
+          { label: 'Verified Place', iconName: 'verified' as const },
+        ],
+        reviews: [],
+      };
+    }
+    return null;
+  }, [customData, fixtureMode, intelligence, placeId]);
+
+  const effectiveRating = intelligence?.rating ?? placeData?.rating ?? 0;
+  const effectiveReviewCount = intelligence?.userRatingCount ?? placeData?.reviewCount ?? 0;
 
   const handleToggleSave = useCallback(() => {
     setIsSaved((prev) => !prev);
@@ -62,7 +106,8 @@ export function PlaceDetailScreen({
 
   const handleRetry = useCallback(() => {
     setStatus('ready');
-  }, []);
+    refetchIntel();
+  }, [refetchIntel]);
 
   const handleDirections = useCallback(() => {
     if (placeData) {
@@ -143,6 +188,27 @@ export function PlaceDetailScreen({
     );
   }
 
+  // Business status mapping
+  const businessStatusText = intelligence
+    ? intelligence.businessStatus === 'OPERATIONAL'
+      ? t('intelligence.businessStatus.operational')
+      : intelligence.businessStatus === 'CLOSED_TEMPORARILY'
+      ? t('intelligence.businessStatus.closedTemporarily')
+      : intelligence.businessStatus === 'CLOSED_PERMANENTLY'
+      ? t('intelligence.businessStatus.closedPermanently')
+      : t('intelligence.businessStatus.unknown')
+    : null;
+
+  const businessStatusColor = intelligence
+    ? intelligence.businessStatus === 'OPERATIONAL'
+      ? '#28A745'
+      : intelligence.businessStatus === 'CLOSED_TEMPORARILY'
+      ? '#E0A800'
+      : intelligence.businessStatus === 'CLOSED_PERMANENTLY'
+      ? colors.state.error
+      : colors.text.muted
+    : colors.text.muted;
+
   return (
     <View style={[styles.screen, { backgroundColor: colors.background.surface }]}>
       {/* Floating Top Navigation Header */}
@@ -170,22 +236,117 @@ export function PlaceDetailScreen({
               shadowColor: '#000',
             },
           ]}>
+          {/* Intelligence Transient Error Banner with Retry */}
+          {intelStatus === 'error' ? (
+            <View
+              accessibilityRole="alert"
+              style={[styles.intelAlertBanner, { backgroundColor: '#FFF3CD', borderColor: '#FFEEBA' }]}>
+              <MaterialIcons color="#856404" name="warning" size={16} />
+              <Text style={[styles.intelAlertText, { color: '#856404' }]}>
+                {t('place.errorSubtitle')}
+              </Text>
+              <Pressable
+                accessibilityHint={t('common.retry')}
+                accessibilityLabel={t('common.retry')}
+                accessibilityRole="button"
+                onPress={() => refetchIntel()}
+                style={styles.alertRetryBtn}>
+                <Text style={styles.alertRetryText}>{t('common.retry')}</Text>
+              </Pressable>
+            </View>
+          ) : null}
+
+          {/* Stale Fallback Notice */}
+          {isFallback || freshness === 'STALE' ? (
+            <Pressable
+              accessibilityHint="Nhấn để cập nhật dữ liệu mới"
+              accessibilityLabel={t('intelligence.staleFallback')}
+              accessibilityRole="button"
+              onPress={() => refetchIntel()}
+              style={[
+                styles.staleNotice,
+                { backgroundColor: colors.background.surfaceVariant, borderColor: colors.border.default },
+              ]}>
+              <MaterialIcons color={colors.text.muted} name="cached" size={16} />
+              <Text style={[styles.staleNoticeText, { color: colors.text.secondary }]}>
+                {t('intelligence.staleFallback')}
+              </Text>
+            </Pressable>
+          ) : null}
+
           {/* Title & Rating */}
           <View style={styles.titleSection}>
+            {/* Live Intelligence Badges Row */}
+            <View style={styles.intelligenceBadgesRow}>
+              {/* Business Status Badge */}
+              {businessStatusText ? (
+                <View
+                  accessibilityLabel={businessStatusText}
+                  accessibilityRole="text"
+                  style={[styles.statusBadge, { backgroundColor: `${businessStatusColor}20` }]}>
+                  <View style={[styles.statusDot, { backgroundColor: businessStatusColor }]} />
+                  <Text style={[styles.statusText, { color: businessStatusColor }]}>
+                    {businessStatusText}
+                  </Text>
+                </View>
+              ) : null}
+
+              {/* Freshness Badge */}
+              {freshness ? (
+                <View
+                  accessibilityLabel={freshness === 'FRESH' ? t('intelligence.fresh') : t('intelligence.stale')}
+                  accessibilityRole="text"
+                  style={[
+                    styles.freshnessBadge,
+                    {
+                      backgroundColor:
+                        freshness === 'FRESH'
+                          ? '#E8F5E9'
+                          : colors.background.surfaceVariant,
+                    },
+                  ]}>
+                  <MaterialIcons
+                    color={freshness === 'FRESH' ? '#2E7D32' : colors.text.muted}
+                    name={freshness === 'FRESH' ? 'bolt' : 'cached'}
+                    size={12}
+                  />
+                  <Text
+                    style={[
+                      styles.freshnessText,
+                      { color: freshness === 'FRESH' ? '#2E7D32' : colors.text.muted },
+                    ]}>
+                    {freshness === 'FRESH' ? t('intelligence.fresh') : t('intelligence.stale')}
+                  </Text>
+                </View>
+              ) : null}
+
+              {/* Provenance Disclosure */}
+              <View
+                accessibilityLabel={t('intelligence.sourceGooglePlaces')}
+                accessibilityRole="text"
+                style={[styles.provenanceBadge, { backgroundColor: colors.background.surfaceVariant }]}>
+                <Text style={[styles.provenanceText, { color: colors.text.muted }]}>
+                  {t('intelligence.sourceGooglePlaces')}
+                </Text>
+              </View>
+            </View>
+
             <View style={styles.titleRow}>
               <Text numberOfLines={2} style={[styles.placeTitle, { color: colors.text.primary }]}>
                 {placeData.name}
               </Text>
-              <View
-                style={[
-                  styles.ratingBadge,
-                  { backgroundColor: effectiveTheme === 'dark' ? '#332914' : '#FFF4E5' },
-                ]}>
-                <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
-                <Text style={[styles.ratingValue, { color: colors.brand.yellow }]}>
-                  {placeData.rating}
-                </Text>
-              </View>
+              {effectiveRating > 0 ? (
+                <View
+                  style={[
+                    styles.ratingBadge,
+                    { backgroundColor: effectiveTheme === 'dark' ? '#332914' : '#FFF4E5' },
+                  ]}>
+                  <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
+                  <Text style={[styles.ratingValue, { color: colors.brand.yellow }]}>
+                    {effectiveRating}
+                  </Text>
+                </View>
+              ) : null}
             </View>
 
             {placeData.subtitle ? (
@@ -241,6 +402,7 @@ export function PlaceDetailScreen({
 
           {/* Details Cards (Opening Hours & Entry Fee) */}
           <View style={styles.detailsGrid}>
+            {/* Opening Hours Card */}
             <View
               style={[
                 styles.detailCard,
@@ -251,14 +413,46 @@ export function PlaceDetailScreen({
                 <Text style={[styles.detailTitle, { color: colors.text.muted }]}>
                   {t('place.openingHours')}
                 </Text>
-                <Text style={[styles.detailMain, { color: colors.text.primary }]}>
-                  {placeData.openStatus}
-                </Text>
-                {placeData.closingNotice ? (
-                  <Text style={[styles.detailSub, { color: colors.text.secondary }]}>
-                    {placeData.closingNotice}
+
+                {/* Honest hours rendering */}
+                {intelligence && intelligence.openingHours === null ? (
+                  <Text style={[styles.detailMain, { color: colors.text.muted }]}>
+                    {t('intelligence.hoursUnavailable')}
                   </Text>
-                ) : null}
+                ) : intelligence?.openingHours ? (
+                  <>
+                    <Text style={[styles.detailMain, { color: colors.text.primary }]}>
+                      {intelligence.openingHours.openNow !== undefined
+                        ? intelligence.openingHours.openNow
+                          ? t('place.openNow')
+                          : t('place.closed')
+                        : placeData.openStatus || t('place.openingHours')}
+                    </Text>
+                    {intelligence.openingHours.weekdayDescriptions &&
+                    intelligence.openingHours.weekdayDescriptions.length > 0 ? (
+                      <Pressable
+                        accessibilityHint="Xem lịch mở cửa đầy đủ trong tuần"
+                        accessibilityLabel="Xem giờ mở cửa"
+                        accessibilityRole="button"
+                        onPress={() => setShowAllHours((prev) => !prev)}>
+                        <Text style={[styles.detailSub, { color: colors.brand.primary }]}>
+                          {showAllHours ? 'Hide schedule' : 'View weekly schedule'}
+                        </Text>
+                      </Pressable>
+                    ) : null}
+                  </>
+                ) : (
+                  <>
+                    <Text style={[styles.detailMain, { color: colors.text.primary }]}>
+                      {placeData.openStatus || t('place.openingHours')}
+                    </Text>
+                    {placeData.closingNotice ? (
+                      <Text style={[styles.detailSub, { color: colors.text.secondary }]}>
+                        {placeData.closingNotice}
+                      </Text>
+                    ) : null}
+                  </>
+                )}
               </View>
             </View>
 
@@ -284,17 +478,34 @@ export function PlaceDetailScreen({
             </View>
           </View>
 
+          {/* Expanded Weekday Opening Hours */}
+          {showAllHours && intelligence?.openingHours?.weekdayDescriptions ? (
+            <View
+              style={[
+                styles.weeklyHoursCard,
+                { backgroundColor: colors.background.surfaceVariant },
+              ]}>
+              {intelligence.openingHours.weekdayDescriptions.map((desc, idx) => (
+                <Text key={idx} style={[styles.weekdayText, { color: colors.text.secondary }]}>
+                  {desc}
+                </Text>
+              ))}
+            </View>
+          ) : null}
+
           {/* Location Section */}
           <View style={styles.section}>
             <Text style={[styles.sectionHeading, { color: colors.text.primary }]}>
               {t('place.address')}
             </Text>
-            <View style={styles.addressRow}>
-              <MaterialIcons color={colors.state.error} name="location-on" size={16} />
-              <Text style={[styles.addressText, { color: colors.text.secondary }]}>
-                {placeData.address}
-              </Text>
-            </View>
+            {placeData.address ? (
+              <View style={styles.addressRow}>
+                <MaterialIcons color={colors.state.error} name="location-on" size={16} />
+                <Text style={[styles.addressText, { color: colors.text.secondary }]}>
+                  {placeData.address}
+                </Text>
+              </View>
+            ) : null}
 
             {/* Simulated Vector Mini Map */}
             <View
@@ -324,9 +535,11 @@ export function PlaceDetailScreen({
               <Text style={[styles.sectionHeading, { color: colors.text.primary }]}>
                 {t('place.reviews')}
               </Text>
-              <Text style={[styles.seeAllText, { color: colors.brand.primary }]}>
-                See all ({placeData.reviewCount.toLocaleString()})
-              </Text>
+              {effectiveReviewCount > 0 ? (
+                <Text style={[styles.seeAllText, { color: colors.brand.primary }]}>
+                  See all ({effectiveReviewCount.toLocaleString()})
+                </Text>
+              ) : null}
             </View>
 
             <View style={styles.reviewsList}>
@@ -421,9 +634,90 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
   },
+  intelAlertBanner: {
+    alignItems: 'center',
+    borderRadius: radius.card,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  intelAlertText: {
+    flex: 1,
+    fontSize: 12,
+  },
+  alertRetryBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  alertRetryText: {
+    color: '#856404',
+    fontSize: 12,
+    fontWeight: typography.fontWeight.bold,
+  },
+  staleNotice: {
+    alignItems: 'center',
+    borderRadius: radius.card,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  staleNoticeText: {
+    flex: 1,
+    fontSize: 11,
+  },
   titleSection: {
     gap: spacing.sm,
     marginBottom: spacing.md,
+  },
+  intelligenceBadgesRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 4,
+  },
+  statusBadge: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    flexDirection: 'row',
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  statusDot: {
+    borderRadius: 4,
+    height: 7,
+    width: 7,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: typography.fontWeight.bold,
+  },
+  freshnessBadge: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    flexDirection: 'row',
+    gap: 3,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+  },
+  freshnessText: {
+    fontSize: 10,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  provenanceBadge: {
+    borderRadius: radius.pill,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+  },
+  provenanceText: {
+    fontSize: 10,
   },
   titleRow: {
     alignItems: 'flex-start',
@@ -514,7 +808,17 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
   detailSub: {
-    fontSize: 10,
+    fontSize: 11,
+    marginTop: 2,
+  },
+  weeklyHoursCard: {
+    borderRadius: radius.card,
+    gap: 4,
+    marginTop: spacing.sm,
+    padding: spacing.md,
+  },
+  weekdayText: {
+    fontSize: 12,
   },
   addressRow: {
     alignItems: 'center',

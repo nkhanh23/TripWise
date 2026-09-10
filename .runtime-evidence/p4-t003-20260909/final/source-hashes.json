@@ -1,0 +1,13 @@
+{
+  "mobile/src/integration/eventIntelligenceContract.ts": "ca9df94faa657a6e4da93cc32d6329651b575f2eac49c2a32e176d1d14159065",
+  "mobile/src/integration/remote/supabaseEventIntelligenceRepository.ts": "653319f9f34fa66eed8ffa29d144c91e888dd6076d7fd46b2211306fbe51544d",
+  "mobile/src/integration/repositories.ts": "2901978e7722471190641a87c0899c8b39468ebcf423e92486bc0373f7d12f76",
+  "mobile/src/integration/index.ts": "4c0885a6f8128faaeadaaaad613a34badc987e2a9cd1059a4109c731dce413e6",
+  "mobile/src/integration/reliability.ts": "40261f63761bbfebb41f320358ee8a9a4933ca1fa63f54b8fa2f08c05af5c244",
+  "mobile/src/integration/validation.ts": "b9fcb83f1a42b13789261915018d0b1e5d3bd4da92c1cac9541bbd19c466ae0b",
+  "mobile/src/integration/errors.ts": "e885d6b3bb922f50342391c78434aa2b5aca3d4ad4d336cb30c8ae66e60797dd",
+  "mobile/tests/event-intelligence.test.ts": "ba3137830869a77d4625b39a243d0a155019b7a1d19eace902a2ca793d2a191a",
+  "supabase/functions/discover-events/index.ts": "f85161a596f2aac1b2961f415ec4deccd99bb6d720ec3b4a22dc42fc29a720ba",
+  "supabase/functions/discover-events/events.ts": "f3966c6454e578adf3b6e66d43644ac5b2eaabb415b4437b4e69b31d77e1e996",
+  "supabase/functions/discover-events/events_test.ts": "d7a049b9fe1807b3e5c49d6609b23b09093e4a62a45a4df7ad96d2f5c8e83ba8"
+}

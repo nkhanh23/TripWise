@@ -1,0 +1,8 @@
+{
+  "freshTTLMs": 900000,
+  "staleTTLMs": 3600000,
+  "initialObservation": "SERVER_RECEIVED",
+  "cacheHitEdgeInvokes": 0,
+  "cacheMissEdgeInvokes": 1,
+  "cacheClearedOnAuth": true
+}

@@ -45,20 +45,35 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
           accessibilityRole="button"
           onPress={() => onPressDetail?.(place.id)}
           style={styles.titleInfo}>
+          {/* Review Required Badge */}
+          <View
+            accessibilityLabel={t('intelligence.reviewRequired')}
+            accessibilityRole="text"
+            style={[styles.reviewBadge, { backgroundColor: '#FFF3CD', borderColor: '#FFEEBA' }]}>
+            <MaterialIcons color="#856404" name="rate-review" size={12} />
+            <Text style={[styles.reviewBadgeText, { color: '#856404' }]}>
+              {t('intelligence.reviewRequired')}
+            </Text>
+          </View>
+
           <Text numberOfLines={1} style={[styles.placeName, { color: colors.text.primary }]}>
             {place.name}
           </Text>
           <View style={styles.metaRow}>
-            {place.rating !== undefined ? <>
-              <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
-              <Text style={[styles.ratingText, { color: colors.text.primary }]}>{place.rating}</Text>
-              {place.reviewCount !== undefined ? (
-                <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
-                  ({place.reviewCount.toLocaleString()} reviews)
+            {place.rating !== undefined ? (
+              <>
+                <MaterialIcons color={colors.brand.yellow} name="star" size={14} />
+                <Text style={[styles.ratingText, { color: colors.text.primary }]}>
+                  {place.rating}
                 </Text>
-              ) : null}
-              <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
-            </> : null}
+                {place.reviewCount !== undefined ? (
+                  <Text style={[styles.reviewText, { color: colors.text.secondary }]}>
+                    ({place.reviewCount.toLocaleString()} reviews)
+                  </Text>
+                ) : null}
+                <Text style={[styles.dotSeparator, { color: colors.text.muted }]}>•</Text>
+              </>
+            ) : null}
             <Text style={[styles.categoryBadge, { color: colors.brand.primary }]}>
               {place.categoryLabel}
             </Text>
@@ -89,25 +104,40 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
         onPress={() => onPressDetail?.(place.id)}
         style={styles.contentRow}>
         {place.imageUrl ? (
-          <Image accessibilityLabel={place.name} accessibilityRole="image" source={{ uri: place.imageUrl }} style={styles.thumbnail} />
+          <Image
+            accessibilityLabel={place.name}
+            accessibilityRole="image"
+            source={{ uri: place.imageUrl }}
+            style={styles.thumbnail}
+          />
         ) : (
-          <View accessibilityLabel="No place image available" style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.background.surfaceVariant }]}>
+          <View
+            accessibilityLabel="No place image available"
+            style={[
+              styles.thumbnail,
+              styles.thumbnailPlaceholder,
+              { backgroundColor: colors.background.surfaceVariant },
+            ]}>
             <MaterialIcons color={colors.text.muted} name="place" size={26} />
           </View>
         )}
         <View style={styles.pillsColumn}>
-          {place.address ? <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
-            <MaterialIcons color={colors.text.secondary} name="location-on" size={14} />
-            <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
-              {place.address}
-            </Text>
-          </View> : null}
-          {place.openStatus ? <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
-            <MaterialIcons color={colors.text.secondary} name="schedule" size={14} />
-            <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
-              {place.openStatus}
-            </Text>
-          </View> : null}
+          {place.address ? (
+            <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
+              <MaterialIcons color={colors.text.secondary} name="location-on" size={14} />
+              <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
+                {place.address}
+              </Text>
+            </View>
+          ) : null}
+          {place.openStatus ? (
+            <View style={[styles.pill, { backgroundColor: colors.background.surfaceVariant }]}>
+              <MaterialIcons color={colors.text.secondary} name="schedule" size={14} />
+              <Text numberOfLines={1} style={[styles.pillText, { color: colors.text.secondary }]}>
+                {place.openStatus}
+              </Text>
+            </View>
+          ) : null}
         </View>
       </Pressable>
 
@@ -183,11 +213,13 @@ export const ExplorePlacePreview = memo(function ExplorePlacePreview({
       </View>
 
       {/* Description Snippet */}
-      {place.description ? <View style={styles.descriptionSection}>
-        <AppText numberOfLines={2} style={styles.descriptionText}>
-          {place.description}
-        </AppText>
-      </View> : null}
+      {place.description ? (
+        <View style={styles.descriptionSection}>
+          <AppText numberOfLines={2} style={styles.descriptionText}>
+            {place.description}
+          </AppText>
+        </View>
+      ) : null}
     </View>
   );
 });
@@ -227,6 +259,21 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
     marginRight: spacing.sm,
+  },
+  reviewBadge: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 4,
+    marginBottom: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  reviewBadgeText: {
+    fontSize: 11,
+    fontWeight: typography.fontWeight.semibold,
   },
   placeName: {
     fontSize: typography.titleSmall,

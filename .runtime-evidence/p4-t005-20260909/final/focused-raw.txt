@@ -1,0 +1,46 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand intelligence-ui-review.test.tsx
+
+PASS tests/intelligence-ui-review.test.tsx
+  FEATURE-P4-T005: Intelligence UI Review & Verification Suite
+    √ 1. renders REVIEW_REQUIRED badge on candidate place preview without auto-saving (119 ms)
+    √ 2. renders live place facts including business status and opening hours on PlaceDetailScreen (311 ms)
+    √ 3. honestly renders "Hours not available" when provider openingHours is null without inventing hours (13 ms)
+    √ 4. renders EventCandidateCard with review badge, event title, and venue (8 ms)
+    √ 5. resolves displayRequirement to official Ticketmaster attribution badge with accessible role and label (4 ms)
+    √ 6. honestly displays "Venue location unavailable" when event venue lacks coordinates (3 ms)
+    √ 7. formats UTC event time accurately (4 ms)
+    √ 8. formats PROVIDER_LOCAL event with explicit "(Local time)" indicator without guessing UTC offset (3 ms)
+    √ 9. renders live freshness badge when classified as FRESH (14 ms)
+    √ 10. renders stale notice and Cached badge when classified as STALE fallback (14 ms)
+    √ 11. classifies expired cache entries as EXPIRED
+    √ 12. handles UNAVAILABLE classification gracefully
+    √ 13. handles empty candidates without crashing
+    √ 14. renders EventEmptyState with clear informative messaging (2 ms)
+    √ 15. renders EventErrorState with functional retry action for transient errors (3 ms)
+    √ 16. renders EventErrorState with rate limit notice when isRateLimited is true (2 ms)
+    √ 17. renders error alert in PlaceDetailScreen on provider error (76 ms)
+    √ 18. purges caches and active UI state on SIGNED_OUT auth transition (1 ms)
+    √ 19. abort signal cancels in-flight operation cleanly without error flash (7 ms)
+    √ 20. in-flight coalescer ensures same request shares single call without duplication (19 ms)
+    √ 21. inspects EventPreviewSheet ensuring zero auto-saving or database writes occur (10 ms)
+    √ 22. getCachedPlaceIntelligenceRepository returns an instance of CachedPlaceIntelligenceRepository (1 ms)
+    √ 23. getCachedEventIntelligenceRepository returns an instance of CachedEventIntelligenceRepository
+    √ 24. repository factory getters return stable identical instances on repeated access (1 ms)
+    √ 25. contains all required EN intelligence and review localization keys
+    √ 26. contains all required VI intelligence and review localization keys (1 ms)
+    √ 27. renders Ticketmaster badge with official brand blue (#024DDF) (3 ms)
+    √ 28. renders EventPreviewSheet with review badge and attribution (4 ms)
+    √ 29. verifies accessibilityRole and accessibilityLabel on review elements (3 ms)
+    √ 30. verifies attribution badge is accessible to assistive technologies (2 ms)
+    √ 31. preserves accepted T001 CandidateDiscovery contract validation (1 ms)
+    √ 32. preserves accepted T002 PlaceIntelligence validation and operational status contracts
+    √ 33. preserves accepted T003 EventIntelligence contract structure and bounds
+    √ 34. preserves accepted T004 cache freshness transitions and zero fan-out guarantee (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       34 passed, 34 total
+Snapshots:   0 total
+Time:        2.155 s
+Ran all test suites matching /intelligence-ui-review.test.tsx/i.

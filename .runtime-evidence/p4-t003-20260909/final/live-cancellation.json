@@ -1,0 +1,7 @@
+{
+  "scenario": "pre-aborted real repository invocation",
+  "code": "cancelled",
+  "additionalInvokes": 0,
+  "inFlightCancellation": "VERIFIED_IN_FOCUSED_TESTS_ONLY",
+  "liveCancelledUpstreamExecution": "UNKNOWN"
+}

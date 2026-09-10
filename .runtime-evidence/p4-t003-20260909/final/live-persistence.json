@@ -1,0 +1,9 @@
+{
+  "repositoryTableRpcStorageAccessAttempts": 0,
+  "networkPaths": [
+    "/auth/v1/token",
+    "/functions/v1/discover-events"
+  ],
+  "databaseSnapshot": "NOT_TAKEN",
+  "productionServerHasNoPersistencePath": true
+}

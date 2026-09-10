@@ -1,0 +1,2 @@
+LIVE_CACHE_SMOKE_PASS events=3 edgeInvokes=2 cacheHits=1 persistence=0
+

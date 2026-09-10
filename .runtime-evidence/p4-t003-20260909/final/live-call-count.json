@@ -1,0 +1,12 @@
+{
+  "primaryRepositoryInvocations": 1,
+  "primaryEdgeClientAttempts": 1,
+  "confirmedEdgeExecutionIds": [
+    "eab88572-2726-4fc4-aff9-21a8bfe20a44"
+  ],
+  "serverReportedCompletedProviderCalls": 1,
+  "independentTicketmasterLogs": "NOT_AVAILABLE",
+  "retries": 0,
+  "paginationFollow": 0,
+  "fanOut": 0
+}

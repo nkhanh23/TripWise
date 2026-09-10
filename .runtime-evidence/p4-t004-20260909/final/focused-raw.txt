@@ -1,0 +1,50 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand intelligence-freshness-policy.test.ts
+
+PASS tests/intelligence-freshness-policy.test.ts
+  T004 Intelligence Freshness & Cache Policy
+    √ 1. returns fresh cache hit without calling delegate provider (6 ms)
+    √ 2. calls delegate provider on cache miss and stores entry (6 ms)
+    √ 3. respects exact TTL boundaries for fresh and stale states
+    √ 4. classifies entry past staleUntil as EXPIRED and does not serve it (1 ms)
+    √ 5. classifies entry between freshUntil and staleUntil as STALE
+    √ 6. refreshes from provider after fresh TTL expires (2 ms)
+    √ 7. propagates provider failure when no cache entry exists (2 ms)
+    √ 8. falls back to stale cache on transient provider failure (1 ms)
+    √ 9. does not serve stale fallback on unauthorized, invalidRequest, or cancelled errors (2 ms)
+    √ 10. aborted request does not commit partial result to cache
+    √ 11. superseded operation does not commit outdated result over newer state (3 ms)
+    √ 12. clearCache purges all stored intelligence on auth change
+    √ 12b. subscribes to auth state changes and clears cache on SIGNED_OUT, SIGNED_IN, USER_UPDATED, but preserves on TOKEN_REFRESHED (1 ms)
+    √ 12c. SupabasePlaceMetadataRepository defensively copies data and purges on auth events (1 ms)
+    √ 13. isolates cache keys across domains (1 ms)
+    √ 14. isolates place intelligence cache strictly by googlePlaceId
+    √ 15. separates event cache keys for different cities
+    √ 16. separates event cache keys for different countries (1 ms)
+    √ 17. separates event cache keys for different time windows and limits
+    √ 18. marks event cache as STALE immediately once event time is past
+    √ 19. applies conservative expiry for local-only events without inventing timezone (1 ms)
+    √ 19b. PROVIDER_LOCAL events with Europe/London or Asia/Ho_Chi_Minh timezone do NOT append fake Z or invent UTC offset
+    √ 20. enforces capacity bounds on BoundedLruCache
+    √ 21. evicts least-recently used entry when capacity is exceeded (1 ms)
+    √ 22. cleans up expired entries and handles disposal cleanly
+    √ 23. coalesces concurrent identical requests into a single in-flight call (1 ms)
+    √ 23b. coalesces concurrent identical event requests into a single in-flight call without cancelling (1 ms)
+    √ 23c. coalescer allows one subscriber to abort while other subscriber succeeds
+    √ 23d. coalescer aborts underlying operation when ALL subscribers abort (1 ms)
+    √ 23e. coalescer cancel and cancelAll aborts underlying operations
+    √ 24. does not coalesce requests across different keys (1 ms)
+    √ 25. performs exactly one delegate attempt on miss, with 0 retry amplification (1 ms)
+    √ 26. preserves single attempt contract on CachedEventIntelligenceRepository
+    √ 27. never executes fan-out or pagination follow on event query (1 ms)
+    √ 28. caches candidate discovery within 5m fresh TTL (1 ms)
+    √ 31. returns deeply immutable results so caller mutations cannot corrupt cache
+    √ 32. guarantees cache contains zero secret or credential fields (1 ms)
+    √ 33. performs zero database/RPC persistence during cache operations
+
+Test Suites: 1 passed, 1 total
+Tests:       38 passed, 38 total
+Snapshots:   0 total
+Time:        1.947 s
+Ran all test suites matching /intelligence-freshness-policy.test.ts/i.
