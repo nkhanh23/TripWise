@@ -22,54 +22,54 @@
 
       at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
 
-PASS tests/intelligence-ui-review.test.tsx (7.5 s)
+PASS tests/intelligence-ui-review.test.tsx (5.426 s)
   FEATURE-P4-T005: Intelligence UI Review & Verification Suite
-    √ 1. renders REVIEW_REQUIRED badge on candidate place preview without auto-saving (197 ms)
-    √ 2. renders live place facts including business status and opening hours on PlaceDetailScreen (545 ms)
-    √ 3. honestly renders "Hours not available" when provider openingHours is null without inventing hours (53 ms)
-    √ 4. renders EventCandidateCard with review badge, event title, and venue (41 ms)
-    √ 5. discloses Ticketmaster as provider with accessible role and label (24 ms)
-    √ 6. honestly displays "Venue location unavailable" when event venue lacks coordinates (22 ms)
-    √ 7. formats UTC event time accurately (5 ms)
-    √ 8. formats PROVIDER_LOCAL event with explicit "(Local time)" indicator without guessing UTC offset (5 ms)
-    √ 9. renders live freshness badge when classified as FRESH (40 ms)
-    √ 10. renders stale notice and Cached badge when classified as STALE fallback (32 ms)
-    √ 11. classifies expired cache entries as EXPIRED (1 ms)
-    √ 12. handles UNAVAILABLE classification gracefully (1 ms)
-    √ 13. handles empty candidates without crashing (3 ms)
-    √ 14. renders EventEmptyState with clear informative messaging (3 ms)
-    √ 15. renders EventErrorState with functional retry action for transient errors (35 ms)
-    √ 16. renders EventErrorState with rate limit notice when isRateLimited is true (3 ms)
-    √ 17. renders error alert in PlaceDetailScreen on provider error (322 ms)
+    √ 1. renders REVIEW_REQUIRED badge on candidate place preview without auto-saving (168 ms)
+    √ 2. renders live place facts including business status and opening hours on PlaceDetailScreen (358 ms)
+    √ 3. honestly renders "Hours not available" when provider openingHours is null without inventing hours (14 ms)
+    √ 4. renders EventCandidateCard with review badge, event title, and venue (11 ms)
+    √ 5. discloses Ticketmaster as provider with accessible role and label (5 ms)
+    √ 6. honestly displays "Venue location unavailable" when event venue lacks coordinates (4 ms)
+    √ 7. formats UTC event time accurately (4 ms)
+    √ 8. formats PROVIDER_LOCAL event with explicit "(Local time)" indicator without guessing UTC offset (3 ms)
+    √ 9. renders live freshness badge when classified as FRESH (15 ms)
+    √ 10. renders stale notice and Cached badge when classified as STALE fallback (16 ms)
+    √ 11. classifies expired cache entries as EXPIRED
+    √ 12. handles UNAVAILABLE classification gracefully
+    √ 13. handles empty candidates without crashing (1 ms)
+    √ 14. renders EventEmptyState with clear informative messaging (2 ms)
+    √ 15. renders EventErrorState with functional retry action for transient errors (4 ms)
+    √ 16. renders EventErrorState with rate limit notice when isRateLimited is true (2 ms)
+    √ 17. renders error alert in PlaceDetailScreen on provider error (149 ms)
     √ 18. purges caches and active UI state on SIGNED_OUT auth transition (1 ms)
-    √ 19. abort signal cancels in-flight operation cleanly without error flash (32 ms)
-    √ 20. in-flight coalescer ensures same request shares single call without duplication (29 ms)
-    √ 21. inspects EventPreviewSheet ensuring zero auto-saving or database writes occur (9 ms)
+    √ 19. abort signal cancels in-flight operation cleanly without error flash (10 ms)
+    √ 20. in-flight coalescer ensures same request shares single call without duplication (24 ms)
+    √ 21. inspects EventPreviewSheet ensuring zero auto-saving or database writes occur (7 ms)
     √ 22. getCachedPlaceIntelligenceRepository returns an instance of CachedPlaceIntelligenceRepository (1 ms)
-    √ 23. getCachedEventIntelligenceRepository returns an instance of CachedEventIntelligenceRepository
-    √ 24. repository factory getters return stable identical instances on repeated access (2 ms)
-    √ 25. contains all required EN intelligence and review localization keys (1 ms)
-    √ 26. contains all required VI intelligence and review localization keys (4 ms)
-    √ 27. renders textual Ticketmaster disclosure (13 ms)
-    √ 28. renders EventPreviewSheet with review badge and attribution (8 ms)
-    √ 29. verifies accessibilityRole and accessibilityLabel on review elements (27 ms)
-    √ 30. verifies attribution badge is accessible to assistive technologies (12 ms)
+    √ 23. getCachedEventIntelligenceRepository returns an instance of CachedEventIntelligenceRepository (1 ms)
+    √ 24. repository factory getters return stable identical instances on repeated access (1 ms)
+    √ 25. contains all required EN intelligence and review localization keys
+    √ 26. contains all required VI intelligence and review localization keys (1 ms)
+    √ 27. renders textual Ticketmaster disclosure (4 ms)
+    √ 28. renders EventPreviewSheet with review badge and attribution (6 ms)
+    √ 29. verifies accessibilityRole and accessibilityLabel on review elements (3 ms)
+    √ 30. verifies attribution badge is accessible to assistive technologies (4 ms)
     √ 31. preserves accepted T001 CandidateDiscovery contract validation (1 ms)
     √ 32. preserves accepted T002 PlaceIntelligence validation and operational status contracts
     √ 33. preserves accepted T003 EventIntelligence contract structure and bounds
     √ 34. preserves accepted T004 cache freshness transitions and zero fan-out guarantee
   T005 corrective context and rendered locale/theme matrix
-    √ no valid context invokes zero event requests (undefined) (164 ms)
-    √ no valid context invokes zero event requests ({"city":"","countryCode":"GB","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (70 ms)
-    √ no valid context invokes zero event requests ({"city":"London","countryCode":"invalid","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (76 ms)
-    √ uses explicit London/GB without a fallback (22 ms)
-    √ uses explicit Paris/FR without a fallback (17 ms)
-    √ mode switches reuse the bounded cached repository without duplicate provider calls (77 ms)
-    √ renders actual en accessibility text in both palettes (244 ms)
-    √ renders actual vi accessibility text in both palettes (216 ms)
+    √ no valid context invokes zero event requests (undefined) (65 ms)
+    √ no valid context invokes zero event requests ({"city":"","countryCode":"GB","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (41 ms)
+    √ no valid context invokes zero event requests ({"city":"London","countryCode":"invalid","startDateTime":"2026-09-10T00:00:00Z","endDateTime":"2026-09-17T00:00:00Z","limit":3}) (37 ms)
+    √ uses explicit London/GB without a fallback (15 ms)
+    √ uses explicit Paris/FR without a fallback (13 ms)
+    √ mode switches reuse the bounded cached repository without duplicate provider calls (40 ms)
+    √ renders actual en accessibility text in both palettes (80 ms)
+    √ renders actual vi accessibility text in both palettes (74 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       42 passed, 42 total
 Snapshots:   0 total
-Time:        8.248 s
+Time:        5.74 s
 Ran all test suites matching /intelligence-ui-review.test.tsx/i.

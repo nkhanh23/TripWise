@@ -219,11 +219,15 @@ export function PlaceDetailScreen({
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Gallery */}
-        <PlaceGallery
+        {placeData.heroImageUrl ? <PlaceGallery
           galleryUrls={placeData.galleryImageUrls}
           heroImageUrl={placeData.heroImageUrl}
           placeName={placeData.name}
-        />
+        /> : (
+          <View accessibilityLabel={t('place.imageUnavailable')} style={[styles.imageUnavailable, { backgroundColor: colors.background.surfaceVariant }]}>
+            <Text style={{ color: colors.text.secondary }}>{t('place.imageUnavailable')}</Text>
+          </View>
+        )}
 
         {/* Content Sheet Body */}
         <View
@@ -231,7 +235,7 @@ export function PlaceDetailScreen({
             styles.contentSheet,
             {
               backgroundColor: colors.background.surface,
-                      },
+            },
           ]}>
           {/* Intelligence Transient Error Banner with Retry */}
           {intelStatus === 'error' ? (
@@ -506,8 +510,8 @@ export function PlaceDetailScreen({
               </View>
             ) : null}
 
-            {/* Simulated Vector Mini Map */}
-            <View
+            {/* Historical fixture illustration; never imply a factual map in live mode. */}
+            {fixtureMode ? <View
               style={[
                 styles.miniMap,
                 { backgroundColor: colors.background.surfaceVariant },
@@ -525,7 +529,7 @@ export function PlaceDetailScreen({
                 ]}>
                 <MaterialIcons color={colors.state.error} name="location-on" size={24} />
               </View>
-            </View>
+            </View> : null}
           </View>
 
           {/* Reviews Section */}
@@ -616,6 +620,13 @@ export function PlaceDetailScreen({
 }
 
 const styles = StyleSheet.create({
+  imageUnavailable: {
+    minHeight: 180,
+    paddingTop: 80,
+    paddingBottom: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   screen: {
     flex: 1,
   },

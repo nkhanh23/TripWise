@@ -2,6 +2,3 @@
 > tripwise-mobile@1.0.0 typecheck
 > tsc --noEmit
 
-tests/intelligence-ui-review.test.tsx(710,46): error TS2322: Type '{ id: string; name: string; category: "attractions"; categoryLabel: string; coordinate: { latitude: number; longitude: number; }; iconName: "place"; }' is not assignable to type 'ExploreMapPlace'.
-  Type '{ id: string; name: string; category: "attractions"; categoryLabel: string; coordinate: { latitude: number; longitude: number; }; iconName: "place"; }' is not assignable to type 'DiscoveredExplorePlace'.
-    Property 'googlePlaceId' is missing in type '{ id: string; name: string; category: "attractions"; categoryLabel: string; coordinate: { latitude: number; longitude: number; }; iconName: "place"; }' but required in type '{ googlePlaceId: string; rating?: number | undefined; reviewCount?: number | undefined; address?: string | undefined; openStatus?: string | undefined; description?: string | undefined; imageUrl?: string | undefined; }'.
