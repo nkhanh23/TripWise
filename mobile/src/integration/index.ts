@@ -19,3 +19,5 @@ export * from './remote/supabaseProfileRepository';
 export * from './remote/supabaseTripRepositories';
 export * from './remote/supabaseWikimediaImageRepository';
 export * from './deterministicConstraintEngine';
+export * from './routeMetricCache';
+export * from './routeOptimization';

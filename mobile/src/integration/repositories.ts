@@ -9,7 +9,9 @@ import type {
   ResolvePlaceRequest,
   ResolvePlaceResult,
   Route,
+  RouteMatrix,
   RouteRequest,
+  RouteTableRequest,
   SavedTripDetail,
   SavedTripsPage,
   SavedTripsPageRequest,
@@ -90,6 +92,7 @@ export interface ExplorePlacesRepository {
 
 export interface RouteRepository {
   getRoute(request: RouteRequest, signal?: AbortSignal): Promise<Route>;
+  getTable?(request: RouteTableRequest, signal?: AbortSignal): Promise<RouteMatrix>;
 }
 
 export interface WeatherRepository {

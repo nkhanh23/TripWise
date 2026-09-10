@@ -7,10 +7,13 @@ import type {
   FixtureId,
   GeneratedTrip,
   OpenMeteoTransport,
+  Coordinate,
   OsrmRouteTransport,
+  OsrmTableTransport,
   Profile,
   ProfileTransport,
   Route,
+  RouteMatrix,
   SavedPlace,
   SavedPlaceTransport,
   SavedTripDetail,
@@ -125,6 +128,15 @@ export function mapOsrmRoute(transport: OsrmRouteTransport): Route {
     distanceMeters: route.distance,
     durationSeconds: route.duration,
     geometry: route.geometry.coordinates.map(([longitude, latitude]) => ({ latitude, longitude })),
+  };
+}
+
+export function mapOsrmTable(transport: OsrmTableTransport, coordinates: readonly Coordinate[]): RouteMatrix {
+  return {
+    profile: 'driving',
+    durationsSeconds: transport.durations,
+    distancesMeters: transport.distances ?? transport.durations.map((row) => row.map(() => null)),
+    coordinates,
   };
 }
 

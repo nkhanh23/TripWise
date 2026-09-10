@@ -1,0 +1,17 @@
+=== FEATURE-P5-T002 CACHED ROUTE REPOSITORY SMOKE ===
+
+1. First Table Request (Cache Miss):
+[HTTP Transport] Attempt 1: GET https://router.project-osrm.org/table/v1/driving/100.4889,13.7437;100.4913,13.75...
+   HTTP Attempts after Request 1: 1 (Expected: 1)
+   Matrix durations: [0, 150 | 150, 0]
+   Cache Size: 1
+
+2. Second Identical Table Request (Cache Hit):
+   HTTP Attempts after Request 2: 1 (Expected: 1, 0 new HTTP calls)
+   Matrix durations: [0, 150 | 150, 0]
+
+3. Deep Cloning Mutation Safety:
+   Mutated matrix2 duration to: 999999
+   matrix3 duration from cache: 150 (Expected: 150)
+
+=== CACHE VERIFICATION SUCCESSFUL ===

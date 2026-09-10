@@ -1,2 +1,14 @@
 Warning: Unable to resolve manifest assets. Icons and fonts might not work. .
 Warning: Unable to resolve manifest assets. Icons and fonts might not work. .
+[metro-file-map] Cache write error
+: Error: Data cannot be cloned, out of memory.
+    at serialize (node:v8:456:7)
+    at D:\Dev\TripWise\mobile\node_modules\@expo\metro-file-map\build\cache\DiskCacheManager.js:78:83
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processTimers (node:internal/timers:568:9)
+[metro-file-map] Cache write error
+: Error: Data cannot be cloned, out of memory.
+    at serialize (node:v8:456:7)
+    at D:\Dev\TripWise\mobile\node_modules\@expo\metro-file-map\build\cache\DiskCacheManager.js:78:83
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processTimers (node:internal/timers:568:9)

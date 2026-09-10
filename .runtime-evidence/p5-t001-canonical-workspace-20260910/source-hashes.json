@@ -1,0 +1,18 @@
+﻿[
+    {
+        "Path":  "D:\\Dev\\TripWise\\mobile\\src\\integration\\deterministicConstraintEngine.ts",
+        "Hash":  "EFC118CFBBBDD476EA369EFE80BCD0FD3E9ACECF016B934D9DDBBCB60096515C"
+    },
+    {
+        "Path":  "D:\\Dev\\TripWise\\mobile\\src\\integration\\index.ts",
+        "Hash":  "F364E1220556DCE060111E3E9CC543430CF6B1ABFB75717C11D63532969F9082"
+    },
+    {
+        "Path":  "D:\\Dev\\TripWise\\mobile\\tests\\deterministic-constraint-engine.test.ts",
+        "Hash":  "BA6A77374A2A3E139111B579775CE6F970FB82248F5982C20AF3BEF758CF4886"
+    },
+    {
+        "Path":  "D:\\Dev\\TripWise\\phase_doc\\PHASES_FEATURES.md",
+        "Hash":  "E4B8DE6797D17FFACCA9FB3FCFCE4D772B285585A36301A61D28A530242114F3"
+    }
+]

@@ -1,0 +1,10 @@
+﻿{
+  "src/integration/routeOptimization.ts": "31e20ac7d161679fc59abf7f9c88f86175507ece9583eec6c0424cd4990b34f2",
+  "src/integration/routeMetricCache.ts": "f7fde6ebdefd05fbaaca680b9a5991334f89d289b4d1dc178e21c407fc449323",
+  "src/integration/remote/publicProviderRepositories.ts": "dcfb4bea7847f475a1ea8a9b1511f86e2d4d4afaa72e6be368cf3dcc673486ca",
+  "src/integration/validation.ts": "a085e7bdba7d4aff728e588f7a9658706acada6fe115a8c035a111fcacdab26d",
+  "src/integration/reliability.ts": "743635a1f0ccc9f9d025e42e785ed9f99f98650b2583fdd30a5641d84a48e9b8",
+  "tests/route-optimization.test.ts": "188752fe20fe8054fb25bdc80b7bd21710c56ef10d7a6143f5a8a0c66b3b2a43",
+  "scripts/p5-t002-osrm-smoke.ts": "de61bfc90260839f6fdd92093deb83fa1f9f9f0a23ee0388e7abed9d9040495c",
+  "scripts/p5-t002-cache-smoke.ts": "40350e673920d1bd2b05babd35d82a6c837194dd09ebdebe279eef335b3fffa2"
+}

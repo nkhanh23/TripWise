@@ -579,23 +579,25 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Bằng chứng Android discovery/detail và a11y PASS.
 
-#### [ ] FEATURE-P5-T001 — Constraint engine tất định
+#### [x] FEATURE-P5-T001 — Constraint engine tất định
 
-**Trạng thái:** IN_PROGRESS — Corrective T001 đang thực hiện; khắc phục triệt để silent structural repair, enum validation nghiêm ngặt, baseline fail-closed, bảo vệ FIXED position, và thuật toán overlap quét có chặn trên (bounded sweep). FEATURE-P5-T002 NOT STARTED.
+**Trạng thái:** COMPLETE — T001 deterministic constraint engine hoàn thành với đầy đủ 76/76 unit tests PASS, full Jest 82/82 suites PASS (1207 tests PASS, 1 skipped), 0 lint errors, 0 typecheck errors, Expo Doctor 20/21 baseline (exit code 1, không phát sinh regression mới). Hard execution bounds fail-fast (MAX_DAYS 60, MAX_ITEMS_PER_DAY 50, MAX_TOTAL_ITEMS 500) được thực thi triệt để không duyệt mảng quá tải. Trùng dayNumber bị loại bỏ không gộp item vào domain sweep nhằm bảo vệ bất biến K <= 50. Evidence lưu tại `.runtime-evidence/p5-t001-canonical-workspace-20260910/`. FEATURE-P5-T002 NOT STARTED.
 
-- [ ] FEATURE-P5-T001-S001 — Triển khai constraints bảo vệ FIXED và MUST_DO.
-
-##### Checklist hoàn thành
-
-- [ ] Validation deterministic và kiểm thử protected-item PASS.
-
-#### [ ] FEATURE-P5-T002 — Gom cụm/tối ưu route-aware
-
-- [ ] FEATURE-P5-T002-S001 — Dùng OSRM metrics đã validate cho clustering/optimization bounded.
+- [x] FEATURE-P5-T001-S001 — Triển khai constraints bảo vệ FIXED và MUST_DO.
 
 ##### Checklist hoàn thành
 
-- [ ] Batching/cache/fallback route PASS.
+- [x] Validation deterministic và kiểm thử protected-item PASS.
+
+#### [x] FEATURE-P5-T002 — Gom cụm/tối ưu route-aware
+
+**Trạng thái:** COMPLETE — Bounded route-aware clustering & optimization fully implemented, tested, and verified with OSRM batching, fail-closed fallback, barrier preservation for unroutable items, cancellation propagation, distinct invalid_input vs constraint_conflict, and P5-T001 deterministic safety boundary. FEATURE-P5-T003 NOT STARTED.
+
+- [x] FEATURE-P5-T002-S001 — Dùng OSRM metrics đã validate cho clustering/optimization bounded.
+
+##### Checklist hoàn thành
+
+- [x] Batching/cache/fallback route PASS.
 
 #### [ ] FEATURE-P5-T003 — Lập lịch weather-aware
 

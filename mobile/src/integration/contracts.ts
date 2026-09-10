@@ -372,6 +372,24 @@ export type RouteRequest = {
   coordinates: readonly Coordinate[];
 };
 
+export type RouteTableRequest = {
+  profile: 'driving';
+  coordinates: readonly Coordinate[];
+};
+
+export type OsrmTableTransport = {
+  code: 'Ok';
+  durations: (number | null)[][];
+  distances?: (number | null)[][];
+};
+
+export type RouteMatrix = {
+  profile: 'driving';
+  durationsSeconds: (number | null)[][];
+  distancesMeters: (number | null)[][];
+  coordinates: readonly Coordinate[];
+};
+
 export type OsrmRouteTransport = {
   code: 'Ok';
   routes: {

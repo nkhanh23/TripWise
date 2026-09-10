@@ -1,0 +1,28 @@
+=== FEATURE-P5-T002 REAL OSRM PROVIDER SMOKE ===
+
+1. Validated Coordinates:
+   Stop 1 (Wat Arun): lat=13.7437, lon=100.4889
+   Stop 2 (Grand Palace): lat=13.75, lon=100.4913
+   Stop 3 (Wat Pho): lat=13.7465, lon=100.4933
+
+2. Executing Route-Aware Optimization (Single Request)...
+
+[HTTP Transport] Attempt 1: GET https://router.project-osrm.org/table/v1/driving/100.4889,13.7437;100.4913,13.75...
+
+3. Optimization Verification:
+   Overall Status: optimized
+   Original Sequence: stop-wat-arun -> stop-grand-palace -> stop-wat-pho
+   Proposed Sequence: stop-wat-arun -> stop-wat-pho -> stop-grand-palace
+   Original Duration: 644.0s
+   Optimized Duration: 608.6s
+   Duration Savings: 35.4s
+   Preserved FIXED Anchors: stop-wat-arun
+   T001 Constraint Evaluation: PASS (0 conflicts)
+
+4. Call Budget & Transport Verification:
+   Logical Provider Calls: 1
+   HTTP Attempts: 1
+   HTTP Retries: 0
+   Zero Database Writes: VERIFIED (in-memory proposed result)
+
+=== REAL OSRM SMOKE COMPLETED SUCCESSFULLY ===

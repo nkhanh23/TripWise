@@ -61,6 +61,11 @@ export const publicProviderPolicy: ReliabilityPolicy = {
   retryTimeout: true,
 };
 
+export const routeMetricProviderPolicy: ReliabilityPolicy = {
+  timeoutMs: 8_000,
+  maximumAttempts: 1,
+};
+
 function wait(milliseconds: number, signal?: AbortSignal): Promise<void> {
   if (milliseconds <= 0) return Promise.resolve();
   return new Promise((resolve, reject) => {

@@ -47,3 +47,6 @@ miniodata-local/
 
 # Dataset/places data
 backend/data/
+
+# Local emulator stdout evidence can exceed GitHub file limits
+/.runtime-evidence/**/emulator-stdout.txt

@@ -1,0 +1,102 @@
+PASS tests/route-optimization.test.ts
+  FEATURE-P5-T002: Bounded Route-Aware Clustering & Optimization
+    Basic Day & Ordering Invariants
+      √ Scenario 1: handles empty day with already_optimal status and 0 provider calls (4 ms)
+      √ Scenario 2: handles single item day as already_optimal without calling provider (2 ms)
+      √ Scenario 3: reorders two routable flexible items to minimize duration (9 ms)
+      √ Scenario 4: resolves deterministic tie ordering using stable item IDs (1 ms)
+    Anchors & Constraint Protections
+      √ Scenario 5: FIXED anchor remains at its exact canonical position (1 ms)
+      √ Scenario 6: multiple FIXED anchors partition the day into protected segments (1 ms)
+      √ Scenario 7: flexible MUST_DO items are strictly retained in proposed plan (1 ms)
+      √ Scenario 8: OPTIONAL items are strictly retained (not dropped)
+    Routable vs Unroutable Coordinates
+      √ Scenario 9: preserves relative position of item with missing coordinates
+      √ Scenario 10: rejects invalid coordinates at validation boundary without crashing (40 ms)
+      √ Scenario 11: handles day with mixed routable and unroutable items (1 ms)
+    Validated OSRM Metrics & Boundary Parsing
+      √ Scenario 12: accurately maps and uses validated OSRM durations
+      √ Scenario 13: accurately maps and uses validated OSRM distances
+      √ Scenario 14: rejects malformed OSRM table response at contract boundary (1 ms)
+    Batching, Fan-Out & Hard Bounds
+      √ Scenario 15: performs 1 batch table request instead of N^2 HTTP calls
+      √ Scenario 16: enforces provider call hard bounds per optimization (1 ms)
+      √ Scenario 17: enforces max routable items per day bound (<= 25)
+    Caching & Isolation
+      √ Scenario 18: returns cached matrix on second request without extra provider call
+      √ Scenario 19: ensures cache key isolation between different coordinate sets (1 ms)
+      √ Scenario 20: isolates transport profile keys (driving prefix)
+    Fail-Closed Fallback, Races & Cancellation
+      √ Scenario 21: falls back deterministically to original order on timeout (1 ms)
+      √ Scenario 22: falls back deterministically on provider unavailable
+      √ Scenario 23: falls back deterministically on malformed provider response
+      √ Scenario 24: respects AbortSignal cancellation immediately (6 ms)
+      √ Scenario 25: cancelled cache requests do not commit incomplete data (3 ms)
+      √ Scenario 26: zero retry amplification on non-retryable provider failure
+      √ Scenario 27: zero fan-out amplification during multi-item optimization (2 ms)
+    Determinism & Heuristics
+      √ Scenario 28: identical inputs and metrics produce 100% identical outputs
+      √ Scenario 29: input array permutations yield identical canonical results (1 ms)
+      √ Scenario 30: stable tie-break between equal duration paths preserves lower ID
+      √ Scenario 31: 2-opt search terminates strictly within bounded iterations (<= 50) (1 ms)
+    Safety Boundary (T001), No Fake Metrics & Zero Persistence
+      √ Scenario 32: accepted proposed plan passes P5-T001 constraint validation (1 ms)
+      √ Scenario 33: fails closed if optimization proposal attempts to alter a FIXED anchor
+      √ Scenario 34: fails closed if optimization proposal drops a MUST_DO item
+      √ Scenario 35: never fabricates fake route metrics (Haversine labeled as local heuristic) (1 ms)
+      √ Scenario 36: execution has zero database persistence side effects
+    Regressions (routePlanning, workspace, P5-T001)
+      √ Scenario 37: routePlanning boundary preserves existing contracts (1 ms)
+      √ Scenario 38: workspace ordering contiguity invariants are preserved in proposed items
+      √ Scenario 39: P5-T001 deterministic constraint engine regression passes (1 ms)
+    Reviewer Corrective Verification (Defects A - G)
+      Defect A / D: T001 validation before coordinate projection yields invalid_input
+        √ fails closed with invalid_input and 0 calls for item with position 0
+        √ fails closed with invalid_input and 0 calls for missing position
+        √ fails closed with invalid_input and 0 calls for gapped positions (1, 3)
+        √ fails closed with invalid_input and 0 calls for non-contiguous days
+        √ fails closed with invalid_input and 0 calls for missing item id (1 ms)
+        √ fails closed with invalid_input and 0 calls for invalid flexibility enum
+        √ fails closed with invalid_input and 0 calls for malformed time string
+      Defect B: Logical provider call budget enforcement
+        √ enforces 10-call logical budget across multiple days and falls back to exceeded_bounds for remaining days (2 ms)
+      Defect C: Absent getTable fails closed without pairwise calls
+        √ fails closed to provider_unavailable with 0 pairwise getRoute calls when getTable is absent (1 ms)
+      Defect D: Zero retry amplification on OSRM Table path
+        √ executes exactly 1 HTTP attempt with zero retries on 429 status (5 ms)
+        √ executes exactly 1 HTTP attempt with zero retries on 500 status (1 ms)
+      Defect E: Hard cap maxIterations in [0, 50]
+        √ accepts maxIterations = 0
+        √ accepts maxIterations = 50
+        √ rejects maxIterations = 51 with invalidRequest (1 ms)
+        √ rejects negative maxIterations with invalidRequest (1 ms)
+        √ rejects NaN / non-integer maxIterations with invalidRequest
+      Defect F: Strict OSRM Table dimensions and unreachable null cells
+        √ throws ContractValidationError if duration row count does not match expected coordinates
+        √ throws ContractValidationError if duration column count does not match row count
+        √ throws ContractValidationError if distances matrix dimensions do not match durations
+        √ preserves null duration cells as legitimate unreachable paths without throwing
+        √ treats unreachable null cells as infinite duration during sequence evaluation (1 ms)
+      Defect G: Route cache defensive deep cloning and TTL timing
+        √ mutating returned Route does not corrupt cached Route entry
+        √ mutating returned RouteMatrix does not corrupt cached RouteMatrix entry
+      Reviewer Corrective Verification (Round 2 Defects A - E)
+        Defect A: Distance Facts & Null/Unreachable Semantics
+          √ rejects OSRM Table response missing distances when requireDistances is true
+          √ preserves null total distance when a traversed leg has null distance (no fake 0m) (1 ms)
+          √ fails closed to unroutable_items when route candidate contains unreachable null duration
+        Defect B: Unroutable Items Must Not Move
+          √ unroutable items (!item.isRoutable) retain their exact canonical position (acting as barriers) (1 ms)
+          √ does not attribute route score across an unroutable stop
+        Defect C: Cancellation Must Propagate to Overall Result
+          √ in-flight Table cancellation propagates to day and overall status as cancelled without executing later days (1 ms)
+        Defect D: Distinct invalid_input vs constraint_conflict
+          √ returns invalid_input for malformed baseline and constraint_conflict when reordering violates constraints
+        Defect E: Cache / Call Metadata Truthfulness
+          √ RouteMetricSummary does not contain cached boolean (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       70 passed, 70 total
+Snapshots:   0 total
+Time:        0.917 s, estimated 1 s
+Ran all test suites matching /tests\\route-optimization.test.ts/i.

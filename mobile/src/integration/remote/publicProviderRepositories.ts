@@ -1,12 +1,12 @@
 import type {
-  Route, RouteRequest, WeatherForecast, WeatherRequest,
+  Route, RouteMatrix, RouteRequest, RouteTableRequest, WeatherForecast, WeatherRequest,
 } from '../contracts';
 import { IntegrationError } from '../errors';
-import { mapOpenMeteoForecast, mapOsrmRoute } from '../mappers';
+import { mapOpenMeteoForecast, mapOsrmRoute, mapOsrmTable } from '../mappers';
 import type { RouteRepository, WeatherRepository } from '../repositories';
-import { executeWithReliability, publicProviderPolicy } from '../reliability';
+import { executeWithReliability, publicProviderPolicy, routeMetricProviderPolicy } from '../reliability';
 import {
-  isRecord, parseOpenMeteoForecast, parseOsrmRoute, validateRouteRequest, validateWeatherRequest,
+  isRecord, parseOpenMeteoForecast, parseOsrmRoute, parseOsrmTable, validateRouteRequest, validateRouteTableRequest, validateWeatherRequest,
 } from '../validation';
 
 const osrmOrigin = 'https://router.project-osrm.org';
@@ -44,6 +44,23 @@ export class OsrmRouteRepository implements RouteRepository {
       if (isRecord(payload) && payload.code === 'NoRoute') throw new IntegrationError('noRoute');
       return mapOsrmRoute(parseOsrmRoute(payload));
     }, publicProviderPolicy, signal);
+  }
+
+  async getTable(request: RouteTableRequest, signal?: AbortSignal): Promise<RouteMatrix> {
+    const normalized = validateRouteTableRequest(request);
+    const coordinates = normalized.coordinates
+      .map((c) => String(c.longitude) + ',' + String(c.latitude)).join(';');
+    const url = osrmOrigin + '/table/v1/driving/' + coordinates + '?annotations=duration,distance';
+
+    return executeWithReliability(async (attemptSignal) => {
+      const response = await this.fetchTransport(url, { method: 'GET', signal: attemptSignal });
+      if (!response.ok) throw mapProviderStatus(response.status);
+      const payload = await readUnknownJson(response);
+      return mapOsrmTable(
+        parseOsrmTable(payload, normalized.coordinates.length, { requireDistances: true }),
+        normalized.coordinates,
+      );
+    }, routeMetricProviderPolicy, signal);
   }
 }
 

@@ -103,6 +103,15 @@ export type ConstraintEvaluationResult = {
   summary: ConstraintEngineSummary;
 };
 
+/**
+ * Canonical itinerary input accepted by the deterministic constraint engine.
+ *
+ * NOTE ON RUNTIME SAFETY:
+ * While strongly typed variants (SavedTripDetail, ConstraintItinerary, etc.) are provided
+ * for developer convenience, ItineraryInput intentionally includes `unknown` because this
+ * engine serves as the untrusted runtime boundary for dynamic JSON payloads, local storage,
+ * and database snapshots before any scheduling logic executes.
+ */
 export type ItineraryInput =
   | SavedTripDetail
   | readonly SavedTripDay[]
@@ -119,21 +128,21 @@ const TIME_FORMAT_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /**
  * Validates whether a string matches standard 24-hour military time 'HH:MM'.
+ * Strict scalar validation: rejects leading/trailing whitespace, non-strings, etc.
  */
 export function isValidTimeString(timeStr: unknown): boolean {
   if (typeof timeStr !== 'string') return false;
-  return TIME_FORMAT_REGEX.test(timeStr.trim());
+  return TIME_FORMAT_REGEX.test(timeStr);
 }
 
 /**
  * Converts 'HH:MM' string to minutes from midnight (0..1439).
- * Returns null if invalid or absent.
+ * Returns null if invalid, absent, or contains whitespace padding.
  */
 export function timeToMinutes(timeStr: unknown): number | null {
   if (typeof timeStr !== 'string') return null;
-  const trimmed = timeStr.trim();
-  if (!TIME_FORMAT_REGEX.test(trimmed)) return null;
-  const [hoursStr, minutesStr] = trimmed.split(':');
+  if (!TIME_FORMAT_REGEX.test(timeStr)) return null;
+  const [hoursStr, minutesStr] = timeStr.split(':');
   const hours = Number.parseInt(hoursStr, 10);
   const minutes = Number.parseInt(minutesStr, 10);
   if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
@@ -169,13 +178,37 @@ export function isValidPriority(val: unknown): val is WorkspacePriority {
 }
 
 /**
- * Normalizes string time or null/undefined.
- * Converts empty string or whitespace-only to undefined.
+ * Validates a strict time scalar (startTime or endTime).
+ * - undefined or null: absent / no fact (valid, returns undefined value).
+ * - exact string matching HH:MM: valid, returns string value.
+ * - numbers, booleans, objects, arrays, empty strings, whitespace-only strings,
+ *   or padded strings (" 09:00 "): invalid, returns conflict with MALFORMED_INPUT.
  */
-function cleanTimeString(val: unknown): string | undefined {
-  if (typeof val !== 'string') return undefined;
-  const trimmed = val.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
+function parseStrictTimeScalar(
+  rawVal: unknown,
+  fieldName: 'startTime' | 'endTime',
+  itemId: string,
+  dayNumber: number,
+  origin: ConflictOrigin,
+  placeName?: string
+): { value: string | undefined; conflict?: ConstraintConflict } {
+  if (rawVal === undefined || rawVal === null) {
+    return { value: undefined };
+  }
+  if (typeof rawVal !== 'string' || !isValidTimeString(rawVal)) {
+    return {
+      value: undefined,
+      conflict: {
+        code: 'MALFORMED_INPUT',
+        itemId,
+        dayNumber,
+        origin,
+        message: `Item "${placeName || itemId}" has invalid ${fieldName} scalar: ${typeof rawVal === 'string' ? `"${rawVal}"` : JSON.stringify(rawVal)} (expected null, undefined, or strict HH:MM string)`,
+        details: { field: fieldName, invalidValue: rawVal },
+      },
+    };
+  }
+  return { value: rawVal };
 }
 
 // ============================================================================
@@ -261,9 +294,17 @@ type NormalizedItinerary = {
 
 /**
  * Extracts and strictly runtime-validates days and items from input shapes.
- * Zero silent repairs: rejects missing/invalid dayNumber, missing/non-array items,
- * missing/invalid position, invalid flexibility/priority enums.
- * Rejects inputs exceeding PLANNING_BOUNDS.
+ * Zero silent repairs:
+ * - Rejects missing/invalid dayNumber (must be positive integer >= 1)
+ * - Rejects duplicate day numbers (reason: 'DUPLICATE_DAY_NUMBER')
+ * - Rejects non-contiguous day numbers (must form exactly 1..N, reason: 'NON_CONTIGUOUS_DAY_NUMBERS')
+ * - Rejects missing/non-array items
+ * - Rejects missing/invalid position (must be positive integer >= 1, reason: 'INVALID_POSITION_DOMAIN')
+ * - Rejects duplicate positions per day (reason: 'DUPLICATE_ITEM_POSITION')
+ * - Rejects non-contiguous item positions per day (must form exactly 1..M, reason: 'NON_CONTIGUOUS_ITEM_POSITIONS')
+ * - Rejects invalid flexibility/priority enums
+ * - Rejects non-scalar / non-HH:MM time fields (no auto-trim, no type-coercion)
+ * - Rejects inputs exceeding PLANNING_BOUNDS.
  */
 export function normalizeItineraryInput(
   input: unknown,
@@ -296,7 +337,8 @@ export function normalizeItineraryInput(
     return { days: [], malformedConflicts };
   }
 
-  // Bounds check: maximum planning days
+  // Fail-fast bounds check: maximum planning days (DEFECT A)
+  // If input exceeds MAX_DAYS, fail-fast immediately without iterating any days!
   if (rawDays.length > PLANNING_BOUNDS.MAX_DAYS) {
     malformedConflicts.push({
       code: 'MALFORMED_INPUT',
@@ -305,14 +347,20 @@ export function normalizeItineraryInput(
       message: `Itinerary exceeds maximum allowed planning days (${rawDays.length} > ${PLANNING_BOUNDS.MAX_DAYS})`,
       details: { maxDays: PLANNING_BOUNDS.MAX_DAYS, actualDays: rawDays.length },
     });
+    return { days: [], malformedConflicts };
   }
 
-  const days: NormalizedDay[] = [];
+  const dayMap = new Map<number, NormalizedDay>();
+  const seenDayNumbers = new Set<number>();
+  const dayNumbersInOrder: number[] = [];
   let totalItemsCount = 0;
+  let hasDuplicateDayNumber = false;
+  let hasInvalidDayNumber = false;
 
   for (let dIdx = 0; dIdx < rawDays.length; dIdx++) {
     const rawDay = rawDays[dIdx];
     if (!rawDay || typeof rawDay !== 'object') {
+      hasInvalidDayNumber = true;
       malformedConflicts.push({
         code: 'MALFORMED_INPUT',
         itemId: `day-idx-${dIdx}`,
@@ -327,8 +375,8 @@ export function normalizeItineraryInput(
 
     // Strict validation of dayNumber: MUST be a positive integer >= 1.
     // NO silent fallback to dIdx + 1!
-    let dayNumber: number;
     if (typeof rawDayNumber !== 'number' || !Number.isInteger(rawDayNumber) || rawDayNumber < 1) {
+      hasInvalidDayNumber = true;
       const fallbackId = typeof dayObj.id === 'string' && dayObj.id.trim() ? dayObj.id.trim() : `day-idx-${dIdx}`;
       malformedConflicts.push({
         code: 'MALFORMED_INPUT',
@@ -338,8 +386,27 @@ export function normalizeItineraryInput(
         details: { invalidDayNumber: rawDayNumber },
       });
       continue;
+    }
+
+    const dayNumber = rawDayNumber;
+
+    // Strict check for duplicate dayNumber across itinerary (DEFECT B)
+    if (seenDayNumbers.has(dayNumber)) {
+      hasDuplicateDayNumber = true;
+      malformedConflicts.push({
+        code: 'MALFORMED_INPUT',
+        itemId: `day-${dayNumber}`,
+        dayNumber,
+        origin,
+        message: `Duplicate dayNumber ${dayNumber} found in itinerary`,
+        details: { reason: 'DUPLICATE_DAY_NUMBER', dayNumber },
+      });
+      // DEFECT B: Duplicate day is already invalid. Do NOT iterate or merge duplicate-day
+      // items into dayMap, preventing aggregate logical day items from exceeding MAX_ITEMS_PER_DAY.
+      continue;
     } else {
-      dayNumber = rawDayNumber;
+      seenDayNumbers.add(dayNumber);
+      dayNumbersInOrder.push(dayNumber);
     }
 
     // Strict validation of items array: MUST be present and an Array.
@@ -357,7 +424,8 @@ export function normalizeItineraryInput(
 
     const rawItems = dayObj.items;
 
-    // Bounds check: maximum items per day
+    // Fail-fast bounds check: maximum items per day (DEFECT A)
+    // If rawItems exceeds MAX_ITEMS_PER_DAY, fail-fast on this day without iterating its items!
     if (rawItems.length > PLANNING_BOUNDS.MAX_ITEMS_PER_DAY) {
       malformedConflicts.push({
         code: 'MALFORMED_INPUT',
@@ -367,12 +435,34 @@ export function normalizeItineraryInput(
         message: `Day ${dayNumber} exceeds maximum allowed items per day (${rawItems.length} > ${PLANNING_BOUNDS.MAX_ITEMS_PER_DAY})`,
         details: { maxItemsPerDay: PLANNING_BOUNDS.MAX_ITEMS_PER_DAY, actualItems: rawItems.length },
       });
+      continue;
     }
 
+    // Fail-fast bounds check: running total items across itinerary (DEFECT A)
+    // If running total + rawItems would exceed MAX_TOTAL_ITEMS, fail-fast immediately!
+    if (totalItemsCount + rawItems.length > PLANNING_BOUNDS.MAX_TOTAL_ITEMS) {
+      malformedConflicts.push({
+        code: 'MALFORMED_INPUT',
+        itemId: 'itinerary',
+        origin,
+        message: `Itinerary exceeds maximum allowed total items (${totalItemsCount + rawItems.length} > ${PLANNING_BOUNDS.MAX_TOTAL_ITEMS})`,
+        details: {
+          maxTotalItems: PLANNING_BOUNDS.MAX_TOTAL_ITEMS,
+          actualTotalItems: totalItemsCount + rawItems.length,
+        },
+      });
+      return { days: [], malformedConflicts };
+    }
+
+    totalItemsCount += rawItems.length;
+
     const items: ConstraintItem[] = [];
+    const seenPositionsOnDay = new Set<number>();
+    const positionsOnDay: number[] = [];
+    let hasInvalidPositionOnDay = false;
+    let hasDuplicatePositionOnDay = false;
 
     for (let iIdx = 0; iIdx < rawItems.length; iIdx++) {
-      totalItemsCount++;
       const rawItem = rawItems[iIdx];
       if (!rawItem || typeof rawItem !== 'object') {
         malformedConflicts.push({
@@ -401,24 +491,40 @@ export function normalizeItineraryInput(
       const id = rawId.trim();
       const placeName = typeof itemObj.placeName === 'string' ? itemObj.placeName.trim() : undefined;
 
-      // Strict validation of position: MUST be non-negative integer >= 0.
-      // NO silent fallback to iIdx!
+      // Strict validation of position: MUST be positive integer >= 1 (Defect A).
+      // NO silent fallback or 0-based positions!
       const rawPos = itemObj.position;
-      if (typeof rawPos !== 'number' || !Number.isInteger(rawPos) || rawPos < 0) {
+      if (typeof rawPos !== 'number' || !Number.isInteger(rawPos) || rawPos < 1) {
+        hasInvalidPositionOnDay = true;
         malformedConflicts.push({
           code: 'MALFORMED_INPUT',
           itemId: id,
           dayNumber,
           origin,
-          message: `Item "${placeName || id}" on day ${dayNumber} has missing or invalid canonical position: ${String(rawPos)} (expected integer >= 0)`,
-          details: { invalidPosition: rawPos },
+          message: `Item "${placeName || id}" on day ${dayNumber} has missing or invalid canonical position: ${String(rawPos)} (expected positive integer >= 1)`,
+          details: { reason: 'INVALID_POSITION_DOMAIN', invalidPosition: rawPos },
         });
         continue;
       }
       const position = rawPos;
 
+      // Check duplicate position on same day
+      if (seenPositionsOnDay.has(position)) {
+        hasDuplicatePositionOnDay = true;
+        malformedConflicts.push({
+          code: 'MALFORMED_INPUT',
+          itemId: id,
+          dayNumber,
+          origin,
+          message: `Duplicate position ${position} found on day ${dayNumber}`,
+          details: { reason: 'DUPLICATE_ITEM_POSITION', dayNumber, position },
+        });
+      } else {
+        seenPositionsOnDay.add(position);
+        positionsOnDay.push(position);
+      }
+
       // Strict validation of flexibility: MUST be 'fixed' or 'flexible'.
-      // NO silent fallback or unsafe cast!
       const rawFlex = itemObj.flexibility;
       if (!isValidFlexibility(rawFlex)) {
         malformedConflicts.push({
@@ -434,7 +540,6 @@ export function normalizeItineraryInput(
       const flexibility: WorkspaceFlexibility = rawFlex;
 
       // Strict validation of priority: MUST be 'must_do', 'want_to_do', or 'optional'.
-      // NO silent fallback or unsafe cast!
       const rawPriority = itemObj.priority;
       if (!isValidPriority(rawPriority)) {
         malformedConflicts.push({
@@ -449,33 +554,18 @@ export function normalizeItineraryInput(
       }
       const priority: WorkspacePriority = rawPriority;
 
-      const startTime = cleanTimeString(itemObj.startTime);
-      const endTime = cleanTimeString(itemObj.endTime);
-
-      // Validate time format if provided
-      let timeFormatError = false;
-      if (startTime !== undefined && !isValidTimeString(startTime)) {
-        malformedConflicts.push({
-          code: 'MALFORMED_INPUT',
-          itemId: id,
-          dayNumber,
-          origin,
-          message: `Item "${placeName || id}" has malformed startTime: "${startTime}" (expected HH:MM 24h)`,
-        });
-        timeFormatError = true;
-      }
-      if (endTime !== undefined && !isValidTimeString(endTime)) {
-        malformedConflicts.push({
-          code: 'MALFORMED_INPUT',
-          itemId: id,
-          dayNumber,
-          origin,
-          message: `Item "${placeName || id}" has malformed endTime: "${endTime}" (expected HH:MM 24h)`,
-        });
-        timeFormatError = true;
+      // Strict scalar time parsing (Defect D): no silent trimming, no type coercion
+      const startParse = parseStrictTimeScalar(itemObj.startTime, 'startTime', id, dayNumber, origin, placeName);
+      if (startParse.conflict) {
+        malformedConflicts.push(startParse.conflict);
       }
 
-      if (timeFormatError) {
+      const endParse = parseStrictTimeScalar(itemObj.endTime, 'endTime', id, dayNumber, origin, placeName);
+      if (endParse.conflict) {
+        malformedConflicts.push(endParse.conflict);
+      }
+
+      if (startParse.conflict || endParse.conflict) {
         continue;
       }
 
@@ -486,12 +576,40 @@ export function normalizeItineraryInput(
         position,
         flexibility,
         priority,
-        startTime,
-        endTime,
+        startTime: startParse.value,
+        endTime: endParse.value,
       });
     }
 
-    days.push({
+    // Check item position contiguity 1..M on this day (Defect C)
+    if (rawItems.length > 0 && !hasInvalidPositionOnDay && !hasDuplicatePositionOnDay) {
+      const sortedPositions = [...positionsOnDay].sort((a, b) => a - b);
+      let isItemContiguous = true;
+      for (let p = 0; p < sortedPositions.length; p++) {
+        if (sortedPositions[p] !== p + 1) {
+          isItemContiguous = false;
+          break;
+        }
+      }
+      if (!isItemContiguous) {
+        malformedConflicts.push({
+          code: 'MALFORMED_INPUT',
+          itemId: `day-${dayNumber}`,
+          dayNumber,
+          origin,
+          message: `Item positions on day ${dayNumber} must be contiguous 1..N (found [${sortedPositions.join(', ')}], expected 1..${sortedPositions.length})`,
+          details: {
+            reason: 'NON_CONTIGUOUS_ITEM_POSITIONS',
+            dayNumber,
+            expectedCount: sortedPositions.length,
+            actualPositions: sortedPositions,
+          },
+        });
+      }
+    }
+
+    // Assign to dayMap (DEFECT B: duplicate day was skipped above, so each entry has items <= 50)
+    dayMap.set(dayNumber, {
       id: typeof dayObj.id === 'string' ? dayObj.id : undefined,
       dayNumber,
       date: typeof dayObj.date === 'string' ? dayObj.date : undefined,
@@ -499,15 +617,35 @@ export function normalizeItineraryInput(
     });
   }
 
-  // Bounds check: maximum total items across itinerary
-  if (totalItemsCount > PLANNING_BOUNDS.MAX_TOTAL_ITEMS) {
-    malformedConflicts.push({
-      code: 'MALFORMED_INPUT',
-      itemId: 'itinerary',
-      origin,
-      message: `Itinerary exceeds maximum allowed total items (${totalItemsCount} > ${PLANNING_BOUNDS.MAX_TOTAL_ITEMS})`,
-      details: { maxTotalItems: PLANNING_BOUNDS.MAX_TOTAL_ITEMS, actualTotalItems: totalItemsCount },
-    });
+  // Check day contiguity 1..N across itinerary (Defect B)
+  if (rawDays.length > 0 && !hasInvalidDayNumber && !hasDuplicateDayNumber) {
+    const sortedDayNumbers = [...dayNumbersInOrder].sort((a, b) => a - b);
+    let isDayContiguous = true;
+    for (let d = 0; d < sortedDayNumbers.length; d++) {
+      if (sortedDayNumbers[d] !== d + 1) {
+        isDayContiguous = false;
+        break;
+      }
+    }
+    if (!isDayContiguous) {
+      malformedConflicts.push({
+        code: 'MALFORMED_INPUT',
+        itemId: 'itinerary',
+        origin,
+        message: `Itinerary dayNumbers must be contiguous 1..N (found [${sortedDayNumbers.join(', ')}], expected 1..${sortedDayNumbers.length})`,
+        details: {
+          reason: 'NON_CONTIGUOUS_DAY_NUMBERS',
+          expectedCount: sortedDayNumbers.length,
+          actualDayNumbers: sortedDayNumbers,
+        },
+      });
+    }
+  }
+
+  // Canonical sort: days by dayNumber ASC, items by position ASC
+  const days: NormalizedDay[] = Array.from(dayMap.values()).sort((a, b) => a.dayNumber - b.dayNumber);
+  for (const day of days) {
+    day.items.sort((a, b) => a.position - b.position);
   }
 
   return { days, malformedConflicts };
@@ -518,7 +656,29 @@ export function normalizeItineraryInput(
 // ============================================================================
 
 /**
- * Detects overlapping FIXED items on a single day using a deterministic bounded sweep:
+ * Detects overlapping FIXED items on a single day using a deterministic bounded sweep.
+ *
+ * COMPUTATIONAL COMPLEXITY & BOUND SPECIFICATION:
+ *
+ * 1. VALID CANONICAL INPUT:
+ *    - Processed days D <= PLANNING_BOUNDS.MAX_DAYS = 60.
+ *    - Processed items per day K <= PLANNING_BOUNDS.MAX_ITEMS_PER_DAY = 50.
+ *    - Total items across itinerary <= PLANNING_BOUNDS.MAX_TOTAL_ITEMS = 500.
+ *    - FIXED overlap list size entering sweep: K <= 50.
+ *    - Sorting per day: O(K log K).
+ *    - Overlap enumeration (bounded sweep): output-sensitive, worst-case O(K^2) pairs,
+ *      hard-bounded by K <= 50 (maximum possible pair checks per day <= 50 * 49 / 2 = 1,225).
+ *    - Overall valid-plan evaluation complexity: O(D * (K log K + K^2)).
+ *
+ * 2. MALFORMED / OVERSIZED INPUT:
+ *    - Rejected fail-fast BEFORE expensive normalization or sweep traversal:
+ *      * rawDays > 60: rejected immediately without traversing any days.
+ *      * rawItems > 50: rejected immediately on that day without traversing its items.
+ *      * running total items > 500: rejected immediately as soon as threshold would be crossed.
+ *      * duplicate dayNumber: rejected fail-fast without merging duplicate-day items into dayMap.
+ *    - No code path processes an unbounded raw array before rejection.
+ *
+ * Algorithm details:
  * 1. Collect scheduled fixed items and sort by startMin ASC, endMin ASC, itemId ASC.
  * 2. Sweep: For item i, check subsequent items j. Because items are sorted by start time,
  *    once startB >= endA (or startB > startA for point items), no subsequent items can overlap,

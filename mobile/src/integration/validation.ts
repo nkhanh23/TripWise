@@ -9,12 +9,14 @@ import type {
   ItineraryItemId,
   OpenMeteoTransport,
   OsrmRouteTransport,
+  OsrmTableTransport,
   PersistTripCommand,
   ProfileTransport,
   ProfileStatistics,
   ResolvePlaceRequest,
   ResolvePlaceSuccessEnvelope,
   RouteRequest,
+  RouteTableRequest,
   SavedTripCursor,
   SavedTripDay,
   SavedTripDetail,
@@ -872,6 +874,75 @@ export function parseOsrmRoute(value: unknown): OsrmRouteTransport {
         coordinates: route.geometry.coordinates.map((point) => [point[0], point[1]] as [number, number]),
       },
     }],
+  };
+}
+
+export function validateRouteTableRequest(value: unknown): RouteTableRequest {
+  if (!isRecord(value) || !hasOnlyKeys(value, ['profile', 'coordinates']) || value.profile !== 'driving'
+    || !Array.isArray(value.coordinates) || value.coordinates.length < 2 || value.coordinates.length > 25
+    || !value.coordinates.every(isValidCoordinate)) {
+    throw new ContractValidationError('route table request');
+  }
+  return { profile: 'driving', coordinates: value.coordinates };
+}
+
+export type ParseOsrmTableOptions = {
+  requireDistances?: boolean;
+};
+
+export function parseOsrmTable(
+  value: unknown,
+  expectedCoordinatesCount?: number,
+  options?: ParseOsrmTableOptions,
+): OsrmTableTransport {
+  if (!isRecord(value) || value.code !== 'Ok' || !Array.isArray(value.durations)) {
+    throw new ContractValidationError('OSRM table response');
+  }
+
+  if (options?.requireDistances && value.distances === undefined) {
+    throw new ContractValidationError('OSRM table missing required distances');
+  }
+
+  const rowCount = value.durations.length;
+  if (expectedCoordinatesCount !== undefined && rowCount !== expectedCoordinatesCount) {
+    throw new ContractValidationError('OSRM table duration row count');
+  }
+
+  const expectedCols = expectedCoordinatesCount !== undefined ? expectedCoordinatesCount : rowCount;
+
+  const durations: (number | null)[][] = value.durations.map((row) => {
+    if (!Array.isArray(row)) throw new ContractValidationError('OSRM table durations row');
+    if (row.length !== expectedCols) throw new ContractValidationError('OSRM table duration column count');
+    return row.map((d) => {
+      if (d === null) return null;
+      const parsed = finiteNumber(d, 0, Number.MAX_SAFE_INTEGER);
+      if (parsed === null) throw new ContractValidationError('OSRM table duration value');
+      return parsed;
+    });
+  });
+
+  let distances: (number | null)[][] | undefined;
+  if (value.distances !== undefined) {
+    if (!Array.isArray(value.distances)) throw new ContractValidationError('OSRM table distances');
+    if (value.distances.length !== rowCount) {
+      throw new ContractValidationError('OSRM table distance row count');
+    }
+    distances = value.distances.map((row) => {
+      if (!Array.isArray(row)) throw new ContractValidationError('OSRM table distances row');
+      if (row.length !== expectedCols) throw new ContractValidationError('OSRM table distance column count');
+      return row.map((d) => {
+        if (d === null) return null;
+        const parsed = finiteNumber(d, 0, Number.MAX_SAFE_INTEGER);
+        if (parsed === null) throw new ContractValidationError('OSRM table distance value');
+        return parsed;
+      });
+    });
+  }
+
+  return {
+    code: 'Ok',
+    durations,
+    distances,
   };
 }
 

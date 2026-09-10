@@ -1,0 +1,96 @@
+PASS tests/deterministic-constraint-engine.test.ts
+  Deterministic Constraint Engine (FEATURE-P5-T001-S001 Canonical Workspace Invariants)
+    Helper Functions & Strict Enum Validators
+      √ validates time strings accurately with strict scalar rules (no trimming) (5 ms)
+      √ converts time strings to minutes accurately (rejects padded/invalid strings) (1 ms)
+      √ validates canonical WorkspaceFlexibility enum strictly (1 ms)
+      √ validates canonical WorkspacePriority enum strictly
+      √ checks item classification functions
+    Defect A — 1-Based Canonical Position Validation
+      √ accepts position = 1 as valid canonical 1-based position (1 ms)
+      √ fails closed when canonical position is 0 (0-based positions rejected) (2 ms)
+      √ fails closed when canonical position is negative or float (1 ms)
+      √ fails closed when canonical position is missing or string
+    Defect B — Day Numbers Unique and Contiguous 1..N
+      √ accepts contiguous 1..N day numbers (1 ms)
+      √ accepts day objects in permuted array order as long as dayNumbers form 1..N
+      √ fails closed on duplicate dayNumber in itinerary (1 ms)
+      √ fails closed when day numbers have a gap (e.g. days 1 and 3)
+      √ fails closed when day numbers start at 2 (e.g. [2, 3]) (1 ms)
+      √ fails closed on single day itinerary starting at day 2
+      √ ensures cross-day safety: duplicate dayNumber fails closed with DUPLICATE_DAY_NUMBER and avoids oversized domains
+    Defect C — Item Positions Unique and Contiguous 1..M per Day
+      √ accepts contiguous 1..M positions on a day (1 ms)
+      √ accepts items in permuted array order as long as positions form 1..M
+      √ fails closed on duplicate position on the same day
+      √ fails closed when positions have a gap (e.g. positions 1 and 3)
+      √ fails closed when positions start at 2 on a day
+      √ fails closed on a single item day with position: 2 (1 ms)
+    Defect D — Strict Time Scalar Validation
+      √ accepts undefined or null time scalars as absent/no fact
+      √ accepts exact HH:MM military time string (1 ms)
+      √ fails closed when startTime is numeric (e.g. 900)
+      √ fails closed when startTime is boolean or object or array
+      √ fails closed when time string contains whitespace padding (" 09:00 ")
+      √ fails closed when time string is empty string or whitespace-only (1 ms)
+      √ fails closed when endTime is an invalid scalar
+    Intra-Schedule Self Validation & Strict Structural Integrity
+      √ evaluates empty itinerary with zero conflicts
+      √ evaluates single valid FIXED item without conflict
+      √ evaluates single valid MUST_DO item without conflict
+      √ allows non-overlapping FIXED items on the same day (adjacent touching allowed) (1 ms)
+      √ detects overlapping FIXED items on the same day (bounded sweep regression) (12 ms)
+      √ detects point-event FIXED item overlapping an interval FIXED item (1 ms)
+      √ detects two point-event FIXED items at the exact same startTime
+      √ does NOT flag overlap between flexible items or flexible and fixed items (1 ms)
+      √ detects invalid time range where endTime < startTime on FIXED items (FIXED_INVALID_TIME_RANGE)
+      √ detects invalid time range on NON-FIXED items using generic INVALID_TIME_RANGE (Time Semantics) (1 ms)
+      √ detects duplicate item IDs across the itinerary
+    Strict Enum Validation
+      √ fails closed on non-canonical flexibility string (e.g. FIXED, Fixed, arbitrary) (1 ms)
+      √ fails closed on non-canonical priority string (e.g. MUST_DO, must-do, mustDo, high) (1 ms)
+    Baseline Must Fail Closed
+      √ fails closed if baseline has malformed time string
+      √ fails closed if baseline has invalid day structure (1 ms)
+      √ fails closed if baseline has duplicate item IDs
+      √ fails closed if baseline has FIXED invalid time range (1 ms)
+      √ fails closed if baseline has FIXED overlap
+    Protect FIXED Position
+      √ passes when FIXED position is unchanged (1 ms)
+      √ emits FIXED_POSITION_CHANGED when FIXED item position changes even on same day and same time
+      √ allows OPTIONAL item position to change without conflict (1 ms)
+      √ allows flexible MUST_DO item position to change without conflict
+      √ protects position for dual FIXED + MUST_DO item (3 ms)
+    Overlap Bounds & Sweep Semantics
+      √ fails closed immediately when itinerary exceeds MAX_DAYS (60) without traversing all days (1 ms)
+      √ fails closed on very large days array without processing any day contents (1 ms)
+      √ fails closed when a day exceeds MAX_ITEMS_PER_DAY (50) without validating every item
+      √ fails closed immediately when total items exceed MAX_TOTAL_ITEMS (500) (1 ms)
+      √ duplicate dayNumber with 50 + 50 items does not create a 100-item overlap domain (8 ms)
+      √ passes valid exact boundary of MAX_DAYS (60 days) (1 ms)
+      √ passes valid exact boundary of MAX_ITEMS_PER_DAY (50 items on one day) (1 ms)
+      √ passes valid exact boundary of MAX_TOTAL_ITEMS (500 items across 10 days) (1 ms)
+      √ adjacent intervals touching at exact boundary do NOT overlap (e.g. 09:00-10:00 and 10:00-11:00)
+      √ point time at boundary of interval does not overlap, but inside interval overlaps (1 ms)
+    Modification Evaluation (Baseline vs Proposed Plan)
+      √ passes when proposed plan matches baseline constraints perfectly
+      √ flags conflict if baseline FIXED item is dropped (1 ms)
+      √ flags conflict if baseline FIXED item is moved to another day
+      √ flags conflict if baseline FIXED item startTime is altered
+      √ flags conflict if baseline FIXED item endTime is altered (1 ms)
+      √ flags conflict if baseline MUST_DO item is dropped
+      √ flags conflict if baseline MUST_DO item is downgraded to want_to_do or optional (1 ms)
+      √ handles items that are BOTH fixed and must_do with dual protection when dropped (1 ms)
+    Determinism, Permutation Invariance & Pure In-Memory Execution
+      √ sorts conflicts strictly according to canonical comparator (origin -> day -> start -> item -> code -> conflictId) (1 ms)
+      √ yields identical canonically-sorted conflicts regardless of input item array order (permutation invariance) (1 ms)
+      √ yields permutation invariance for duplicate IDs across days
+      √ does NOT invent duration if item has only startTime and no endTime (1 ms)
+      √ executes in-memory with zero network calls and zero persistence writes
+      √ evaluates a large 300-item multi-day itinerary smoothly within bounds (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       76 passed, 76 total
+Snapshots:   0 total
+Time:        1.07 s, estimated 2 s
+Ran all test suites matching /tests\\deterministic-constraint-engine.test.ts/i.
