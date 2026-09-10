@@ -66,6 +66,12 @@ export const routeMetricProviderPolicy: ReliabilityPolicy = {
   maximumAttempts: 1,
 };
 
+/** Optional planning weather must not amplify generation latency through retries. */
+export const weatherSchedulingProviderPolicy: ReliabilityPolicy = {
+  timeoutMs: 8_000,
+  maximumAttempts: 1,
+};
+
 function wait(milliseconds: number, signal?: AbortSignal): Promise<void> {
   if (milliseconds <= 0) return Promise.resolve();
   return new Promise((resolve, reject) => {

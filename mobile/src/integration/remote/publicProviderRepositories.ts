@@ -4,7 +4,7 @@ import type {
 import { IntegrationError } from '../errors';
 import { mapOpenMeteoForecast, mapOsrmRoute, mapOsrmTable } from '../mappers';
 import type { RouteRepository, WeatherRepository } from '../repositories';
-import { executeWithReliability, publicProviderPolicy, routeMetricProviderPolicy } from '../reliability';
+import { executeWithReliability, publicProviderPolicy, routeMetricProviderPolicy, weatherSchedulingProviderPolicy } from '../reliability';
 import {
   isRecord, parseOpenMeteoForecast, parseOsrmRoute, parseOsrmTable, validateRouteRequest, validateRouteTableRequest, validateWeatherRequest,
 } from '../validation';
@@ -65,7 +65,10 @@ export class OsrmRouteRepository implements RouteRepository {
 }
 
 export class OpenMeteoWeatherRepository implements WeatherRepository {
-  constructor(private readonly fetchTransport: FetchTransport = fetch) {}
+  constructor(
+    private readonly fetchTransport: FetchTransport = fetch,
+    private readonly usage: 'trip_detail' | 'scheduling' = 'trip_detail',
+  ) {}
 
   async getForecast(request: WeatherRequest, signal?: AbortSignal): Promise<WeatherForecast | null> {
     const normalized = validateWeatherRequest(request);
@@ -83,7 +86,7 @@ export class OpenMeteoWeatherRepository implements WeatherRepository {
         const response = await this.fetchTransport(url, { method: 'GET', signal: attemptSignal });
         if (!response.ok) throw mapProviderStatus(response.status);
         return mapOpenMeteoForecast(parseOpenMeteoForecast(await readUnknownJson(response)));
-      }, publicProviderPolicy, signal);
+      }, this.usage === 'scheduling' ? weatherSchedulingProviderPolicy : publicProviderPolicy, signal);
     } catch (error) {
       if (error instanceof IntegrationError
         && ['network', 'timeout', 'rateLimited', 'providerUnavailable'].includes(error.code)) return null;

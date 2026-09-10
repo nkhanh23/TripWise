@@ -1717,8 +1717,11 @@ describe('FEATURE-P5-T002: Bounded Route-Aware Clustering & Optimization', () =>
           );
 
           // Adjacent pairs: (routable-1, unroutable-middle) -> unroutable; (unroutable-middle, routable-2) -> unroutable
-          // Zero adjacent routable legs -> duration is 0
-          expect(result.days[0].metrics.originalDurationSeconds).toBe(0);
+          // Travel exists but neither transition is known: full totals are unavailable.
+          expect(result.days[0].metrics).toMatchObject({
+            originalDurationSeconds: null, optimizedDurationSeconds: null, durationSavingsSeconds: null,
+            originalDistanceMeters: null, optimizedDistanceMeters: null, distanceSavingsMeters: null,
+          });
         });
       });
 
@@ -1816,5 +1819,105 @@ describe('FEATURE-P5-T002: Bounded Route-Aware Clustering & Optimization', () =>
         });
       });
     });
+  });
+});
+
+describe('Final bounded-input and full-route metric closure', () => {
+  const item = (id: string, position: number, coordinate?: Coordinate) => ({
+    id, position, flexibility: 'flexible', priority: 'want_to_do', ...coordinate,
+  });
+  const unknownMetrics = {
+    originalDurationSeconds: null, optimizedDurationSeconds: null, durationSavingsSeconds: null,
+    originalDistanceMeters: null, optimizedDistanceMeters: null, distanceSavingsMeters: null,
+  };
+
+  it.each(['days', 'items'])('rejects oversized %s without accessing elements or projecting routes', async (kind) => {
+    const touched = jest.fn(() => { throw new Error('Rejected element accessed'); });
+    const oversized = new Array(kind === 'days' ? 61 : 51);
+    Object.defineProperty(oversized, '0', { get: touched });
+    const repo = new MockRouteRepository();
+    const input = { id: 'bounded-trip', days: kind === 'days' ? oversized : [{ dayNumber: 1, items: oversized }] };
+    const result = await optimizeItineraryRoutes(input, repo);
+    expect(result.status).toBe('invalid_input');
+    expect(result.tripId).toBe('bounded-trip');
+    expect(result.days).toEqual([]);
+    expect(result.totalProviderCalls).toBe(0);
+    expect(repo.tableCallCount).toBe(0);
+    expect(repo.routeCallCount).toBe(0);
+    expect(touched).not.toHaveBeenCalled();
+  });
+
+  it('never projects even bounded earlier items when total item bounds reject a later day', async () => {
+    const projection = jest.fn(() => { throw new Error('Route projection accessed'); });
+    const days = Array.from({ length: 11 }, (_, d) => ({
+      dayNumber: d + 1,
+      items: Array.from({ length: 50 }, (_, i) => Object.defineProperty(item(`${d}-${i}`, i + 1), 'latitude', { get: projection })),
+    }));
+    const rejectedItem = jest.fn(() => { throw new Error('Over-total item accessed'); });
+    Object.defineProperty(days[10].items, '0', { get: rejectedItem });
+    const repo = new MockRouteRepository();
+    const result = await optimizeItineraryRoutes({ id: 'total-bound', days }, repo);
+    expect(result.status).toBe('invalid_input');
+    expect(result.totalProviderCalls).toBe(0);
+    expect(repo.tableCallCount).toBe(0);
+    expect(repo.routeCallCount).toBe(0);
+    expect(projection).not.toHaveBeenCalled();
+    expect(rejectedItem).not.toHaveBeenCalled();
+  });
+
+  it('reads only shallow id after rejection and never normalizes malformed fields', async () => {
+    const reads: PropertyKey[] = [];
+    const input = new Proxy({ id: ' unchanged ', days: new Array(61) }, {
+      get(target, key, receiver) { reads.push(key); return Reflect.get(target, key, receiver); },
+    });
+    const repo = new MockRouteRepository();
+    const result = await optimizeItineraryRoutes(input, repo);
+    expect(result.tripId).toBe(' unchanged ');
+    expect(reads).toEqual(['days', 'days', 'id']);
+    expect(result.totalProviderCalls).toBe(0);
+    expect(repo.tableCallCount).toBe(0);
+  });
+
+  it('does not read id or days properties on a rejected array input', async () => {
+    const input = new Array(61);
+    const touched = jest.fn(() => { throw new Error('Array property accessed'); });
+    Object.defineProperties(input, { id: { get: touched }, days: { get: touched } });
+    const result = await optimizeItineraryRoutes(input, new MockRouteRepository());
+    expect(result.status).toBe('invalid_input');
+    expect(result.tripId).toBeUndefined();
+    expect(touched).not.toHaveBeenCalled();
+  });
+
+  it('optimizes both sides of A/B/X/C/D while keeping X fixed and all full totals null', async () => {
+    const repo = new MockRouteRepository(async (req) => ({
+      profile: 'driving', coordinates: req.coordinates,
+      durationsSeconds: [[0, 100, 300, 300], [10, 0, 300, 300], [300, 300, 0, 100], [300, 300, 10, 0]],
+      distancesMeters: [[0, 1000, 3000, 3000], [100, 0, 3000, 3000], [3000, 3000, 0, 1000], [3000, 3000, 100, 0]],
+    }));
+    const result = await optimizeItineraryRoutes({ days: [{ dayNumber: 1, items: [
+      item('A', 1, COORD_A), item('B', 2, COORD_B), item('X', 3), item('C', 4, COORD_C), item('D', 5, COORD_D),
+    ] }] }, repo);
+    expect(result.status).toBe('optimized');
+    expect(result.days[0].proposedItemIds).toEqual(['B', 'A', 'X', 'D', 'C']);
+    expect(result.days[0].items[2]).toMatchObject({ id: 'X', position: 3 });
+    expect(result.days[0].metrics).toMatchObject(unknownMetrics);
+    expect(result.validation?.isValid).toBe(true);
+  });
+
+  it.each([0, 1])('%i-item day has factual zero metrics and no travel request', async (count) => {
+    const repo = new MockRouteRepository();
+    const result = await optimizeItineraryRoutes({ days: [{ dayNumber: 1, items: count ? [item('A', 1, COORD_A)] : [] }] }, repo);
+    for (const key of Object.keys(unknownMetrics) as (keyof typeof unknownMetrics)[]) expect(result.days[0].metrics[key]).toBe(0);
+    expect(repo.tableCallCount).toBe(0);
+  });
+
+  it('complete all-routable sequence retains numeric full totals', async () => {
+    const repo = new MockRouteRepository(async (req) => ({
+      profile: 'driving', coordinates: req.coordinates,
+      durationsSeconds: [[0, 100], [100, 0]], distancesMeters: [[0, 1000], [1000, 0]],
+    }));
+    const result = await optimizeItineraryRoutes({ days: [{ dayNumber: 1, items: [item('A', 1, COORD_A), item('B', 2, COORD_B)] }] }, repo);
+    expect(result.days[0].metrics).toMatchObject({ originalDurationSeconds: 100, optimizedDurationSeconds: 100,
+      durationSavingsSeconds: 0, originalDistanceMeters: 1000, optimizedDistanceMeters: 1000, distanceSavingsMeters: 0 });
   });
 });

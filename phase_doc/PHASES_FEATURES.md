@@ -581,7 +581,7 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 #### [x] FEATURE-P5-T001 — Constraint engine tất định
 
-**Trạng thái:** COMPLETE — T001 deterministic constraint engine hoàn thành với đầy đủ 76/76 unit tests PASS, full Jest 82/82 suites PASS (1207 tests PASS, 1 skipped), 0 lint errors, 0 typecheck errors, Expo Doctor 20/21 baseline (exit code 1, không phát sinh regression mới). Hard execution bounds fail-fast (MAX_DAYS 60, MAX_ITEMS_PER_DAY 50, MAX_TOTAL_ITEMS 500) được thực thi triệt để không duyệt mảng quá tải. Trùng dayNumber bị loại bỏ không gộp item vào domain sweep nhằm bảo vệ bất biến K <= 50. Evidence lưu tại `.runtime-evidence/p5-t001-canonical-workspace-20260910/`. FEATURE-P5-T002 NOT STARTED.
+**Trạng thái:** COMPLETE — T001 deterministic constraint engine hoàn thành với đầy đủ 76/76 unit tests PASS, full Jest 82/82 suites PASS (1207 tests PASS, 1 skipped), 0 lint errors, 0 typecheck errors, Expo Doctor 20/21 baseline (exit code 1, không phát sinh regression mới). Hard execution bounds fail-fast (MAX_DAYS 60, MAX_ITEMS_PER_DAY 50, MAX_TOTAL_ITEMS 500) được thực thi triệt để không duyệt mảng quá tải. Trùng dayNumber bị loại bỏ không gộp item vào domain sweep nhằm bảo vệ bất biến K <= 50. Evidence lưu tại `.runtime-evidence/p5-t001-canonical-workspace-20260910/`. Trạng thái T002 hiện tại xem mục bên dưới.
 
 - [x] FEATURE-P5-T001-S001 — Triển khai constraints bảo vệ FIXED và MUST_DO.
 
@@ -591,7 +591,7 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 #### [x] FEATURE-P5-T002 — Gom cụm/tối ưu route-aware
 
-**Trạng thái:** COMPLETE — Bounded route-aware clustering & optimization fully implemented, tested, and verified with OSRM batching, fail-closed fallback, barrier preservation for unroutable items, cancellation propagation, distinct invalid_input vs constraint_conflict, and P5-T001 deterministic safety boundary. FEATURE-P5-T003 NOT STARTED.
+**Trạng thái:** COMPLETE — Final bounded-input / metric-truthfulness corrective PASS: invalid input returns before route projection; unknown adjacent transitions make all full-day metrics null while safe segments may reorder. Focused 79/79, full Jest 1286 PASS (1 skipped), regressions 98/98, lint/typecheck exit 0. Doctor 20/21 BASELINE — EXIT 1 — NO P5-T002 REGRESSION. Prior real OSRM success reused with unchanged provider boundary hashes; cache is VERIFIED WRAPPER CACHE SMOKE WITH CONTROLLED TRANSPORT. Evidence: `.runtime-evidence/p5-t002-route-optimization-20260910/final-corrective/FINAL_CLOSURE.md`. FEATURE-P5-T003 NOT STARTED.
 
 - [x] FEATURE-P5-T002-S001 — Dùng OSRM metrics đã validate cho clustering/optimization bounded.
 

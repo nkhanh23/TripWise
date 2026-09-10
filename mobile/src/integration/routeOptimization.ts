@@ -74,7 +74,7 @@ export type RouteMetricSummary = {
   originalDistanceMeters: number | null;
   optimizedDistanceMeters: number | null;
   distanceSavingsMeters: number | null;
-  /** Logical route metric requests made to the RouteRepository (1 batch Table request per day). */
+  /** Logical RouteRepository metric requests, not guaranteed upstream HTTP attempts (cache/retries differ). */
   providerCallCount: number;
   matrixCellCount?: number;
 };
@@ -159,6 +159,12 @@ export function calculateHaversineDistanceMeters(c1: Coordinate, c2: Coordinate)
 // ============================================================================
 // Helper: Extract Days & Items from ItineraryInput
 // ============================================================================
+
+function extractShallowTripId(input: ItineraryInput): string | undefined {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return undefined;
+  const id = (input as Record<string, unknown>).id;
+  return typeof id === 'string' ? id : undefined;
+}
 
 function extractDaysAndItems(input: ItineraryInput): {
   tripId?: string;
@@ -296,21 +302,21 @@ function calculateSequenceCost(
   sequence: InternalRoutableItem[],
   matrix: RouteMatrix,
   coordIndexMap: Map<string, number>,
-): { totalDuration: number; totalDistance: number | null } | null {
+): { totalDuration: number | null; totalDistance: number | null } | null {
   if (sequence.length < 2) {
     return { totalDuration: 0, totalDistance: 0 };
   }
 
   let totalDuration = 0;
   let totalDistance: number | null = 0;
-  let hasAnyRoutableLeg = false;
+  let complete = true;
 
   for (let i = 0; i < sequence.length - 1; i++) {
     const fromItem = sequence[i];
     const toItem = sequence[i + 1];
 
-    // No route score is attributed across an unknown-coordinate stop:
-    // Only adjacent legs where BOTH items are routable with valid coordinates contribute.
+    // Unknown transitions make full-sequence totals incomplete. Still inspect known
+    // adjacent legs so unreachable durations continue to fail closed.
     if (
       !fromItem.isRoutable ||
       !toItem.isRoutable ||
@@ -319,10 +325,10 @@ function calculateSequenceCost(
       toItem.latitude === null ||
       toItem.longitude === null
     ) {
+      complete = false;
       continue;
     }
 
-    hasAnyRoutableLeg = true;
     const fromKey = `${fromItem.latitude.toFixed(6)},${fromItem.longitude.toFixed(6)}`;
     const toKey = `${toItem.latitude.toFixed(6)},${toItem.longitude.toFixed(6)}`;
 
@@ -346,11 +352,7 @@ function calculateSequenceCost(
     }
   }
 
-  if (!hasAnyRoutableLeg) {
-    return { totalDuration: 0, totalDistance: 0 };
-  }
-
-  return { totalDuration, totalDistance };
+  return complete ? { totalDuration, totalDistance } : { totalDuration: null, totalDistance: null };
 }
 
 // ============================================================================
@@ -434,7 +436,7 @@ function optimizeSegmentFlexibleItems(
   };
 
   let bestCostObj = calculateSequenceCost(fullTourCandidate(ordered), matrix, coordIndexMap);
-  let bestDuration = bestCostObj ? bestCostObj.totalDuration : Number.POSITIVE_INFINITY;
+  let bestDuration = bestCostObj?.totalDuration ?? Number.POSITIVE_INFINITY;
 
   while (improved && iterations < maxIterations) {
     improved = false;
@@ -450,7 +452,7 @@ function optimizeSegmentFlexibleItems(
         ];
 
         const costObj = calculateSequenceCost(fullTourCandidate(candidateOrdered), matrix, coordIndexMap);
-        if (costObj !== null) {
+        if (costObj !== null && costObj.totalDuration !== null) {
           // Strictly lower duration by at least 1 second
           if (costObj.totalDuration < bestDuration - 1.0) {
             ordered.splice(0, ordered.length, ...candidateOrdered);
@@ -746,7 +748,7 @@ async function optimizeDay(
   const origDuration = originalCost?.totalDuration ?? null;
   const optDuration = optimizedCost.totalDuration;
   const durationSavings =
-    origDuration !== null ? Math.max(0, origDuration - optDuration) : null;
+    origDuration !== null && optDuration !== null ? Math.max(0, origDuration - optDuration) : null;
 
   const origDistance = originalCost?.totalDistance ?? null;
   const optDistance = optimizedCost.totalDistance;
@@ -813,7 +815,7 @@ export async function optimizeItineraryRoutes(
   // Step 0: Validate planning snapshot with P5-T001 deterministic constraint engine
   const initialValidation = evaluatePlanConstraints(input);
   if (!initialValidation.isValid) {
-    const { tripId } = extractDaysAndItems(input);
+    const tripId = extractShallowTripId(input);
     return {
       tripId,
       status: 'invalid_input',
