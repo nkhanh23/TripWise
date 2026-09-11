@@ -1,0 +1,152 @@
+[
+  {
+    "path": "docs/05-engineering/weather-scheduling-policy.md",
+    "before": "6ABA071EEA9871613819B22761DEF4E891D718C4CD3108C0B8240B2A76847DAE",
+    "current": "EB54341E23B909445E80A3A67A49BF2649B319937F5333C50E73D7C0A336B0C3",
+    "unchanged": false
+  },
+  {
+    "path": "mobile/package.json",
+    "before": "ACA2AF043F4B31D2968CB7250D2393EB0AD0B9408FE7C8847D118BE3839722F7",
+    "current": "ACA2AF043F4B31D2968CB7250D2393EB0AD0B9408FE7C8847D118BE3839722F7",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/features/planner/generationContracts.ts",
+    "before": "C9525D790D9A8B3F10B04F599AF802BF3B685A703F211E0589938C10E28EAE8F",
+    "current": "C9525D790D9A8B3F10B04F599AF802BF3B685A703F211E0589938C10E28EAE8F",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/features/trips/travelWorkspace.ts",
+    "before": "B815DDB4316D5B78263083D576A01E80E3A75E952E368824DF149AF52A72F481",
+    "current": "B815DDB4316D5B78263083D576A01E80E3A75E952E368824DF149AF52A72F481",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/features/trips/weather.ts",
+    "before": "AAA3D4E2E8B98280A2FFAF6269D71A74A7D58EE425AF637CFFB4D3157A359999",
+    "current": "AAA3D4E2E8B98280A2FFAF6269D71A74A7D58EE425AF637CFFB4D3157A359999",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/contracts.ts",
+    "before": "CE0A72E66D8B6CE1732667725E5F03B46A758D2FEC0EE3B1C6A02C0ADCBD7E1C",
+    "current": "CE0A72E66D8B6CE1732667725E5F03B46A758D2FEC0EE3B1C6A02C0ADCBD7E1C",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/deterministicConstraintEngine.ts",
+    "before": "EFC118CFBBBDD476EA369EFE80BCD0FD3E9ACECF016B934D9DDBBCB60096515C",
+    "current": "EFC118CFBBBDD476EA369EFE80BCD0FD3E9ACECF016B934D9DDBBCB60096515C",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/index.ts",
+    "before": "0D97BC30B05E0DB2698D7F27F4F048BB6702ED035DB7AC02E65A3EEE60051F2A",
+    "current": "0D97BC30B05E0DB2698D7F27F4F048BB6702ED035DB7AC02E65A3EEE60051F2A",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/mappers.ts",
+    "before": "31311274042D3EA30DBD12F2BC93F5111DE3BBBA9BECADD0BBE2C8A29AAD2FF7",
+    "current": "31311274042D3EA30DBD12F2BC93F5111DE3BBBA9BECADD0BBE2C8A29AAD2FF7",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/reliability.ts",
+    "before": "F53328EEF4C4A68B06B68062B214A91EDB192CCD640F1D70C4A85D6E26D36949",
+    "current": "F53328EEF4C4A68B06B68062B214A91EDB192CCD640F1D70C4A85D6E26D36949",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/remote/publicProviderRepositories.ts",
+    "before": "EFD0229E5AD87CD128662642B991D6B76BC118C50CF7BB910004B2DDF90044F9",
+    "current": "EFD0229E5AD87CD128662642B991D6B76BC118C50CF7BB910004B2DDF90044F9",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/repositories.ts",
+    "before": "5473A329E4727F6A1785ED843E62DAFAF6EB91DC95AF5ECDA32943168304A595",
+    "current": "5473A329E4727F6A1785ED843E62DAFAF6EB91DC95AF5ECDA32943168304A595",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/routeOptimization.ts",
+    "before": "859D6D274D0A2C392E21EC0ACD061FCF4E107CC4ED59A6C1B913874D637AB36C",
+    "current": "859D6D274D0A2C392E21EC0ACD061FCF4E107CC4ED59A6C1B913874D637AB36C",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/validation.ts",
+    "before": "A085E7BDBA7D4AFF728E588F7A9658706ACADA6FE115A8C035A111FCACDAB26D",
+    "current": "A085E7BDBA7D4AFF728E588F7A9658706ACADA6FE115A8C035A111FCACDAB26D",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/weatherScheduling.ts",
+    "before": "6466EC5CFAD5596E512174A96443FF5CDB6CE619EDD1766A2B590965A860CB6A",
+    "current": "6466EC5CFAD5596E512174A96443FF5CDB6CE619EDD1766A2B590965A860CB6A",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/src/integration/weatherSchedulingPolicy.ts",
+    "before": "8B344BF526C6F46F5CAAAB8EA81D0B491F1644D1FC4EBDCC7C7B920D76100481",
+    "current": "DE0CD555D0478E0A54BE7E15460C1A3C636F86B9028EF4F4B9B8EDB9A4AFCEC1",
+    "unchanged": false
+  },
+  {
+    "path": "mobile/tests/deterministic-constraint-engine.test.ts",
+    "before": "BA6A77374A2A3E139111B579775CE6F970FB82248F5982C20AF3BEF758CF4886",
+    "current": "BA6A77374A2A3E139111B579775CE6F970FB82248F5982C20AF3BEF758CF4886",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/integration-remote-repositories.test.ts",
+    "before": "C65F6A56C0CE950A85624F0E145354EE21593241BAF5208A4942C93A1B5C5CFB",
+    "current": "C65F6A56C0CE950A85624F0E145354EE21593241BAF5208A4942C93A1B5C5CFB",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/integration-validation.test.ts",
+    "before": "2871308EDF7422FA67A628478288E7BBC08B6F050B768D5D0CAB3EEEB89DA106",
+    "current": "2871308EDF7422FA67A628478288E7BBC08B6F050B768D5D0CAB3EEEB89DA106",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/integration-weather.test.ts",
+    "before": "EBBB71B5B7A5B3A59F7F90E16ECD47AD96E32AF4A264633170A2EE4E4BDAB33E",
+    "current": "EBBB71B5B7A5B3A59F7F90E16ECD47AD96E32AF4A264633170A2EE4E4BDAB33E",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/route-optimization.test.ts",
+    "before": "F8D7FCA0A01AB3DFDF8C207ABD5086AFE9059F092D066B3EC4325C18491C5DF7",
+    "current": "F8D7FCA0A01AB3DFDF8C207ABD5086AFE9059F092D066B3EC4325C18491C5DF7",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/TripDetailScreen.test.tsx",
+    "before": "EDB2241EB730A827E73F8589EC474C2806F94BF540D9EF8D079FB5F9EA9629E1",
+    "current": "EDB2241EB730A827E73F8589EC474C2806F94BF540D9EF8D079FB5F9EA9629E1",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/weather-scheduling.live-smoke.ts",
+    "before": "F062476D77903E441E473E97F8FAFF69B4C082F69870659201A59C2C91BEE18E",
+    "current": "F062476D77903E441E473E97F8FAFF69B4C082F69870659201A59C2C91BEE18E",
+    "unchanged": true
+  },
+  {
+    "path": "mobile/tests/weather-scheduling.test.ts",
+    "before": "356EC22628D691DF06309B6A1E4D50D1C5E31A4699A52458529675BE99469CEE",
+    "current": "BD424A244B13770171753C65B05E96AD020E92C7D6EC5039FBCCB1717F548AA7",
+    "unchanged": false
+  },
+  {
+    "path": "phase_doc/PHASES_FEATURES.md",
+    "before": "B089E838C6B1FF2BE5190FFA2CFECBF2EFE609D7C98032751FE74D341CC76CCD",
+    "current": "AE09F4FDB7B9CB270CEB06D3BC81946C266747D97615929903286B506D3E10EE",
+    "unchanged": false
+  }
+]

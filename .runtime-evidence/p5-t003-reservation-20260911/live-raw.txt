@@ -1,0 +1,72 @@
+{"origin":"https://api.open-meteo.com","forecastDays":"2","timezoneRequest":"auto","httpAttempts":1}
+{
+  "coordinate": {
+    "latitude": 13.7498558,
+    "longitude": 100.4915765
+  },
+  "coordinateProvenance": "accepted real Google Places result, p4-t001-20260909/live-smoke-provider-evidence.md; test-only itinerary",
+  "localToday": "2026-09-11",
+  "alternativeDate": "2026-09-12",
+  "normalizedForecast": {
+    "days": [
+      {
+        "date": "2026-09-11",
+        "weatherCode": 55,
+        "maximumTemperatureCelsius": 30.8,
+        "minimumTemperatureCelsius": 24.6,
+        "maximumPrecipitationProbability": 91
+      },
+      {
+        "date": "2026-09-12",
+        "weatherCode": 95,
+        "maximumTemperatureCelsius": 31.2,
+        "minimumTemperatureCelsius": 23.4,
+        "maximumPrecipitationProbability": 95
+      }
+    ]
+  },
+  "result": {
+    "status": "no_change",
+    "reason": "no_lower_risk_day",
+    "schedule": {
+      "days": [
+        {
+          "dayNumber": 1,
+          "date": "2026-09-11",
+          "items": [
+            {
+              "id": "live-weather-test-activity",
+              "position": 1,
+              "flexibility": "flexible",
+              "priority": "must_do",
+              "resolution": "VERIFIED",
+              "latitude": 13.7498558,
+              "longitude": 100.4915765
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "date": "2026-09-12",
+          "items": []
+        }
+      ]
+    },
+    "validation": {
+      "isValid": true,
+      "conflicts": [],
+      "summary": {
+        "totalItems": 1,
+        "fixedItems": 0,
+        "mustDoItems": 1,
+        "conflictsCount": 0
+      }
+    },
+    "decisions": [],
+    "logicalForecastRequestCount": 1
+  },
+  "httpAttempts": 1,
+  "persistenceWrites": 0,
+  "evidence": "REAL OPEN-METEO SUCCESS"
+}
+REAL OPEN-METEO SUCCESS — normalized facts + deterministic policy + T001 PASS; zero persistence

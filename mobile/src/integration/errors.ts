@@ -64,6 +64,7 @@ const generateCodes: readonly GenerateTripErrorCode[] = [
 
 const persistenceCodes: readonly PersistenceErrorCode[] = ['TW001', 'TW002', 'TW003', 'TW004', 'TW005'];
 const workspaceMutationCodes: readonly WorkspaceMutationErrorCode[] = ['TW006', 'TW007', 'TW008', 'TW009', 'TW010', 'TW011', 'TW012', 'TW013', 'TW014'];
+const tripRefreshApplyCodes = ['TW015', 'TW016', 'TW017', 'TW018', 'TW019', 'TW020', 'TW021'] as const;
 
 const resolvePlaceCodes: readonly ResolvePlaceErrorCode[] = [
   'PLACE_INPUT_INVALID', 'PLACE_NOT_FOUND', 'PLACE_AMBIGUOUS', 'PLACE_PROVIDER_AUTH',
@@ -137,6 +138,24 @@ export function mapWorkspaceMutationError(value: unknown): IntegrationError {
     case 'TW012': return new IntegrationError('invalidRequest');
     case 'TW013': return new IntegrationError('invalidRequest');
     case 'TW014': return new IntegrationError('invalidRequest');
+  }
+}
+
+/** Maps only stable SQLSTATEs emitted by apply_trip_refresh. */
+export function mapTripRefreshApplyError(value: unknown): IntegrationError {
+  const rawCode = isRecord(value) && typeof value.code === 'string' ? value.code : null;
+  if (!tripRefreshApplyCodes.includes(rawCode as (typeof tripRefreshApplyCodes)[number])) {
+    return mapPostgrestError(value);
+  }
+  switch (rawCode) {
+    case 'TW015': return new IntegrationError('unauthorized');
+    case 'TW016': return new IntegrationError('invalidRequest');
+    case 'TW017': return new IntegrationError('notFound');
+    case 'TW018': return new IntegrationError('conflict');
+    case 'TW019': return new IntegrationError('conflict');
+    case 'TW020': return new IntegrationError('invalidRequest');
+    case 'TW021': return new IntegrationError('persistenceFailed');
+    default: return new IntegrationError('unknown');
   }
 }
 

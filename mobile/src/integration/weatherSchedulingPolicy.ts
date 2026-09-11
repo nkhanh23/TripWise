@@ -1,4 +1,4 @@
-import type { Coordinate, WeatherForecast, WeatherRequest } from './contracts';
+import type { Coordinate, WeatherForecast, WeatherRequest, WorkspaceContactPatch } from './contracts';
 import {
   evaluatePlanConstraints, PLANNING_BOUNDS,
   type ConstraintEvaluationResult, type ConstraintItem,
@@ -27,6 +27,7 @@ export type WeatherScheduleItem = ConstraintItem & {
   longitude?: number | null;
   itemKind?: string;
   activityStatus?: string;
+  contact?: WorkspaceContactPatch;
   transport?: unknown;
   accommodation?: unknown;
 };
@@ -108,7 +109,9 @@ export function prepareWeatherScheduling(
   const raw = (Array.isArray(input) ? { days: input } : input) as WeatherSchedule;
   // Copy the accepted snapshot before any await; retain item metadata, never mutate the caller.
   const baseline: WeatherSchedule = { ...raw, days: raw.days.map(day => ({
-    ...day, items: day.items.map(item => ({ ...item })).sort((a, b) => a.position - b.position),
+    ...day, items: day.items.map(item => ({ ...item,
+      ...(item.contact === undefined ? {} : { contact: { ...item.contact } }),
+    })).sort((a, b) => a.position - b.position),
   })).sort((a, b) => a.dayNumber - b.dayNumber) };
   const fallback = (status: WeatherSchedulingStatus, reason: WeatherSchedulingReason) =>
     weatherSchedulingFallback(baseline, validation, status, reason);
@@ -116,6 +119,13 @@ export function prepareWeatherScheduling(
     return fallback('invalid_input', 'invalid_preferences');
   }
   const items = new Map(baseline.days.flatMap(day => day.items.map(item => [item.id, item] as const)));
+  for (const item of items.values()) {
+    const code = item.contact?.reservationCode;
+    // Same nullable bounded-string semantics as the canonical workspace boundary.
+    if (code != null && (typeof code !== 'string' || !code.trim() || code.trim().length > 128)) {
+      return fallback('invalid_input', 'invalid_itinerary');
+    }
+  }
   const dayNumbers = new Set(baseline.days.map(day => day.dayNumber));
   const seen = new Set<string>();
   const parsed: ExplicitWeatherPreference[] = [];
@@ -222,6 +232,7 @@ export function applyPreparedWeatherScheduling(
     if (item.flexibility === 'fixed') return fallback('protected_constraint_conflict', 'fixed_item');
     // Do not reinterpret booked/timed/completed activities as freely movable dates.
     if (item.startTime != null || item.endTime != null || item.transport != null || item.accommodation != null
+      || (typeof item.contact?.reservationCode === 'string' && item.contact.reservationCode.trim().length > 0)
       || ['transport', 'accommodation', 'reservation'].includes(item.itemKind ?? '')
       || (item.activityStatus !== undefined && item.activityStatus !== 'scheduled')) {
       return fallback('no_change', 'timed_or_bound_activity');
@@ -237,6 +248,13 @@ export function applyPreparedWeatherScheduling(
         : day.dayNumber === target.dayNumber ? [...day.items, { ...item, dayNumber: target.dayNumber }] : day.items)
         .map((value, index) => ({ ...value, position: index + 1 })),
     })) };
+    // Moving another item must not indirectly shift a reservation's canonical slot.
+    if (baseline.days.some(day => day.items.some(value => {
+      if (!value.contact?.reservationCode) return false;
+      const retained = candidate.days.find(next => next.dayNumber === day.dayNumber)
+        ?.items.find(next => next.id === value.id);
+      return !retained || retained.position !== value.position;
+    }))) return fallback('no_change', 'timed_or_bound_activity');
     const safe = validateWeatherScheduleProposal(baseline, candidate);
     if (safe.status === 'protected_constraint_conflict') return safe;
     proposed = candidate;

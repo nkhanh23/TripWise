@@ -599,17 +599,19 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Batching/cache/fallback route PASS.
 
-#### [ ] FEATURE-P5-T003 — Lập lịch weather-aware
+#### [x] FEATURE-P5-T003 — Lập lịch weather-aware
 
-**Trạng thái:** PARTIAL — source/policy và controlled tests đã triển khai; live Open-Meteo scheduling smoke BLOCKED (repository trả null, 1 logical request/1 HTTP attempt, baseline giữ nguyên, exit 1). Chưa có REAL OPEN-METEO SUCCESS nên T003/S001/checklist chưa đóng. Không suy luận weather-sensitivity; input user-explicit, policy precipitation 60%/30%, một tọa độ VERIFIED chính xác, tối đa 1 request, T001 bảo vệ FIXED/MUST_DO. Evidence: `.runtime-evidence/p5-t003-weather-scheduling-20260910/FINAL_STATUS.md`. FEATURE-P5-T004 NOT STARTED.
+**Trạng thái:** COMPLETE — reservation-safety corrective PASS: canonical reservationCode giữ nguyên day/position/priority, booking links không suy luận confirmed reservation. Focused 86/86, full Jest 1372 PASS (1 skipped), regressions 197/197, lint/typecheck exit 0. Doctor 20/21 BASELINE — EXIT 1 — NO P5-T003 REGRESSION. REAL OPEN-METEO SUCCESS 2026-09-11: 1 logical request/1 HTTP attempt, normalized dates 11–12/09, policy no_change/no_lower_risk_day, T001 PASS, zero persistence. Evidence: `.runtime-evidence/p5-t003-reservation-20260911/FINAL_CLOSURE.md`.
 
-- [ ] FEATURE-P5-T003-S001 — Dùng Open-Meteo facts cho scheduling rule có fallback.
+- [x] FEATURE-P5-T003-S001 — Dùng Open-Meteo facts cho scheduling rule có fallback.
 
 ##### Checklist hoàn thành
 
-- [ ] Weather failure không chặn trip; kiểm thử rule PASS.
+- [x] Weather failure không chặn trip; kiểm thử rule PASS.
 
 #### [ ] FEATURE-P5-T004 — Multi-Stage Trip Refresh
+
+**Trạng thái:** PARTIAL — proposal/version/diff/explicit-confirm contract và controlled atomic-port tests PASS (focused 55/55, full Jest 1427 PASS + 1 skipped, regressions 313/313, lint/typecheck exit 0). Production `TravelWorkspaceRepository` chỉ có mutation CAS theo từng command và chưa có atomic whole-refresh/idempotent-confirm primitive; không mô phỏng transaction bằng chuỗi client mutations. Production apply/runtime evidence vì vậy chưa có và T004 vẫn unchecked. Evidence: `.runtime-evidence/p5-t004-refresh-contract-20260911/FINAL_REPORT.md`.
 
 - [ ] FEATURE-P5-T004-S001 — Tạo refresh version/diff/explicit-confirm contract.
 

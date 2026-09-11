@@ -40,3 +40,11 @@ Focused: mobile/tests/weather-scheduling.test.ts (controlled policy/transport fi
 Real smoke: mobile/tests/weather-scheduling.live-smoke.ts, manually invoked with explicit location-local dates; schedule and sensitivity are test-only, weather is real. Coordinate provenance comes from prior accepted real Google Places evidence; no assertion of inherent outdoor status. REAL OPEN-METEO SUCCESS and CONTROLLED FAILURE/FALLBACK EVIDENCE are recorded separately under .runtime-evidence/p5-t003-weather-scheduling-20260910/.
 
 FEATURE-P5-T004 NOT STARTED.
+
+## Reservation-safety corrective (2026-09-11)
+
+Canonical contact.reservationCode (WorkspaceContactPatch / SavedTripItem) is user-owned confirmed/bound metadata for T003. A non-empty canonical code blocks weather rescheduling with no_change/timed_or_bound_activity. Its original day, position, priority and metadata remain intact, including when moving another activity would shift its slot. The contact object is copied into the evaluation snapshot before awaiting weather.
+
+Canonical nullable-string semantics apply: absent/null code does not add a reservation restriction; empty/whitespace-only or over-128-trimmed-character values are invalid_input, matching workspace validation, and are not silently erased. No persisted booking state is invented.
+
+contact.bookingUrl or a sourceLinks entry of type booking alone is only a link, not proof of completed reservation. They do not create a weather restriction. Existing time, transport, accommodation, reservation-kind, completed/skipped and FIXED protections remain. A separate movable sensitive activity can still require the single forecast request; reservation metadata is not a global zero-call shortcut. Existing atomic baseline fallback remains when a sensitive bound activity prevents the proposal.

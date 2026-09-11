@@ -6,20 +6,24 @@ import type {
   SavedTripsPage, SavedTripsPageRequest, TripId, WorkspaceMutationCommand, WorkspaceMutationResult,
 } from '../contracts';
 import {
-  IntegrationError, mapGenerateTripError, mapPersistenceError, mapPostgrestError, mapWorkspaceMutationError, readFunctionErrorPayload,
+  IntegrationError, mapGenerateTripError, mapPersistenceError, mapPostgrestError, mapTripRefreshApplyError, mapWorkspaceMutationError, readFunctionErrorPayload,
 } from '../errors';
 import type {
   SavedTripsRepository, TravelWorkspaceRepository, TripGenerationRepository, TripPersistenceRepository,
 } from '../repositories';
 import {
   executeWithReliability, idempotentPersistencePolicy, supabaseMutationPolicy,
-  supabaseReadPolicy, tripGenerationPolicy,
+  supabaseReadPolicy, tripGenerationPolicy, tripRefreshApplyPolicy,
 } from '../reliability';
 import {
   asTripId, parseGenerateTripSuccess, parseProfileStatistics, parseSavedTripDetail, parseSavedTripsPage,
   validateGenerateTripRequest, validatePersistTripCommand, validateSavedTripsPageRequest,
   parseWorkspaceMutationResult, validateWorkspaceMutationCommand,
 } from '../validation';
+import {
+  type AtomicTripRefreshApplyCommand, type AtomicTripRefreshApplyRepository,
+  type AtomicTripRefreshApplyResult, validateAtomicTripRefreshApplyCommand,
+} from '../tripRefresh';
 
 export class SupabaseTripGenerationRepository implements TripGenerationRepository {
   constructor(private readonly client: SupabaseClient<Database>) {}
@@ -132,4 +136,49 @@ export class SupabaseTravelWorkspaceRepository implements TravelWorkspaceReposit
     }, supabaseMutationPolicy, signal);
   }
 
+}
+
+/**
+ * T004's only production write boundary. The server owns CAS, durable
+ * idempotency and the whole graph transaction; this adapter makes one RPC call.
+ */
+export class SupabaseAtomicTripRefreshApplyRepository implements AtomicTripRefreshApplyRepository {
+  constructor(private readonly client: SupabaseClient<Database>) {}
+
+  async applyReviewedProposal(
+    command: AtomicTripRefreshApplyCommand,
+    signal?: AbortSignal,
+  ): Promise<AtomicTripRefreshApplyResult> {
+    const stableCommand = validateAtomicTripRefreshApplyCommand(command);
+    const rpcPayload = {
+      tripId: stableCommand.tripId,
+      expectedRevision: stableCommand.expectedRevision,
+      proposalId: stableCommand.proposalId,
+      confirmationId: stableCommand.confirmationId,
+      idempotencyKey: stableCommand.idempotencyKey,
+      items: stableCommand.reviewedMutation.items.map((entry) => ({
+        itemId: entry.itemId,
+        dayId: entry.dayId,
+        position: entry.position,
+      })),
+    };
+    return executeWithReliability(async (attemptSignal) => {
+      const { data, error } = await this.client.rpc('apply_trip_refresh', {
+        p_command: rpcPayload as unknown as Json,
+      }).abortSignal(attemptSignal);
+      if (error) throw mapTripRefreshApplyError(error);
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        throw new IntegrationError('invalidResponse');
+      }
+      const record = data as Record<string, unknown>;
+      if (!Number.isInteger(record.revision) || (record.revision as number) < 1
+        || (record.noOp !== undefined && typeof record.noOp !== 'boolean')) {
+        throw new IntegrationError('invalidResponse');
+      }
+      return {
+        revision: record.revision as AtomicTripRefreshApplyResult['revision'],
+        ...(record.noOp === true ? { noOp: true } : {}),
+      };
+    }, tripRefreshApplyPolicy, signal);
+  }
 }

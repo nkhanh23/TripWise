@@ -266,3 +266,72 @@ describe('CONTROLLED FAILURE/FALLBACK EVIDENCE through production Open-Meteo bou
     expect(transport).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('T003 reservation-safety corrective', () => {
+  it('flexible place with reservation retains exact day/position, MUST_DO and metadata', () => {
+    const plan = itinerary();
+    Object.assign(plan.days[0].items[0], { itemKind: 'place', contact: { reservationCode: 'TEST-RESERVATION-123' } });
+    const before = structuredClone(plan);
+    const result = apply(plan);
+    expect(result).toMatchObject({ status: 'no_change', reason: 'timed_or_bound_activity', decisions: [], schedule: before });
+    expect(result.schedule?.days[0].items[0]).toMatchObject({ id: 'A', position: 1, priority: 'must_do', contact: { reservationCode: 'TEST-RESERVATION-123' } });
+    expect(evaluatePlanConstraints(result.schedule, plan).isValid).toBe(true);
+    expect(plan).toEqual(before);
+  });
+  it.each([undefined, null])('absent/null reservationCode %s leaves the same place eligible', reservationCode => {
+    const plan = itinerary(); Object.assign(plan.days[0].items[0], { itemKind: 'place', contact: { reservationCode } });
+    expect(apply(plan).status).toBe('applied');
+  });
+  it.each(['', '   '])('empty reservationCode %j follows canonical rejection, never silently removed', reservationCode => {
+    const plan = itinerary(); plan.days[0].items[0].contact = { reservationCode };
+    expect(apply(plan)).toMatchObject({ status: 'invalid_input', reason: 'invalid_itinerary', schedule: plan, decisions: [] });
+  });
+  it('booking URL and booking source link alone do not imply a reservation', () => {
+    const plan = itinerary();
+    Object.assign(plan.days[0].items[0], { contact: { bookingUrl: 'https://example.com/booking' }, sourceLinks: [{ type: 'booking', url: 'https://example.com/booking' }] });
+    const result = apply(plan);
+    expect(result.status).toBe('applied');
+    expect(result.schedule?.days[1].items[0]).toMatchObject({ contact: { bookingUrl: 'https://example.com/booking' }, sourceLinks: [{ type: 'booking', url: 'https://example.com/booking' }] });
+  });
+  it.each(['reservation', 'transport', 'accommodation'])('itemKind=%s remains bound', itemKind => {
+    const plan = itinerary(); plan.days[0].items[0].itemKind = itemKind;
+    expect(apply(plan)).toMatchObject({ status: 'no_change', reason: 'timed_or_bound_activity', schedule: plan });
+  });
+  it('another movable sensitive item still fetches weather when reservation metadata exists', async () => {
+    const plan = itinerary();
+    plan.days[0].items[0].contact = { reservationCode: 'TEST-BOUND' };
+    plan.days[0].items.push({ ...plan.days[0].items[0], id: 'B', position: 2, contact: undefined });
+    const repository = repo();
+    const result = await evaluateWeatherScheduling(plan, [{ ...preferences[0], itemId: 'B' }], context, repository);
+    expect(result.status).toBe('applied');
+    expect(result.schedule?.days[0].items).toEqual([plan.days[0].items[0]]);
+    expect(result.schedule?.days[1].items[0].id).toBe('B');
+    expect(repository.getForecast).toHaveBeenCalledTimes(1);
+    expect(result.logicalForecastRequestCount).toBe(1);
+    expect(evaluatePlanConstraints(result.schedule, plan).isValid).toBe(true);
+  });
+  it('sensitive reserved and movable items preserve existing atomic no-change behavior after fetch', async () => {
+    const plan = itinerary(); plan.days[0].items[0].contact = { reservationCode: 'TEST-BOUND' };
+    plan.days[0].items.push({ ...plan.days[0].items[0], id: 'B', position: 2, contact: undefined });
+    const repository = repo();
+    const result = await evaluateWeatherScheduling(plan, [...preferences, { ...preferences[0], itemId: 'B' }], context, repository);
+    expect(result).toMatchObject({ status: 'no_change', reason: 'timed_or_bound_activity', schedule: plan, logicalForecastRequestCount: 1 });
+    expect(repository.getForecast).toHaveBeenCalledTimes(1);
+  });
+  it('moving another item cannot shift a non-sensitive reservation position', () => {
+    const plan = itinerary(); plan.days[0].items.push({ ...plan.days[0].items[0], id: 'B', position: 2, contact: { reservationCode: 'TEST-BOUND' } });
+    expect(apply(plan)).toMatchObject({ status: 'no_change', reason: 'timed_or_bound_activity', schedule: plan });
+  });
+  it('reservation metadata is snapshotted before await and no persistence occurs', async () => {
+    const plan = itinerary(); plan.days[0].items[0].contact = { reservationCode: 'TEST-BOUND' };
+    let finish!: (value: WeatherForecast) => void;
+    const repository = { getForecast: jest.fn(() => new Promise<WeatherForecast>(resolve => { finish = resolve; })) };
+    const pending = evaluateWeatherScheduling(plan, preferences, context, repository);
+    plan.days[0].items[0].contact.reservationCode = null;
+    finish(forecast());
+    const result = await pending;
+    expect(result.status).toBe('no_change');
+    expect(result.schedule?.days[0].items[0].contact?.reservationCode).toBe('TEST-BOUND');
+    expect(Object.keys(repository)).toEqual(['getForecast']);
+  });
+});

@@ -101,6 +101,7 @@ try {
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_mutation_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_move_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'workspace_security_matrix.sql')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'trip_refresh_apply_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'expense_ledger_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'expense_aggregate_contract.sql')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'trip_fx_context_contract.sql')
@@ -568,6 +569,7 @@ select 'source_link_concurrency_pass' as result;
 
 
   . (Join-Path $PSScriptRoot 'workspace_direct_writer_concurrency.ps1')
+  . (Join-Path $PSScriptRoot 'trip_refresh_apply_concurrency.ps1')
 
   Invoke-SqlText -Database $freshDb -Sql "create database $upgradeDb;"
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'bootstrap.sql')
@@ -582,6 +584,7 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_ledger_contract.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_aggregate_contract.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_fx_context_contract.sql')
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_refresh_apply_contract.sql')
 
   Write-Output 'PERSISTENCE_TESTS_PASS'
 }

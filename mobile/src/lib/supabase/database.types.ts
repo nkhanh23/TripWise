@@ -435,6 +435,7 @@ export type Database = {
             Args: { p_graph: Json; p_idempotency_key: string }
             Returns: string
           }
+      apply_trip_refresh: { Args: { p_command: Json }; Returns: Json }
       create_travel_workspace_item: { Args: { p_command: Json }; Returns: Json }
       delete_saved_trip: { Args: { p_trip_id: string }; Returns: boolean }
       delete_user_account: { Args: never; Returns: undefined }

@@ -1,0 +1,101 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand weather-scheduling.test.ts
+
+PASS tests/weather-scheduling.test.ts
+  P5-T003 pure weather scheduling
+    √ empty itinerary has no sensitive items and remains valid (4 ms)
+    √ no explicit sensitivity never moves items (1 ms)
+    √ explicit flexible item moves to permitted lower-precipitation date and MUST_DO is retained (2 ms)
+    √ FIXED sensitive item and its time/day/position never move
+    √ moving flexible item cannot shift a FIXED anchor position (1 ms)
+    √ T001 rejects attempted fixed_move (7 ms)
+    √ T001 rejects attempted must_do_drop (1 ms)
+    √ T001 rejects attempted must_do_downgrade (1 ms)
+    √ calendar dates match exactly, even if provider array is reversed (2 ms)
+    √ wrong calendar date is never borrowed from another day (1 ms)
+    √ null precipitation on relevant day 0 is incomplete, never sunny (1 ms)
+    √ null precipitation on relevant day 1 is incomplete, never sunny
+    √ null weather code/temperature do not replace or invalidate known precipitation facts (1 ms)
+    √ WMO codes and UI descriptions do not drive decisions
+    √ missing forecast is explicitly unavailable and retains baseline (1 ms)
+    √ threshold 59.99 -> 10 gives no_change
+    √ threshold 60 -> 10 gives applied (1 ms)
+    √ threshold 80 -> 29.99 gives applied
+    √ threshold 80 -> 30 gives no_change
+    √ threshold 0 -> 0 gives no_change
+    √ never infers sensitivity from title Beach outdoor hike (1 ms)
+    √ never infers sensitivity from title Ticketmaster Outdoor Festival
+    √ missing VERIFIED resolution UNRESOLVED falls back (1 ms)
+    √ missing VERIFIED resolution undefined falls back
+    √ invalid latitude NaN falls back without coordinates substitution (1 ms)
+    √ invalid latitude Infinity falls back without coordinates substitution
+    √ invalid latitude 91 falls back without coordinates substitution
+    √ invalid latitude null falls back without coordinates substitution
+    √ facts tied to a different coordinate cannot be applied
+    √ past or >16-day date 2026-09-26 is out of horizon (1 ms)
+    √ past or >16-day date 2026-09-09 is out of horizon
+    √ day 16 remains in range (2 ms)
+    √ invalid/duplicate date 2026-02-30 rejected without repair
+    √ invalid/duplicate date 2026-09-10T00:00:00Z rejected without repair (1 ms)
+    √ invalid/duplicate date 2026-09-10 rejected without repair
+    √ missing itinerary date is incomplete
+    √ unknown current local calendar date is invalid rather than using device clock (1 ms)
+    √ invalid normalized probability -1 is incomplete
+    √ invalid normalized probability 101 is incomplete
+    √ invalid normalized probability NaN is incomplete (1 ms)
+    √ invalid normalized probability undefined is incomplete
+    √ duplicate provider dates never depend on provider array order
+    √ does not reschedule activity bound by startTime
+    √ does not reschedule activity bound by transport (1 ms)
+    √ does not reschedule activity bound by accommodation
+    √ result is identical and input is never mutated (2 ms)
+    √ permutations of canonical days/items/preferences produce identical proposal (1 ms)
+    √ does not move to any day not explicitly permitted
+    √ invalid explicit metadata source fails closed
+    √ invalid explicit metadata unknown_item fails closed
+    √ invalid explicit metadata duplicate fails closed
+    √ invalid explicit metadata too_many fails closed
+    √ T002 accepts the weather proposal without route reimplementation (3 ms)
+  P5-T003 bounded optional fetch and cancellation
+    √ network failure retains safe baseline (1 ms)
+    √ timeout failure retains safe baseline (1 ms)
+    √ rateLimited failure retains safe baseline (1 ms)
+    √ providerUnavailable failure retains safe baseline
+    √ repository null means unavailable, never sunny
+    √ different sensitive locations cause zero requests rather than N+1
+    √ 20 same-location preferences share one bounded request (4 ms)
+    √ out-of-horizon makes zero provider calls (1 ms)
+    √ pre-cancelled evaluation makes zero calls (1 ms)
+    √ in-flight cancellation ignores late repository success (1 ms)
+    √ superseded response cannot override the newer result
+    √ T001 rejects oversized days without projection/getter access
+    √ T001 rejects oversized items without projection/getter access (1 ms)
+    √ zero persistence and caller snapshot remains intact across async evaluation
+  CONTROLLED FAILURE/FALLBACK EVIDENCE through production Open-Meteo boundary
+    √ scheduling HTTP 429 uses one attempt and retains baseline (16 ms)
+    √ scheduling HTTP 503 uses one attempt and retains baseline (1 ms)
+    √ scheduling network failure uses one attempt (2 ms)
+    √ scheduling timeout uses one attempt and does not block the trip (4 ms)
+    √ malformed provider response falls back rather than failing the trip (1 ms)
+    √ default Trip Detail retry behavior remains two attempts (110 ms)
+  T003 reservation-safety corrective
+    √ flexible place with reservation retains exact day/position, MUST_DO and metadata (1 ms)
+    √ absent/null reservationCode undefined leaves the same place eligible
+    √ absent/null reservationCode null leaves the same place eligible
+    √ empty reservationCode "" follows canonical rejection, never silently removed (1 ms)
+    √ empty reservationCode "   " follows canonical rejection, never silently removed
+    √ booking URL and booking source link alone do not imply a reservation
+    √ itemKind=reservation remains bound (1 ms)
+    √ itemKind=transport remains bound
+    √ itemKind=accommodation remains bound
+    √ another movable sensitive item still fetches weather when reservation metadata exists
+    √ sensitive reserved and movable items preserve existing atomic no-change behavior after fetch (1 ms)
+    √ moving another item cannot shift a non-sensitive reservation position
+    √ reservation metadata is snapshotted before await and no persistence occurs (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       86 passed, 86 total
+Snapshots:   0 total
+Time:        2.53 s
+Ran all test suites matching /weather-scheduling.test.ts/i.

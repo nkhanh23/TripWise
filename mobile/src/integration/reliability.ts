@@ -49,6 +49,13 @@ export const idempotentPersistencePolicy: ReliabilityPolicy = {
   retryTimeout: true,
 };
 
+export const tripRefreshApplyPolicy: ReliabilityPolicy = {
+  timeoutMs: 15_000,
+  maximumAttempts: 2,
+  retryDelayMs: 100,
+  retryTimeout: true,
+};
+
 export const tripGenerationPolicy: ReliabilityPolicy = {
   timeoutMs: 50_000,
   maximumAttempts: 1,

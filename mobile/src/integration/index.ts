@@ -25,3 +25,4 @@ export { applyWeatherSchedulingPolicy, validateWeatherScheduleProposal, WEATHER_
 export type { ExplicitWeatherPreference, LocatedWeatherFacts, WeatherSchedule, WeatherSchedulingContext, WeatherSchedulingDecision, WeatherSchedulingReason, WeatherSchedulingResult, WeatherSchedulingStatus } from './weatherSchedulingPolicy';
 export { evaluateWeatherScheduling, createWeatherSchedulingEvaluator } from './weatherScheduling';
 export type { WeatherSchedulingOptions } from './weatherScheduling';
+export * from './tripRefresh';

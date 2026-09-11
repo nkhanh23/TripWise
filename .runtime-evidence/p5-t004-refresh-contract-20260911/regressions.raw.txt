@@ -1,0 +1,556 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand deterministic-constraint-engine.test.ts route-optimization.test.ts weather-scheduling.test.ts integration-weather.test.ts planner-persistence.test.ts workspace-mutation-contract.test.ts travel-workspace.test.ts WorkspaceMoveController.test.tsx ActivityEditorConflictAndSubmit.test.tsx ActivityEditorStaleUser.test.tsx
+
+PASS tests/WorkspaceMoveController.test.tsx
+PASS tests/ActivityEditorConflictAndSubmit.test.tsx
+  ● Console
+
+    console.error
+      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
+
+      at popActScope (node_modules/react/cjs/react.development.js:556:17)
+      at node_modules/react/cjs/react.development.js:844:17
+
+    console.error
+      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
+
+      at popActScope (node_modules/react/cjs/react.development.js:556:17)
+      at node_modules/react/cjs/react.development.js:844:17
+
+    console.error
+      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
+
+      at popActScope (node_modules/react/cjs/react.development.js:556:17)
+      at node_modules/react/cjs/react.development.js:844:17
+
+PASS tests/ActivityEditorStaleUser.test.tsx
+  ● Console
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      165 |     void (async () => {
+      166 |       if (!isCurrent(requestGeneration)) return;
+    > 167 |       setSaving(false);
+          |       ^
+      168 |       setConflict(false);
+      169 |       setErrorKey(null);
+      170 |       setDetail(null);
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setSaving (src/features/trips/useActivityEditorController.ts:167:7)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at src/features/trips/useActivityEditorController.ts:178:6
+      at Object.react_stack_bottom_frame (node_modules/react-reconciler/cjs/react-reconciler.development.js:17681:20)
+      at runWithFiberInDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:2508:13)
+      at commitHookEffectListMount (node_modules/react-reconciler/cjs/react-reconciler.development.js:10861:29)
+      at commitHookPassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:10948:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12979:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13014:11)
+      at flushPassiveEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:15982:9)
+      at node_modules/react-reconciler/cjs/react-reconciler.development.js:15555:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at node_modules/react/cjs/react.development.js:847:21
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      166 |       if (!isCurrent(requestGeneration)) return;
+      167 |       setSaving(false);
+    > 168 |       setConflict(false);
+          |       ^
+      169 |       setErrorKey(null);
+      170 |       setDetail(null);
+      171 |       if (!user || !isUuid(route.tripId)) {
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setConflict (src/features/trips/useActivityEditorController.ts:168:7)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at src/features/trips/useActivityEditorController.ts:178:6
+      at Object.react_stack_bottom_frame (node_modules/react-reconciler/cjs/react-reconciler.development.js:17681:20)
+      at runWithFiberInDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:2508:13)
+      at commitHookEffectListMount (node_modules/react-reconciler/cjs/react-reconciler.development.js:10861:29)
+      at commitHookPassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:10948:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12979:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13014:11)
+      at flushPassiveEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:15982:9)
+      at node_modules/react-reconciler/cjs/react-reconciler.development.js:15555:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at node_modules/react/cjs/react.development.js:847:21
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      167 |       setSaving(false);
+      168 |       setConflict(false);
+    > 169 |       setErrorKey(null);
+          |       ^
+      170 |       setDetail(null);
+      171 |       if (!user || !isUuid(route.tripId)) {
+      172 |         setLoading(false);
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setErrorKey (src/features/trips/useActivityEditorController.ts:169:7)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at src/features/trips/useActivityEditorController.ts:178:6
+      at Object.react_stack_bottom_frame (node_modules/react-reconciler/cjs/react-reconciler.development.js:17681:20)
+      at runWithFiberInDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:2508:13)
+      at commitHookEffectListMount (node_modules/react-reconciler/cjs/react-reconciler.development.js:10861:29)
+      at commitHookPassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:10948:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12979:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13014:11)
+      at flushPassiveEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:15982:9)
+      at node_modules/react-reconciler/cjs/react-reconciler.development.js:15555:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at node_modules/react/cjs/react.development.js:847:21
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      168 |       setConflict(false);
+      169 |       setErrorKey(null);
+    > 170 |       setDetail(null);
+          |       ^
+      171 |       if (!user || !isUuid(route.tripId)) {
+      172 |         setLoading(false);
+      173 |         return;
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setDetail (src/features/trips/useActivityEditorController.ts:170:7)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at src/features/trips/useActivityEditorController.ts:178:6
+      at Object.react_stack_bottom_frame (node_modules/react-reconciler/cjs/react-reconciler.development.js:17681:20)
+      at runWithFiberInDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:2508:13)
+      at commitHookEffectListMount (node_modules/react-reconciler/cjs/react-reconciler.development.js:10861:29)
+      at commitHookPassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:10948:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12979:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13014:11)
+      at flushPassiveEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:15982:9)
+      at node_modules/react-reconciler/cjs/react-reconciler.development.js:15555:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at node_modules/react/cjs/react.development.js:847:21
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      173 |         return;
+      174 |       }
+    > 175 |       setLoading(true);
+          |       ^
+      176 |       await fetchAuthoritative(true, requestGeneration);
+      177 |       if (isCurrent(requestGeneration)) setLoading(false);
+      178 |     })();
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setLoading (src/features/trips/useActivityEditorController.ts:175:7)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:22:7
+      at node_modules/@babel/runtime/helpers/asyncToGenerator.js:14:12
+      at src/features/trips/useActivityEditorController.ts:178:6
+      at Object.react_stack_bottom_frame (node_modules/react-reconciler/cjs/react-reconciler.development.js:17681:20)
+      at runWithFiberInDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:2508:13)
+      at commitHookEffectListMount (node_modules/react-reconciler/cjs/react-reconciler.development.js:10861:29)
+      at commitHookPassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:10948:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12979:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13213:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:12971:11)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12934:11)
+      at commitPassiveMountOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:13014:11)
+      at flushPassiveEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:15982:9)
+      at node_modules/react-reconciler/cjs/react-reconciler.development.js:15555:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at node_modules/react/cjs/react.development.js:847:21
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      150 |       const next = await savedTripsRepository.getDetail(asTripId(route.tripId));
+      151 |       if (!isCurrent(requestGeneration)) return;
+    > 152 |       setDetail(next);
+          |       ^
+      153 |       // Conflict refresh updates only authoritative state/revision. It never
+      154 |       // replaces user-owned draft controls with server values.
+      155 |       if (initialize) initializeDraft(next);
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setDetail (src/features/trips/useActivityEditorController.ts:152:7)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      117 |     const found = requestedItemId ? next?.days.flatMap((day) => day.items).find((item) => item.id === requestedItemId) : undefined;
+      118 |     if (found) {
+    > 119 |       setTitle(found.placeName);
+          |       ^
+      120 |       setStartTime(found.startTime ?? '');
+      121 |       setEndTime(found.endTime ?? '');
+      122 |       setFlexibility(found.flexibility);
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setTitle (src/features/trips/useActivityEditorController.ts:119:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      118 |     if (found) {
+      119 |       setTitle(found.placeName);
+    > 120 |       setStartTime(found.startTime ?? '');
+          |       ^
+      121 |       setEndTime(found.endTime ?? '');
+      122 |       setFlexibility(found.flexibility);
+      123 |       setPriority(found.priority);
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setStartTime (src/features/trips/useActivityEditorController.ts:120:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      119 |       setTitle(found.placeName);
+      120 |       setStartTime(found.startTime ?? '');
+    > 121 |       setEndTime(found.endTime ?? '');
+          |       ^
+      122 |       setFlexibility(found.flexibility);
+      123 |       setPriority(found.priority);
+      124 |       setNote(found.note ?? '');
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setEndTime (src/features/trips/useActivityEditorController.ts:121:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      120 |       setStartTime(found.startTime ?? '');
+      121 |       setEndTime(found.endTime ?? '');
+    > 122 |       setFlexibility(found.flexibility);
+          |       ^
+      123 |       setPriority(found.priority);
+      124 |       setNote(found.note ?? '');
+      125 |       setContact({
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setFlexibility (src/features/trips/useActivityEditorController.ts:122:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      121 |       setEndTime(found.endTime ?? '');
+      122 |       setFlexibility(found.flexibility);
+    > 123 |       setPriority(found.priority);
+          |       ^
+      124 |       setNote(found.note ?? '');
+      125 |       setContact({
+      126 |         name: found.contact?.name ?? '', phone: found.contact?.phone ?? '', address: found.contact?.address ?? '',
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setPriority (src/features/trips/useActivityEditorController.ts:123:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      122 |       setFlexibility(found.flexibility);
+      123 |       setPriority(found.priority);
+    > 124 |       setNote(found.note ?? '');
+          |       ^
+      125 |       setContact({
+      126 |         name: found.contact?.name ?? '', phone: found.contact?.phone ?? '', address: found.contact?.address ?? '',
+      127 |         websiteUrl: found.contact?.websiteUrl ?? '', bookingUrl: found.contact?.bookingUrl ?? '', reservationCode: found.contact?.reservationCode ?? '',
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setNote (src/features/trips/useActivityEditorController.ts:124:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      123 |       setPriority(found.priority);
+      124 |       setNote(found.note ?? '');
+    > 125 |       setContact({
+          |       ^
+      126 |         name: found.contact?.name ?? '', phone: found.contact?.phone ?? '', address: found.contact?.address ?? '',
+      127 |         websiteUrl: found.contact?.websiteUrl ?? '', bookingUrl: found.contact?.bookingUrl ?? '', reservationCode: found.contact?.reservationCode ?? '',
+      128 |       });
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setContact (src/features/trips/useActivityEditorController.ts:125:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      127 |         websiteUrl: found.contact?.websiteUrl ?? '', bookingUrl: found.contact?.bookingUrl ?? '', reservationCode: found.contact?.reservationCode ?? '',
+      128 |       });
+    > 129 |       setTransport({
+          |       ^
+      130 |         ...emptyTransport, ...found.transport, mode: found.transport?.mode ?? 'other',
+      131 |         originLabel: found.transport?.originLabel ?? '', destinationLabel: found.transport?.destinationLabel ?? '',
+      132 |         operatorName: found.transport?.operatorName ?? '', departureAt: found.transport?.departureAt ?? '', arrivalAt: found.transport?.arrivalAt ?? '',
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setTransport (src/features/trips/useActivityEditorController.ts:129:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      134 |         plannedCostCurrency: found.transport?.plannedCostCurrency ?? '',
+      135 |       });
+    > 136 |       setAccommodation({
+          |       ^
+      137 |         checkInAt: found.accommodation?.checkInAt ?? '', checkOutAt: found.accommodation?.checkOutAt ?? '',
+      138 |         nights: found.accommodation?.nights?.toString() ?? '',
+      139 |       });
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setAccommodation (src/features/trips/useActivityEditorController.ts:136:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      138 |         nights: found.accommodation?.nights?.toString() ?? '',
+      139 |       });
+    > 140 |       setSourceLinks((found.sourceLinks ?? []).map((link) => ({ ...link, label: link.label ?? '' })));
+          |       ^
+      141 |       setDayId(next?.days.find((day) => day.items.some((item) => item.id === found.id))?.id ?? '');
+      142 |     } else if (route.mode === 'add') {
+      143 |       setDayId((current) => current || next?.days[0]?.id || '');
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setSourceLinks (src/features/trips/useActivityEditorController.ts:140:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      139 |       });
+      140 |       setSourceLinks((found.sourceLinks ?? []).map((link) => ({ ...link, label: link.label ?? '' })));
+    > 141 |       setDayId(next?.days.find((day) => day.items.some((item) => item.id === found.id))?.id ?? '');
+          |       ^
+      142 |     } else if (route.mode === 'add') {
+      143 |       setDayId((current) => current || next?.days[0]?.id || '');
+      144 |     }
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setDayId (src/features/trips/useActivityEditorController.ts:141:7)
+      at initializeDraft (src/features/trips/useActivityEditorController.ts:155:23)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      175 |       setLoading(true);
+      176 |       await fetchAuthoritative(true, requestGeneration);
+    > 177 |       if (isCurrent(requestGeneration)) setLoading(false);
+          |                                         ^
+      178 |     })();
+      179 |     return () => { generation.current += 1; };
+      180 |   }, [fetchAuthoritative, isCurrent, route.tripId, user, user?.id]);
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at dispatchSetStateInternal (node_modules/react-reconciler/cjs/react-reconciler.development.js:6784:13)
+      at dispatchSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:6741:7)
+      at setLoading (src/features/trips/useActivityEditorController.ts:177:41)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+    console.error
+      The current testing environment is not configured to support act(...)
+
+      at isConcurrentActEnvironment (node_modules/react-reconciler/cjs/react-reconciler.development.js:13990:17)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:16304:7)
+      at scheduleUpdateOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:14070:11)
+      at Object.enqueueSetState (node_modules/react-reconciler/cjs/react-reconciler.development.js:18909:13)
+      at KeyboardAvoidingView.Object.<anonymous>.process.env.NODE_ENV.Component.setState (node_modules/react/cjs/react.development.js:655:20)
+      at KeyboardAvoidingView.setState [as _setBottom] (node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js:150:12)
+      at KeyboardAvoidingView._setBottom [as componentDidMount] (node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js:195:12)
+      at Object.react_stack_bottom_frame (node_modules/react-reconciler/cjs/react-reconciler.development.js:17619:22)
+      at runWithFiberInDEV (node_modules/react-reconciler/cjs/react-reconciler.development.js:2508:13)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11511:21)
+      at recursivelyTraverseLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12653:11)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11488:11)
+      at recursivelyTraverseLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12653:11)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11705:11)
+      at recursivelyTraverseLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12653:11)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11488:11)
+      at recursivelyTraverseLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12653:11)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11705:11)
+      at recursivelyTraverseLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12653:11)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11488:11)
+      at recursivelyTraverseLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:12653:11)
+      at commitLayoutEffectOnFiber (node_modules/react-reconciler/cjs/react-reconciler.development.js:11570:11)
+      at flushLayoutEffects (node_modules/react-reconciler/cjs/react-reconciler.development.js:15671:15)
+      at commitRoot (node_modules/react-reconciler/cjs/react-reconciler.development.js:15586:9)
+      at performWorkOnRoot (node_modules/react-reconciler/cjs/react-reconciler.development.js:14329:15)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-reconciler/cjs/react-reconciler.development.js:3335:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at recursivelyFlushAsyncActWork (node_modules/react/cjs/react.development.js:566:13)
+      at Immediate._onImmediate (node_modules/react/cjs/react.development.js:849:32)
+
+PASS tests/weather-scheduling.test.ts
+PASS tests/integration-weather.test.ts
+PASS tests/route-optimization.test.ts
+PASS tests/planner-persistence.test.ts
+PASS tests/deterministic-constraint-engine.test.ts
+PASS tests/workspace-mutation-contract.test.ts
+PASS tests/travel-workspace.test.ts
+
+Test Suites: 10 passed, 10 total
+Tests:       313 passed, 313 total
+Snapshots:   0 total
+Time:        6.963 s
+Ran all test suites matching /deterministic-constraint-engine.test.ts|route-optimization.test.ts|weather-scheduling.test.ts|integration-weather.test.ts|planner-persistence.test.ts|workspace-mutation-contract.test.ts|travel-workspace.test.ts|WorkspaceMoveController.test.tsx|ActivityEditorConflictAndSubmit.test.tsx|ActivityEditorStaleUser.test.tsx/i.
