@@ -1,0 +1,5 @@
+
+> tripwise-mobile@1.0.0 typecheck
+> tsc --noEmit
+
+tests/weather-scheduling.live-smoke.ts(6,20): error TS2591: Cannot find name 'node:assert/strict'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.

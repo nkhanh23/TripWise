@@ -591,7 +591,7 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 #### [x] FEATURE-P5-T002 — Gom cụm/tối ưu route-aware
 
-**Trạng thái:** COMPLETE — Final bounded-input / metric-truthfulness corrective PASS: invalid input returns before route projection; unknown adjacent transitions make all full-day metrics null while safe segments may reorder. Focused 79/79, full Jest 1286 PASS (1 skipped), regressions 98/98, lint/typecheck exit 0. Doctor 20/21 BASELINE — EXIT 1 — NO P5-T002 REGRESSION. Prior real OSRM success reused with unchanged provider boundary hashes; cache is VERIFIED WRAPPER CACHE SMOKE WITH CONTROLLED TRANSPORT. Evidence: `.runtime-evidence/p5-t002-route-optimization-20260910/final-corrective/FINAL_CLOSURE.md`. FEATURE-P5-T003 NOT STARTED.
+**Trạng thái:** COMPLETE — Final bounded-input / metric-truthfulness corrective PASS: invalid input returns before route projection; unknown adjacent transitions make all full-day metrics null while safe segments may reorder. Focused 79/79, full Jest 1286 PASS (1 skipped), regressions 98/98, lint/typecheck exit 0. Doctor 20/21 BASELINE — EXIT 1 — NO P5-T002 REGRESSION. Prior real OSRM success reused with unchanged provider boundary hashes; cache is VERIFIED WRAPPER CACHE SMOKE WITH CONTROLLED TRANSPORT. Evidence: `.runtime-evidence/p5-t002-route-optimization-20260910/final-corrective/FINAL_CLOSURE.md`. Trạng thái T003 hiện tại xem mục bên dưới.
 
 - [x] FEATURE-P5-T002-S001 — Dùng OSRM metrics đã validate cho clustering/optimization bounded.
 
@@ -600,6 +600,8 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 - [x] Batching/cache/fallback route PASS.
 
 #### [ ] FEATURE-P5-T003 — Lập lịch weather-aware
+
+**Trạng thái:** PARTIAL — source/policy và controlled tests đã triển khai; live Open-Meteo scheduling smoke BLOCKED (repository trả null, 1 logical request/1 HTTP attempt, baseline giữ nguyên, exit 1). Chưa có REAL OPEN-METEO SUCCESS nên T003/S001/checklist chưa đóng. Không suy luận weather-sensitivity; input user-explicit, policy precipitation 60%/30%, một tọa độ VERIFIED chính xác, tối đa 1 request, T001 bảo vệ FIXED/MUST_DO. Evidence: `.runtime-evidence/p5-t003-weather-scheduling-20260910/FINAL_STATUS.md`. FEATURE-P5-T004 NOT STARTED.
 
 - [ ] FEATURE-P5-T003-S001 — Dùng Open-Meteo facts cho scheduling rule có fallback.
 

@@ -1,0 +1,16 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand deterministic-constraint-engine.test.ts route-optimization.test.ts integration-weather.test.ts TripDetailScreen.test.tsx integration-remote-repositories.test.ts integration-validation.test.ts
+
+PASS tests/TripDetailScreen.test.tsx
+PASS tests/integration-remote-repositories.test.ts
+PASS tests/integration-weather.test.ts
+PASS tests/route-optimization.test.ts
+PASS tests/deterministic-constraint-engine.test.ts
+PASS tests/integration-validation.test.ts
+
+Test Suites: 6 passed, 6 total
+Tests:       197 passed, 197 total
+Snapshots:   0 total
+Time:        5.556 s
+Ran all test suites matching /deterministic-constraint-engine.test.ts|route-optimization.test.ts|integration-weather.test.ts|TripDetailScreen.test.tsx|integration-remote-repositories.test.ts|integration-validation.test.ts/i.

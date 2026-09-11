@@ -21,3 +21,7 @@ export * from './remote/supabaseWikimediaImageRepository';
 export * from './deterministicConstraintEngine';
 export * from './routeMetricCache';
 export * from './routeOptimization';
+export { applyWeatherSchedulingPolicy, validateWeatherScheduleProposal, WEATHER_SCHEDULING_POLICY } from './weatherSchedulingPolicy';
+export type { ExplicitWeatherPreference, LocatedWeatherFacts, WeatherSchedule, WeatherSchedulingContext, WeatherSchedulingDecision, WeatherSchedulingReason, WeatherSchedulingResult, WeatherSchedulingStatus } from './weatherSchedulingPolicy';
+export { evaluateWeatherScheduling, createWeatherSchedulingEvaluator } from './weatherScheduling';
+export type { WeatherSchedulingOptions } from './weatherScheduling';

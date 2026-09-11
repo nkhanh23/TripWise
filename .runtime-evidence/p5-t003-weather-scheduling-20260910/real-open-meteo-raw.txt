@@ -1,0 +1,55 @@
+{"origin":"https://api.open-meteo.com","forecastDays":"2","timezoneRequest":"auto","httpAttempts":1}
+{
+  "coordinate": {
+    "latitude": 13.7498558,
+    "longitude": 100.4915765
+  },
+  "coordinateProvenance": "accepted real Google Places result, p4-t001-20260909/live-smoke-provider-evidence.md; test-only itinerary",
+  "localToday": "2026-09-10",
+  "alternativeDate": "2026-09-11",
+  "normalizedForecast": null,
+  "result": {
+    "status": "forecast_unavailable",
+    "reason": "missing_forecast",
+    "schedule": {
+      "days": [
+        {
+          "dayNumber": 1,
+          "date": "2026-09-10",
+          "items": [
+            {
+              "id": "live-weather-test-activity",
+              "position": 1,
+              "flexibility": "flexible",
+              "priority": "must_do",
+              "resolution": "VERIFIED",
+              "latitude": 13.7498558,
+              "longitude": 100.4915765
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "date": "2026-09-11",
+          "items": []
+        }
+      ]
+    },
+    "validation": {
+      "isValid": true,
+      "conflicts": [],
+      "summary": {
+        "totalItems": 1,
+        "fixedItems": 0,
+        "mustDoItems": 1,
+        "conflictsCount": 0
+      }
+    },
+    "decisions": [],
+    "logicalForecastRequestCount": 1
+  },
+  "httpAttempts": 1,
+  "persistenceWrites": 0,
+  "evidence": "BLOCKED — REAL OPEN-METEO UNAVAILABLE"
+}
+BLOCKED — live weather smoke did not meet success assertions

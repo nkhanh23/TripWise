@@ -1,0 +1,87 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand weather-scheduling.test.ts
+
+PASS tests/weather-scheduling.test.ts
+  P5-T003 pure weather scheduling
+    √ empty itinerary has no sensitive items and remains valid (4 ms)
+    √ no explicit sensitivity never moves items (1 ms)
+    √ explicit flexible item moves to permitted lower-precipitation date and MUST_DO is retained (2 ms)
+    √ FIXED sensitive item and its time/day/position never move (1 ms)
+    √ moving flexible item cannot shift a FIXED anchor position
+    √ T001 rejects attempted fixed_move (6 ms)
+    √ T001 rejects attempted must_do_drop
+    √ T001 rejects attempted must_do_downgrade (1 ms)
+    √ calendar dates match exactly, even if provider array is reversed
+    √ wrong calendar date is never borrowed from another day
+    √ null precipitation on relevant day 0 is incomplete, never sunny
+    √ null precipitation on relevant day 1 is incomplete, never sunny (1 ms)
+    √ null weather code/temperature do not replace or invalidate known precipitation facts
+    √ WMO codes and UI descriptions do not drive decisions
+    √ missing forecast is explicitly unavailable and retains baseline
+    √ threshold 59.99 -> 10 gives no_change (1 ms)
+    √ threshold 60 -> 10 gives applied
+    √ threshold 80 -> 29.99 gives applied
+    √ threshold 80 -> 30 gives no_change (1 ms)
+    √ threshold 0 -> 0 gives no_change
+    √ never infers sensitivity from title Beach outdoor hike
+    √ never infers sensitivity from title Ticketmaster Outdoor Festival
+    √ missing VERIFIED resolution UNRESOLVED falls back (1 ms)
+    √ missing VERIFIED resolution undefined falls back
+    √ invalid latitude NaN falls back without coordinates substitution
+    √ invalid latitude Infinity falls back without coordinates substitution (1 ms)
+    √ invalid latitude 91 falls back without coordinates substitution
+    √ invalid latitude null falls back without coordinates substitution
+    √ facts tied to a different coordinate cannot be applied
+    √ past or >16-day date 2026-09-26 is out of horizon (1 ms)
+    √ past or >16-day date 2026-09-09 is out of horizon
+    √ day 16 remains in range (1 ms)
+    √ invalid/duplicate date 2026-02-30 rejected without repair
+    √ invalid/duplicate date 2026-09-10T00:00:00Z rejected without repair (1 ms)
+    √ invalid/duplicate date 2026-09-10 rejected without repair
+    √ missing itinerary date is incomplete
+    √ unknown current local calendar date is invalid rather than using device clock
+    √ invalid normalized probability -1 is incomplete (1 ms)
+    √ invalid normalized probability 101 is incomplete
+    √ invalid normalized probability NaN is incomplete
+    √ invalid normalized probability undefined is incomplete
+    √ duplicate provider dates never depend on provider array order (1 ms)
+    √ does not reschedule activity bound by startTime
+    √ does not reschedule activity bound by transport (1 ms)
+    √ does not reschedule activity bound by accommodation
+    √ result is identical and input is never mutated (2 ms)
+    √ permutations of canonical days/items/preferences produce identical proposal (1 ms)
+    √ does not move to any day not explicitly permitted
+    √ invalid explicit metadata source fails closed
+    √ invalid explicit metadata unknown_item fails closed
+    √ invalid explicit metadata duplicate fails closed
+    √ invalid explicit metadata too_many fails closed
+    √ T002 accepts the weather proposal without route reimplementation (2 ms)
+  P5-T003 bounded optional fetch and cancellation
+    √ network failure retains safe baseline (1 ms)
+    √ timeout failure retains safe baseline (1 ms)
+    √ rateLimited failure retains safe baseline
+    √ providerUnavailable failure retains safe baseline (1 ms)
+    √ repository null means unavailable, never sunny (1 ms)
+    √ different sensitive locations cause zero requests rather than N+1
+    √ 20 same-location preferences share one bounded request (4 ms)
+    √ out-of-horizon makes zero provider calls
+    √ pre-cancelled evaluation makes zero calls (1 ms)
+    √ in-flight cancellation ignores late repository success (1 ms)
+    √ superseded response cannot override the newer result (1 ms)
+    √ T001 rejects oversized days without projection/getter access
+    √ T001 rejects oversized items without projection/getter access
+    √ zero persistence and caller snapshot remains intact across async evaluation (1 ms)
+  CONTROLLED FAILURE/FALLBACK EVIDENCE through production Open-Meteo boundary
+    √ scheduling HTTP 429 uses one attempt and retains baseline (10 ms)
+    √ scheduling HTTP 503 uses one attempt and retains baseline
+    √ scheduling network failure uses one attempt (1 ms)
+    √ scheduling timeout uses one attempt and does not block the trip (12 ms)
+    √ malformed provider response falls back rather than failing the trip (1 ms)
+    √ default Trip Detail retry behavior remains two attempts (109 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       73 passed, 73 total
+Snapshots:   0 total
+Time:        1.913 s
+Ran all test suites matching /weather-scheduling.test.ts/i.
