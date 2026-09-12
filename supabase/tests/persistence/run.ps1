@@ -570,6 +570,7 @@ select 'source_link_concurrency_pass' as result;
 
   . (Join-Path $PSScriptRoot 'workspace_direct_writer_concurrency.ps1')
   . (Join-Path $PSScriptRoot 'trip_refresh_apply_concurrency.ps1')
+  Write-Output 'FRESH_PERSISTENCE_CHAIN_PASS'
 
   Invoke-SqlText -Database $freshDb -Sql "create database $upgradeDb;"
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'bootstrap.sql')
@@ -585,6 +586,10 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_aggregate_contract.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_fx_context_contract.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_refresh_apply_contract.sql')
+
+  Write-Output 'UPGRADE_PERSISTENCE_CHAIN_PASS'
+
+  . (Join-Path $PSScriptRoot 'trip_refresh_default_acl_regression.ps1')
 
   Write-Output 'PERSISTENCE_TESTS_PASS'
 }

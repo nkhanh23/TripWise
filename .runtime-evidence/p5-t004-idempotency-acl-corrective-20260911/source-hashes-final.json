@@ -1,0 +1,54 @@
+[
+  {
+    "Path": "supabase/migrations/20260911000000_apply_trip_refresh_atomic.sql",
+    "SHA256": "17791E4C06DB629497FA3B6059EB406BF45D67C738577FF84C0FDE61E7102E9B"
+  },
+  {
+    "Path": "supabase/migrations/20260911161103_harden_trip_refresh_idempotency_acl.sql",
+    "SHA256": "0AFED0B5937C6918540F080B19704F03CC714C603CF7689AEF06476DA365C0F8"
+  },
+  {
+    "Path": "supabase/tests/persistence/trip_refresh_apply_contract.sql",
+    "SHA256": "4D91AA964A73872F45D8742FA1BB2BED99595996F47351D3F3FBDDFA0AC35A35"
+  },
+  {
+    "Path": "supabase/tests/persistence/run.ps1",
+    "SHA256": "A7E6024881D22D78B5631ABEF5C8BD3C0421DBFECC8071621981175DFD91FE39"
+  },
+  {
+    "Path": "supabase/tests/persistence/trip_refresh_default_acl_regression.ps1",
+    "SHA256": "58D4F76EF627C71AB7B371F2BEA001F19FEB75AC32469D8601D22DB931D02F30"
+  },
+  {
+    "Path": "mobile/src/integration/tripRefresh.ts",
+    "SHA256": "534581EE4AC3E2C8F0C1029F81F5FA153C3A67836E9CF0F1E8302ACE41503EE9"
+  },
+  {
+    "Path": "mobile/src/integration/errors.ts",
+    "SHA256": "4A2E73D2A571E3BEC408350CA4A670E4E8D28252273FA891A4E25417DDD2B160"
+  },
+  {
+    "Path": "mobile/src/integration/reliability.ts",
+    "SHA256": "42596C83EF5BDA0CDBDAFCD0D8A30BEAA8110759365B1A953E109498F14BD223"
+  },
+  {
+    "Path": "mobile/src/integration/remote/supabaseTripRepositories.ts",
+    "SHA256": "6C61EE3BCE3ED4BE89276E50B8C020D117B0DA04CCC11E2F2F3C106053592D4B"
+  },
+  {
+    "Path": "mobile/src/lib/supabase/database.types.ts",
+    "SHA256": "CE50B3EDF93B40BED6CC471D850CCFA7725465ED71BEF733973AFBB7ECDF81E4"
+  },
+  {
+    "Path": "mobile/tests/trip-refresh.test.ts",
+    "SHA256": "0B1FB271ADB4E58B950FAC382A9138B63A6EB9E5BD8D29B9A3BCEBCBC4ADDB7F"
+  },
+  {
+    "Path": "mobile/package.json",
+    "SHA256": "ACA2AF043F4B31D2968CB7250D2393EB0AD0B9408FE7C8847D118BE3839722F7"
+  },
+  {
+    "Path": "mobile/package-lock.json",
+    "SHA256": "C9DF4A1E4A7CFB65E3D20C0B6F5D058DC440CB01AC7A094E6F93517F5664AD93"
+  }
+]

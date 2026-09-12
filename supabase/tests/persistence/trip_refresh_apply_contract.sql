@@ -10,14 +10,46 @@ $$;
 -- Public surface and the idempotency table must not expose a bypass around the
 -- owner-scoped RPC. All fixture writes below occur before switching roles.
 do $$
+declare
+  v_privilege text;
 begin
   if has_function_privilege('anon', 'public.apply_trip_refresh(jsonb)', 'EXECUTE')
      or not has_function_privilege('authenticated', 'public.apply_trip_refresh(jsonb)', 'EXECUTE')
      or (select prosecdef from pg_proc where oid = 'public.apply_trip_refresh(jsonb)'::regprocedure) then
     raise exception 'Refresh RPC privileges or SECURITY INVOKER contract is invalid.';
   end if;
+  perform pg_temp.assert_true(
+    (select relrowsecurity from pg_class where oid='public.trip_refresh_apply_idempotency'::regclass),
+    'Refresh idempotency RLS must remain enabled.');
+  perform pg_temp.assert_true(exists (
+    select 1 from pg_policies
+    where schemaname='public' and tablename='trip_refresh_apply_idempotency'
+      and policyname='trip_refresh_apply_idempotency_select_own' and cmd='SELECT'
+      and roles=array['authenticated']::name[] and qual like '%owner_id%auth.uid()%'
+  ), 'Refresh owner-scoped SELECT policy is missing.');
+  -- acldefault enumerates every table privilege supported by this server,
+  -- including MAINTAIN on PostgreSQL 17+, without parsing ACL display text.
+  for v_privilege in
+    select privilege_type from aclexplode(acldefault('r', (select oid from pg_roles where rolname='postgres')))
+  loop
+    perform pg_temp.assert_true(
+      has_table_privilege('authenticated','public.trip_refresh_apply_idempotency',v_privilege) = (v_privilege='SELECT'),
+      'Unexpected authenticated idempotency privilege: ' || v_privilege);
+    perform pg_temp.assert_true(
+      not has_table_privilege('anon','public.trip_refresh_apply_idempotency',v_privilege),
+      'Unexpected anon idempotency privilege: ' || v_privilege);
+  end loop;
+  perform pg_temp.assert_true(not exists (
+    select 1 from pg_class c, lateral aclexplode(c.relacl) a
+    where c.oid='public.trip_refresh_apply_idempotency'::regclass and a.grantee=0
+  ), 'PUBLIC must not have idempotency table grants.');
+  perform pg_temp.assert_true(not exists (
+    select 1 from pg_proc p, lateral aclexplode(p.proacl) a
+    where p.oid='public.apply_trip_refresh(jsonb)'::regprocedure and a.grantee=0
+  ), 'PUBLIC must not have refresh RPC grants.');
 end;
 $$;
+select 'trip_refresh_effective_acl_pass' as result;
 
 insert into public.trips(id,user_id,title,destination,start_date,end_date)
 values ('85000000-0000-4000-8000-000000000001','11111111-1111-4111-8111-111111111111','Refresh apply','Hue','2028-08-01','2028-08-02');
@@ -95,6 +127,32 @@ end;
 $$;
 
 -- No-op is explicit, retains its revision, and still stores a durable result.
+-- Target a real RPC-owned durable row; an RLS-filtered zero-row UPDATE/DELETE
+-- is not sufficient: both statements must raise insufficient_privilege.
+do $$
+declare v_before jsonb;
+begin
+  select to_jsonb(t) into v_before from public.trip_refresh_apply_idempotency t
+  where confirmation_id='confirm-v1-atomic-apply-01';
+  perform pg_temp.assert_true(v_before is not null, 'Owner cannot read RPC-owned idempotency row.');
+  begin
+    update public.trip_refresh_apply_idempotency set result='{}'::jsonb
+    where confirmation_id='confirm-v1-atomic-apply-01';
+    raise exception 'Direct idempotency UPDATE unexpectedly permitted.';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    delete from public.trip_refresh_apply_idempotency
+    where confirmation_id='confirm-v1-atomic-apply-01';
+    raise exception 'Direct idempotency DELETE unexpectedly permitted.';
+  exception when insufficient_privilege then null;
+  end;
+  perform pg_temp.assert_true(v_before=(select to_jsonb(t) from public.trip_refresh_apply_idempotency t
+    where confirmation_id='confirm-v1-atomic-apply-01'), 'Direct attempts changed the durable row.');
+end;
+$$;
+select 'trip_refresh_direct_insert_update_delete_denied_pass' as result;
+
 do $$
 declare
   v_revision integer := (select revision from refresh_fixture);
@@ -183,6 +241,9 @@ drop function public.trip_refresh_test_fail_update();
 
 set role authenticated;
 select set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',false);
+select pg_temp.assert_true(not exists (
+  select 1 from public.trip_refresh_apply_idempotency where trip_id='85000000-0000-4000-8000-000000000001'
+), 'User B can read user A refresh idempotency rows.');
 do $$
 begin
   begin perform public.apply_trip_refresh(jsonb_build_object('tripId','85000000-0000-4000-8000-000000000001','expectedRevision',1,'proposalId','refresh-v1-foreign-01','confirmationId','confirm-v1-foreign-01','idempotencyKey','confirm-v1-foreign-01','items',jsonb_build_array(jsonb_build_object('itemId','85000000-0000-4000-8000-000000000021','dayId','85000000-0000-4000-8000-000000000011','position',1)))); raise exception 'Foreign trip was accepted.'; exception when sqlstate 'TW017' then null; end;

@@ -1,0 +1,6 @@
+Initialising login role...
+DRY RUN: migrations will *not* be pushed to the database.
+Connecting to remote database...
+Would push these migrations:
+ • 20260911161103_harden_trip_refresh_idempotency_acl.sql
+{"upToDate":false,"dryRun":true,"migrations":["20260911161103_harden_trip_refresh_idempotency_acl.sql"],"seeds":[],"roles":[],"message":"Finished supabase db push."}

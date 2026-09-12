@@ -1,0 +1,15 @@
+#### [ ] FEATURE-P5-T004 — Multi-Stage Trip Refresh
+
+**Trạng thái:** NEEDS_FIX — local atomic RPC/adapter, SQL/concurrency và mobile gates đã có accepted PASS evidence; SHA-256 của 10 file khớp bundle local. Migration `20260911000000` đã được deploy theo explicit user authorization và xác nhận trong linked Supabase remote history. Remote security gate FAIL: `authenticated` vẫn có INSERT/UPDATE/DELETE và TRUNCATE trên `trip_refresh_apply_idempotency` do default privileges; RLS bật với owner-scoped SELECT policy nhưng privilege contract chưa đạt. Dừng trước khi tạo disposable fixtures hoặc chạy owner/duplicate/stale/cross-user apply; remote runtime closure chưa hoàn tất. Không sửa production source hoặc remote privileges trong evidence-only run; T004/S001/checklist giữ unchecked. Evidence: `.runtime-evidence/p5-t004-remote-runtime-closure-20260911/FINAL_REPORT.md`.
+
+- [ ] FEATURE-P5-T004-S001 — Tạo refresh version/diff/explicit-confirm contract.
+
+##### Checklist hoàn thành
+
+- [ ] Idempotency, conflict và không silent mutation PASS.
+
+#### [ ] FEATURE-P5-T005 — Explainable Itinerary
+
+- [ ] FEATURE-P5-T005-S001 — Hiển thị explanation với factual provenance tách Gemini composition.
+
+##### Checklist hoàn thành

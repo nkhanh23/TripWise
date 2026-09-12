@@ -611,7 +611,7 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 #### [ ] FEATURE-P5-T004 — Multi-Stage Trip Refresh
 
-**Trạng thái:** PARTIAL — proposal/version/diff/explicit-confirm contract và controlled atomic-port tests PASS (focused 55/55, full Jest 1427 PASS + 1 skipped, regressions 313/313, lint/typecheck exit 0). Production `TravelWorkspaceRepository` chỉ có mutation CAS theo từng command và chưa có atomic whole-refresh/idempotent-confirm primitive; không mô phỏng transaction bằng chuỗi client mutations. Production apply/runtime evidence vì vậy chưa có và T004 vẫn unchecked. Evidence: `.runtime-evidence/p5-t004-refresh-contract-20260911/FINAL_REPORT.md`.
+**Trạng thái:** PARTIAL — local atomic RPC/adapter, SQL/concurrency và fresh/upgrade persistence PASS. Remote default ACL defect của migration `20260911000000` đã được sửa bằng forward migration `20260911161103_harden_trip_refresh_idempotency_acl.sql`, deploy theo explicit authorization và có trong remote history. Remote effective ACL đã xác minh SELECT-only cho authenticated, bao gồm MAINTAIN=false trên PostgreSQL 17; RLS/owner SELECT policy, RPC EXECUTE và project default ACLs giữ nguyên. Regression tái hiện broad default ACL trong database test riêng PASS; focused 66/66, full Jest 1438 PASS + 1 skipped, lint/typecheck exit 0. Doctor 20/21 exit 1: cùng 5 package patch mismatches, upstream expected versions tăng so với bundle cũ; không sửa dependency. Functional remote runtime evidence vẫn pending; không tạo remote user/trip hoặc chạy apply smoke trong corrective. T004/S001/checklist giữ unchecked. Evidence: `.runtime-evidence/p5-t004-idempotency-acl-corrective-20260911/FINAL_REPORT.md`.
 
 - [ ] FEATURE-P5-T004-S001 — Tạo refresh version/diff/explicit-confirm contract.
 
