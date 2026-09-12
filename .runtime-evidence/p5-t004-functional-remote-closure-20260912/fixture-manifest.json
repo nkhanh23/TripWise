@@ -1,0 +1,19 @@
+{
+  "classification": "DISPOSABLE_ONLY",
+  "identityMechanism": {
+    "provisioning": "established Supabase admin test workflow",
+    "runtimeAuthorization": "ordinary authenticated user sessions",
+    "cleanup": "owner delete_saved_trip RPC followed by admin test-user deletion"
+  },
+  "perAttempt": {
+    "users": 2,
+    "trips": 1,
+    "days": 2,
+    "items": 4,
+    "unresolvedItems": 4,
+    "movableFlexibleItems": 2,
+    "boundItems": 1,
+    "fabricatedProviderFacts": 0
+  },
+  "providerFields": "No Google Place IDs, verified coordinates, ratings, or provider metadata were supplied."
+}

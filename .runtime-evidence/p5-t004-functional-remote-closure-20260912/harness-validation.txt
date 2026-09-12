@@ -1,0 +1,5 @@
+standalone TypeScript noEmit compile: PASS (exit 0)
+Node runner syntax: PASS (exit 0)
+PowerShell parser: PASS for remote smoke and exact cleanup scripts
+functional runtime: FAIL (exit 1) at reproducible invalid_input before apply_trip_refresh
+production source changed: NO

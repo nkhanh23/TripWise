@@ -1,0 +1,14 @@
+{
+  "scope": "three bounded diagnostic attempts ending at the same pre-confirm defect",
+  "authenticatedAuthoritativeReads": 9,
+  "proposalGenerations": 3,
+  "logicalApplyRpcCalls": 0,
+  "duplicateServerCalls": 0,
+  "effectiveRefreshMutations": 0,
+  "fixtureWorkspaceCasMutations": 6,
+  "staleRefreshAttempts": 0,
+  "crossUserAttempts": 0,
+  "explicitFixtureWorkspaceRevisionAdvances": 6,
+  "durableIdempotencyRowsCreatedThroughApply": 0,
+  "note": "Trip creation has its own server revision mechanics and is not counted as a refresh mutation. No apply_trip_refresh call occurred."
+}

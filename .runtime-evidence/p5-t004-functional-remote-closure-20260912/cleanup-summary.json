@@ -1,0 +1,24 @@
+{
+  "cleanupPass": true,
+  "runs": [
+    {
+      "runId": "f84ea66c00f7",
+      "initialState": "one trip and one user remained after auth-admin cascade returned HTTP 500",
+      "recovery": "deleted the exact disposable trip, then the exact metadata-matched test user",
+      "remainingUsers": 0,
+      "remainingTrips": 0
+    },
+    {
+      "runId": "5e7829c092f5",
+      "ownerCleanup": "PASS",
+      "finalMetadataMatch": 0
+    },
+    {
+      "runId": "bcbb12083ab7",
+      "ownerCleanup": "PASS",
+      "finalMetadataMatch": 0
+    }
+  ],
+  "unrelatedDataTouched": false,
+  "migrationsRemoved": false
+}
