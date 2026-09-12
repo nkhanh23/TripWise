@@ -1,0 +1,19 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand integration-validation.test.ts
+
+PASS tests/integration-validation.test.ts
+  integration DTO validation
+    √ accepts exact non-negative Profile statistics and rejects malformed values (87 ms)
+    √ accepts a valid generate-trip success and rejects malformed ordering (7 ms)
+    √ accepts unresolved nullable coordinate pairs and rejects half-pairs (6 ms)
+    √ requires protected provenance before accepting provider fields (31 ms)
+    √ reads omitted legacy workspace fields, but rejects explicit malformed workspace fields (16 ms)
+    √ validates keyset cursor, limit and saved page response (22 ms)
+    √ rejects unknown resolver status and malformed provider shapes (12 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       7 passed, 7 total
+Snapshots:   0 total
+Time:        3.95 s
+Ran all test suites matching /integration-validation.test.ts/i.

@@ -1,0 +1,26 @@
+[
+  {
+    "path": "mobile/src/integration/validation.ts",
+    "sha256": "E37CE4686EC84CCF87450DB08DB458A009E1917476D127DF9C67E4C535F7C02A"
+  },
+  {
+    "path": "mobile/tests/integration-validation.test.ts",
+    "sha256": "BCEF523E3935B9963034E211355D3C3C93B67F208536F0DFEE68527B40D42738"
+  },
+  {
+    "path": "mobile/tests/trip-refresh.test.ts",
+    "sha256": "9D7153D1CFC96B5DCC518448F4B36184F9B707083D5D1E64A5A4AF1D1A075AFB"
+  },
+  {
+    "path": "mobile/tests/trip-refresh.remote.runtime.test.ts",
+    "sha256": "6E0D2BD37CFB3AC7B30500533A7B5508B8F2085053F917001C0FBD43A8508D32"
+  },
+  {
+    "path": "supabase/migrations/20260911000000_apply_trip_refresh_atomic.sql",
+    "sha256": "17791E4C06DB629497FA3B6059EB406BF45D67C738577FF84C0FDE61E7102E9B"
+  },
+  {
+    "path": "supabase/migrations/20260911161103_harden_trip_refresh_idempotency_acl.sql",
+    "sha256": "0AFED0B5937C6918540F080B19704F03CC714C603CF7689AEF06476DA365C0F8"
+  }
+]

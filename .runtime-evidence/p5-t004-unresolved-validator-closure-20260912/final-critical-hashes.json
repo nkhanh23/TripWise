@@ -1,0 +1,30 @@
+[
+  {
+    "path": "mobile/src/integration/tripRefresh.ts",
+    "sha256": "534581EE4AC3E2C8F0C1029F81F5FA153C3A67836E9CF0F1E8302ACE41503EE9"
+  },
+  {
+    "path": "mobile/src/integration/errors.ts",
+    "sha256": "4A2E73D2A571E3BEC408350CA4A670E4E8D28252273FA891A4E25417DDD2B160"
+  },
+  {
+    "path": "mobile/src/integration/reliability.ts",
+    "sha256": "42596C83EF5BDA0CDBDAFCD0D8A30BEAA8110759365B1A953E109498F14BD223"
+  },
+  {
+    "path": "mobile/src/integration/remote/supabaseTripRepositories.ts",
+    "sha256": "6C61EE3BCE3ED4BE89276E50B8C020D117B0DA04CCC11E2F2F3C106053592D4B"
+  },
+  {
+    "path": "mobile/src/lib/supabase/database.types.ts",
+    "sha256": "CE50B3EDF93B40BED6CC471D850CCFA7725465ED71BEF733973AFBB7ECDF81E4"
+  },
+  {
+    "path": "supabase/migrations/20260911000000_apply_trip_refresh_atomic.sql",
+    "sha256": "17791E4C06DB629497FA3B6059EB406BF45D67C738577FF84C0FDE61E7102E9B"
+  },
+  {
+    "path": "supabase/migrations/20260911161103_harden_trip_refresh_idempotency_acl.sql",
+    "sha256": "0AFED0B5937C6918540F080B19704F03CC714C603CF7689AEF06476DA365C0F8"
+  }
+]

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../src/lib/supabase/database.types';
-import type { SavedTripDetail, SavedTripItem, TripId, UserId } from '../src/integration/contracts';
+import type { SavedTripDetail, TripId, UnresolvedSavedTripItem, UserId } from '../src/integration/contracts';
 import { evaluatePlanConstraints } from '../src/integration/deterministicConstraintEngine';
 import { IntegrationError } from '../src/integration/errors';
 import { SupabaseAtomicTripRefreshApplyRepository } from '../src/integration/remote/supabaseTripRepositories';
@@ -17,6 +17,7 @@ import {
 } from '../src/integration/tripRefresh';
 import { applyWeatherSchedulingPolicy } from '../src/integration/weatherSchedulingPolicy';
 import type { SavedTripsRepository } from '../src/integration/repositories';
+import { parseSavedTripDetail } from '../src/integration/validation';
 
 const OWNER_A = '11111111-1111-4111-8111-111111111111' as UserId;
 const OWNER_B = '22222222-2222-4222-8222-222222222222' as UserId;
@@ -34,8 +35,8 @@ const CREATED_AT = '2028-01-01T00:00:00.000Z';
 function item(
   id: string,
   position: number,
-  overrides: Partial<SavedTripItem> = {},
-): SavedTripItem {
+  overrides: Partial<Omit<UnresolvedSavedTripItem, 'id' | 'position' | 'resolution' | 'latitude' | 'longitude'>> = {},
+): UnresolvedSavedTripItem {
   return {
     id: id as never,
     position,
@@ -45,8 +46,10 @@ function item(
     activityStatus: 'scheduled',
     placeName: `Item ${id.slice(-1)}`,
     resolution: 'UNRESOLVED',
+    latitude: null,
+    longitude: null,
     ...overrides,
-  } as SavedTripItem;
+  };
 }
 
 function baseline(revision: number | undefined = 7): SavedTripDetail {
@@ -124,6 +127,29 @@ describe('P5-T004 proposal, version and deterministic diff', () => {
     const persist = jest.fn();
     const coordinator = new TripRefreshCoordinator(savedTrips(), applyRepo(persist));
     expect(coordinator.open(proposalInput()).status).toBe('ready');
+    expect(persist).not.toHaveBeenCalled();
+  });
+
+  it('1a. normalized repository output remains valid at the proposal boundary without persistence', () => {
+    const raw = structuredClone(baseline()) as unknown as {
+      days: Array<{ items: Array<Record<string, unknown>> }>;
+    };
+    for (const day of raw.days) {
+      for (const rawItem of day.items) {
+        delete rawItem.latitude;
+        delete rawItem.longitude;
+      }
+    }
+    const normalized = parseSavedTripDetail(raw);
+    expect(normalized).not.toBeNull();
+    expect(normalized!.days.flatMap((day) => day.items).every((candidate) =>
+      candidate.resolution === 'UNRESOLVED' && candidate.latitude === null && candidate.longitude === null)).toBe(true);
+    const persist = jest.fn();
+    const result = new TripRefreshCoordinator(savedTrips(), applyRepo(persist)).open(
+      proposalInput(movedFlexible(normalized!), normalized!),
+    );
+    expect(result.status).toBe('ready');
+    expect(result.proposal).not.toBeNull();
     expect(persist).not.toHaveBeenCalled();
   });
 
@@ -242,10 +268,11 @@ describe('P5-T004 proposal, version and deterministic diff', () => {
 
   it('19. provider snapshot tampering, self-certification, item-kind and lifecycle changes are invalid proposals', () => {
     const verifiedBaseline = baseline();
-    verifiedBaseline.days[0].items[1] = item(ITEM_B, 2, {
+    verifiedBaseline.days[0].items[1] = {
+      ...item(ITEM_B, 2),
       itemKind: 'place', resolution: 'VERIFIED', googlePlaceId: 'google-place-b' as never, latitude: 16.1, longitude: 108.1,
       placeAddress: 'Verified address', placeCategory: 'museum', placeResolvedAt: CREATED_AT,
-    });
+    };
     const providerSpoof = movedFlexible(verifiedBaseline); providerSpoof.days[1].items[1].latitude = 15.9;
     expect(createTripRefreshProposal(proposalInput(providerSpoof, verifiedBaseline)).status).toBe('invalid_proposal');
 

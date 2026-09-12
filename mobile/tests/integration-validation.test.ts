@@ -61,13 +61,57 @@ describe('integration DTO validation', () => {
     };
     const unresolved = { id: itemId, position: 1, itemKind: 'place', flexibility: 'fixed', priority: 'must_do', activityStatus: 'scheduled', placeName: 'Đại Nội', resolution: 'UNRESOLVED' };
     const detail = { ...common, days: [{ id: dayId, dayNumber: 1, date: '2026-09-01', items: [unresolved] }] };
-    expect(parseSavedTripDetail(detail)?.days[0].items[0]).toMatchObject({
+    const parsed = parseSavedTripDetail(detail);
+    expect(parsed?.days[0].items[0]).toMatchObject({
       resolution: 'UNRESOLVED', latitude: null, longitude: null,
     });
-    expect(() => parseSavedTripDetail({
+    const explicitNulls = {
       ...detail,
-      days: [{ ...detail.days[0], items: [{ ...unresolved, googlePlaceId: 'provider-looking-id' }] }],
-    })).toThrow('Invalid unresolved saved trip item contract.');
+      days: [{ ...detail.days[0], items: [{ ...unresolved, latitude: null, longitude: null }] }],
+    };
+    expect(parseSavedTripDetail(explicitNulls)?.days[0].items[0]).toMatchObject({
+      resolution: 'UNRESOLVED', latitude: null, longitude: null,
+    });
+    const reparsed = parseSavedTripDetail(parsed);
+    expect(reparsed).toEqual(parsed);
+
+    const rejectedUnresolvedFields = [
+      { latitude: 0 },
+      { longitude: 0 },
+      { latitude: 16.46, longitude: 107.59 },
+      { latitude: '16.46' },
+      { longitude: false },
+      { latitude: {} },
+      { googlePlaceId: 'provider-looking-id' },
+      { googlePlaceId: null },
+      { placeAddress: 'Provider address' },
+      { placeCategory: 'museum' },
+      { placeResolvedAt: createdAt },
+    ];
+    for (const fields of rejectedUnresolvedFields) {
+      expect(() => parseSavedTripDetail({
+        ...detail,
+        days: [{ ...detail.days[0], items: [{ ...unresolved, ...fields }] }],
+      })).toThrow('Invalid unresolved saved trip item contract.');
+    }
+
+    const verified = {
+      ...unresolved,
+      resolution: 'VERIFIED',
+      googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY',
+      latitude: 16.4637,
+      longitude: 107.5909,
+      placeAddress: 'Huế',
+      placeCategory: 'museum',
+      placeResolvedAt: createdAt,
+    };
+    expect(parseSavedTripDetail({
+      ...detail,
+      days: [{ ...detail.days[0], items: [verified] }],
+    })?.days[0].items[0]).toMatchObject({
+      resolution: 'VERIFIED', latitude: 16.4637, longitude: 107.5909,
+      googlePlaceId: 'ChIJaSv_6gaZ4jARnbiUVn6Z_YY',
+    });
   });
 
   it('reads omitted legacy workspace fields, but rejects explicit malformed workspace fields', () => {

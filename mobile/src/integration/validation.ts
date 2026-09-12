@@ -716,7 +716,9 @@ function parseSavedTripItem(value: unknown, expectedPosition: number): SavedTrip
     sourceLinks,
   };
   if (value.resolution === 'UNRESOLVED') {
-    if (value.googlePlaceId !== undefined || value.latitude !== undefined || value.longitude !== undefined
+    if (value.googlePlaceId !== undefined
+      || (value.latitude !== undefined && value.latitude !== null)
+      || (value.longitude !== undefined && value.longitude !== null)
       || value.placeAddress !== undefined || value.placeCategory !== undefined || value.placeResolvedAt !== undefined) {
       throw new ContractValidationError('unresolved saved trip item');
     }

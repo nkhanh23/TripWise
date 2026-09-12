@@ -609,15 +609,15 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Weather failure không chặn trip; kiểm thử rule PASS.
 
-#### [ ] FEATURE-P5-T004 — Multi-Stage Trip Refresh
+#### [x] FEATURE-P5-T004 — Multi-Stage Trip Refresh
 
-**Trạng thái:** NEEDS_FIX — local atomic RPC/adapter, SQL/concurrency, fresh/upgrade persistence và remote SELECT-only ACL corrective PASS. Functional remote runtime trên project TripWise đã dừng trước `apply_trip_refresh`: authoritative `UNRESOLVED` items từ `SupabaseSavedTripsRepository` được chuẩn hóa với `latitude: null`/`longitude: null`, nhưng `createTripRefreshProposal` parse lại và từ chối các field này, nên proposal hợp lệ trả `invalid_input`. Zero logical apply RPC/effective refresh mutation; toàn bộ disposable users/trips đã cleanup. T004/S001/checklist giữ unchecked. Evidence: `.runtime-evidence/p5-t004-functional-remote-closure-20260912/FINAL_REPORT.md`.
+**Trạng thái:** COMPLETE — canonical `UNRESOLVED` validator chấp nhận omitted hoặc explicit `null` coordinates, chuẩn hóa về `null/null`, parse idempotency và provider-provenance rejection PASS. Local validation 7/7, focused T004 67/67, consumer regressions 315/315, full Jest 1439 PASS + 2 skipped, lint/typecheck exit 0; Doctor 20/21 thuộc existing patch-mismatch category, không đổi dependency. Functional remote runtime trên TripWise PASS: zero-write proposal, owner apply revision 9→11, authoritative schedule match, fresh-client durable duplicate không tăng revision, owner-only idempotency visibility, TW018 stale rejection, TW017 cross-user rejection, provenance/bound item preservation, no-op durable result, private schema blocked và cleanup PASS. Evidence: `.runtime-evidence/p5-t004-unresolved-validator-closure-20260912/FINAL_REPORT.md`.
 
-- [ ] FEATURE-P5-T004-S001 — Tạo refresh version/diff/explicit-confirm contract.
+- [x] FEATURE-P5-T004-S001 — Tạo refresh version/diff/explicit-confirm contract.
 
 ##### Checklist hoàn thành
 
-- [ ] Idempotency, conflict và không silent mutation PASS.
+- [x] Idempotency, conflict và không silent mutation PASS.
 
 #### [ ] FEATURE-P5-T005 — Explainable Itinerary
 

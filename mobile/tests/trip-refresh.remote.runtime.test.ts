@@ -218,7 +218,7 @@ remoteDescribe('FEATURE-P5-T004 functional remote runtime closure', () => {
     expect(afterApply!.days.flatMap((day) => day.items).every((item) => {
       const record = item as unknown as Record<string, unknown>;
       return item.resolution === 'UNRESOLVED' && record.googlePlaceId === undefined
-        && record.latitude === undefined && record.longitude === undefined;
+        && item.latitude === null && item.longitude === null;
     })).toBe(true);
 
     const duplicateCounter = { calls: 0 };

@@ -1,0 +1,14 @@
+[
+  {
+    "path": "supabase/migrations/20260911000000_apply_trip_refresh_atomic.sql",
+    "reviewedHash": "17791E4C06DB629497FA3B6059EB406BF45D67C738577FF84C0FDE61E7102E9B",
+    "currentHash": "17791E4C06DB629497FA3B6059EB406BF45D67C738577FF84C0FDE61E7102E9B",
+    "unchanged": true
+  },
+  {
+    "path": "supabase/migrations/20260911161103_harden_trip_refresh_idempotency_acl.sql",
+    "reviewedHash": "0AFED0B5937C6918540F080B19704F03CC714C603CF7689AEF06476DA365C0F8",
+    "currentHash": "0AFED0B5937C6918540F080B19704F03CC714C603CF7689AEF06476DA365C0F8",
+    "unchanged": true
+  }
+]

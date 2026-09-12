@@ -1,0 +1,34 @@
+{
+  "lint": { "exit": 0, "errors": 0, "warnings": 9 },
+  "typecheck": { "exit": 0 },
+  "validationFocused": { "exit": 0, "suites": 1, "passed": 7 },
+  "t004Focused": { "exit": 0, "suites": 1, "passed": 67 },
+  "consumerRegressions": {
+    "exit": 0,
+    "suites": 9,
+    "passed": 315,
+    "coverage": [
+      "T001 deterministic constraints",
+      "T002 route optimization/planning",
+      "T003 weather scheduling",
+      "SavedTrips remote repository parsing",
+      "TripDetail and Workspace metadata consumers",
+      "travel workspace",
+      "planner persistence"
+    ]
+  },
+  "fullJest": { "exit": 0, "suitesPassed": 85, "suitesSkipped": 2, "testsPassed": 1439, "testsSkipped": 2 },
+  "expoDoctor": {
+    "exit": 1,
+    "checksPassed": 20,
+    "checksTotal": 21,
+    "classification": "20/21 — EXISTING PATCH-MISMATCH CATEGORY; NO DEPENDENCY CHANGE",
+    "installedVersions": {
+      "expo": "57.0.18",
+      "expo-asset": "57.0.15",
+      "expo-dev-client": "57.0.16",
+      "expo-font": "57.0.2",
+      "expo-secure-store": "57.0.2"
+    }
+  }
+}

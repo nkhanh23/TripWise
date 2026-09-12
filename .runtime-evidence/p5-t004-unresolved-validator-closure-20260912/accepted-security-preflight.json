@@ -1,0 +1,16 @@
+{
+  "projectRef": "bvblyrzbkyhcreimuumu",
+  "name": "TripWise",
+  "region": "ap-northeast-1",
+  "status": "ACTIVE_HEALTHY",
+  "migrations": [
+    "20260911000000",
+    "20260911161103"
+  ],
+  "acl": "authenticated SELECT-only",
+  "rls": true,
+  "ownerSelectPolicy": "trip_refresh_apply_idempotency_select_own",
+  "authenticatedRpcExecute": true,
+  "anonRpcExecute": false,
+  "securityInvoker": true
+}

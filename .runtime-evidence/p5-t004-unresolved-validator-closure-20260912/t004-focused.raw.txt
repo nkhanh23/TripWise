@@ -1,0 +1,82 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand trip-refresh.test.ts
+
+PASS tests/trip-refresh.test.ts
+  P5-T004 proposal, version and deterministic diff
+    √ 1. valid baseline creates a proposal with no repository writes (45 ms)
+    √ 1a. normalized repository output remains valid at the proposal boundary without persistence (14 ms)
+    √ 2. proposal is tied to the exact trip ID (7 ms)
+    √ 3. proposal is tied to the exact workspace revision (5 ms)
+    √ 4. missing workspace revision fails safely (3 ms)
+    √ 5. diff is deterministic and ordered by stable item ID (6 ms)
+    √ 6. unchanged proposal has a machine-readable no-op diff (4 ms)
+    √ 7. FIXED move is rejected by T001 (28 ms)
+    √ 8. FIXED removal is rejected by T001 (1 ms)
+    √ 9. MUST_DO removal is rejected by T001 (2 ms)
+    √ 10. MUST_DO downgrade is rejected by T001 (3 ms)
+    √ 11. valid flexible movement becomes confirmable (5 ms)
+    √ 12. opening a proposal performs no read or write (8 ms)
+    √ 13. recomputing a proposal performs no persistence and keeps identity stable (13 ms)
+    √ 14. confirm is required before the apply boundary is crossed (7 ms)
+    √ 15. diff classifies add, remove, movement, time and metadata changes (5 ms)
+    √ 16. metadata changes are rejected instead of receiving a new executable identity (4 ms)
+    √ 17. unsupported envelope tampering title is an invalid proposal (2 ms)
+    √ 17. unsupported envelope tampering trip_id is an invalid proposal (3 ms)
+    √ 17. unsupported envelope tampering day_identity is an invalid proposal (2 ms)
+    √ 17. unsupported envelope tampering day_summary is an invalid proposal (3 ms)
+    √ 18. returned proposal snapshot is frozen against post-review mutation (6 ms)
+    √ 19. provider snapshot tampering, self-certification, item-kind and lifecycle changes are invalid proposals (8 ms)
+    √ 20. timed and confirmed-reservation items are schedule barriers (13 ms)
+  P5-T004 explicit confirmation, idempotency and conflict
+    √ 19. confirm applies the exact reviewed snapshot once (10 ms)
+    √ 20. stale authoritative revision returns conflict and performs zero mutation (9 ms)
+    √ 21. stale conflict is never automatically replayed (9 ms)
+    √ 22. exact duplicate confirm after success does not apply twice (11 ms)
+    √ 23. concurrent duplicate confirms produce one read and one effective apply (13 ms)
+    √ 24. retry after ambiguous failure preserves the exact idempotency identity (17 ms)
+    √ 25. altered proposal identifier is rejected before read/apply (10 ms)
+    √ 25. altered confirmation identifier is rejected before read/apply (12 ms)
+    √ 25. altered trip identifier is rejected before read/apply (9 ms)
+    √ 25. altered revision identifier is rejected before read/apply (7 ms)
+    √ 26. a no-op proposal confirms without a mutation (7 ms)
+    √ 27. repository CAS conflict is stale and never retried (10 ms)
+    √ 28. persistence failure retains the authoritative baseline and reports no success (15 ms)
+    √ 29. no partial client-side atomic sequence exists (13 ms)
+    √ 30. invalid current session is rejected before persistence (9 ms)
+    √ 31. an effective result with unchanged revision is a persistence failure, while explicit server no-op is accepted (15 ms)
+  P5-T004 cancellation, stale user and accepted-stage compatibility
+    √ 31. pre-cancelled generation never invokes a stage builder (5 ms)
+    √ 32. in-flight cancelled generation cannot publish a proposal (1 ms)
+    √ 33. late older generation result is superseded by newer result (13 ms)
+    √ 34. owner change cannot confirm owner A proposal (8 ms)
+    √ 35. session rotation cannot confirm an old reviewed proposal (18 ms)
+    √ 36. clearing a signed-out session expires its in-memory proposal (7 ms)
+    √ 37. T001 validates the final proposal against its exact baseline (7 ms)
+    √ 38. accepted T002 can evaluate the snapshot without refresh duplicating OSRM (15 ms)
+    √ 39. accepted T003 can evaluate explicit normalized input without refresh duplicating weather fetch (7 ms)
+    √ 40. route/weather stage provenance is bound into proposal identity without provider refetch (15 ms)
+    √ 41. failed provider stage cannot silently rewrite or persist baseline (10 ms)
+    √ 42. pre-cancelled confirmation performs zero reads and writes (10 ms)
+    √ 43. authoritative trip disappearance is a stale-baseline conflict (11 ms)
+    √ 44. authoritative read failure never crosses the mutation boundary (14 ms)
+    √ 45. identical reviewed input returns an identical proposal result (17 ms)
+    √ 46. invalid canonical proposal input is classified without throwing (2 ms)
+    √ 47. invalid apply response cannot be published as success (8 ms)
+    √ 48. clearing the active owner session aborts and suppresses an in-flight confirmation result (10 ms)
+    √ 49. stage metadata has an explicit hard bound (4 ms)
+  SupabaseAtomicTripRefreshApplyRepository production adapter
+    √ 50. calls exact apply_trip_refresh RPC with exact schedule-only payload (7 ms)
+    √ 51. preserves noOp boolean in result when server returns no-op (3 ms)
+    √ 52. propagates AbortSignal and rejects when aborted (2 ms)
+    √ 53. maps TW015 through TW021 to safe sanitized IntegrationErrors (12 ms)
+    √ 54. rejects invalid or malformed server responses (4 ms)
+    √ 55. never retries a revision conflict (TW018) (2 ms)
+    √ 56. never retries invalid request (TW016/TW020) or idempotency conflict (TW019) (2 ms)
+    √ 57. retries ambiguous transport error with the exact same idempotency identity and payload (110 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       67 passed, 67 total
+Snapshots:   0 total
+Time:        4.252 s, estimated 6 s
+Ran all test suites matching /trip-refresh.test.ts/i.

@@ -1,0 +1,19 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand deterministic-constraint-engine.test.ts route-optimization.test.ts route-planning.test.ts weather-scheduling.test.ts integration-remote-repositories.test.ts TripDetailScreen.test.tsx WorkspaceMetadataForm.test.tsx travel-workspace.test.ts planner-persistence.test.ts
+
+PASS tests/TripDetailScreen.test.tsx (10.473 s)
+PASS tests/WorkspaceMetadataForm.test.tsx
+PASS tests/integration-remote-repositories.test.ts
+PASS tests/weather-scheduling.test.ts
+PASS tests/route-optimization.test.ts
+PASS tests/deterministic-constraint-engine.test.ts
+PASS tests/planner-persistence.test.ts
+PASS tests/route-planning.test.ts
+PASS tests/travel-workspace.test.ts
+
+Test Suites: 9 passed, 9 total
+Tests:       315 passed, 315 total
+Snapshots:   0 total
+Time:        19.94 s
+Ran all test suites matching /deterministic-constraint-engine.test.ts|route-optimization.test.ts|route-planning.test.ts|weather-scheduling.test.ts|integration-remote-repositories.test.ts|TripDetailScreen.test.tsx|WorkspaceMetadataForm.test.tsx|travel-workspace.test.ts|planner-persistence.test.ts/i.
