@@ -309,7 +309,7 @@ T002–T004 phải thêm/chạy test cho: owner read; owner mutation; cross-user
 
 **Kiểm thử / Android / bằng chứng:** function contract/provider parser/timeout test, no-fake data audit, Android discovery/details state. **Điều kiện hoàn thành:** trusted candidate/live fact có thể review nhưng không silently persist. **Rủi ro rollback/regression:** quota, stale hours/events, source mismatch. **Cổng phase tiếp theo:** P4 provider provenance/freshness evidence PASS.
 
-### [ ] FEATURE-P5 — Lập kế hoạch thông minh nhận thức constraint
+### [x] FEATURE-P5 — Lập kế hoạch thông minh nhận thức constraint
 
 **Mục tiêu / lý do:** chuyển các input đáng tin cậy thành lịch trình khả thi, có thể giải thích, đồng thời giữ quyền kiểm soát của người dùng.
 
@@ -619,13 +619,15 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Idempotency, conflict và không silent mutation PASS.
 
-#### [ ] FEATURE-P5-T005 — Explainable Itinerary
+#### [x] FEATURE-P5-T005 — Explainable Itinerary
 
-- [ ] FEATURE-P5-T005-S001 — Hiển thị explanation với factual provenance tách Gemini composition.
+**Trạng thái:** COMPLETE — Factual explanation provenance độc lập hoàn toàn với Gemini composition (PRODUCTION GEMINI EXPLANATION COMPOSER = NOT WIRED; deterministic client fallback là production path). Bounds an toàn (maxReasons <= 50, maxReasonsPerItem <= 4), canonical weather policy (HIGH_PRECIPITATION_PERCENT), no-op diff handling (refresh_no_op), validation constraint truthfulness được kiểm thử triệt để (49/49 focused explainable-itinerary tests PASS, 1497 full suite tests PASS). Live Android runtime verification trên emulator (`emulator-5554`, Android 17 / API 35/37) đạt 100%: Review screen trước khi lưu (`02-review-en.png`), song ngữ EN/VI (`03-review-vi.png`), Dark Mode (`04-review-dark.png`), cuộn và các controls (`05-review-controls.png`), luồng Reject trả về wizard với 0 persistence (`06-reject-step5.png` + `db_proof_reject.json`), luồng Confirm & Save lưu vào Supabase đúng 1 lần và chuyển tới `TripDetailScreen` (`07-detail-saved.png` + `db_proof_confirm.json`). Quality gates: lint 0 errors, typecheck 0 errors, full Jest 1497 PASS, expo-doctor 20/21 baseline. Bằng chứng kiểm duyệt lưu tại `.runtime-evidence/p5-t005-reviewer-closure-20260912/`. FEATURE-P6 NOT STARTED.
+
+- [x] FEATURE-P5-T005-S001 — Hiển thị explanation với factual provenance tách Gemini composition.
 
 ##### Checklist hoàn thành
 
-- [ ] Reason validation, EN/VI và review/confirm Android PASS.
+- [x] Reason validation, EN/VI và review/confirm Android PASS.
 
 #### [ ] FEATURE-P6-T001 — Trip Progress State Engine
 

@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { CreateTripWizardScreen } from '../src/features/planner/screens/CreateTripWizardScreen';
 
 jest.mock('../src/lib/supabase/client', () => ({ supabase: {} }));
@@ -95,6 +95,30 @@ describe('CreateTripWizardScreen destination search', () => {
     await render(<CreateTripWizardScreen initialStep={5} initialState={{ destination: tokyo, startDate: '2026-10-15', endDate: '2026-10-20', durationDays: 6 }} generationRepository={{ generate }} />);
     await press(screen.getByText('Generate Itinerary'));
     expect(generate).toHaveBeenCalledWith({ destination: 'Tokyo', startDate: '2026-10-15', endDate: '2026-10-20', preferences: ['Culture & History', 'Food & Dining'], notes: 'Travel pace: moderate; budget tier: moderate; group type: couple.' }, expect.any(AbortSignal));
+  });
+
+  it('reviews explanation before explicit confirm and reject causes zero persistence', async () => {
+    const generated = {
+      title: 'Tokyo draft', destination: 'Tokyo', startDate: '2026-10-15', endDate: '2026-10-15',
+      days: [{ dayNumber: 1, date: '2026-10-15', items: [{ position: 1, placeName: 'Ueno Park' }] }],
+    };
+    const generate = jest.fn().mockResolvedValue(generated);
+    const persist = jest.fn().mockResolvedValue('22222222-2222-4222-8222-222222222222');
+    await render(<CreateTripWizardScreen initialStep={5}
+      initialState={{ destination: tokyo, startDate: '2026-10-15', endDate: '2026-10-15', durationDays: 1 }}
+      generationRepository={{ generate }} persistenceRepository={{ persist }} />);
+
+    await press(screen.getByText('Generate Itinerary'));
+    await waitFor(() => expect(screen.getByText('Why this itinerary?')).toBeTruthy());
+    expect(persist).not.toHaveBeenCalled();
+    await press(screen.getByRole('button', { name: 'Reject this draft' }));
+    expect(screen.getByText('Review & Generate')).toBeTruthy();
+    expect(persist).not.toHaveBeenCalled();
+
+    await press(screen.getByText('Generate Itinerary'));
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Confirm and save itinerary' })).toBeTruthy());
+    await press(screen.getByRole('button', { name: 'Confirm and save itinerary' }));
+    await waitFor(() => expect(persist).toHaveBeenCalledTimes(1));
   });
 
   it('rejects malformed budget input on Step 4 and blocks proceeding to Step 5', async () => {

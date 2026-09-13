@@ -1,0 +1,21 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand CreateTripExplanationReview.test.tsx
+
+
+PASS tests/CreateTripExplanationReview.test.tsx (9.072 s)
+  FEATURE-P5-T005 generated itinerary review
+    √ shows explanation and factual provenance before confirmation (3718 ms)
+    √ renders the Vietnamese path from the same facts (14 ms)
+    √ remains renderable in light theme (13 ms)
+    √ remains renderable in dark theme (12 ms)
+    √ calls only the explicit persistence callback on confirm (18 ms)
+    √ rejects with zero persistence callback (14 ms)
+    √ view and explore actions do not persist (14 ms)
+    √ provides understandable reason and provenance copy alongside labelled controls (13 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        9.357 s
+Ran all test suites matching /CreateTripExplanationReview.test.tsx/i.

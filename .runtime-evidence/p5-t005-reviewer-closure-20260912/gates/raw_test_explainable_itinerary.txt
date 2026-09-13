@@ -1,0 +1,64 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand explainable-itinerary.test.ts
+
+
+PASS tests/explainable-itinerary.test.ts
+  FEATURE-P5-T005 factual reason contract
+    √ is deterministic for identical input (3 ms)
+    √ normalizes and freezes a valid reason set (1 ms)
+    √ creates honest initial-generation facts with user preference provenance (1 ms)
+    √ rejects unsupported type (35 ms)
+    √ rejects Gemini factual provenance
+    √ rejects unknown field (1 ms)
+    √ rejects NaN fact
+    √ rejects Infinity fact (1 ms)
+    √ rejects negative fact
+    √ rejects an unsupported locale (2 ms)
+    √ enforces the proposal identity pair
+    √ enforces the total reason bound before composition (1 ms)
+    √ enforces the per-item reason bound
+    √ rejects raw provider payload fields (1 ms)
+  FEATURE-P5-T005 owned T001-T004 facts
+    √ creates FIXED and MUST_DO preservation reasons from T001-owned fields (1 ms)
+    √ keeps stable ordering independent of supplied route-day order (1 ms)
+    √ uses only complete positive OSRM duration savings
+    √ turns null OSRM metrics into availability, never zero savings (1 ms)
+    √ creates weather-applied reason from T003 decisions and TripWise policy (1 ms)
+    √ does not call missing weather good weather (1 ms)
+    √ creates moved reasons only for T004 moved diff records (1 ms)
+    √ never describes a retained T004 item as moved
+    √ binds refresh explanations to exact trip, proposal and baseline revision (1 ms)
+    √ rejects stale proposal explanation reuse through exact binding comparison
+    √ rejects cross-trip explanation reuse (1 ms)
+    √ uses canonical T003 weather policy threshold constant
+    √ emits truthful refresh_no_op reason when proposal diff isNoOp is true (1 ms)
+    √ truthfully withholds preservation reasons when constraintResult is invalid
+    √ truthfully withholds fixed_item_preserved when item moved in proposed
+    √ truthfully withholds must_do_preserved when item is missing in proposed (1 ms)
+    √ deterministically bounds valid large input above 50 reasons without throwing (2 ms)
+  FEATURE-P5-T005 bounded composition and fallback
+    √ provides deterministic en fallback without a composer
+    √ provides deterministic vi fallback without a composer
+    √ changing locale changes wording but not factual records
+    √ makes one bounded composition request for the set, never one per reason (1 ms)
+    √ rejects unknown reason ID (1 ms)
+    √ rejects duplicate/missing reason
+    √ rejects malformed JSON-shaped value
+    √ rejects unknown output field (1 ms)
+    √ rejects URL prose
+    √ rejects oversized prose (1 ms)
+    √ falls back when composer reports timeout
+    √ falls back when composer reports rate limit
+    √ falls back when composer reports provider unavailable (1 ms)
+    √ falls back when composer reports invalid JSON
+    √ falls back when already cancelled without calling composer (1 ms)
+    √ ignores late composition from an old request (1 ms)
+    √ cancellation invalidates an in-flight composition
+    √ cannot alter authoritative numeric facts through composed wording (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       49 passed, 49 total
+Snapshots:   0 total
+Time:        3.464 s
+Ran all test suites matching /explainable-itinerary.test.ts/i.

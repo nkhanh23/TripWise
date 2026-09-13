@@ -1,0 +1,117 @@
+{
+  "marker": "T005-CLOSURE-VERIFY-20260912",
+  "timestamp": "2026-09-12T05:34:55.918Z",
+  "tripsCount": 1,
+  "trips": [
+    {
+      "id": "13fa9cf6-298b-4594-81e4-3ea1bc2121a0",
+      "user_id": "e845e7b3-3903-4823-9284-1669f7b85864",
+      "title": "T005-CLOSURE-VERIFY-202609126",
+      "destination": "Bangkok",
+      "start_date": "2026-09-26",
+      "end_date": "2026-09-28",
+      "created_at": "2026-09-12T05:34:50.782499+00:00"
+    }
+  ],
+  "error": null,
+  "details": [
+    {
+      "tripId": "13fa9cf6-298b-4594-81e4-3ea1bc2121a0",
+      "daysCount": 3,
+      "itemsCount": 10,
+      "unresolvedItemsCount": 10,
+      "items": [
+        {
+          "id": "469aba3d-dc02-499c-9f8e-5dbb0ace4951",
+          "itinerary_day_id": "2fe9edb3-2f71-428d-9e23-300ae6a6952b",
+          "place_name": "Nhà Jim Thompson",
+          "position": 1,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "06a08be1-e98b-4f56-a7fe-8d207b04a2cf",
+          "itinerary_day_id": "f7a085e8-8a33-42ed-974a-1bfb2ca206fc",
+          "place_name": "Chợ nổi Damnoen Saduak",
+          "position": 1,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "0bceea44-2737-4d6e-a74b-700132f41046",
+          "itinerary_day_id": "bc2f0d5b-0eaa-4f56-913a-6b6790a9bb74",
+          "place_name": "Cung điện Hoàng gia Thái Lan (Grand Palace)",
+          "position": 1,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "9adc1aaf-785d-4f89-b0ad-44f58b70c88f",
+          "itinerary_day_id": "f7a085e8-8a33-42ed-974a-1bfb2ca206fc",
+          "place_name": "Bảo tàng Quốc gia Bangkok",
+          "position": 2,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "3cad0647-4b1f-43ba-a1cb-07358a8d065f",
+          "itinerary_day_id": "bc2f0d5b-0eaa-4f56-913a-6b6790a9bb74",
+          "place_name": "Chùa Phật Ngọc (Wat Phra Kaew)",
+          "position": 2,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "1814544d-b4d0-4333-8f2b-76b9022eae4d",
+          "itinerary_day_id": "2fe9edb3-2f71-428d-9e23-300ae6a6952b",
+          "place_name": "Trung tâm thương mại Siam Paragon",
+          "position": 2,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "2e188eae-d601-4896-959a-02ad061f836a",
+          "itinerary_day_id": "f7a085e8-8a33-42ed-974a-1bfb2ca206fc",
+          "place_name": "Khu phố ẩm thực Yaowarat (Chinatown)",
+          "position": 3,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "84774a53-725d-4f11-a503-505386649c4f",
+          "itinerary_day_id": "2fe9edb3-2f71-428d-9e23-300ae6a6952b",
+          "place_name": "Quảng trường Siam",
+          "position": 3,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "c0cb898f-1c04-4653-a7f5-36c7b1c48372",
+          "itinerary_day_id": "bc2f0d5b-0eaa-4f56-913a-6b6790a9bb74",
+          "place_name": "Chùa Wat Arun",
+          "position": 3,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        },
+        {
+          "id": "451879cd-474c-4e98-aaec-beb35d5d5fc1",
+          "itinerary_day_id": "bc2f0d5b-0eaa-4f56-913a-6b6790a9bb74",
+          "place_name": "Khu phố cổ Rattanakosin",
+          "position": 4,
+          "google_place_id": null,
+          "place_resolved_at": null,
+          "activity_status": "scheduled"
+        }
+      ]
+    }
+  ]
+}

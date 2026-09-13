@@ -37,7 +37,7 @@ import type {
   TravelPace,
   WizardStepNumber,
 } from '../types';
-import type { TripGenerationRepository } from '../../../integration/repositories';
+import type { TripGenerationRepository, TripPersistenceRepository } from '../../../integration/repositories';
 
 type Props = {
   initialStep?: WizardStepNumber;
@@ -45,6 +45,7 @@ type Props = {
   onComplete?: (state: CreateTripWizardState) => void;
   onCancel?: () => void;
   generationRepository?: TripGenerationRepository;
+  persistenceRepository?: TripPersistenceRepository;
   destinationSearchRepository?: DestinationSearchRepository;
 };
 
@@ -54,6 +55,7 @@ export function CreateTripWizardScreen({
   onComplete,
   onCancel,
   generationRepository,
+  persistenceRepository,
   destinationSearchRepository,
 }: Props) {
   const defaultDestinationRepository = useMemo(() => new SupabaseDestinationSearchRepository(), []);
@@ -65,8 +67,8 @@ export function CreateTripWizardScreen({
 
   const [currentStep, setCurrentStep] = useState<WizardStepNumber>(initialStep);
   const [stepError, setStepError] = useState<string | null>(null);
-  const { state: generation, generate, retry } = useTripGeneration(generationRepository);
-  const { state: persistence, save } = useTripPersistence();
+  const { state: generation, generate, retry, reset } = useTripGeneration(generationRepository);
+  const { state: persistence, save } = useTripPersistence(persistenceRepository);
   const completedPreviewRef = useRef(false);
 
   const [wizardState, setWizardState] = useState<CreateTripWizardState>(() => ({
@@ -250,6 +252,11 @@ export function CreateTripWizardScreen({
     });
   }, [generation, navigation, save, wizardState.budgetAmount, wizardState.budgetCurrency, wizardState.tripTitle, t]);
 
+  const handleRejectGeneratedTrip = useCallback(() => {
+    reset();
+    setStepError(null);
+  }, [reset]);
+
   // Render Step Content
   const stepContent = useMemo(() => {
     switch (currentStep) {
@@ -335,6 +342,7 @@ export function CreateTripWizardScreen({
         {stepError ? <Text accessibilityRole="alert" style={{ color: colors.state.error }}>{stepError}</Text> : null}
         <CreateTripSuccessView
           onExplorePlaces={handleExplorePlaces}
+          onReject={handleRejectGeneratedTrip}
           onSave={handleSaveTrip}
           saveStatus={persistence.status}
           onViewItinerary={handleViewItinerary}

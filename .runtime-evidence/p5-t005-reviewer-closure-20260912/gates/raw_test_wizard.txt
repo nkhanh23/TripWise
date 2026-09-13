@@ -1,0 +1,27 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand CreateTripWizardScreen.test.tsx
+
+
+PASS tests/CreateTripWizardScreen.test.tsx
+  CreateTripWizardScreen destination search
+    √ blocks initial configured budget with currency "XYZ" on Step 4 and Step 5 (725 ms)
+    √ blocks initial configured budget with currency "usd" on Step 4 and Step 5 (61 ms)
+    √ blocks initial configured budget with currency "" on Step 4 and Step 5 (63 ms)
+    √ blocks initial configured budget with currency " " on Step 4 and Step 5 (62 ms)
+    √ blocks initial configured budget with currency undefined on Step 4 and Step 5 (52 ms)
+    √ blocks initial configured budget with currency null on Step 4 and Step 5 (52 ms)
+    √ allows an explicit canonical UI selection to repair an invalid configured currency (59 ms)
+    √ uses the exact 500ms debounce before rendering provider results (249 ms)
+    √ shows editorial popular destinations for an empty query, hides them for provider search, and restores them when cleared (44 ms)
+    √ keeps a popular destination selected without starting provider autocomplete, including after Back (147 ms)
+    √ preserves selected provider identity and query on Step 1 -> Step 2 -> Back without refetch (49 ms)
+    √ maps selected destination and inclusive dates to generation (22 ms)
+    √ reviews explanation before explicit confirm and reject causes zero persistence (44 ms)
+    √ rejects malformed budget input on Step 4 and blocks proceeding to Step 5 (68 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       14 passed, 14 total
+Snapshots:   0 total
+Time:        4.675 s
+Ran all test suites matching /CreateTripWizardScreen.test.tsx/i.

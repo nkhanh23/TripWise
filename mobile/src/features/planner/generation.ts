@@ -59,5 +59,12 @@ export function useTripGeneration(repository?: TripGenerationRepository) {
     return generate(lastIntentRef.current);
   }, [generate]);
 
-  return { state, generate, retry, cancel };
+  const reset = useCallback(() => {
+    controllerRef.current?.abort();
+    controllerRef.current = null;
+    lastIntentRef.current = null;
+    if (mountedRef.current) setState({ status: 'idle', preview: null, error: null });
+  }, []);
+
+  return { state, generate, retry, cancel, reset };
 }
