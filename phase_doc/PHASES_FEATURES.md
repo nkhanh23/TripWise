@@ -629,13 +629,13 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Reason validation, EN/VI và review/confirm Android PASS.
 
-#### [ ] FEATURE-P6-T001 — Trip Progress State Engine
+#### [x] FEATURE-P6-T001 — Trip Progress State Engine
 
-- [ ] FEATURE-P6-T001-S001 — Persist progress event/state idempotent theo itinerary lifecycle.
+- [x] FEATURE-P6-T001-S001 — Persist progress event/state idempotent theo itinerary lifecycle.
 
 ##### Checklist hoàn thành
 
-- [ ] Cô lập owner, transition và kiểm thử timezone PASS.
+- [x] Cô lập owner, transition và kiểm thử timezone PASS.
 
 #### [ ] FEATURE-P6-T002 — Reminder Engine
 

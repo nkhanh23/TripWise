@@ -1,0 +1,43 @@
+{
+  "focused": {
+    "exit": 0,
+    "passed": 62
+  },
+  "timezones": {
+    "lifecycleCases": 12,
+    "exit": 0,
+    "processes": 4
+  },
+  "persistence": {
+    "upgrade": "PASS",
+    "fresh": "PASS",
+    "concurrency": "PASS",
+    "exit": 0,
+    "broadDefaultACL": "PASS",
+    "owner": "PASS"
+  },
+  "fullJest": {
+    "testsSkipped": 2,
+    "exit": 0,
+    "suitesPassed": 88,
+    "testsPassed": 1559,
+    "suitesSkipped": 2
+  },
+  "lint": {
+    "errors": 0,
+    "warnings": 9,
+    "exit": 0
+  },
+  "typecheck": {
+    "exit": 0
+  },
+  "doctor": {
+    "passed": 20,
+    "exit": 1,
+    "total": 21,
+    "classification": "PATCH_VERSION_MISMATCH"
+  },
+  "remote": "INSUFFICIENT_EVIDENCE — REMOTE P6 PROGRESS PERSISTENCE NOT VERIFIED",
+  "android": "NOT REQUIRED FOR P6-T001 DOMAIN/PERSISTENCE FOUNDATION",
+  "next": "FEATURE-P6-T002 NOT STARTED"
+}

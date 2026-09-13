@@ -1,0 +1,26 @@
+[
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\lib\\supabase\\database.types.ts",
+    "Hash": "CE50B3EDF93B40BED6CC471D850CCFA7725465ED71BEF733973AFBB7ECDF81E4"
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\supabase\\tests\\persistence\\run.ps1",
+    "Hash": "A7E6024881D22D78B5631ABEF5C8BD3C0421DBFECC8071621981175DFD91FE39"
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\phase_doc\\PHASES_FEATURES.md",
+    "Hash": "4D4AA273850C536D1BB9EB000159CFBA46E37ECD35E6E59C9A940340816DDED9"
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\integration\\remote\\supabaseTripRepositories.ts",
+    "Hash": "6C61EE3BCE3ED4BE89276E50B8C020D117B0DA04CCC11E2F2F3C106053592D4B"
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\features\\trips\\useActivityEditorController.ts",
+    "Hash": "D4487FCDFE8CE69F5A95A77330C1AAD42E80BCEC684EF2BCEC615A881404CAC6"
+  },
+  {
+    "Path": "D:\\Dev\\TripWise\\mobile\\src\\features\\settings\\screens\\SettingsScreen.tsx",
+    "Hash": "E6F91650C95428BF55035C0C1B06A2309AF6E98DA53821181DB752547B3C9CE6"
+  }
+]

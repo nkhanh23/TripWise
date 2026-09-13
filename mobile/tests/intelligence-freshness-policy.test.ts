@@ -346,8 +346,9 @@ describe('T004 Intelligence Freshness & Cache Policy', () => {
     const repo = new CachedEventIntelligenceRepository({
       discover: delegateDiscover,
       cancel: jest.fn(),
-    });
+    }, 32, () => Date.parse('2026-09-12T18:00:00Z'));
 
+    // Supersession/cache identity is independent of when this test is executed.
     const pendingFirst = repo.discover(sampleEventQuery);
     // Trigger second request with different key which supersedes the first
     const secondResult = await repo.discover(secondQuery);

@@ -400,6 +400,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      read_trip_progress: { Args: { p_request: Json }; Returns: Json }
       get_trip_expense_aggregate: { Args: { p_request: Json }; Returns: Json }
       get_trip_fx_context: { Args: { p_request: Json }; Returns: Json }
       create_trip_expense: { Args: { p_command: Json }; Returns: Json }

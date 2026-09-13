@@ -570,6 +570,8 @@ select 'source_link_concurrency_pass' as result;
 
   . (Join-Path $PSScriptRoot 'workspace_direct_writer_concurrency.ps1')
   . (Join-Path $PSScriptRoot 'trip_refresh_apply_concurrency.ps1')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'trip_progress_contract.sql')
+  . (Join-Path $PSScriptRoot 'trip_progress_concurrency.ps1')
   Write-Output 'FRESH_PERSISTENCE_CHAIN_PASS'
 
   Invoke-SqlText -Database $freshDb -Sql "create database $upgradeDb;"
@@ -578,8 +580,12 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $migrationRoot '20260819010000_auth_profile_foundation.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'upgrade_seed.sql')
   foreach ($migration in $migrations | Where-Object Name -GT '20260819010000_auth_profile_foundation.sql') {
+    if ($migration.Name -like '*_trip_progress_events.sql') {
+      Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_progress_legacy_seed.sql')
+    }
     Invoke-SqlFile -Database $upgradeDb -Path $migration.FullName
   }
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_progress_legacy_verify.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'upgrade_verify.sql')
 
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'expense_ledger_contract.sql')
@@ -587,9 +593,15 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_fx_context_contract.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_refresh_apply_contract.sql')
 
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_progress_contract.sql')
   Write-Output 'UPGRADE_PERSISTENCE_CHAIN_PASS'
 
   . (Join-Path $PSScriptRoot 'trip_refresh_default_acl_regression.ps1')
+
+  # Reuse the disposable broad-default-ACL database to verify P6 revokes grants.
+  Invoke-SqlFile -Database $aclDb -Path (Join-Path $migrationRoot '20260913000000_trip_progress_events.sql')
+  Invoke-SqlFile -Database $aclDb -Path (Join-Path $PSScriptRoot 'trip_progress_contract.sql')
+  Write-Output 'trip_progress_default_acl_matrix_pass'
 
   Write-Output 'PERSISTENCE_TESTS_PASS'
 }

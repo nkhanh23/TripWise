@@ -127,6 +127,7 @@ export function mapResolvePlaceError(value: unknown): IntegrationError {
 /** Maps only stable SQLSTATEs emitted by mutate_travel_workspace. */
 export function mapWorkspaceMutationError(value: unknown): IntegrationError {
   const rawCode = isRecord(value) && typeof value.code === 'string' ? value.code : null;
+  if (rawCode === 'TW024') return new IntegrationError('persistenceFailed');
   if (!workspaceMutationCodes.includes(rawCode as WorkspaceMutationErrorCode)) return mapPostgrestError(value);
   switch (rawCode as WorkspaceMutationErrorCode) {
     case 'TW006': return new IntegrationError('unauthorized');
