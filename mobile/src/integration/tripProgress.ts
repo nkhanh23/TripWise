@@ -1,8 +1,9 @@
+import { parseTripTimezone, type TripTimezone } from './tripTimezone';
 import type { SavedTripDetail, WorkspaceActivityStatus } from './contracts';
 import { IntegrationError } from './errors';
 import { ContractValidationError, isIsoDate, isRecord, isUuid } from './validation';
 
-/** Lifecycle facts, never physical presence. The destination timezone is unknown. */
+/** Lifecycle facts, never physical presence. Timezone authority never implies physical presence. */
 export type ProgressTransition =
   | { fromStatus: 'scheduled'; toStatus: 'completed' | 'skipped' }
   | { fromStatus: 'completed' | 'skipped'; toStatus: 'scheduled' };
@@ -13,7 +14,8 @@ export type TripProgressEvent = ProgressTransition & {
 export type ProgressCounts = { scheduled: number; completed: number; skipped: number };
 export type TripProgressState = {
   tripId: string; revision: number | null;
-  calendar: 'unavailable_timezone';
+  calendar: 'unavailable_timezone' | 'available_user_confirmed';
+  timezone?: TripTimezone;
   counts: ProgressCounts;
   days: (ProgressCounts & { dayId: string })[];
 };
@@ -60,16 +62,17 @@ export function validateProgressReadRequest(value: unknown): ProgressReadRequest
     ...('beforeRevision' in v ? { beforeRevision: integer(v.beforeRevision) } : {}) };
 }
 const zero = (): ProgressCounts => ({ scheduled: 0, completed: 0, skipped: 0 });
-function state(tripId: string, revision: number | null, days: TripProgressState['days']): TripProgressState {
+function state(tripId: string, revision: number | null, days: TripProgressState['days'], timezone?: TripTimezone): TripProgressState {
   const counts = zero();
   for (const day of days) {
     counts.scheduled += day.scheduled; counts.completed += day.completed; counts.skipped += day.skipped;
   }
-  return { tripId, revision, calendar: 'unavailable_timezone', counts,
+  return { tripId, revision, calendar: timezone?.timezone ? 'available_user_confirmed' : 'unavailable_timezone', counts,
+    ...(timezone?.timezone ? { timezone } : {}),
     days: days.sort((a,b) => a.dayId < b.dayId ? -1 : a.dayId > b.dayId ? 1 : 0) };
 }
 export function parseTripProgressState(value: unknown): TripProgressState {
-  const v = object(value, ['tripId','revision','days']);
+  const v = object(value, ['tripId','revision','days','timezone']);
   if (!Array.isArray(v.days) || v.days.length > 60) return invalid();
   const seen = new Set<string>();
   const days = v.days.map(raw => {
@@ -77,7 +80,7 @@ export function parseTripProgressState(value: unknown): TripProgressState {
     if (seen.has(dayId)) return invalid(); seen.add(dayId);
     return { dayId, scheduled: integer(day.scheduled,0), completed: integer(day.completed,0), skipped: integer(day.skipped,0) };
   });
-  return state(uuid(v.tripId),integer(v.revision),days);
+  return state(uuid(v.tripId),integer(v.revision),days,parseTripTimezone(v.timezone));
 }
 /** O(items), pure, no event-history requirement. Existing validated graph is the authority. */
 export function projectTripProgress(detail: SavedTripDetail): TripProgressState {
@@ -95,7 +98,7 @@ export function projectTripProgress(detail: SavedTripDetail): TripProgressState 
     }
     return { dayId, ...counts };
   });
-  return state(tripId,detail.workspaceRevision === undefined ? null : integer(detail.workspaceRevision),days);
+  return state(tripId,detail.workspaceRevision === undefined ? null : integer(detail.workspaceRevision),days,parseTripTimezone(detail.timezone));
 }
 export function parseProgressEventPage(value: unknown, request: Extract<ProgressReadRequest,{kind:'events'}>): ProgressEventPage {
   if (!Array.isArray(value) || value.length > request.limit + 1) return invalid();

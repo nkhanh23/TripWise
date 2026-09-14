@@ -15,6 +15,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      set_trip_timezone: { Args: { p_command: Json }; Returns: Json }
+      is_supported_trip_timezone: { Args: { p_timezone: string }; Returns: boolean }
       graphql: {
         Args: {
           extensions?: Json
@@ -308,6 +310,9 @@ export type Database = {
         Row: {
           created_at: string
           currency: string | null
+          schedule_timezone: string | null
+          timezone_provenance: string | null
+          timezone_confirmed_at: string | null
           destination: string
           end_date: string
           estimated_budget: number | null
@@ -323,6 +328,9 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string | null
+          schedule_timezone?: string | null
+          timezone_provenance?: string | null
+          timezone_confirmed_at?: string | null
           destination: string
           end_date: string
           estimated_budget?: number | null
@@ -338,6 +346,9 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string | null
+          schedule_timezone?: string | null
+          timezone_provenance?: string | null
+          timezone_confirmed_at?: string | null
           destination?: string
           end_date?: string
           estimated_budget?: number | null
@@ -400,6 +411,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      set_trip_timezone: { Args: { p_command: Json }; Returns: Json }
+      is_supported_trip_timezone: { Args: { p_timezone: string }; Returns: boolean }
       read_trip_progress: { Args: { p_request: Json }; Returns: Json }
       get_trip_expense_aggregate: { Args: { p_request: Json }; Returns: Json }
       get_trip_fx_context: { Args: { p_request: Json }; Returns: Json }

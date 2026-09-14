@@ -572,6 +572,7 @@ select 'source_link_concurrency_pass' as result;
   . (Join-Path $PSScriptRoot 'trip_refresh_apply_concurrency.ps1')
   Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'trip_progress_contract.sql')
   . (Join-Path $PSScriptRoot 'trip_progress_concurrency.ps1')
+  Invoke-SqlFile -Database $freshDb -Path (Join-Path $PSScriptRoot 'trip_timezone_contract.sql')
   Write-Output 'FRESH_PERSISTENCE_CHAIN_PASS'
 
   Invoke-SqlText -Database $freshDb -Sql "create database $upgradeDb;"
@@ -580,6 +581,9 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $migrationRoot '20260819010000_auth_profile_foundation.sql')
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'upgrade_seed.sql')
   foreach ($migration in $migrations | Where-Object Name -GT '20260819010000_auth_profile_foundation.sql') {
+    if ($migration.Name -like '*_user_confirmed_trip_timezone.sql') {
+      Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_timezone_upgrade_seed.sql')
+    }
     if ($migration.Name -like '*_trip_progress_events.sql') {
       Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_progress_legacy_seed.sql')
     }
@@ -594,6 +598,8 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_refresh_apply_contract.sql')
 
   Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_progress_contract.sql')
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_timezone_upgrade_verify.sql')
+  Invoke-SqlFile -Database $upgradeDb -Path (Join-Path $PSScriptRoot 'trip_timezone_contract.sql')
   Write-Output 'UPGRADE_PERSISTENCE_CHAIN_PASS'
 
   . (Join-Path $PSScriptRoot 'trip_refresh_default_acl_regression.ps1')
@@ -603,6 +609,9 @@ select 'source_link_concurrency_pass' as result;
   Invoke-SqlFile -Database $aclDb -Path (Join-Path $PSScriptRoot 'trip_progress_contract.sql')
   Write-Output 'trip_progress_default_acl_matrix_pass'
 
+  Invoke-SqlFile -Database $aclDb -Path (Join-Path $migrationRoot '20260913155554_user_confirmed_trip_timezone.sql')
+  Invoke-SqlFile -Database $aclDb -Path (Join-Path $PSScriptRoot 'trip_timezone_contract.sql')
+  Write-Output 'TRIP_TIMEZONE_DEFAULT_ACL_PASS'
   Write-Output 'PERSISTENCE_TESTS_PASS'
 }
 finally {

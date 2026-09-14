@@ -1,3 +1,4 @@
+import { parseTripTimezone } from './tripTimezone';
 import type {
   Coordinate,
   GenerateTripRequest,
@@ -772,7 +773,7 @@ function parseSavedTripDay(value: unknown, expectedDay: number, startDate: strin
 export function parseSavedTripDetail(value: unknown): SavedTripDetail | null {
   if (value === null) return null;
   if (!isRecord(value)
-    || !hasOnlyKeys(value, ['id', 'title', 'destination', 'startDate', 'endDate', 'estimatedBudget', 'currency', 'createdAt', 'updatedAt', 'workspaceRevision', 'days'])
+    || !hasOnlyKeys(value, ['id', 'title', 'destination', 'startDate', 'endDate', 'estimatedBudget', 'currency', 'createdAt', 'updatedAt', 'workspaceRevision', 'days', 'timezone'])
     || !isUuid(value.id) || !isIsoDate(value.startDate) || !isIsoDate(value.endDate)
     || !isIsoTimestamp(value.createdAt) || !isIsoTimestamp(value.updatedAt)
     || (value.workspaceRevision !== undefined
@@ -796,6 +797,7 @@ export function parseSavedTripDetail(value: unknown): SavedTripDetail | null {
     throw new ContractValidationError('saved trip detail');
   }
   return {
+    ...(Object.hasOwn(value, 'timezone') ? { timezone: parseTripTimezone(value.timezone) } : {}),
     id: value.id as TripId,
     title,
     destination,

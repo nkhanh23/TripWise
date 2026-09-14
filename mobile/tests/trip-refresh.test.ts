@@ -158,6 +158,18 @@ describe('P5-T004 proposal, version and deterministic diff', () => {
     expect(result.proposal?.tripId).toBe(TRIP);
   });
 
+  it('preserves the user-confirmed timezone through a refresh proposal', () => {
+    const source = baseline();
+    source.timezone = { timezone: 'Asia/Ho_Chi_Minh', provenance: 'USER_CONFIRMED', confirmedAt: CREATED_AT };
+    expect(createTripRefreshProposal(proposalInput(movedFlexible(source), source)).status).toBe('ready');
+    for (const timezone of [undefined, { timezone: null, provenance: null, confirmedAt: null },
+      { ...source.timezone, timezone: 'America/New_York' }] as const) {
+      const candidate = movedFlexible(source);
+      candidate.timezone = timezone;
+      expect(createTripRefreshProposal(proposalInput(candidate, source)).status).toBe('invalid_proposal');
+    }
+  });
+
   it('3. proposal is tied to the exact workspace revision', () => {
     expect(createTripRefreshProposal(proposalInput()).proposal?.baselineWorkspaceRevision).toBe(7);
   });

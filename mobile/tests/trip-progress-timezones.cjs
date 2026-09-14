@@ -21,10 +21,14 @@ if (process.argv[2] === '--worker') {
     assert.deepEqual(result.counts,{scheduled:Number(activityStatus==='scheduled'),completed:Number(activityStatus==='completed'),skipped:Number(activityStatus==='skipped')});
     assert.equal(result.calendar,'unavailable_timezone');
   }
+  const { parseTripTimezone } = require('../src/integration/tripTimezone.ts');
+  const confirmed={timezone:'America/New_York',provenance:'USER_CONFIRMED',confirmedAt:'2026-09-13T12:00:00Z'};
+  assert.deepEqual(parseTripTimezone(confirmed),confirmed);
+  assert.equal(projectTripProgress({id:'76000000-0000-4000-8000-000000000001',timezone:confirmed,days:[]}).calendar,'available_user_confirmed');
   Date.now=originalNow;
   console.log(JSON.stringify({deviceTimezone:process.env.TZ,offsetMinutes:offset,lifecycleCases:3,result:'PASS'}));
 } else {
-  for(const [TZ,offset] of [['UTC',0],['Pacific/Kiritimati',-840],['Etc/GMT+12',720],['America/New_York',300]]) {
+  for(const [TZ,offset] of [['UTC',0],['Pacific/Kiritimati',-840],['Etc/GMT+12',720],['America/New_York',300],['Asia/Ho_Chi_Minh',-420]]) {
     const result=spawnSync(process.execPath,[path.resolve(__filename),'--worker',String(offset)],{env:{...process.env,TZ},encoding:'utf8'});
     process.stdout.write(result.stdout);process.stderr.write(result.stderr);
     assert.equal(result.status,0);

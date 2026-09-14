@@ -10,6 +10,7 @@ import type {
 import { evaluatePlanConstraints, type ConstraintConflict } from './deterministicConstraintEngine';
 import { IntegrationError, mapUnknownTransportError } from './errors';
 import type { SavedTripsRepository } from './repositories';
+import { parseTripTimezone } from './tripTimezone';
 import { isUuid, parseSavedTripDetail } from './validation';
 
 export type TripRefreshChangeKind =
@@ -375,12 +376,14 @@ function hasStableEnvelope(baseline: SavedTripDetail, proposed: SavedTripDetail)
     startDate: baseline.startDate, endDate: baseline.endDate,
     estimatedBudget: baseline.estimatedBudget, currency: baseline.currency,
     createdAt: baseline.createdAt, updatedAt: baseline.updatedAt,
+    timezone: parseTripTimezone(baseline.timezone),
   };
   const proposedEnvelope = {
     id: proposed.id, title: proposed.title, destination: proposed.destination,
     startDate: proposed.startDate, endDate: proposed.endDate,
     estimatedBudget: proposed.estimatedBudget, currency: proposed.currency,
     createdAt: proposed.createdAt, updatedAt: proposed.updatedAt,
+    timezone: parseTripTimezone(proposed.timezone),
   };
   if (stableValue(baselineEnvelope) !== stableValue(proposedEnvelope)) return false;
   if (proposed.workspaceRevision !== undefined && proposed.workspaceRevision !== baseline.workspaceRevision) return false;

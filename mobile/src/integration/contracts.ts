@@ -1,3 +1,4 @@
+import type { TripTimezone } from './tripTimezone';
 export type Brand<Value, Name extends string> = Value & { readonly __brand: Name };
 
 export type UserId = Brand<string, 'UserId'>;
@@ -292,6 +293,8 @@ export type SavedTripDay = {
 };
 
 export type SavedTripDetail = {
+  /** Absent only on legacy transports; no inferred confirmation. */
+  timezone?: TripTimezone;
   id: TripId;
   title: string;
   destination: string;
