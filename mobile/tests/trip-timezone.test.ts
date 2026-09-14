@@ -56,9 +56,12 @@ describe('explicit trip timezone validation', () => {
     expect(result).not.toHaveProperty('arrived');
   });
   test('create graph cannot accept hidden AI/provider timezone confirmation', () => {
-    expect(() => validatePersistTripCommand({idempotencyKey:'timezone-forgery',graph:{
-      title:'Trip',destination:'Country',startDate:'2028-01-01',endDate:'2028-01-01',days:[],timezone:confirmed,
-    }})).toThrow();
+    const base = { idempotencyKey: 'timezone-forgery', graph: {
+      title: 'Trip', destination: 'Country', startDate: '2028-01-01', endDate: '2028-01-01',
+      days: [{ dayNumber: 1, date: '2028-01-01', items: [{ position: 1, placeName: 'Unresolved place' }] }],
+    } };
+    expect(() => validatePersistTripCommand(base)).not.toThrow();
+    expect(() => validatePersistTripCommand({ ...base, graph: { ...base.graph, timezone: confirmed } })).toThrow();
   });
 });
 
