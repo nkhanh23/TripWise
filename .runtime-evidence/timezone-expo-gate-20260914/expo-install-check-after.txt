@@ -1,0 +1,8 @@
+env: load .env.local .env
+env: export EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+The following packages should be updated for best compatibility with the installed expo version:
+  react-native@0.86.2 - expected version: 0.86.3
+  eslint-config-expo@57.0.1 - expected version: ~57.0.2
+  jest-expo@57.0.4 - expected version: ~57.0.5
+Your project may not work correctly until you install the expected versions of the packages.
+Found outdated dependencies

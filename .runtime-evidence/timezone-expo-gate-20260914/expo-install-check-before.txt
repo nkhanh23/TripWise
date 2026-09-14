@@ -1,0 +1,10 @@
+env: load .env.local .env
+env: export EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@57.0.18 - expected version: ~57.0.22
+  expo-asset@57.0.15 - expected version: ~57.0.17
+  expo-dev-client@57.0.16 - expected version: ~57.0.19
+  expo-font@57.0.2 - expected version: ~57.0.4
+  expo-secure-store@57.0.2 - expected version: ~57.0.4
+Your project may not work correctly until you install the expected versions of the packages.
+Found outdated dependencies

@@ -2,8 +2,8 @@
 > tripwise-mobile@1.0.0 test
 > jest --runInBand
 
-PASS tests/RegisterScreen.test.tsx (8.186 s)
-PASS tests/ExploreScreen.test.tsx (5.837 s)
+PASS tests/RegisterScreen.test.tsx (8.777 s)
+PASS tests/ExploreScreen.test.tsx (6.004 s)
   ● Console
 
     console.info
@@ -261,20 +261,23 @@ PASS tests/ExploreScreen.test.tsx (5.837 s)
 
       at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
 
-PASS tests/SettingsScreen.test.tsx (5.79 s)
+PASS tests/SettingsScreen.test.tsx (5.996 s)
 PASS tests/AddPlaceScreen.test.tsx
 PASS tests/PlaceDetailScreen.test.tsx
 PASS tests/LoginScreen.test.tsx
-PASS tests/RouteScreen.test.tsx
-PASS tests/WorkspaceMetadataForm.test.tsx
 PASS tests/TripDetailScreen.test.tsx
 PASS tests/TripMapScreen.test.tsx
-PASS tests/MyTripsScreen.test.tsx
 PASS tests/ProfileScreen.test.tsx
-PASS tests/SharedComponentPolish.test.tsx
 PASS tests/HomeScreen.test.tsx
-PASS tests/CreateTripWizardScreen.test.tsx
+PASS tests/SharedComponentPolish.test.tsx
+PASS tests/MyTripsScreen.test.tsx
+PASS tests/RouteScreen.test.tsx
 PASS tests/ForgotPasswordScreen.test.tsx
+PASS tests/WorkspaceMetadataForm.test.tsx
+PASS tests/SavedPlacesScreen.test.tsx
+PASS tests/ResponsiveAndPerformanceAudit.test.tsx
+PASS tests/CreateTripWizardScreen.test.tsx
+PASS tests/trips-runtime-regression.test.tsx
 PASS tests/intelligence-ui-review.test.tsx
   ● Console
 
@@ -298,9 +301,6 @@ PASS tests/intelligence-ui-review.test.tsx
 
       at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
 
-PASS tests/trips-runtime-regression.test.tsx
-PASS tests/SavedPlacesScreen.test.tsx
-PASS tests/ResponsiveAndPerformanceAudit.test.tsx
 PASS tests/DesignConsistencyAudit.test.tsx
   ● Console
 
@@ -319,7 +319,6 @@ PASS tests/DesignConsistencyAudit.test.tsx
 
       at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
 
-PASS tests/WorkspaceMoveController.test.tsx
 PASS tests/ActivityEditorScreen.test.tsx
   ● Console
 
@@ -343,6 +342,8 @@ PASS tests/ActivityEditorScreen.test.tsx
       at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
       at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
 
+PASS tests/WorkspaceMoveController.test.tsx
+PASS tests/trip-timezone.test.ts
 PASS tests/ExploreProductionScreen.test.tsx
   ● Console
 
@@ -705,6 +706,27 @@ PASS tests/TripExpensesScreen.test.tsx
       at Timeout._updateCellsToRender [as _onTimeout] (node_modules/@react-native/virtualized-lists/Lists/VirtualizedList.js:1806:16)
 
 PASS tests/AuthProvider.test.tsx
+PASS tests/ActivityEditorConflictAndSubmit.test.tsx
+  ● Console
+
+    console.error
+      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
+
+      at popActScope (node_modules/react/cjs/react.development.js:556:17)
+      at node_modules/react/cjs/react.development.js:844:17
+
+    console.error
+      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
+
+      at popActScope (node_modules/react/cjs/react.development.js:556:17)
+      at node_modules/react/cjs/react.development.js:844:17
+
+    console.error
+      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
+
+      at popActScope (node_modules/react/cjs/react.development.js:556:17)
+      at node_modules/react/cjs/react.development.js:844:17
+
 PASS tests/ActivityEditorStaleUser.test.tsx
   ● Console
 
@@ -1222,29 +1244,13 @@ PASS tests/ActivityEditorStaleUser.test.tsx
       at recursivelyFlushAsyncActWork (node_modules/react/cjs/react.development.js:566:13)
       at Immediate._onImmediate (node_modules/react/cjs/react.development.js:849:32)
 
-PASS tests/ActivityEditorConflictAndSubmit.test.tsx
-  ● Console
-
-    console.error
-      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
-
-      at popActScope (node_modules/react/cjs/react.development.js:556:17)
-      at node_modules/react/cjs/react.development.js:844:17
-
-    console.error
-      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
-
-      at popActScope (node_modules/react/cjs/react.development.js:556:17)
-      at node_modules/react/cjs/react.development.js:844:17
-
-    console.error
-      You seem to have overlapping act() calls, this is not supported. Be sure to await previous act() calls before making a new one.
-
-      at popActScope (node_modules/react/cjs/react.development.js:556:17)
-      at node_modules/react/cjs/react.development.js:844:17
-
 PASS tests/StepBudgetGroup.test.tsx
 PASS tests/trip-refresh.test.ts
+PASS tests/CreateTripExplanationReview.test.tsx
+PASS tests/AccessibilityBaseline.test.tsx
+PASS tests/P2T001LegacyTripDetail.test.tsx
+PASS tests/integration-remote-repositories.test.ts
+PASS tests/ThemeAndLocalization.test.tsx
 PASS tests/StepDestination.attribution.test.tsx
   ● Console
 
@@ -1260,23 +1266,13 @@ PASS tests/StepDestination.attribution.test.tsx
       at popActScope (node_modules/react/cjs/react.development.js:556:17)
       at node_modules/react/cjs/react.development.js:844:17
 
-PASS tests/P2T001LegacyTripDetail.test.tsx
-PASS tests/CreateTripExplanationReview.test.tsx
-PASS tests/AccessibilityBaseline.test.tsx
-PASS tests/integration-remote-repositories.test.ts
-PASS tests/ThemeAndLocalization.test.tsx
 PASS tests/weather-scheduling.test.ts
 PASS tests/WelcomeScreen.test.tsx
 PASS tests/ItineraryCardStatus.test.tsx
 PASS tests/expense-aggregate-contract.test.ts
-PASS tests/route-optimization.test.ts
 PASS tests/integration-weather.test.ts
+PASS tests/route-optimization.test.ts
 PASS tests/useTripExpensesController.test.ts
-PASS tests/fx-contract.test.ts
-PASS tests/candidate-discovery.test.ts
-PASS tests/fx-repository.test.ts
-PASS tests/event-intelligence.test.ts
-PASS tests/trip-timezone.test.ts
 PASS tests/ExploreMapCanvas.test.tsx
   ● Console
 
@@ -1305,16 +1301,21 @@ PASS tests/ExploreMapCanvas.test.tsx
 
       at info (src/features/explore/components/ExploreMapCanvas.tsx:174:15)
 
+PASS tests/event-intelligence.test.ts
+PASS tests/fx-contract.test.ts
 PASS tests/planner-persistence.test.ts
-PASS tests/place-intelligence.test.ts
+PASS tests/candidate-discovery.test.ts
+PASS tests/auth-validation.test.ts
 PASS tests/expense-ledger-contract.test.ts
 PASS tests/destinationSearch.test.tsx
-PASS tests/auth-profile-repositories.test.ts
+PASS tests/place-intelligence.test.ts
+PASS tests/fx-repository.test.ts
 PASS tests/deterministic-constraint-engine.test.ts
-PASS tests/workspace-mutation-contract.test.ts
 PASS tests/trip-progress.test.ts
+PASS tests/integration-saved-places.test.ts
 PASS tests/explainable-itinerary.test.ts
-PASS tests/integration-validation.test.ts
+PASS tests/workspace-mutation-contract.test.ts
+PASS tests/AppText.test.tsx
 PASS tests/debug.test.tsx
   ● Console
 
@@ -1323,38 +1324,37 @@ PASS tests/debug.test.tsx
 
       at Object.log (tests/debug.test.tsx:7:13)
 
-PASS tests/AppText.test.tsx
-PASS tests/integration-saved-places.test.ts
+PASS tests/integration-validation.test.ts
 PASS tests/integration-place-photos.test.ts
-PASS tests/integration-reliability.test.ts
-PASS tests/integration-explore.test.ts
-PASS tests/planner-generation.test.ts
-PASS tests/budget-risk-service.test.ts
 PASS tests/intelligence-freshness-policy.test.ts
-PASS tests/budget-risk-contract.test.ts
-PASS tests/supabase-config.test.ts
-PASS tests/destinationImageLoader.test.ts
-PASS tests/generate-trip-client.test.ts
-PASS tests/auth-errors.test.ts
-PASS tests/api-errors.test.ts
-PASS tests/budget-validation.test.ts
-PASS tests/integration-mappers.test.ts
-PASS tests/auth-validation.test.ts
-PASS tests/auth-navigation.test.ts
-PASS tests/SupabaseDestinationSearchRepository.test.ts
+PASS tests/integration-explore.test.ts
 PASS tests/image-resolution.test.ts
+PASS tests/budget-risk-contract.test.ts
 PASS tests/route-planning.test.ts
+PASS tests/auth-navigation.test.ts
+PASS tests/planner-generation.test.ts
 PASS tests/integration-errors.test.ts
-PASS tests/travel-workspace.test.ts
-PASS tests/saved-trip-cover-contract-source.test.ts
-PASS tests/api-config.test.ts
+PASS tests/budget-risk-service.test.ts
+PASS tests/SupabaseDestinationSearchRepository.test.ts
 PASS tests/mapper-regression.test.ts
 PASS tests/get-place-photo-index-source.test.ts
-PASS tests/explore-map-utils.test.ts
+PASS tests/generate-trip-client.test.ts
 PASS tests/resolved-image-source.test.ts
+PASS tests/integration-mappers.test.ts
+PASS tests/integration-reliability.test.ts
+PASS tests/travel-workspace.test.ts
+PASS tests/auth-profile-repositories.test.ts
+PASS tests/supabase-config.test.ts
+PASS tests/explore-map-utils.test.ts
+PASS tests/destinationImageLoader.test.ts
+PASS tests/saved-trip-cover-contract-source.test.ts
+PASS tests/auth-errors.test.ts
+PASS tests/api-config.test.ts
+PASS tests/budget-validation.test.ts
+PASS tests/api-errors.test.ts
 
 Test Suites: 2 skipped, 89 passed, 89 of 91 total
 Tests:       2 skipped, 1618 passed, 1620 total
 Snapshots:   0 total
-Time:        72.303 s, estimated 75 s
+Time:        69.552 s, estimated 71 s
 Ran all test suites.
