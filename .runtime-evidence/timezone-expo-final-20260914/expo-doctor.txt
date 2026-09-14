@@ -1,0 +1,4 @@
+env: load .env.local .env
+env: export EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+Running 21 checks on your project...
+21/21 checks passed. No issues detected!

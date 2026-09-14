@@ -1,0 +1,6 @@
+{"deviceTimezone":"UTC","offsetMinutes":0,"lifecycleCases":3,"result":"PASS"}
+{"deviceTimezone":"Pacific/Kiritimati","offsetMinutes":-840,"lifecycleCases":3,"result":"PASS"}
+{"deviceTimezone":"Etc/GMT+12","offsetMinutes":720,"lifecycleCases":3,"result":"PASS"}
+{"deviceTimezone":"America/New_York","offsetMinutes":300,"lifecycleCases":3,"result":"PASS"}
+{"deviceTimezone":"Asia/Ho_Chi_Minh","offsetMinutes":-420,"lifecycleCases":3,"result":"PASS"}
+TRIP_PROGRESS_TIMEZONE_PROCESSES_PASS
