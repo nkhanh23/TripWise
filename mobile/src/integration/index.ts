@@ -26,3 +26,6 @@ export type { ExplicitWeatherPreference, LocatedWeatherFacts, WeatherSchedule, W
 export { evaluateWeatherScheduling, createWeatherSchedulingEvaluator } from './weatherScheduling';
 export type { WeatherSchedulingOptions } from './weatherScheduling';
 export * from './tripRefresh';
+export * from './reminderEngine';
+export * from './reminderScheduling';
+export * from './remote/expoNotificationRepository';

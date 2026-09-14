@@ -101,6 +101,11 @@ export class CachedRouteRepository implements RouteRepository {
   }
 
   async getTable(request: RouteTableRequest, signal?: AbortSignal): Promise<RouteMatrix> {
+    return (await this.getTableEntry(request, signal)).value;
+  }
+
+  /** Exposes cache provenance for consumers whose durable identity must include metric freshness. */
+  async getTableEntry(request: RouteTableRequest, signal?: AbortSignal): Promise<CachedRouteEntry<RouteMatrix>> {
     if (this.isDisposed) throw new IntegrationError('providerUnavailable');
     if (signal?.aborted) throw new IntegrationError('cancelled');
 
@@ -113,7 +118,7 @@ export class CachedRouteRepository implements RouteRepository {
     const cached = this.tableCache.get(key);
 
     if (cached && now - cached.cachedAt <= this.ttlMs) {
-      return cloneRouteMatrix(cached.value);
+      return { value: cloneRouteMatrix(cached.value), cachedAt: cached.cachedAt };
     }
 
     const fresh = await this.underlying.getTable(request, signal);
@@ -121,6 +126,6 @@ export class CachedRouteRepository implements RouteRepository {
     if (!this.isDisposed && !signal?.aborted) {
       this.tableCache.set(key, { value: cloneRouteMatrix(fresh), cachedAt: receivedAt });
     }
-    return cloneRouteMatrix(fresh);
+    return { value: cloneRouteMatrix(fresh), cachedAt: receivedAt };
   }
 }
