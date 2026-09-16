@@ -1,0 +1,2 @@
+NOT_RUN_DEVICE_DISCONNECTED
+API 37 device was observed with POST_NOTIFICATIONS denied before it disconnected. No permission grant was performed, and no real native scheduling claim is made.

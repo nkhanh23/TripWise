@@ -1,0 +1,2 @@
+NOT_RUN_DEVICE_DISCONNECTED
+No system settings action was opened. No generic resume logic was added. The existing explicit-ticket behavior remains source/test evidence only.

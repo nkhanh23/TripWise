@@ -78,10 +78,6 @@ export const SUPPORTED_CURRENCIES: CurrencyOption[] = [
 export const defaultSettings: AppSettings = {
   currency: 'USD',
   distanceUnit: 'km',
-  notifications: {
-    tripReminders: false,
-    itineraryReminders: false,
-  },
 };
 
 type Listener = () => void;
@@ -97,10 +93,6 @@ export function updateSettings(partial: Partial<AppSettings>): void {
   currentSettings = {
     ...currentSettings,
     ...partial,
-    notifications: {
-      ...currentSettings.notifications,
-      ...(partial.notifications || {}),
-    },
   };
   notifyListeners();
 }

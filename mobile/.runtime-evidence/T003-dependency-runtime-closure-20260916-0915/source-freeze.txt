@@ -1,0 +1,15 @@
+mobile/src/integration/remote/expoNotificationPermissionAdapter.ts:39:    const result = await Notifications.requestPermissionsAsync();
+mobile/src/integration/notificationPolicyRuntime.ts:104:  const appState = AppState.addEventListener('change', (state) => { void notificationPolicyController.appStateChanged(state); });
+mobile/src/integration/notificationPolicy.ts:7:  tripReminders: boolean;
+mobile/src/integration/notificationPolicy.ts:8:  itineraryReminders: boolean;
+mobile/src/integration/notificationPolicy.ts:12:  tripReminders: false,
+mobile/src/integration/notificationPolicy.ts:13:  itineraryReminders: false,
+mobile/src/integration/notificationPolicy.ts:42:const tripTypes: readonly ReminderType[] = ['TRIP_STARTING_SOON'];
+mobile/src/integration/notificationPolicy.ts:43:const itineraryTypes: readonly ReminderType[] = ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'];
+mobile/src/integration/notificationPolicy.ts:47:    ...(intent.tripReminders === true ? tripTypes : []),
+mobile/src/integration/notificationPolicy.ts:48:    ...(intent.itineraryReminders === true ? itineraryTypes : []),
+mobile/src/integration/notificationPolicyController.ts:62:    return { tripReminders: intent.tripReminders && !this.revoked.has('tripReminders'),
+mobile/src/integration/notificationPolicyController.ts:63:      itineraryReminders: intent.itineraryReminders && !this.revoked.has('itineraryReminders') };
+mobile/src/integration/notificationPolicyController.ts:111:        ...(this.revoked.has('tripReminders') ? ['TRIP_STARTING_SOON' as const] : []),
+mobile/src/integration/notificationPolicyController.ts:112:        ...(this.revoked.has('itineraryReminders') ? ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'] as const : []),
+mobile/src/integration/notificationPolicyController.ts:175:  async appStateChanged(state: string): Promise<void> {

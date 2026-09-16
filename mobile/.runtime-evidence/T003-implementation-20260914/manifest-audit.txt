@@ -1,0 +1,2 @@
+mobile/android/app/src/main/AndroidManifest.xml EXACT_ALARM_MATCH_COUNT=0
+mobile/android/app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml EXACT_ALARM_MATCH_COUNT=0

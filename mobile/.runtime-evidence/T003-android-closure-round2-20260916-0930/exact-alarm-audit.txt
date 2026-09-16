@@ -1,0 +1,5 @@
+SOURCE_EXACT_ALARM_MATCHES=0
+MERGED_DEBUG_MANIFEST_EXACT_ALARM_MATCHES=0
+APK_EXACT_ALARM_MATCHES=0
+APK_PACKAGE=com.anonymous.tripwisemobile
+APK permissions were inspected with build-tools 37.0.0 aapt; neither exact-alarm permission was present.

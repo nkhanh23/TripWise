@@ -11,7 +11,6 @@ import type {
   AppSettings,
   CurrencyCode,
   DistanceUnit,
-  NotificationPreferences,
 } from '../types';
 
 export function useSettings() {
@@ -37,18 +36,6 @@ export function useSettings() {
     updateSettings({ distanceUnit });
   }, []);
 
-  const setNotifications = useCallback(
-    (notifications: Partial<NotificationPreferences>) => {
-      updateSettings({
-        notifications: {
-          ...settings.notifications,
-          ...notifications,
-        },
-      });
-    },
-    [settings.notifications]
-  );
-
   return {
     // Theme
     themePreference,
@@ -60,12 +47,10 @@ export function useSettings() {
     setLocale,
     t,
 
-    // General & Notifications
+    // General settings only; notification consent lives in the T003 controller.
     currency: settings.currency,
     setCurrency,
     distanceUnit: settings.distanceUnit,
     setDistanceUnit,
-    notifications: settings.notifications,
-    setNotifications,
   };
 }

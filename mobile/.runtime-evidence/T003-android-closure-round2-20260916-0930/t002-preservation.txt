@@ -1,0 +1,14 @@
+MATCH mobile/src/integration/reminderEngine.ts
+MATCH mobile/src/integration/reminderScheduling.ts
+MATCH mobile/src/integration/remote/expoNotificationRepository.ts
+MATCH mobile/src/integration/routeMetricCache.ts
+MATCH mobile/src/integration/index.ts
+MATCH mobile/src/navigation/AppNavigator.tsx
+MATCH mobile/src/features/trips/screens/MyTripsScreen.tsx
+MATCH mobile/App.tsx
+MATCH mobile/tests/reminder-engine.test.ts
+MATCH mobile/tests/expo-reminder-notification-repository.test.ts
+MATCH mobile/tests/RegisterScreen.test.tsx
+MATCH mobile/app.json
+MATCH mobile/package.json
+MATCH mobile/android/app/src/main/AndroidManifest.xml

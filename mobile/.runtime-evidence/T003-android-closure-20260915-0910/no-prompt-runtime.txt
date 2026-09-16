@@ -1,0 +1,5 @@
+ANDROID_RUNTIME_EVIDENCE=PARTIAL
+The current debug APK was installed with adb install -r (data preserved) and launched normally while POST_NOTIFICATIONS was denied.
+No Android permission dialog was observed during this launch attempt.
+This is not a complete proof of zero request calls because the device disconnected before controlled instrumentation/UI navigation could be completed.
+No production debug instrumentation was added.

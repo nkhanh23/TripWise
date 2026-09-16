@@ -13,6 +13,7 @@ type Props = {
   value: boolean;
   onValueChange: (newValue: boolean) => void;
   showDivider?: boolean;
+  disabled?: boolean;
 };
 
 export const SettingsSwitchRow = memo(function SettingsSwitchRow({
@@ -22,6 +23,7 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
   value,
   onValueChange,
   showDivider = true,
+  disabled = false,
 }: Props) {
   const { colors, effectiveTheme } = useTheme();
 
@@ -33,10 +35,6 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
   return (
     <View>
       <View
-        accessibilityHint={description}
-        accessibilityLabel={title}
-        accessibilityRole="switch"
-        accessibilityState={{ checked: value }}
         style={styles.row}>
         <View style={styles.leftContent}>
           <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
@@ -59,6 +57,9 @@ export const SettingsSwitchRow = memo(function SettingsSwitchRow({
         </View>
 
         <Switch
+          accessibilityLabel={title}
+          accessibilityHint={description}
+          disabled={disabled}
           ios_backgroundColor={colors.border.default}
           onValueChange={onValueChange}
           thumbColor={

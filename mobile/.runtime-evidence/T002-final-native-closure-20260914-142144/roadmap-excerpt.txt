@@ -1,0 +1,40 @@
+SOURCE=phase_doc/PHASES_FEATURES.md
+EXCERPT_LINES=324-330,632-662
+### [ ] FEATURE-P6 — Engine tiến độ chuyến đi và nhắc nhở
+
+**Mục tiêu / lý do:** tạo state machine và notification policy có giới hạn trước behavior được kích hoạt bởi location.
+
+**Phụ thuộc:** P2, P5. **Phạm vi/task:** `FEATURE-P6-T001` progress state/event; `T002` schedule `TRIP_STARTING_SOON`, `DAY_STARTING`, `PLACE_UPCOMING`, `LEAVE_SOON`, `LATE_RISK`; `T003` policy/preference opt-in; `T004` lifecycle local notification. **Ngoài phạm vi:** geofencing (P7), xử lý nền không kiểm soát, hạ tầng push trừ khi được duyệt riêng.
+
+**Domain/schema:** record reminder/event idempotent và consent/preference notification của người dùng. **Supabase:** dữ liệu policy theo phạm vi owner; chỉ schedule ở server khi cần và có giới hạn chi phí. **Mobile:** UX permission explicit, schedule/cancel/reconcile cục bộ khi edit/sign-out. **Provider:** fact route/weather chỉ đến từ nguồn đã được chấp nhận.
+#### [x] FEATURE-P6-T001 — Trip Progress State Engine
+
+- [x] FEATURE-P6-T001-S001 — Persist progress event/state idempotent theo itinerary lifecycle.
+
+##### Checklist hoàn thành
+
+- [x] Cô lập owner, transition và kiểm thử timezone PASS.
+
+#### [x] FEATURE-P6-T002 — Reminder Engine
+
+- [x] FEATURE-P6-T002-S001 — Schedule `TRIP_STARTING_SOON`, `DAY_STARTING`, `PLACE_UPCOMING`, `LEAVE_SOON`, `LATE_RISK`.
+
+##### Checklist hoàn thành
+
+- [x] Dedupe, cancel/reconcile và bằng chứng Android native PASS.
+
+#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+
+- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+
+##### Checklist hoàn thành
+
+- [ ] Permission privacy và policy không chứa content nhạy cảm PASS.
+
+#### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
+
+- [ ] FEATURE-P6-T004-S001 — Xác minh lifecycle notification khi edit/sign-out/reboot/background.
+
+##### Checklist hoàn thành
+
+- [ ] Bằng chứng delivery/cancellation trên Android vật lý PASS.

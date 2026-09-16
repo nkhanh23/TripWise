@@ -1,0 +1,3 @@
+NOT_RUN_REAL_NATIVE_ENUMERATION
+No T003 native reminder was scheduled or enumerated after this closure bundle began because the device disconnected before an explicit opt-in/grant path.
+Static and deterministic tests verify generic EN/VI titles and no sensitive candidate-field reads; this is not native runtime evidence.

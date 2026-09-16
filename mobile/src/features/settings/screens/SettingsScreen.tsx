@@ -22,6 +22,7 @@ import { SettingsRow } from '../components/SettingsRow';
 import { SettingsSection } from '../components/SettingsSection';
 import { SettingsSwitchRow } from '../components/SettingsSwitchRow';
 import { useSettings } from '../hooks/useSettings';
+import { useNotificationPolicyController } from '../hooks/useNotificationPolicyController';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -39,9 +40,8 @@ export const SettingsScreen = memo(function SettingsScreen({
     currency,
     distanceUnit,
     setDistanceUnit,
-    notifications,
-    setNotifications,
   } = useSettings();
+  const notificationPolicy = useNotificationPolicyController();
 
   const [activeDestructiveAction, setActiveDestructiveAction] =
     useState<DestructiveActionType>(null);
@@ -70,17 +70,23 @@ export const SettingsScreen = memo(function SettingsScreen({
 
   const handleTripRemindersToggle = useCallback(
     (val: boolean) => {
-      setNotifications({ tripReminders: val });
+      void notificationPolicy.setTripReminders(val);
     },
-    [setNotifications]
+    [notificationPolicy]
   );
 
   const handleItineraryRemindersToggle = useCallback(
     (val: boolean) => {
-      setNotifications({ itineraryReminders: val });
+      void notificationPolicy.setItineraryReminders(val);
     },
-    [setNotifications]
+    [notificationPolicy]
   );
+
+  const notificationDescription = (enabled: boolean) => t(`settings.notifications.status.${
+    notificationPolicy.loading ? 'loading' : !enabled ? 'disabled'
+      : notificationPolicy.permission === 'denied_blocked' || notificationPolicy.permission === 'legacy_disabled' ? 'blocked'
+        : notificationPolicy.permission === 'denied_requestable' ? 'denied'
+          : notificationPolicy.policy.canSchedule ? 'enabled' : 'unknown'}`);
 
   const handleOpenDeleteAccountDialog = useCallback(() => {
     setActiveDestructiveAction('deleteAccount');
@@ -198,20 +204,31 @@ export const SettingsScreen = memo(function SettingsScreen({
         {/* 3. NOTIFICATIONS Section */}
         <SettingsSection title={t('settings.sections.notifications')}>
           <SettingsSwitchRow
-            description={t('settings.notifications.tripRemindersDesc')}
+            description={`${t('settings.notifications.tripRemindersDesc')} ${notificationDescription(notificationPolicy.intent.tripReminders)}`}
+            disabled={notificationPolicy.loading || (!notificationPolicy.intent.tripReminders && notificationPolicy.busy) || !notificationPolicy.session}
             iconName="notifications-active"
             onValueChange={handleTripRemindersToggle}
             title={t('settings.notifications.tripReminders')}
-            value={notifications.tripReminders}
+            value={notificationPolicy.intent.tripReminders}
           />
           <SettingsSwitchRow
-            description={t('settings.notifications.itineraryRemindersDesc')}
+            description={`${t('settings.notifications.itineraryRemindersDesc')} ${notificationDescription(notificationPolicy.intent.itineraryReminders)}`}
+            disabled={notificationPolicy.loading || (!notificationPolicy.intent.itineraryReminders && notificationPolicy.busy) || !notificationPolicy.session}
             iconName="event-note"
             onValueChange={handleItineraryRemindersToggle}
             showDivider={false}
             title={t('settings.notifications.itineraryReminders')}
-            value={notifications.itineraryReminders}
+            value={notificationPolicy.intent.itineraryReminders}
           />
+          {notificationPolicy.permission === 'denied_blocked' || notificationPolicy.permission === 'legacy_disabled' ? (
+            <SettingsRow iconName="settings" title={t('settings.notifications.openSystemSettings')}
+              onPress={() => { void notificationPolicy.openSystemSettings(); }} showDivider={false} />
+          ) : null}
+          {notificationPolicy.error ? (
+            <SettingsRow iconName="refresh" title={t('settings.notifications.retry')}
+              subtitle={t(`settings.notifications.error.${notificationPolicy.error}`)}
+              onPress={() => { void notificationPolicy.retry(); }} showDivider={false} />
+          ) : null}
         </SettingsSection>
 
         {/* 4. ACCOUNT Section */}

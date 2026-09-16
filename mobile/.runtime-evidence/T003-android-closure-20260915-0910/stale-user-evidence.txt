@@ -1,0 +1,3 @@
+VERIFIED_FROM_TEST_EVIDENCE
+Focused T003 tests PASS for stale preference load, stale write, stale permission response and stale native enumeration dispatch.
+NOT_RUN_ON_ANDROID: device disconnected before an authenticated account-switch runtime flow. No T004 sign-out cleanup was added.

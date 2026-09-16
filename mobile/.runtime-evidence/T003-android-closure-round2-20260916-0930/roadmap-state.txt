@@ -1,0 +1,63 @@
+171-| Activity status | `SCHEDULED`, `COMPLETED`, `SKIPPED` | `SCHEDULED` | User-driven only. Valid state changes are `SCHEDULED → COMPLETED`, `SCHEDULED → SKIPPED`, `COMPLETED → SCHEDULED`, and `SKIPPED → SCHEDULED`; direct COMPLETED ↔ SKIPPED is forbidden and must be corrected through SCHEDULED. |
+172-
+173:Nếu T002 persist status timestamp, `completed_at` chỉ được đặt khi `SCHEDULED → COMPLETED`, `skipped_at` chỉ khi `SCHEDULED → SKIPPED`, cả hai bị xóa khi trở về SCHEDULED và không bao giờ cùng tồn tại. Timestamp này biểu thị explicit user action, không phải physical arrival. `ARRIVED` không bao giờ được P1 suy ra hoặc persist; arrival/geofencing thuộc FEATURE-P7.
+174-
+175-##### Metadata có cấu trúc và giới hạn
+--
+334-**Kiểm thử / Android / bằng chứng:** kiểm thử scheduler/state và bằng chứng Android vật lý về permission, delivery, edit/cancel, reboot/behavior nền. **Điều kiện hoàn thành:** reminder là opt-in, có giới hạn, chính xác và hủy được. **Rủi ro rollback/regression:** thông báo trùng/muộn và quyền riêng tư notification. **Cổng phase tiếp theo:** bằng chứng native Android P6 PASS.
+335-
+336:### [ ] FEATURE-P7 — Đồng hành vị trí và ngữ cảnh
+337-
+338-**Mục tiêu / lý do:** chỉ thêm tín hiệu arrival và context theo nguyên tắc privacy-first sau khi đã có policy và semantics itinerary.
+339-
+340:**Phụ thuộc:** P2, P5, P6. **Phạm vi/task:** `FEATURE-P7-T001` consent location explicit và lifecycle geofence; `T002` capture `ARRIVED`/actual visit; `T003` phát hiện weather risk và skip/delay; `T004` context engine có giới hạn. **Ngoài phạm vi:** theo dõi liên tục, chia sẻ location lên social, replanning tự động.
+341-
+342-**Domain/schema:** consent, đăng ký geofence, dữ liệu event/actual-visit tối thiểu kèm policy retention/deletion. **Supabase:** đồng bộ event chỉ cho owner; event local-first chỉ upload theo contract explicit. **Mobile:** permission của OS, giới hạn background, thay thế/dọn dẹp geofence và UI battery. **Provider:** chỉ dùng OSRM/Open-Meteo đã được chấp nhận; không có tọa độ giả.
+--
+646-- [x] Dedupe, cancel/reconcile và bằng chứng Android native PASS.
+647-
+648:#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+649-
+650:- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+651-
+652-##### Checklist hoàn thành
+--
+654-- [ ] Permission privacy và policy không chứa content nhạy cảm PASS.
+655-
+656:#### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
+657-
+658:- [ ] FEATURE-P6-T004-S001 — Xác minh lifecycle notification khi edit/sign-out/reboot/background.
+659-
+660-##### Checklist hoàn thành
+--
+662-- [ ] Bằng chứng delivery/cancellation trên Android vật lý PASS.
+663-
+664:#### [ ] FEATURE-P7-T001 — Consent và geofence lifecycle
+665-
+666:- [ ] FEATURE-P7-T001-S001 — Triển khai consent, geofence registration/replacement/cleanup bounded.
+667-
+668-##### Checklist hoàn thành
+--
+670-- [ ] Kiểm thử denial/revoke/geofence-cap/privacy PASS.
+671-
+672:#### [ ] FEATURE-P7-T002 — `ARRIVED` và Actual Visit
+673-
+674:- [ ] FEATURE-P7-T002-S001 — Capture arrival/actual-visit chỉ sau native signal hợp lệ.
+675-
+676-##### Checklist hoàn thành
+--
+678-- [ ] Không suy diễn arrival; bằng chứng Android foreground/background PASS.
+679-
+680:#### [ ] FEATURE-P7-T003 — Weather risk và skip/delay detection
+681-
+682:- [ ] FEATURE-P7-T003-S001 — Tạo bounded risk/delay signals từ context trusted.
+683-
+684-##### Checklist hoàn thành
+--
+686-- [ ] Behavior false-positive/failure và battery cost PASS.
+687-
+688:#### [ ] FEATURE-P7-T004 — Context Engine
+689-
+690:- [ ] FEATURE-P7-T004-S001 — Hợp nhất context theo consent, freshness và data minimization.
+691-
+692-##### Checklist hoàn thành

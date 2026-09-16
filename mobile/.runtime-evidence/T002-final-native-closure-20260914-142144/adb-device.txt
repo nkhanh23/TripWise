@@ -1,0 +1,23 @@
+COMMAND=adb devices
+--- adb devices ---
+List of devices attached
+emulator-5554	device
+
+ADB_DEVICES_EXIT_CODE=0
+--- ro.build.version.release ---
+17
+ANDROID_RELEASE_EXIT_CODE=0
+--- ro.build.version.sdk ---
+37
+ANDROID_SDK_EXIT_CODE=0
+--- ro.product.model ---
+sdk_gphone16k_x86_64
+ANDROID_MODEL_EXIT_CODE=0
+
+--- post-harness emulator facts ---
+List of devices attached
+emulator-5554          device product:sdk_gphone16k_x86_64 model:sdk_gphone16k_x86_64 device:emu64xa16k transport_id:1
+
+ANDROID_RELEASE=17
+ANDROID_SDK=37
+ANDROID_MODEL=sdk_gphone16k_x86_64

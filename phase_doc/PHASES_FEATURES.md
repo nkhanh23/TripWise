@@ -637,13 +637,13 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Cô lập owner, transition và kiểm thử timezone PASS.
 
-#### [ ] FEATURE-P6-T002 — Reminder Engine
+#### [x] FEATURE-P6-T002 — Reminder Engine
 
-- [ ] FEATURE-P6-T002-S001 — Schedule `TRIP_STARTING_SOON`, `DAY_STARTING`, `PLACE_UPCOMING`, `LEAVE_SOON`, `LATE_RISK`.
+- [x] FEATURE-P6-T002-S001 — Schedule `TRIP_STARTING_SOON`, `DAY_STARTING`, `PLACE_UPCOMING`, `LEAVE_SOON`, `LATE_RISK`.
 
 ##### Checklist hoàn thành
 
-- [ ] Dedupe, cancel/reconcile và bằng chứng Android native PASS.
+- [x] Dedupe, cancel/reconcile và bằng chứng Android native PASS.
 
 #### [ ] FEATURE-P6-T003 — Smart Notification Policy
 

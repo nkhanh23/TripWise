@@ -1,0 +1,15 @@
+173:Nếu T002 persist status timestamp, `completed_at` chỉ được đặt khi `SCHEDULED → COMPLETED`, `skipped_at` chỉ khi `SCHEDULED → SKIPPED`, cả hai bị xóa khi trở về SCHEDULED và không bao giờ cùng tồn tại. Timestamp này biểu thị explicit user action, không phải physical arrival. `ARRIVED` không bao giờ được P1 suy ra hoặc persist; arrival/geofencing thuộc FEATURE-P7.
+336:### [ ] FEATURE-P7 — Đồng hành vị trí và ngữ cảnh
+340:**Phụ thuộc:** P2, P5, P6. **Phạm vi/task:** `FEATURE-P7-T001` consent location explicit và lifecycle geofence; `T002` capture `ARRIVED`/actual visit; `T003` phát hiện weather risk và skip/delay; `T004` context engine có giới hạn. **Ngoài phạm vi:** theo dõi liên tục, chia sẻ location lên social, replanning tự động.
+648:#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+650:- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+656:#### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
+658:- [ ] FEATURE-P6-T004-S001 — Xác minh lifecycle notification khi edit/sign-out/reboot/background.
+664:#### [ ] FEATURE-P7-T001 — Consent và geofence lifecycle
+666:- [ ] FEATURE-P7-T001-S001 — Triển khai consent, geofence registration/replacement/cleanup bounded.
+672:#### [ ] FEATURE-P7-T002 — `ARRIVED` và Actual Visit
+674:- [ ] FEATURE-P7-T002-S001 — Capture arrival/actual-visit chỉ sau native signal hợp lệ.
+680:#### [ ] FEATURE-P7-T003 — Weather risk và skip/delay detection
+682:- [ ] FEATURE-P7-T003-S001 — Tạo bounded risk/delay signals từ context trusted.
+688:#### [ ] FEATURE-P7-T004 — Context Engine
+690:- [ ] FEATURE-P7-T004-S001 — Hợp nhất context theo consent, freshness và data minimization.

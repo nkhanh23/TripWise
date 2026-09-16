@@ -1,0 +1,3 @@
+NOT_RUN_REAL_UI_DEVICE_DISCONNECTED
+Deterministic policy tests PASS for trip-only, itinerary-only, both-on and both-off mapping.
+No real Android Settings toggle mapping is claimed because the emulator disconnected before navigation/testing.

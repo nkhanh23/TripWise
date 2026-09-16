@@ -1,0 +1,3 @@
+EXPO_INSTALL_CHECK=NOT_RUN
+Reason: execution policy rejected npx expo install --check because it may modify dependencies or node_modules in this evidence-only round.
+Expo Doctor already established the exact patch mismatch.

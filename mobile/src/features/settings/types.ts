@@ -25,16 +25,9 @@ export type CurrencyOption = {
 
 export type DistanceUnit = 'km' | 'mi';
 
-export type NotificationPreferences = {
-  // App-local intent only. These values do not represent OS permission or scheduled notifications.
-  tripReminders: boolean;
-  itineraryReminders: boolean;
-};
-
 export type AppSettings = {
   currency: CurrencyCode;
   distanceUnit: DistanceUnit;
-  notifications: NotificationPreferences;
 };
 
 export type SettingsRowItem = {

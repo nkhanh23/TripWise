@@ -1,0 +1,2 @@
+WARNING: Error loading config file: open C:\Users\PC\.docker\config.json: Access is denied.
+error during connect: Get "http://localhost:2375/v1.54/containers/supabase_db_TripWise/json": dial tcp [::1]:2375: connectex: No connection could be made because the target machine actively refused it.

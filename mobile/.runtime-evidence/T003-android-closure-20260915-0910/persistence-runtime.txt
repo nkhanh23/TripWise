@@ -1,0 +1,3 @@
+NOT_RUN_REAL_REMOTE_PERSISTENCE
+The T003 migration was not deployed remotely, per task boundary. No controlled remote owner row was written or read during this evidence run.
+Repository/controller tests and prior isolated local migration evidence do not substitute for this runtime requirement.

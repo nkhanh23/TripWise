@@ -1,0 +1,10 @@
+CLASSIFICATION=VERIFIED FROM ANDROID RUNTIME
+REPOSITORY=ExpoReminderNotificationRepository.prepare
+--- HARNESS ---
+TW_T002_EVIDENCE CHANNEL_PREPARE_BEGIN {"channelId":"tripwise-reminders-v1"}
+TW_T002_EVIDENCE CHANNEL_PREPARE_OK {"channelId":"tripwise-reminders-v1","channelName":"Trip reminders","importance":5}
+--- ANDROID_DUMPSYS_NOTIFICATION_FILTERED ---
+>       AppSettings: com.anonymous.tripwisemobile (10229) importance=NONE userSet=false
+>         NotificationChannel{mId='tripwise-reminders-v1', mName=Tri..., mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800(FLAG_MUTE_HAPTIC)  tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0, isBundle=false, emoji=null}
+        AppSettings: com.google.android.gms.supervision (10158) importance=NONE userSet=false
+        AppSettings: com.android.internal.emulation.pixel_6_pro (10014)

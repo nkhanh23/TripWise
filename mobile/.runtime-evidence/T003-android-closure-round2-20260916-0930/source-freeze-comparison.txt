@@ -1,0 +1,16 @@
+MATCH mobile/src/integration/notificationPolicy.ts
+MATCH mobile/src/integration/notificationPolicyController.ts
+MATCH mobile/src/integration/notificationPolicyRuntime.ts
+MATCH mobile/src/integration/remote/supabaseNotificationPreferencesRepository.ts
+MATCH mobile/src/integration/remote/expoNotificationPermissionAdapter.ts
+MATCH mobile/src/features/settings/screens/SettingsScreen.tsx
+MATCH mobile/src/features/settings/hooks/useNotificationPolicyController.ts
+MATCH mobile/src/i18n/en.ts
+MATCH mobile/src/i18n/vi.ts
+MATCH mobile/src/integration/reminderScheduling.ts
+MATCH mobile/src/integration/reminderEngine.ts
+MATCH mobile/src/integration/remote/expoNotificationRepository.ts
+MATCH mobile/src/lib/supabase/database.types.ts
+MATCH supabase/migrations/20260914000000_notification_preferences_t003.sql
+MATCH supabase/tests/persistence/notification_preferences_contract.sql
+MATCH phase_doc/PHASES_FEATURES.md

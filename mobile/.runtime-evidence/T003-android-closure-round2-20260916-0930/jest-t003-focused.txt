@@ -1,0 +1,14 @@
+PASS tests/notification-settings.test.tsx
+PASS tests/notification-policy-runtime.test.ts
+PASS tests/notification-preferences-repository.test.ts
+PASS tests/notification-permission.test.ts
+PASS tests/notification-policy-controller.test.ts
+PASS tests/notification-policy.test.ts
+PASS tests/expo-reminder-notification-repository.test.ts
+
+Test Suites: 7 passed, 7 total
+Tests:       73 passed, 73 total
+Snapshots:   0 total
+Time:        2.346 s
+Ran all test suites matching /tests\\notification-policy.test.ts|tests\\notification-policy-runtime.test.ts|tests\\notification-policy-controller.test.ts|tests\\notification-permission.test.ts|tests\\notification-settings.test.tsx|tests\\notification-preferences-repository.test.ts|tests\\expo-reminder-notification-repository.test.ts/i.
+EXIT_CODE=0

@@ -1,0 +1,3 @@
+NOT_RUN_DEVICE_DISCONNECTED
+The approved emulator disconnected after initial launch-state collection. No explicit Settings ON action, durable remote write, permission prompt, or T002 reconcile is claimed.
+No fake/mock production runtime path was used.

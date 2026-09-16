@@ -1,0 +1,6 @@
+
+Algorithm : SHA256
+Hash      : 5F363975231A6F706A628AE57077EA8B8BBB5E3D38F1FAC15F1006EE434B4711
+Path      : D:\Dev\TripWise\mobile\android\app\build\outputs\apk\debug\app-debug.apk
+
+

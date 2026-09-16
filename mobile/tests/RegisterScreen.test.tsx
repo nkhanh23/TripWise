@@ -15,7 +15,7 @@ describe('RegisterScreen real-auth composition', () => {
   afterEach(cleanup);
 
   async function fillAndSubmit() {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup({ delay: 0 });
     await user.type(screen.getByPlaceholderText('Jane Doe'), 'Lan Nguyen');
     await user.type(screen.getByPlaceholderText('jane@example.com'), 'lan@example.com');
     const passwords = screen.getAllByPlaceholderText('••••••••');
@@ -26,7 +26,7 @@ describe('RegisterScreen real-auth composition', () => {
   }
 
   it('validates input before calling the repository', async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup({ delay: 0 });
     await render(<RegisterScreen navigation={navigation} route={{} as never} />);
     await user.press(screen.getByLabelText('Tạo tài khoản'));
     expect(await screen.findByText('Please enter your name.')).toBeTruthy();
@@ -64,7 +64,7 @@ describe('RegisterScreen real-auth composition', () => {
     let resolveSignUp: ((value: { confirmationRequired: boolean }) => void) | undefined;
     mockSignUp.mockImplementation(() => new Promise((resolve) => { resolveSignUp = resolve; }));
     await render(<RegisterScreen navigation={navigation} route={{} as never} />);
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup({ delay: 0 });
     await user.type(screen.getByPlaceholderText('Jane Doe'), 'Lan Nguyen');
     await user.type(screen.getByPlaceholderText('jane@example.com'), 'lan@example.com');
     const passwords = screen.getAllByPlaceholderText('••••••••');

@@ -1,0 +1,5 @@
+DEVICE_RUNTIME=BLOCKED
+adb devices -l returned no connected device.
+adb reconnect returned no devices/emulators found.
+D:\Dev\Android\Sdk\emulator\emulator.exe -list-avds returned no configured AVD.
+No device state was reset or wiped.

@@ -1,0 +1,27 @@
+CLASSIFICATION=VERIFIED FROM SOURCE + VERIFIED FROM ANDROID RUNTIME
+mobile/android/app/src/main/AndroidManifest.xml: SCHEDULE_EXACT_ALARM=0 USE_EXACT_ALARM=0
+mobile/android/app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml: SCHEDULE_EXACT_ALARM=0 USE_EXACT_ALARM=0
+mobile/android/app/build/intermediates/packaged_manifests/debug/processDebugManifestForPackage/AndroidManifest.xml: SCHEDULE_EXACT_ALARM=0 USE_EXACT_ALARM=0
+RUNTIME_PACKAGE_EXACT_PERMISSION_MATCHES=0
+ANDROID_ALARM_MANAGER_FILTERED:
+>     RTC_WAKEUP #15: Alarm{1d3ef4e type 0 origWhen 1789383600000 whenElapsed 11779676 com.anonymous.tripwisemobile}
+        tag=*walarm*:expo.modules.notifications.NOTIFICATION_EVENT
+        type=RTC_WAKEUP origWhen=2026-09-14 18:00:00.000 window=+1h0m0s0ms repeatInterval=0 count=0 flags=0x20
+        policyWhenElapsed: requester=+3h11m9s568ms app_standby=-3m7s228ms device_idle=-- battery_saver=-3m7s228ms
+>       operation=PendingIntent{e7ad86f: PendingIntentRecord{d1a297c com.anonymous.tripwisemobile broadcastIntent}}
+        idle-options=Bundle[{android.pendingIntent.backgroundActivityAllowed=2, android:broadcast.temporaryAppAllowlistReasonCode=-1, android:broadcast.temporaryAppAllowlistDuration=10000, android:broadcast.temporaryAppAllowlistReason=, android:broadcast.temporaryAppAllowlistType=1, android:broadcast.flags=8}]
+      ELAPSED #16: Alarm{eafa205 type 3 origWhen 14428110 whenElapsed 14428110 android}
+        tag=*alarm*:PowerStats
+>     RTC_WAKEUP #28: Alarm{8ad2cae type 0 origWhen 1789430400000 whenElapsed 58579676 com.anonymous.tripwisemobile}
+        tag=*walarm*:expo.modules.notifications.NOTIFICATION_EVENT
+        type=RTC_WAKEUP origWhen=2026-09-15 07:00:00.000 window=+1h0m0s0ms repeatInterval=0 count=0 flags=0x20
+        policyWhenElapsed: requester=+16h11m9s568ms app_standby=-3m7s263ms device_idle=-- battery_saver=-3m7s263ms
+>       operation=PendingIntent{1ed3a4f: PendingIntentRecord{1e015dc com.anonymous.tripwisemobile broadcastIntent}}
+        idle-options=Bundle[{android.pendingIntent.backgroundActivityAllowed=2, android:broadcast.temporaryAppAllowlistReasonCode=-1, android:broadcast.temporaryAppAllowlistDuration=10000, android:broadcast.temporaryAppAllowlistReason=, android:broadcast.temporaryAppAllowlistType=1, android:broadcast.flags=8}]
+      ELAPSED #29: Alarm{73a86e5 type 3 origWhen 64851015 whenElapsed 64851015 android}
+        tag=*alarm*:NetworkTimeUpdateService.POLL
+DELIVERY_MODE=OS_MANAGED_INEXACT
+
+POST_HARNESS_NATIVE_CLEANUP:
+TRIPWISE_ALARM_MATCH_COUNT=0
+EXPECTED=0

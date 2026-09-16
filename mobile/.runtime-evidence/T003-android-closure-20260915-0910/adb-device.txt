@@ -1,0 +1,9 @@
+List of devices attached
+emulator-5554	device
+
+ro.build.version.release=17
+ro.build.version.sdk=37
+ro.product.model=sdk_gphone16k_x86_64
+ro.product.manufacturer=Google
+List of devices attached
+

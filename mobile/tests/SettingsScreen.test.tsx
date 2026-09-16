@@ -299,8 +299,7 @@ describe('Settings Feature (FE-P15-T001)', () => {
   });
 
   describe('Notification Preferences', () => {
-    it('toggles notification switches without native or remote side effects', async () => {
-      const user = userEvent.setup();
+    it('keeps notification switches fail-closed until owner policy loads', async () => {
       await renderWithProviders(<SettingsScreen {...mockNavProps} />);
 
       const tripSwitch = screen.getByLabelText('Trip reminders');
@@ -308,12 +307,12 @@ describe('Settings Feature (FE-P15-T001)', () => {
 
       expect(tripSwitch).toBeTruthy();
       expect(itinerarySwitch).toBeTruthy();
-      expect(screen.getByText('App preference only — notifications are not configured yet.')).toBeTruthy();
-      expect(screen.getByText('App preference only — no OS alerts are scheduled.')).toBeTruthy();
-
-      // Toggle switches
-      await user.press(tripSwitch);
-      await user.press(itinerarySwitch);
+      expect(screen.getByText(/Private reminders before your trip/)).toBeTruthy();
+      expect(screen.getByText(/Private reminders for your day and activities/)).toBeTruthy();
+      expect(tripSwitch.props.disabled).toBe(true);
+      expect(itinerarySwitch.props.disabled).toBe(true);
+      expect(tripSwitch.props.value).toBe(false);
+      expect(itinerarySwitch.props.value).toBe(false);
     });
   });
 

@@ -1,0 +1,4 @@
+PARTIAL_REAL_DEVICE_STATE
+Initial Android package state showed POST_NOTIFICATIONS granted=false and AppOp POST_NOTIFICATION=ignore.
+The Expo adapter's raw canAskAgain/status values could not be queried before device disconnect; normalized domain state is therefore not asserted from Android runtime.
+Deterministic adapter/controller tests cover denial and no-nag behavior; this is not a runtime denial-path PASS.

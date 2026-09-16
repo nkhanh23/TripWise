@@ -1,0 +1,2 @@
+NOT_RUN_DEVICE_DISCONNECTED
+Mandatory real OFF cancellation evidence was not collected. Controller/runtime tests cover immediate local fail-closed state, affected-type reconciliation, and cancellation ordering.

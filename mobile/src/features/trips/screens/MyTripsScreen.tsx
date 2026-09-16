@@ -1,4 +1,3 @@
-import { EvidenceRunner } from '../../../app/EvidenceRunner';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -52,7 +51,6 @@ export function MyTripsScreen({
   tripCoverRepository,
   fixtureMode,
 }: Props) {
-  return <EvidenceRunner />;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<CombinedNavProp>();
   const { colors } = useTheme();
@@ -449,7 +447,3 @@ const styles = StyleSheet.create({
     fontWeight: typography.fontWeight.bold,
   },
 });
-
-
-
-

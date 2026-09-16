@@ -1,0 +1,1 @@
+T003 Android closure round 2Scope: evidence-only; no production source, tests, migration, dependency, Android native, app config, or roadmap changes.Started: 2026-09-16 Asia/Bangkok
