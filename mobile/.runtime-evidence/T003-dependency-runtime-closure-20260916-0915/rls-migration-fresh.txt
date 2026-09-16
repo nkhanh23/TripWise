@@ -1,0 +1,2 @@
+RLS_RUNTIME_VERIFICATION_BLOCKED
+Fresh Docker diagnostic could not connect to localhost:2375. The established isolated migration-chain/RLS runner was not run against a stale substitute and no remote migration was deployed.

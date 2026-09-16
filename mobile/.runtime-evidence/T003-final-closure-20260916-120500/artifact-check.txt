@@ -1,0 +1,4 @@
+ARTIFACT CHECK
+REQUIRED=31
+EMPTY_OR_MISSING=0
+PASS: all required artifacts are non-empty; blocked artifacts are labeled honestly.

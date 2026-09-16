@@ -1,0 +1,122 @@
+ROADMAP EXCERPT — read only; unchanged by this task
+
+  phase_doc\PHASES_FEATURES.md:171:| Activity status | `SCHEDULED`, `COMPLETED`, `SKIPPED` | `SCHEDULED` | User-driven only. Valid state changes are `SCHEDULED → COMPLETED`, `SCHEDULED → SKIPPED`, `COMPLETED → SCHEDULED`, and `SKIPPED → 
+SCHEDULED`; direct COMPLETED ↔ SKIPPED is forbidden and must be corrected through SCHEDULED. |
+  phase_doc\PHASES_FEATURES.md:172:
+> phase_doc\PHASES_FEATURES.md:173:Nếu T002 persist status timestamp, `completed_at` chỉ được đặt khi `SCHEDULED → COMPLETED`, `skipped_at` chỉ khi `SCHEDULED → SKIPPED`, cả hai bị xóa khi trở về SCHEDULED và không bao giờ cùng tồn tại. 
+Timestamp này biểu thị explicit user action, không phải physical arrival. `ARRIVED` không bao giờ được P1 suy ra hoặc persist; arrival/geofencing thuộc FEATURE-P7.
+  phase_doc\PHASES_FEATURES.md:174:
+  phase_doc\PHASES_FEATURES.md:175:##### Metadata có cấu trúc và giới hạn
+  phase_doc\PHASES_FEATURES.md:176:
+  phase_doc\PHASES_FEATURES.md:177:These are contract-level limits for T002 validation; they do not alter the current TypeScript type or database today.
+  phase_doc\PHASES_FEATURES.md:322:**Kiểm thử / Android / bằng chứng:** kiểm thử constraint deterministic, provider failure, item được bảo vệ, owner/RLS, luồng Android generated→review→confirm. **Điều kiện hoàn thành:** nhận thức 
+route/weather phải là scheduling, không chỉ retrieval. **Rủi ro rollback/regression:** thay đổi route/weather và refresh conflict; dùng diff/undo có version. **Cổng phase tiếp theo:** bằng chứng feasibility/explanation/runtime P5 PASS.
+  phase_doc\PHASES_FEATURES.md:323:
+> phase_doc\PHASES_FEATURES.md:324:### [ ] FEATURE-P6 — Engine tiến độ chuyến đi và nhắc nhở
+  phase_doc\PHASES_FEATURES.md:325:
+  phase_doc\PHASES_FEATURES.md:326:**Mục tiêu / lý do:** tạo state machine và notification policy có giới hạn trước behavior được kích hoạt bởi location.
+  phase_doc\PHASES_FEATURES.md:327:
+> phase_doc\PHASES_FEATURES.md:328:**Phụ thuộc:** P2, P5. **Phạm vi/task:** `FEATURE-P6-T001` progress state/event; `T002` schedule `TRIP_STARTING_SOON`, `DAY_STARTING`, `PLACE_UPCOMING`, `LEAVE_SOON`, `LATE_RISK`; `T003` policy/preference 
+opt-in; `T004` lifecycle local notification. **Ngoài phạm vi:** geofencing (P7), xử lý nền không kiểm soát, hạ tầng push trừ khi được duyệt riêng.
+  phase_doc\PHASES_FEATURES.md:329:
+  phase_doc\PHASES_FEATURES.md:330:**Domain/schema:** record reminder/event idempotent và consent/preference notification của người dùng. **Supabase:** dữ liệu policy theo phạm vi owner; chỉ schedule ở server khi cần và có giới hạn chi 
+phí. **Mobile:** UX permission explicit, schedule/cancel/reconcile cục bộ khi edit/sign-out. **Provider:** fact route/weather chỉ đến từ nguồn đã được chấp nhận.
+  phase_doc\PHASES_FEATURES.md:331:
+  phase_doc\PHASES_FEATURES.md:332:**Bảo mật/RLS:** consent là private và có thể thu hồi; không bao giờ gửi chi tiết itinerary nhạy cảm qua kênh notification không an toàn. **Hiệu năng/khả năng phục hồi:** dedupe, giới hạn, expiry, 
+cancellation, timezone/DST chính xác và không tạo retry storm. **UI/Stitch:** switch Settings chỉ ngừng là UI-only sau khi có state mapping được duyệt. **Địa phương hóa/theme/accessibility:** nội dung notification được địa phương hóa, 
+control Settings theme/a11y.
+  phase_doc\PHASES_FEATURES.md:334:**Kiểm thử / Android / bằng chứng:** kiểm thử scheduler/state và bằng chứng Android vật lý về permission, delivery, edit/cancel, reboot/behavior nền. **Điều kiện hoàn thành:** reminder là opt-in, có giới 
+hạn, chính xác và hủy được. **Rủi ro rollback/regression:** thông báo trùng/muộn và quyền riêng tư notification. **Cổng phase tiếp theo:** bằng chứng native Android P6 PASS.
+  phase_doc\PHASES_FEATURES.md:335:
+> phase_doc\PHASES_FEATURES.md:336:### [ ] FEATURE-P7 — Đồng hành vị trí và ngữ cảnh
+  phase_doc\PHASES_FEATURES.md:337:
+  phase_doc\PHASES_FEATURES.md:338:**Mục tiêu / lý do:** chỉ thêm tín hiệu arrival và context theo nguyên tắc privacy-first sau khi đã có policy và semantics itinerary.
+  phase_doc\PHASES_FEATURES.md:339:
+> phase_doc\PHASES_FEATURES.md:340:**Phụ thuộc:** P2, P5, P6. **Phạm vi/task:** `FEATURE-P7-T001` consent location explicit và lifecycle geofence; `T002` capture `ARRIVED`/actual visit; `T003` phát hiện weather risk và skip/delay; `T004` 
+context engine có giới hạn. **Ngoài phạm vi:** theo dõi liên tục, chia sẻ location lên social, replanning tự động.
+  phase_doc\PHASES_FEATURES.md:341:
+  phase_doc\PHASES_FEATURES.md:342:**Domain/schema:** consent, đăng ký geofence, dữ liệu event/actual-visit tối thiểu kèm policy retention/deletion. **Supabase:** đồng bộ event chỉ cho owner; event local-first chỉ upload theo contract 
+explicit. **Mobile:** permission của OS, giới hạn background, thay thế/dọn dẹp geofence và UI battery. **Provider:** chỉ dùng OSRM/Open-Meteo đã được chấp nhận; không có tọa độ giả.
+  phase_doc\PHASES_FEATURES.md:343:
+  phase_doc\PHASES_FEATURES.md:344:**Bảo mật/RLS:** tối thiểu hóa dữ liệu, giới hạn mục đích, truy cập chỉ cho owner, precise location không bao giờ public mặc định. **Hiệu năng/khả năng phục hồi:** giới hạn số lượng/bán kính geofence, 
+chiến lược significant-event, theo dõi battery/storage, cancellation và không tạo location loop. **UI/Stitch:** dùng state đã duyệt hoặc xin design được duyệt. **Địa phương hóa/theme/accessibility:** giải thích consent/risk rõ ràng bằng 
+EN/VI.
+  phase_doc\PHASES_FEATURES.md:622:#### [x] FEATURE-P5-T005 — Explainable Itinerary
+  phase_doc\PHASES_FEATURES.md:623:
+> phase_doc\PHASES_FEATURES.md:624:**Trạng thái:** COMPLETE — Factual explanation provenance độc lập hoàn toàn với Gemini composition (PRODUCTION GEMINI EXPLANATION COMPOSER = NOT WIRED; deterministic client fallback là production path). 
+Bounds an toàn (maxReasons <= 50, maxReasonsPerItem <= 4), canonical weather policy (HIGH_PRECIPITATION_PERCENT), no-op diff handling (refresh_no_op), validation constraint truthfulness được kiểm thử triệt để (49/49 focused 
+explainable-itinerary tests PASS, 1497 full suite tests PASS). Live Android runtime verification trên emulator (`emulator-5554`, Android 17 / API 35/37) đạt 100%: Review screen trước khi lưu (`02-review-en.png`), song ngữ EN/VI 
+(`03-review-vi.png`), Dark Mode (`04-review-dark.png`), cuộn và các controls (`05-review-controls.png`), luồng Reject trả về wizard với 0 persistence (`06-reject-step5.png` + `db_proof_reject.json`), luồng Confirm & Save lưu vào Supabase 
+đúng 1 lần và chuyển tới `TripDetailScreen` (`07-detail-saved.png` + `db_proof_confirm.json`). Quality gates: lint 0 errors, typecheck 0 errors, full Jest 1497 PASS, expo-doctor 20/21 baseline. Bằng chứng kiểm duyệt lưu tại 
+`.runtime-evidence/p5-t005-reviewer-closure-20260912/`. FEATURE-P6 NOT STARTED.
+  phase_doc\PHASES_FEATURES.md:625:
+  phase_doc\PHASES_FEATURES.md:626:- [x] FEATURE-P5-T005-S001 — Hiển thị explanation với factual provenance tách Gemini composition.
+  phase_doc\PHASES_FEATURES.md:627:
+  phase_doc\PHASES_FEATURES.md:628:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:630:- [x] Reason validation, EN/VI và review/confirm Android PASS.
+  phase_doc\PHASES_FEATURES.md:631:
+> phase_doc\PHASES_FEATURES.md:632:#### [x] FEATURE-P6-T001 — Trip Progress State Engine
+  phase_doc\PHASES_FEATURES.md:633:
+> phase_doc\PHASES_FEATURES.md:634:- [x] FEATURE-P6-T001-S001 — Persist progress event/state idempotent theo itinerary lifecycle.
+  phase_doc\PHASES_FEATURES.md:635:
+  phase_doc\PHASES_FEATURES.md:636:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:637:
+  phase_doc\PHASES_FEATURES.md:638:- [x] Cô lập owner, transition và kiểm thử timezone PASS.
+  phase_doc\PHASES_FEATURES.md:639:
+> phase_doc\PHASES_FEATURES.md:640:#### [x] FEATURE-P6-T002 — Reminder Engine
+  phase_doc\PHASES_FEATURES.md:641:
+> phase_doc\PHASES_FEATURES.md:642:- [x] FEATURE-P6-T002-S001 — Schedule `TRIP_STARTING_SOON`, `DAY_STARTING`, `PLACE_UPCOMING`, `LEAVE_SOON`, `LATE_RISK`.
+  phase_doc\PHASES_FEATURES.md:643:
+  phase_doc\PHASES_FEATURES.md:644:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:645:
+  phase_doc\PHASES_FEATURES.md:646:- [x] Dedupe, cancel/reconcile và bằng chứng Android native PASS.
+  phase_doc\PHASES_FEATURES.md:647:
+> phase_doc\PHASES_FEATURES.md:648:#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+  phase_doc\PHASES_FEATURES.md:649:
+> phase_doc\PHASES_FEATURES.md:650:- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+  phase_doc\PHASES_FEATURES.md:651:
+  phase_doc\PHASES_FEATURES.md:652:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:653:
+  phase_doc\PHASES_FEATURES.md:654:- [ ] Permission privacy và policy không chứa content nhạy cảm PASS.
+  phase_doc\PHASES_FEATURES.md:655:
+> phase_doc\PHASES_FEATURES.md:656:#### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
+  phase_doc\PHASES_FEATURES.md:657:
+> phase_doc\PHASES_FEATURES.md:658:- [ ] FEATURE-P6-T004-S001 — Xác minh lifecycle notification khi edit/sign-out/reboot/background.
+  phase_doc\PHASES_FEATURES.md:659:
+  phase_doc\PHASES_FEATURES.md:660:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:661:
+  phase_doc\PHASES_FEATURES.md:662:- [ ] Bằng chứng delivery/cancellation trên Android vật lý PASS.
+  phase_doc\PHASES_FEATURES.md:663:
+> phase_doc\PHASES_FEATURES.md:664:#### [ ] FEATURE-P7-T001 — Consent và geofence lifecycle
+  phase_doc\PHASES_FEATURES.md:665:
+> phase_doc\PHASES_FEATURES.md:666:- [ ] FEATURE-P7-T001-S001 — Triển khai consent, geofence registration/replacement/cleanup bounded.
+  phase_doc\PHASES_FEATURES.md:667:
+  phase_doc\PHASES_FEATURES.md:668:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:669:
+  phase_doc\PHASES_FEATURES.md:670:- [ ] Kiểm thử denial/revoke/geofence-cap/privacy PASS.
+  phase_doc\PHASES_FEATURES.md:671:
+> phase_doc\PHASES_FEATURES.md:672:#### [ ] FEATURE-P7-T002 — `ARRIVED` và Actual Visit
+  phase_doc\PHASES_FEATURES.md:673:
+> phase_doc\PHASES_FEATURES.md:674:- [ ] FEATURE-P7-T002-S001 — Capture arrival/actual-visit chỉ sau native signal hợp lệ.
+  phase_doc\PHASES_FEATURES.md:675:
+  phase_doc\PHASES_FEATURES.md:676:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:677:
+  phase_doc\PHASES_FEATURES.md:678:- [ ] Không suy diễn arrival; bằng chứng Android foreground/background PASS.
+  phase_doc\PHASES_FEATURES.md:679:
+> phase_doc\PHASES_FEATURES.md:680:#### [ ] FEATURE-P7-T003 — Weather risk và skip/delay detection
+  phase_doc\PHASES_FEATURES.md:681:
+> phase_doc\PHASES_FEATURES.md:682:- [ ] FEATURE-P7-T003-S001 — Tạo bounded risk/delay signals từ context trusted.
+  phase_doc\PHASES_FEATURES.md:683:
+  phase_doc\PHASES_FEATURES.md:684:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:685:
+  phase_doc\PHASES_FEATURES.md:686:- [ ] Behavior false-positive/failure và battery cost PASS.
+  phase_doc\PHASES_FEATURES.md:687:
+> phase_doc\PHASES_FEATURES.md:688:#### [ ] FEATURE-P7-T004 — Context Engine
+  phase_doc\PHASES_FEATURES.md:689:
+> phase_doc\PHASES_FEATURES.md:690:- [ ] FEATURE-P7-T004-S001 — Hợp nhất context theo consent, freshness và data minimization.
+  phase_doc\PHASES_FEATURES.md:691:
+  phase_doc\PHASES_FEATURES.md:692:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:693:
+  phase_doc\PHASES_FEATURES.md:694:- [ ] RLS, retention, cancellation và runtime Android PASS.
+
+

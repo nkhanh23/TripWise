@@ -1,0 +1,4 @@
+BUNDLE=D:\Dev\TripWise\mobile\.runtime-evidence\T003-expo-sdk-metadata-corrective-20260916-114500
+DEPENDENCY_TREE_EXIT=0
+EXPO_DOCTOR_BEFORE_EXIT=-1
+EXPO_INSTALL_CHECK_BEFORE_EXIT=1

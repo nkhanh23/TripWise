@@ -1,0 +1,876 @@
+INSTALLED_EXPO_PACKAGE_JSON
+{
+  "name": "expo",
+  "version": "57.0.22",
+  "description": "The Expo SDK",
+  "main": "src/Expo.ts",
+  "module": "src/Expo.ts",
+  "types": "build/Expo.d.ts",
+  "sideEffects": [
+    "*.fx.tsx",
+    "*.fx.web.tsx",
+    "./src/winter/*.ts",
+    "./src/async-require/*.ts"
+  ],
+  "bin": {
+    "expo": "bin/cli",
+    "expo-modules-autolinking": "bin/autolinking",
+    "fingerprint": "bin/fingerprint"
+  },
+  "files": [
+    "android",
+    "bin",
+    "build",
+    "internal",
+    "ios",
+    "scripts",
+    "src",
+    "AppEntry.js",
+    "Expo.podspec",
+    "bundledNativeModules.json",
+    "expo-module.config.json",
+    "metro-config.js",
+    "metro-config.d.ts",
+    "dom",
+    "config",
+    "config-plugins.js",
+    "config-plugins.d.ts",
+    "devtools.js",
+    "devtools.d.ts",
+    "fetch.js",
+    "fetch.d.ts",
+    "fingerprint.js",
+    "fingerprint.d.ts",
+    "local-build-cache-provider.js",
+    "local-build-cache-provider.d.ts",
+    "react-native.config.js",
+    "requiresExtraSetup.json",
+    "tsconfig.base.json",
+    "types",
+    "virtual",
+    "template.tgz"
+  ],
+  "jest": {
+    "preset": "../expo-module-scripts/jest-preset.cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo"
+  },
+  "keywords": [
+    "expo"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "dependencies": {
+    "@babel/runtime": "^7.20.0",
+    "@expo/cli": "^57.0.24",
+    "@expo/config": "~57.0.9",
+    "@expo/config-plugins": "~57.0.9",
+    "@expo/devtools": "~57.0.1",
+    "@expo/dom-webview": "~57.0.1",
+    "@expo/fingerprint": "^0.20.13",
+    "@expo/local-build-cache-provider": "^57.0.8",
+    "@expo/log-box": "^57.0.4",
+    "@expo/metro": "~56.0.2",
+    "@expo/metro-config": "~57.0.12",
+    "@ungap/structured-clone": "^1.3.0",
+    "babel-preset-expo": "~57.0.11",
+    "expo-asset": "~57.0.17",
+    "expo-constants": "~57.0.18",
+    "expo-file-system": "~57.0.7",
+    "expo-font": "~57.0.4",
+    "expo-keep-awake": "~57.0.2",
+    "expo-modules-autolinking": "~57.0.13",
+    "expo-modules-core": "~57.0.18",
+    "pretty-format": "^29.7.0",
+    "react-refresh": "^0.14.2",
+    "whatwg-url-minimum": "^0.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "npm-run-all2": "^8.0.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "rimraf": "^6.1.2",
+    "web-streams-polyfill": "^3.3.2",
+    "@expo/dom-webview": "57.0.1",
+    "@expo/metro-runtime": "57.0.15",
+    "expo-updates": "57.0.22"
+  },
+  "peerDependencies": {
+    "@expo/dom-webview": "*",
+    "@expo/metro-runtime": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-dom": "*",
+    "react-native-web": "*",
+    "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/dom-webview": {
+      "optional": true
+    },
+    "@expo/metro-runtime": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-web": {
+      "optional": true
+    },
+    "react-native-webview": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/node-binary.sh",
+      "./scripts/react-native-xcode.sh",
+      "./scripts/xcode/with-environment.sh",
+      "./scripts/compose-source-maps.js",
+      "scripts/resolveAppEntry.js"
+    ]
+  },
+  "gitHead": "9e5319c0f821a27b7924841903abae50e2b41790",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf build",
+    "lint": "eslint src",
+    "test": "jest"
+  }
+}
+INSTALLED_EXPO_BUNDLED_NATIVE_MODULES
+{
+  "@expo/dom-webview": "~57.0.1",
+  "@expo/fingerprint": "~0.20.13",
+  "@expo/metro-runtime": "~57.0.15",
+  "@expo/vector-icons": "^15.0.2",
+  "@expo/ui": "~57.0.18",
+  "@react-native-async-storage/async-storage": "2.2.0",
+  "@react-native-community/datetimepicker": "9.1.0",
+  "@react-native-masked-view/masked-view": "0.3.2",
+  "@react-native-community/slider": "5.2.0",
+  "@react-native-community/netinfo": "12.0.1",
+  "@react-native-community/viewpager": "5.0.11",
+  "@react-native-picker/picker": "2.11.4",
+  "@react-native-segmented-control/segmented-control": "2.5.7",
+  "@stripe/stripe-react-native": "0.64.0",
+  "eslint-config-expo": "~57.0.2",
+  "expo-analytics-amplitude": "~11.3.0",
+  "expo-app-auth": "~11.1.0",
+  "expo-app-loader-provider": "~8.0.0",
+  "expo-app-metrics": "~57.0.18",
+  "expo-apple-authentication": "~57.0.2",
+  "expo-application": "~57.0.3",
+  "expo-asset": "~57.0.17",
+  "expo-audio": "~57.0.5",
+  "expo-auth-session": "~57.0.12",
+  "expo-background-fetch": "~57.0.17",
+  "expo-background-task": "~57.0.17",
+  "expo-battery": "~57.0.3",
+  "expo-blur": "~57.0.3",
+  "expo-brightness": "~57.0.2",
+  "expo-brownfield": "~57.0.19",
+  "expo-build-properties": "~57.0.17",
+  "expo-calendar": "~57.0.3",
+  "expo-camera": "~57.0.5",
+  "expo-cellular": "~57.0.2",
+  "expo-checkbox": "~57.0.0",
+  "expo-clipboard": "~57.0.2",
+  "expo-constants": "~57.0.18",
+  "expo-contacts": "~57.0.5",
+  "expo-crypto": "~57.0.3",
+  "expo-dev-client": "~57.0.19",
+  "expo-device": "~57.0.2",
+  "expo-document-picker": "~57.0.2",
+  "expo-eas-client": "~57.0.4",
+  "expo-file-system": "~57.0.7",
+  "expo-font": "~57.0.4",
+  "expo-gl": "~57.0.2",
+  "expo-glass-effect": "~57.0.3",
+  "expo-google-app-auth": "~8.3.0",
+  "expo-haptics": "~57.0.3",
+  "expo-image": "~57.0.5",
+  "expo-image-loader": "~57.0.1",
+  "expo-image-manipulator": "~57.0.17",
+  "expo-image-picker": "~57.0.17",
+  "expo-intent-launcher": "~57.0.1",
+  "expo-insights": "~57.0.17",
+  "expo-keep-awake": "~57.0.2",
+  "expo-linear-gradient": "~57.0.2",
+  "expo-linking": "~57.0.10",
+  "expo-local-authentication": "~57.0.3",
+  "expo-localization": "~57.0.2",
+  "expo-location": "~57.0.17",
+  "expo-mail-composer": "~57.0.2",
+  "expo-manifests": "~57.0.2",
+  "expo-maps": "~57.0.3",
+  "expo-mcp": "~0.2.1",
+  "expo-media-library": "~57.0.5",
+  "expo-mesh-gradient": "~57.0.2",
+  "expo-module-template": "~57.0.11",
+  "expo-modules-core": "~57.0.18",
+  "expo-navigation-bar": "~57.0.2",
+  "expo-network": "~57.0.2",
+  "expo-notifications": "~57.0.18",
+  "expo-observe": "~57.0.21",
+  "expo-print": "~57.0.2",
+  "expo-live-photo": "~57.0.2",
+  "expo-router": "~57.0.21",
+  "expo-screen-capture": "~57.0.3",
+  "expo-screen-orientation": "~57.0.2",
+  "expo-secure-store": "~57.0.4",
+  "expo-sensors": "~57.0.3",
+  "expo-server": "~57.0.3",
+  "expo-sharing": "~57.0.19",
+  "expo-sms": "~57.0.2",
+  "expo-speech": "~57.0.3",
+  "expo-splash-screen": "~57.0.9",
+  "expo-sqlite": "~57.0.3",
+  "expo-status-bar": "~57.0.1",
+  "expo-store-review": "~57.0.3",
+  "expo-symbols": "~57.0.3",
+  "expo-system-ui": "~57.0.4",
+  "expo-task-manager": "~57.0.17",
+  "expo-tracking-transparency": "~57.0.2",
+  "expo-updates": "~57.0.22",
+  "expo-video-thumbnails": "~57.0.2",
+  "expo-video": "~57.0.4",
+  "expo-web-browser": "~57.0.3",
+  "expo-widgets": "~57.0.19",
+  "jest-expo": "~57.0.5",
+  "lottie-react-native": "~7.3.8",
+  "react": "19.2.3",
+  "react-dom": "19.2.3",
+  "react-native": "0.86.3",
+  "react-native-web": "~0.21.0",
+  "react-native-gesture-handler": "~2.32.0",
+  "react-native-get-random-values": "~1.11.0",
+  "react-native-keyboard-controller": "1.21.9",
+  "react-native-maps": "1.27.2",
+  "react-native-pager-view": "8.0.2",
+  "react-native-worklets": "0.10.1",
+  "react-native-reanimated": "4.5.1",
+  "react-native-screens": "~4.26.0",
+  "react-native-safe-area-context": "~5.7.0",
+  "react-native-svg": "15.15.4",
+  "react-native-view-shot": "5.1.0",
+  "react-native-webview": "13.16.1",
+  "react-server-dom-webpack": "~19.2.4",
+  "sentry-expo": "~7.0.0",
+  "unimodules-app-loader": "~57.0.2",
+  "unimodules-image-loader-interface": "~6.1.0",
+  "@shopify/react-native-skia": "2.6.2",
+  "@shopify/flash-list": "2.0.2",
+  "@sentry/react-native": "~7.11.0",
+  "react-native-bootsplash": "^6.3.10"
+}
+
+INSTALLED_NESTED_CLI_PACKAGE_JSON
+{
+  "name": "@expo/cli",
+  "version": "57.0.24",
+  "description": "The Expo CLI",
+  "main": "main.js",
+  "bin": {
+    "expo-internal": "main.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./static/template/*": "./static/template/*",
+    ".": "./build/bin/cli",
+    "./ts-declarations/react-server-dom-webpack": "./ts-declarations/react-server-dom-webpack/index.d.ts",
+    "./ts-declarations/*": "./ts-declarations/*",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
+  "files": [
+    "main.js",
+    "internal",
+    "static",
+    "build"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/cli"
+  },
+  "keywords": [
+    "expo",
+    "cli"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
+  "dependencies": {
+    "@expo/code-signing-certificates": "^0.0.6",
+    "@expo/config": "~57.0.9",
+    "@expo/config-plugins": "~57.0.9",
+    "@expo/devcert": "^1.2.1",
+    "@expo/env": "~2.4.3",
+    "@expo/image-utils": "^0.11.5",
+    "@expo/inline-modules": "^0.1.7",
+    "@expo/json-file": "^11.0.1",
+    "@expo/log-box": "^57.0.4",
+    "@expo/metro": "~56.0.2",
+    "@expo/metro-config": "~57.0.12",
+    "@expo/metro-file-map": "^57.0.3",
+    "@expo/osascript": "^2.7.1",
+    "@expo/package-manager": "^1.13.1",
+    "@expo/plist": "^0.8.1",
+    "@expo/prebuild-config": "^57.0.16",
+    "@expo/require-utils": "^57.0.5",
+    "@expo/router-server": "^57.0.9",
+    "@expo/schema-utils": "^57.0.2",
+    "@expo/spawn-async": "^1.8.0",
+    "@expo/ws-tunnel": "^2.0.0",
+    "@expo/xcpretty": "^4.4.4",
+    "@react-native/dev-middleware": "0.86.3",
+    "accepts": "^1.3.8",
+    "agent-cli-detector": "0.1.7",
+    "arg": "^5.0.2",
+    "bplist-creator": "0.1.0",
+    "bplist-parser": "^0.3.1",
+    "chalk": "^4.0.0",
+    "ci-info": "^3.3.0",
+    "compression": "^1.7.4",
+    "connect": "^3.7.0",
+    "debug": "^4.3.4",
+    "dnssd-advertise": "^1.1.4",
+    "expo-server": "^57.0.3",
+    "fetch-nodeshim": "^0.4.10",
+    "getenv": "^2.0.0",
+    "glob": "^13.0.0",
+    "lan-network": "^0.2.1",
+    "multitars": "^1.0.2",
+    "node-forge": "^1.3.3",
+    "npm-package-arg": "^11.0.0",
+    "ora": "^3.4.0",
+    "picomatch": "^4.0.4",
+    "pretty-format": "^29.7.0",
+    "progress": "^2.0.3",
+    "prompts": "^2.3.2",
+    "resolve-from": "^5.0.0",
+    "sandbox-cli-detector": "^0.2.0",
+    "semver": "^7.6.0",
+    "send": "^0.19.0",
+    "slugify": "^1.3.4",
+    "stacktrace-parser": "^0.1.10",
+    "structured-headers": "^0.4.1",
+    "terminal-link": "^2.1.1",
+    "toqr": "^0.1.1",
+    "wrap-ansi": "^7.0.0",
+    "ws": "^8.12.1",
+    "zod": "^3.25.76"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-swc.js"
+    ]
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-router": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@expo/mcp-tunnel": "~0.2.3",
+    "@expo/ngrok": "^4.1.3",
+    "@jest/globals": "^29.7.0",
+    "@playwright/test": "^1.59.0",
+    "@swc/core": "^1.11.11",
+    "@taskr/clear": "^1.1.0",
+    "@taskr/esnext": "^1.1.0",
+    "@taskr/watch": "^1.1.0",
+    "@types/accepts": "^1.3.5",
+    "@types/connect": "^3.4.33",
+    "@types/cross-spawn": "^6.0.6",
+    "@types/debug": "^4.1.7",
+    "@types/eslint": "^8.56.12",
+    "@types/execa": "^0.9.0",
+    "@types/express": "^5.0.3",
+    "@types/getenv": "^1.0.0",
+    "@types/klaw-sync": "^6.0.0",
+    "@types/node": "^22.14.0",
+    "@types/npm-package-arg": "^6.1.0",
+    "@types/picomatch": "^4.0.2",
+    "@types/progress": "^2.0.5",
+    "@types/prompts": "^2.0.6",
+    "@types/resolve": "^1.20.2",
+    "@types/semver": "^7.5.8",
+    "@types/send": "^0.17.1",
+    "@types/webpack": "~4.41.32",
+    "@types/webpack-dev-server": "^3.11.0",
+    "@types/wrap-ansi": "^3.0.0",
+    "@types/ws": "^8.5.4",
+    "devtools-protocol": "^0.0.1113120",
+    "expect": "^29.7.0",
+    "expo-atlas": "^0.4.1",
+    "find-process": "^1.4.7",
+    "jest-matcher-utils": "^29.7.0",
+    "klaw-sync": "^6.0.0",
+    "memfs": "^3.2.0",
+    "nock": "^14.0.10",
+    "node-html-parser": "^6.1.5",
+    "playwright": "^1.59.0",
+    "taskr": "^1.1.0",
+    "tree-kill": "^1.2.2",
+    "expo": "57.0.22",
+    "expo-module-scripts": "56.0.3",
+    "expo-modules-autolinking": "57.0.13",
+    "expo-router": "57.0.21",
+    "@expo/fingerprint": "0.20.13"
+  },
+  "gitHead": "9e5319c0f821a27b7924841903abae50e2b41790",
+  "scripts": {
+    "build": "taskr",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "test": "expo-module test",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "test:playwright": "playwright test --config e2e/playwright.config.ts",
+    "expo-module": "expo-module"
+  }
+}
+CLI_DEPENDENCY_VALIDATION_SOURCE_FILES
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\utils\downloadExpoGoAsync.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\platforms\ExpoGoInstaller.js
+
+CLI_RELEVANT_SOURCE_MATCHES
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-26-    };
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-27-    return data;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-28-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-29-const _log = /*#__PURE__*/ _interop_require_wildcard(require("../log"));
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js:30:const _validateDependenciesVersions = require("./doctor/dependencies/validateDependenciesVersions");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-31-function _interop_require_default(obj) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-32-    return obj && obj.__esModule ? obj : {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-33-        default: obj
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-34-    };
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-77-/**
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-78- * Fetch dependency version check results.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-79- * Returns null if everything is up-to-date.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-80- */ async function checkDependenciesAsync(projectRoot, exp, pkg) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js:81:    const incorrectDeps = await (0, _validateDependenciesVersions.getVersionedDependenciesAsync)(projectRoot, exp, pkg);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-82-    if (incorrectDeps.length === 0) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-83-        return null;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-84-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\checkDependenciesOnStart.js-85-    const expoDep = incorrectDeps.find((dep)=>dep.packageName === 'expo');
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-12-_export(exports, {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-13-    get MAX_PACKAGES_PER_QUERY () {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-14-        return MAX_PACKAGES_PER_QUERY;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-15-    },
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js:16:    get checkPackagesCompatibility () {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js:17:        return checkPackagesCompatibility;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-18-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-19-});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-20-function _chalk() {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-21-    const data = /*#__PURE__*/ _interop_require_default(require("chalk"));
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-34-    };
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-35-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-36-const MAX_PACKAGES_PER_QUERY = 50;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-37-const ERROR_MESSAGE = 'Unable to fetch compatibility data from React Native Directory. Skipping check.';
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js:38:async function checkPackagesCompatibility(packages) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-39-    try {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-40-        const packagesToCheck = packages.filter((packageName)=>!packageName.startsWith('@expo/') && !packageName.startsWith('@expo-google-fonts/'));
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-41-        if (!packagesToCheck.length) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-42-            return;
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-78-    const lastPackage = incompatiblePackages.pop();
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-79-    return `${incompatiblePackages.join(', ')} and ${lastPackage}`;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-80-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js-81-
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\utils\checkPackagesCompatibility.js:82://# sourceMappingURL=checkPackagesCompatibility.js.map
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-37-    };
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-38-    return data;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-39-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-40-const _applyPlugins = require("./applyPlugins");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js:41:const _checkPackages = require("./checkPackages");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-42-const _installExpoPackage = require("./installExpoPackage");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-43-const _log = /*#__PURE__*/ _interop_require_wildcard(require("../log"));
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js:44:const _checkPackagesCompatibility = require("./utils/checkPackagesCompatibility");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-45-const _getVersionedPackages = require("../start/doctor/dependencies/getVersionedPackages");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-46-const _env = require("../utils/env");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-47-const _errors = require("../utils/errors");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-48-const _findUp = require("../utils/findUp");
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-117-        throw new _errors.CommandError('BAD_ARGS', `Cannot install other packages with ${expoVersion} and --fix or --check`);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-118-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-119-    // Only check/fix packages if `expo@<version>` is not requested
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-120-    if (!packageHasVersion(expoVersion) && (options.check || options.fix)) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js:121:        return await (0, _checkPackages.checkPackagesAsync)(projectRoot, {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-122-            packages,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-123-            options,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-124-            packageManager,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-125-            packageManagerArguments
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-126-        });
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-127-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-128-    // note(simek): check out the packages compatibility with New Architecture against RND API
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-129-    if (!_env.env.EXPO_NO_DEPENDENCY_VALIDATION && !_env.env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js:130:        await (0, _checkPackagesCompatibility.checkPackagesCompatibility)(otherPackages);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-131-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-132-    // Read the project Expo config without plugins.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-133-    const { exp } = (0, _config().getConfig)(projectRoot, {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\installAsync.js-134-        // Sometimes users will add a plugin to the config before installing the library,
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-1-"use strict";
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-2-Object.defineProperty(exports, "__esModule", {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-3-    value: true
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-4-});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:5:Object.defineProperty(exports, "checkPackagesAsync", {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-6-    enumerable: true,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-7-    get: function() {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:8:        return checkPackagesAsync;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-9-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-10-});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-11-function _config() {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-12-    const data = require("@expo/config");
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-23-    return data;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-24-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-25-const _fixPackages = require("./fixPackages");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-26-const _log = /*#__PURE__*/ _interop_require_wildcard(require("../log"));
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:27:const _validateDependenciesVersions = require("../start/doctor/dependencies/validateDependenciesVersions");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-28-const _interactive = require("../utils/interactive");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-29-const _link = require("../utils/link");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-30-const _prompts = require("../utils/prompts");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-31-const _strings = require("../utils/strings");
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-75-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-76-    return newObj;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-77-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-78-const debug = require('debug')('expo:install:check');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:79:async function checkPackagesAsync(projectRoot, { packages, packageManager, options: { fix, json }, packageManagerArguments }) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-80-    var _pkg_expo_install_exclude, _pkg_expo_install, _pkg_expo;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-81-    // Read the project Expo config without plugins.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-82-    const { exp, pkg } = (0, _config().getConfig)(projectRoot, {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-83-        // Sometimes users will add a plugin to the config before installing the library,
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-86-    });
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-87-    if (((_pkg_expo = pkg.expo) == null ? void 0 : (_pkg_expo_install = _pkg_expo.install) == null ? void 0 : (_pkg_expo_install_exclude = _pkg_expo_install.exclude) == null ? void 0 : _pkg_expo_install_exclude.length) && !json) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-88-        _log.log((0, _chalk().default)`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${(0, _strings.joinWithCommasAnd)(pkg.expo.install.exclude)}. These dependencies are listed in {bold expo.install.exclude} in package.json. ${(0, _link.learnMore)('https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation')}`);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-89-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:90:    const dependencies = await (0, _validateDependenciesVersions.getVersionedDependenciesAsync)(projectRoot, exp, pkg, packages);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-91-    if (!dependencies.length) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-92-        if (json) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-93-            console.log(JSON.stringify({
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-94-                dependencies: [],
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-106-        }, null, 2));
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-107-        // Exit with non-zero exit code to indicate outdated dependencies
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-108-        process.exit(1);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-109-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:110:    (0, _validateDependenciesVersions.logIncorrectDependencies)(dependencies);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-111-    const value = // If `--fix` then always fix.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-112-    fix || // Otherwise prompt to fix when not running in CI.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-113-    (0, _interactive.isInteractive)() && await (0, _prompts.confirmAsync)({
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-114-        message: 'Fix dependencies?'
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-126-    // Exit with non-zero exit code if any of the dependencies are out of date.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-127-    _log.exit(_chalk().default.red('Found outdated dependencies'), 1);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-128-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js-129-
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\install\checkPackages.js:130://# sourceMappingURL=checkPackages.js.map
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-78-        cache.set(obj, newObj);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-79-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-80-    return newObj;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-81-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:82:const debug = require('debug')('expo:doctor:dependencies:bundledNativeModules');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-83-async function getVersionedNativeModulesAsync(projectRoot, sdkVersion, options = {}) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-84-    if (sdkVersion !== 'UNVERSIONED' && !_env.env.EXPO_OFFLINE && !options.skipRemoteVersions) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-85-        try {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-86-            debug('Fetching bundled native modules from the server...');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-87-            return await (0, _getNativeModuleVersions.getNativeModuleVersionsAsync)(sdkVersion);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-88-        } catch (error) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-89-            if (error instanceof _errors.CommandError && (error.code === 'OFFLINE' || error.code === 'API')) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:90:                _log.warn((0, _chalk().default)`Unable to reach well-known versions endpoint. Using local dependency map {bold expo/bundledNativeModules.json} for version validation`);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-91-            } else {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-92-                throw error;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-93-            }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-94-        }
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-96-    debug('Fetching bundled native modules from the local JSON file...');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-97-    return await getBundledNativeModulesAsync(projectRoot);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-98-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-99-/**
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:100: * Get the legacy static `bundledNativeModules.json` file
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-101- * that's shipped with the version of `expo` that the project has installed.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-102- */ async function getBundledNativeModulesAsync(projectRoot) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-103-    // TODO: Revisit now that this code is in the `expo` package.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:104:    const bundledNativeModulesPath = _resolvefrom().default.silent(projectRoot, 'expo/bundledNativeModules.json');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:105:    if (!bundledNativeModulesPath) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-106-        _log.log();
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:107:        throw new _errors.CommandError((0, _chalk().default)`The dependency map {bold expo/bundledNativeModules.json} cannot be found, please ensure you have the package "{bold expo}" installed in your project.`);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-108-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:109:    return await _jsonfile().default.readAsync(bundledNativeModulesPath);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-110-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js-111-
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\bundledNativeModules.js:112://# sourceMappingURL=bundledNativeModules.js.map
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-17-    },
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-18-    get logIncorrectDependencies () {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-19-        return logIncorrectDependencies;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-20-    },
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:21:    get validateDependenciesVersionsAsync () {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:22:        return validateDependenciesVersionsAsync;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-23-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-24-});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-25-function _assert() {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-26-    const data = /*#__PURE__*/ _interop_require_default(require("assert"));
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-108-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-109-    return newObj;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-110-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-111-const debug = require('debug')('expo:doctor:dependencies:validate');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:112:async function validateDependenciesVersionsAsync(projectRoot, exp, pkg, packagesToCheck) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-113-    if (_env.env.EXPO_OFFLINE) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-114-        _log.warn('Skipping dependency validation in offline mode');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-115-        return null;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-116-    } else if (_env.env.EXPO_NO_DEPENDENCY_VALIDATION) {
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-209-        acc[key] = object[key];
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-210-        return acc;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-211-    }, {});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-212-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:213:function getPackagesToCheck(bundledNativeModules, dependencies) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-214-    const dependencyNames = Object.keys(dependencies ?? {});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-215-    const known = [];
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-216-    const unknown = [];
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-217-    for (const dependencyName of dependencyNames){
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:218:        if (dependencyName in bundledNativeModules) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-219-            known.push(dependencyName);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-220-        } else {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-221-            unknown.push(dependencyName);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-222-        }
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-225-        known,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-226-        unknown
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-227-    };
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-228-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:229:async function findIncorrectDependencies(pkg, packageVersions, bundledNativeModules, isReactNativeTvProject) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-230-    // For TV projects, compare the installed `major.minor` against the bundled
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-231-    // `react-native` `major.minor` — `react-native-tvos` follows the upstream
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-232-    // minor lines via a `<major>.<minor>-stable` dist-tag, so a matching minor
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-233-    // means the TV variant is up to date.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-234-    //
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-235-    // Resolve the install spec for the TV variant once up front so the inner
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-236-    // loop stays synchronous and we don't hit the npm registry per dependency.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:237:    const bundledReactNativeVersion = bundledNativeModules['react-native'];
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-238-    const reactNativeTvExpectedVersionOrRange = isReactNativeTvProject && bundledReactNativeVersion ? await (0, _reactNativeTv.correctReactNativeTvVersion)(bundledReactNativeVersion) : undefined;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-239-    const packages = Object.keys(packageVersions);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-240-    const incorrectDeps = [];
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-241-    for (const packageName of packages){
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-250-                });
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-251-            }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-252-            continue;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-253-        }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:254:        const expectedVersionOrRange = bundledNativeModules[packageName];
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-255-        if (isDependencyVersionIncorrect(packageName, actualVersion, expectedVersionOrRange)) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-256-            incorrectDeps.push({
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-257-                packageName,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-258-                packageType: findDependencyType(pkg, packageName),
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-283-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-284-    return 'dependencies';
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-285-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js-286-
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\validateDependenciesVersions.js:287://# sourceMappingURL=validateDependenciesVersions.js.map
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-28-        return data;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-29-    };
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-30-    return data;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-31-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js:32:const _bundledNativeModules = require("./bundledNativeModules");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-33-const _resolvePackages = require("./resolvePackages");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-34-const _getVersions = require("../../../api/getVersions");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-35-const _log = require("../../../log");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-36-const _env = require("../../../utils/env");
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-64-    const skipRemoteVersions = await (0, _resolvePackages.hasExpoCanaryAsync)(projectRoot);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-65-    if (skipRemoteVersions) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-66-        _log.Log.warn('Dependency validation might be unreliable when using canary SDK versions');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-67-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js:68:    const bundledNativeModules = sdkVersion ? await (0, _bundledNativeModules.getVersionedNativeModulesAsync)(projectRoot, sdkVersion, {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-69-        skipRemoteVersions
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-70-    }) : {};
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-71-    const versionsForSdk = !skipRemoteVersions ? await getRemoteVersionsForSdkAsync({
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-72-        sdkVersion,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-73-        skipCache
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-74-    }) : {};
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-75-    return {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js:76:        ...bundledNativeModules,
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-77-        // Prefer the remote versions over the bundled versions, this enables us to push
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-78-        // emergency fixes that users can access without having to update the `expo` package.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-79-        ...versionsForSdk
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\getVersionedPackages.js-80-    };
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-73-        return LATEST_FALLBACK_SPEC;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-74-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-75-    // In offline mode skip the npm dist-tags lookup and trust the derived tag —
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-76-    // any other CLI code path that needs a network request also bails on
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js:77:    // `EXPO_OFFLINE` (see `validateDependenciesVersionsAsync`).
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-78-    if (_env.env.EXPO_OFFLINE) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-79-        debug(`EXPO_OFFLINE is set; skipping npm dist-tags lookup for react-native-tvos`);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-80-        return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${derivedTag}`;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\start\doctor\dependencies\reactNativeTv.js-81-    }
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-18-});
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-19-const _env = require("../utils/env");
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-20-function getExpoApiBaseUrl() {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-21-    if (_env.env.EXPO_STAGING) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js:22:        return `https://staging-api.expo.dev`;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-23-    } else if (_env.env.EXPO_LOCAL) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-24-        return `http://127.0.0.1:3000`;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-25-    } else {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js:26:        return `https://api.expo.dev`;
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-27-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-28-}
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-29-function getExpoWebsiteBaseUrl() {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\endpoint.js-30-    if (_env.env.EXPO_STAGING) {
+--
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-17-        cacheDirectory: 'versions-cache',
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-18-        // We'll use a 5 minute cache to ensure we stay relatively up to date.
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-19-        ttl: 1000 * 60 * 5
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-20-    });
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js:21:    const results = await fetchAsync('versions/latest');
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-22-    if (!results.ok) {
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-23-        throw new _errors.CommandError('API', `Unexpected response when fetching version info from Expo servers: ${results.statusText}.`);
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-24-    }
+mobile\node_modules\expo\node_modules\@expo\cli\build\src\api\getVersions.js-25-    const json = await results.json();
+
+LOCKFILE_RESOLUTION_ENTRIES
+
+> mobile\package-lock.json:6776:    "node_modules/expo": {
+  mobile\package-lock.json:6777:      "version": "57.0.22",
+  mobile\package-lock.json:6778:      "resolved": "https://registry.npmjs.org/expo/-/expo-57.0.22.tgz",
+  mobile\package-lock.json:6779:      "integrity": "sha512-YWUGqWtchsRQzcbU+Iqqt/1kFbZ9Pp3/eg+UenINahNt2RIaDElFJFFWLD1Yfex6WnBm6ESSE8h0/ja28hRqZg==",
+  mobile\package-lock.json:6780:      "license": "MIT",
+  mobile\package-lock.json:6781:      "dependencies": {
+  mobile\package-lock.json:6782:        "@babel/runtime": "^7.20.0",
+  mobile\package-lock.json:6783:        "@expo/cli": "^57.0.24",
+  mobile\package-lock.json:6784:        "@expo/config": "~57.0.9",
+  mobile\package-lock.json:6785:        "@expo/config-plugins": "~57.0.9",
+  mobile\package-lock.json:6786:        "@expo/devtools": "~57.0.1",
+  mobile\package-lock.json:6787:        "@expo/dom-webview": "~57.0.1",
+  mobile\package-lock.json:6788:        "@expo/fingerprint": "^0.20.13",
+  mobile\package-lock.json:6789:        "@expo/local-build-cache-provider": "^57.0.8",
+  mobile\package-lock.json:6790:        "@expo/log-box": "^57.0.4",
+  mobile\package-lock.json:6791:        "@expo/metro": "~56.0.2",
+  mobile\package-lock.json:6792:        "@expo/metro-config": "~57.0.12",
+  mobile\package-lock.json:6793:        "@ungap/structured-clone": "^1.3.0",
+  mobile\package-lock.json:6794:        "babel-preset-expo": "~57.0.11",
+  mobile\package-lock.json:6795:        "expo-asset": "~57.0.17",
+  mobile\package-lock.json:6796:        "expo-constants": "~57.0.18",
+  mobile\package-lock.json:6797:        "expo-file-system": "~57.0.7",
+  mobile\package-lock.json:6798:        "expo-font": "~57.0.4",
+  mobile\package-lock.json:6799:        "expo-keep-awake": "~57.0.2",
+  mobile\package-lock.json:6800:        "expo-modules-autolinking": "~57.0.13",
+  mobile\package-lock.json:6801:        "expo-modules-core": "~57.0.18",
+  mobile\package-lock.json:6802:        "pretty-format": "^29.7.0",
+  mobile\package-lock.json:6803:        "react-refresh": "^0.14.2",
+  mobile\package-lock.json:6804:        "whatwg-url-minimum": "^0.1.2"
+  mobile\package-lock.json:6805:      },
+  mobile\package-lock.json:6806:      "bin": {
+> mobile\package-lock.json:7005:    "node_modules/expo-notifications": {
+  mobile\package-lock.json:7006:      "version": "57.0.18",
+  mobile\package-lock.json:7007:      "resolved": "https://registry.npmjs.org/expo-notifications/-/expo-notifications-57.0.18.tgz",
+  mobile\package-lock.json:7008:      "integrity": "sha512-EUyFHeP7pakTYO3UkxnK3CvzgrNSfe+IOxcCa8dX6DuSxSvIOcIzaQ2sNZ4XsvzmJzZPxl3MHKql2QVigDmg8A==",
+  mobile\package-lock.json:7009:      "license": "MIT",
+  mobile\package-lock.json:7010:      "dependencies": {
+  mobile\package-lock.json:7011:        "@expo/image-utils": "^0.11.5",
+  mobile\package-lock.json:7012:        "abort-controller": "^3.0.0",
+  mobile\package-lock.json:7013:        "badgin": "^1.1.5",
+  mobile\package-lock.json:7014:        "expo-application": "~57.0.3",
+  mobile\package-lock.json:7015:        "expo-constants": "~57.0.18"
+  mobile\package-lock.json:7016:      },
+  mobile\package-lock.json:7017:      "peerDependencies": {
+  mobile\package-lock.json:7018:        "expo": "*",
+  mobile\package-lock.json:7019:        "react": "*",
+  mobile\package-lock.json:7020:        "react-native": "*"
+  mobile\package-lock.json:7021:      }
+  mobile\package-lock.json:7022:    },
+  mobile\package-lock.json:7023:    "node_modules/expo-secure-store": {
+  mobile\package-lock.json:7024:      "version": "57.0.4",
+  mobile\package-lock.json:7025:      "resolved": "https://registry.npmjs.org/expo-secure-store/-/expo-secure-store-57.0.4.tgz",
+  mobile\package-lock.json:7026:      "integrity": "sha512-7zBA1RThURTXdP4w65kBzZNbcSsfArqVd+p+ETAnPRWXO8J296Qd0YaCVyRpJ0HSwlCnGdvOnqO+NgSreHsOhA==",
+  mobile\package-lock.json:7027:      "license": "MIT",
+  mobile\package-lock.json:7028:      "peerDependencies": {
+  mobile\package-lock.json:7029:        "expo": "*"
+  mobile\package-lock.json:7030:      }
+  mobile\package-lock.json:7031:    },
+  mobile\package-lock.json:7032:    "node_modules/expo-server": {
+  mobile\package-lock.json:7033:      "version": "57.0.3",
+  mobile\package-lock.json:7034:      "resolved": "https://registry.npmjs.org/expo-server/-/expo-server-57.0.3.tgz",
+  mobile\package-lock.json:7035:      "integrity": "sha512-aK+LdKzauHSGmsOStZtyxdzv0zWssCkxTw3m4QuOhfDSJsZaMRTd9O41d8ixU/QfELTbaJ0oRNcF7JFV/7O9YQ==",
+> mobile\package-lock.json:7061:    "node_modules/expo/node_modules/@expo/cli": {
+  mobile\package-lock.json:7062:      "version": "57.0.24",
+  mobile\package-lock.json:7063:      "resolved": "https://registry.npmjs.org/@expo/cli/-/cli-57.0.24.tgz",
+  mobile\package-lock.json:7064:      "integrity": "sha512-CCBkvhPgAcrzJQ3daYbyOD6YuqKKkvOIyUfAbsUIvlpLomIlocYxFHYdmaC/KHqfCsbGFYSV/QKTSYshhSFNEA==",
+  mobile\package-lock.json:7065:      "license": "MIT",
+  mobile\package-lock.json:7066:      "dependencies": {
+  mobile\package-lock.json:7067:        "@expo/code-signing-certificates": "^0.0.6",
+  mobile\package-lock.json:7068:        "@expo/config": "~57.0.9",
+  mobile\package-lock.json:7069:        "@expo/config-plugins": "~57.0.9",
+  mobile\package-lock.json:7070:        "@expo/devcert": "^1.2.1",
+  mobile\package-lock.json:7071:        "@expo/env": "~2.4.3",
+  mobile\package-lock.json:7072:        "@expo/image-utils": "^0.11.5",
+  mobile\package-lock.json:7073:        "@expo/inline-modules": "^0.1.7",
+  mobile\package-lock.json:7074:        "@expo/json-file": "^11.0.1",
+  mobile\package-lock.json:7075:        "@expo/log-box": "^57.0.4",
+  mobile\package-lock.json:7076:        "@expo/metro": "~56.0.2",
+  mobile\package-lock.json:7077:        "@expo/metro-config": "~57.0.12",
+  mobile\package-lock.json:7078:        "@expo/metro-file-map": "^57.0.3",
+  mobile\package-lock.json:7079:        "@expo/osascript": "^2.7.1",
+  mobile\package-lock.json:7080:        "@expo/package-manager": "^1.13.1",
+  mobile\package-lock.json:7081:        "@expo/plist": "^0.8.1",
+  mobile\package-lock.json:7082:        "@expo/prebuild-config": "^57.0.16",
+  mobile\package-lock.json:7083:        "@expo/require-utils": "^57.0.5",
+  mobile\package-lock.json:7084:        "@expo/router-server": "^57.0.9",
+  mobile\package-lock.json:7085:        "@expo/schema-utils": "^57.0.2",
+  mobile\package-lock.json:7086:        "@expo/spawn-async": "^1.8.0",
+  mobile\package-lock.json:7087:        "@expo/ws-tunnel": "^2.0.0",
+  mobile\package-lock.json:7088:        "@expo/xcpretty": "^4.4.4",
+  mobile\package-lock.json:7089:        "@react-native/dev-middleware": "0.86.3",
+  mobile\package-lock.json:7090:        "accepts": "^1.3.8",
+  mobile\package-lock.json:7091:        "agent-cli-detector": "0.1.7",
+
+
+
+EXACT EXPECTATION PROVENANCE SUMMARY
+- getCombinedKnownVersionsAsync in the installed nested @expo/cli@57.0.24 calls getVersionedNativeModulesAsync and getRemoteVersionsForSdkAsync, then merges local and remote maps with ...versionsForSdk last. Its inline comment explicitly states remote versions are preferred to push emergency fixes without requiring an expo package update.
+- getVersionsAsync calls official https://api.expo.dev/v2/versions/latest; getNativeModuleVersionsAsync calls https://api.expo.dev/v2/sdks/57.0.0/native-modules.
+- The raw Expo Doctor/install-check failures therefore originate in the official remote SDK 57 expectation table. The installed xpo@57.0.22 bundled map is fallback/local metadata and specifies xpo-notifications ~57.0.18; it is overridden while online.
+- The nested CLI is package-resolved under xpo; it is not a direct project dependency and was not added or pinned.

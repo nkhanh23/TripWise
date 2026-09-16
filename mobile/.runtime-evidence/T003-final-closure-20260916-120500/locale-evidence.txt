@@ -1,0 +1,1 @@
+VERIFIED FROM TEST EVIDENCE only in existing source tests; no new runtime locale evidence was captured because final closure stopped at fresh RLS blocker.

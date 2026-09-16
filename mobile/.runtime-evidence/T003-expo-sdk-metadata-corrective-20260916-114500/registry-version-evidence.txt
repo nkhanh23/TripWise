@@ -1,0 +1,115 @@
+Configured npm registry and public metadata queries
+
+### npm config get registry
+https://registry.npmjs.org/
+EXIT_CODE=0
+
+### npm view expo version
+57.0.23
+EXIT_CODE=0
+
+### npm view expo dist-tags --json
+{
+  "sdk-52": "52.0.49",
+  "sdk-53": "53.0.27",
+  "canary-sdk-55": "55.0.3-canary-20260429-a5e59cf",
+  "canary-sdk-56": "56.0.6-canary-20260701-9100865",
+  "sdk-54": "54.0.37",
+  "sdk-56": "56.0.21",
+  "sdk-55": "55.0.31",
+  "canary": "58.0.0-canary-20260909-ea7a89a",
+  "next": "58.0.0-preview.2",
+  "sdk-57": "57.0.23",
+  "latest": "57.0.23"
+}
+EXIT_CODE=0
+
+### npm view expo@57.0.22 version
+57.0.22
+EXIT_CODE=0
+
+### npm view expo@57.0.23 version
+57.0.23
+EXIT_CODE=0
+
+### npm view expo@57.0.23 dependencies --json
+{
+  "@expo/cli": "^57.0.25",
+  "expo-font": "~57.0.4",
+  "expo-asset": "~57.0.17",
+  "@expo/metro": "~56.0.2",
+  "@expo/config": "~57.0.9",
+  "@expo/log-box": "^57.0.4",
+  "pretty-format": "^29.7.0",
+  "react-refresh": "^0.14.2",
+  "@babel/runtime": "^7.20.0",
+  "@expo/devtools": "~57.0.1",
+  "expo-constants": "~57.0.18",
+  "expo-keep-awake": "~57.0.2",
+  "expo-file-system": "~57.0.7",
+  "@expo/dom-webview": "~57.0.1",
+  "@expo/fingerprint": "^0.20.13",
+  "babel-preset-expo": "~57.0.12",
+  "expo-modules-core": "~57.0.18",
+  "@expo/metro-config": "~57.0.12",
+  "whatwg-url-minimum": "^0.1.2",
+  "@expo/config-plugins": "~57.0.9",
+  "@ungap/structured-clone": "^1.3.0",
+  "expo-modules-autolinking": "~57.0.13",
+  "@expo/local-build-cache-provider": "^57.0.8"
+}
+EXIT_CODE=0
+
+### npm view expo-notifications version
+57.0.19
+EXIT_CODE=0
+
+### npm view expo-notifications dist-tags --json
+{
+  "sdk-50": "0.27.6",
+  "sdk-51": "0.28.3",
+  "sdk-53": "0.31.5",
+  "sdk-54": "0.32.17",
+  "canary-sdk-55": "55.0.11-canary-20260429-a5e59cf",
+  "canary-sdk-56": "56.0.15-canary-20260701-9100865",
+  "sdk-55": "55.0.27",
+  "sdk-56": "56.0.25",
+  "canary": "58.0.0-canary-20260909-ea7a89a",
+  "next": "58.0.2",
+  "sdk-57": "57.0.19",
+  "latest": "57.0.19"
+}
+EXIT_CODE=0
+
+### npm view expo-notifications@57.0.18 version
+57.0.18
+EXIT_CODE=0
+
+### npm view expo-notifications@57.0.19 version
+57.0.19
+EXIT_CODE=0
+
+### Expo API versions/latest SDK 57 relevant values
+{
+  "expoVersion": "~57.0.23",
+  "reactNative": "0.86.3"
+}
+EXIT_CODE=0
+
+### Expo API sdks/57.0.0/native-modules relevant values
+[
+  {
+    "id": "3168fd21-a53c-4e91-bcb4-2d8373ea1bf4",
+    "sdkVersion": "57.0.0",
+    "npmPackage": "expo-notifications",
+    "versionRange": "~57.0.19",
+    "createdAt": "2026-06-25T19:45:52.285Z",
+    "updatedAt": "2026-06-25T19:45:52.285Z"
+  }
+]
+EXIT_CODE=0
+RUNTIME VERSIONS
+node=v22.23.2
+npm=10.9.8
+npx-expo=57.0.25
+registry=https://registry.npmjs.org/

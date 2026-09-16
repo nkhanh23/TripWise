@@ -1,0 +1,2 @@
+NOT_RUN_DEVICE_UNAVAILABLE
+Mandatory real OFF cancellation ordering was not collected. Deterministic controller/runtime tests cover immediate local revocation and scoped cancellation before persistence completion.

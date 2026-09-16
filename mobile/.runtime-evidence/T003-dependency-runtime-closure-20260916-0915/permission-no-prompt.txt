@@ -1,0 +1,3 @@
+NOT_RUN_DEVICE_UNAVAILABLE
+Fresh adb devices output is empty. No temporary instrumentation, permission request, app launch, Settings mount, or normalized Expo adapter call was performed during this closure attempt.
+Prior device evidence is not reused as fresh runtime proof.

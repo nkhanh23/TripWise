@@ -1,0 +1,2 @@
+BLOCKED_BACKEND_NOT_DEPLOYED
+No user-authorized remote/dev backend containing the T003 migration is identified. Remote migration deployment was not attempted. No in-memory replacement was used as production runtime evidence.

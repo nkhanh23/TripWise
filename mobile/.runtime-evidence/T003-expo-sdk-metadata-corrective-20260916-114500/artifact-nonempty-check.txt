@@ -1,0 +1,5 @@
+REQUIRED_ARTIFACT_NONEMPTY_CHECK
+BUNDLE=D:\Dev\TripWise\mobile\.runtime-evidence\T003-expo-sdk-metadata-corrective-20260916-114500
+REQUIRED_COUNT=19
+MISSING_OR_EMPTY_COUNT=0
+PASS: every required artifact is non-empty UTF-8 text.

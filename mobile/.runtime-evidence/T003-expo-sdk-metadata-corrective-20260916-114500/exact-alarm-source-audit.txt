@@ -1,0 +1,5 @@
+EXACT-ALARM SOURCE AUDIT
+Search target: mobile/android/app/src/main/AndroidManifest.xml
+Patterns: android.permission.SCHEDULE_EXACT_ALARM; android.permission.USE_EXACT_ALARM
+
+RESULT: no matches (rg exit 1 means no pattern found).

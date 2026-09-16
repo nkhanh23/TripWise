@@ -1,0 +1,1 @@
+NOT RUN — stopped by mandatory fresh RLS verification blocker before Android runtime evidence.

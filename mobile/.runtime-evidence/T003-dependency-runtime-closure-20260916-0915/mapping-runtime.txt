@@ -1,0 +1,2 @@
+VERIFIED_FROM_TEST_EVIDENCE_ONLY
+Focused policy tests cover trip-only, itinerary-only, both-on and both-off mappings. No current-device mapping reaches the native adapter because no device is connected.

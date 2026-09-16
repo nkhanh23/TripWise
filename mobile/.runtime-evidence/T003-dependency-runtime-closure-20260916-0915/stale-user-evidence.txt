@@ -1,0 +1,2 @@
+VERIFIED_FROM_TEST_EVIDENCE
+Focused T003 tests PASS for stale preference load, stale write, stale permission response and stale native enumeration. No personal account-switch runtime flow was run.

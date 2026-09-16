@@ -1,0 +1,2 @@
+NOT_RUN_DEVICE_UNAVAILABLE
+No current native scheduled reminder was enumerated. Tests/source verify generic EN/VI presentation and opaque T002 native metadata; this is not Android runtime evidence.

@@ -1,0 +1,174 @@
+DURABLE DEPENDENCY FILES CHANGED:
+mobile/package.json — expo ~57.0.22 -> ~57.0.23; expo-notifications ~57.0.18 -> ~57.0.19.
+mobile/package-lock.json — resolution updates limited to Expo package tree required by the two patch upgrades.
+
+NO PRODUCTION/T003/T002 SOURCE, TEST, MIGRATION, ANDROID CONFIG, OR ROADMAP FILE WAS MODIFIED BY THIS TASK.
+
+PACKAGE.JSON DIFF:
+
+InputObject                           SideIndicator
+-----------                           -------------
+    "expo": "~57.0.23",               =>
+    "expo-notifications": "~57.0.19", =>
+    "expo": "~57.0.22",               <=
+    "expo-notifications": "~57.0.18", <=
+
+
+PACKAGE-LOCK RELEVANT EXCERPT DIFF:
+
+InputObject                                                                                                                                           SideIndicator
+-----------                                                                                                                                           -------------
+> mobile\package-lock.json:6746:    "node_modules/expo": {                                                                                            =>
+  mobile\package-lock.json:6747:      "version": "57.0.23",                                                                                           =>
+  mobile\package-lock.json:6748:      "resolved": "https://registry.npmjs.org/expo/-/expo-57.0.23.tgz",                                               =>
+  mobile\package-lock.json:6749:      "integrity": "sha512-/aBLZFTD7+BNHWV/q5XbNRFqMhW/CrHsYeq8CcS/iGz6lJHYwEMm4XFcdoaeliuMdo6ZjNrsTHkBIdGB8VMHTg==", =>
+  mobile\package-lock.json:6750:      "license": "MIT",                                                                                               =>
+  mobile\package-lock.json:6751:      "dependencies": {                                                                                               =>
+  mobile\package-lock.json:6752:        "@babel/runtime": "^7.20.0",                                                                                  =>
+  mobile\package-lock.json:6753:        "@expo/cli": "^57.0.25",                                                                                      =>
+  mobile\package-lock.json:6754:        "@expo/config": "~57.0.9",                                                                                    =>
+  mobile\package-lock.json:6755:        "@expo/config-plugins": "~57.0.9",                                                                            =>
+  mobile\package-lock.json:6756:        "@expo/devtools": "~57.0.1",                                                                                  =>
+  mobile\package-lock.json:6757:        "@expo/dom-webview": "~57.0.1",                                                                               =>
+  mobile\package-lock.json:6758:        "@expo/fingerprint": "^0.20.13",                                                                              =>
+  mobile\package-lock.json:6759:        "@expo/local-build-cache-provider": "^57.0.8",                                                                =>
+  mobile\package-lock.json:6760:        "@expo/log-box": "^57.0.4",                                                                                   =>
+  mobile\package-lock.json:6761:        "@expo/metro": "~56.0.2",                                                                                     =>
+  mobile\package-lock.json:6762:        "@expo/metro-config": "~57.0.12",                                                                             =>
+  mobile\package-lock.json:6763:        "@ungap/structured-clone": "^1.3.0",                                                                          =>
+  mobile\package-lock.json:6764:        "babel-preset-expo": "~57.0.12",                                                                              =>
+  mobile\package-lock.json:6765:        "expo-asset": "~57.0.17",                                                                                     =>
+  mobile\package-lock.json:6766:        "expo-constants": "~57.0.18",                                                                                 =>
+  mobile\package-lock.json:6767:        "expo-file-system": "~57.0.7",                                                                                =>
+  mobile\package-lock.json:6768:        "expo-font": "~57.0.4",                                                                                       =>
+  mobile\package-lock.json:6769:        "expo-keep-awake": "~57.0.2",                                                                                 =>
+  mobile\package-lock.json:6770:        "expo-modules-autolinking": "~57.0.13",                                                                       =>
+> mobile\package-lock.json:6975:    "node_modules/expo-notifications": {                                                                              =>
+  mobile\package-lock.json:6976:      "version": "57.0.19",                                                                                           =>
+  mobile\package-lock.json:6977:      "resolved": "https://registry.npmjs.org/expo-notifications/-/expo-notifications-57.0.19.tgz",                   =>
+  mobile\package-lock.json:6978:      "integrity": "sha512-JW/usGEwOxWzN8s0L7+j3FAoB39GtaZtpUGye2lPvcqYSkvewpZYkrC16P1JaCP09YRx0Q+qXPx5NUoUU8NsBA==", =>
+  mobile\package-lock.json:6979:      "license": "MIT",                                                                                               =>
+  mobile\package-lock.json:6980:      "dependencies": {                                                                                               =>
+  mobile\package-lock.json:6981:        "@expo/image-utils": "^0.11.5",                                                                               =>
+  mobile\package-lock.json:6982:        "abort-controller": "^3.0.0",                                                                                 =>
+  mobile\package-lock.json:6983:        "badgin": "^1.1.5",                                                                                           =>
+  mobile\package-lock.json:6984:        "expo-application": "~57.0.3",                                                                                =>
+  mobile\package-lock.json:6985:        "expo-constants": "~57.0.18"                                                                                  =>
+  mobile\package-lock.json:6986:      },                                                                                                              =>
+  mobile\package-lock.json:6987:      "peerDependencies": {                                                                                           =>
+  mobile\package-lock.json:6988:        "expo": "*",                                                                                                  =>
+  mobile\package-lock.json:6989:        "react": "*",                                                                                                 =>
+  mobile\package-lock.json:6990:        "react-native": "*"                                                                                           =>
+  mobile\package-lock.json:6991:      }                                                                                                               =>
+  mobile\package-lock.json:6992:    },                                                                                                                =>
+  mobile\package-lock.json:6993:    "node_modules/expo-secure-store": {                                                                               =>
+  mobile\package-lock.json:6994:      "version": "57.0.4",                                                                                            =>
+  mobile\package-lock.json:6995:      "resolved": "https://registry.npmjs.org/expo-secure-store/-/expo-secure-store-57.0.4.tgz",                      =>
+  mobile\package-lock.json:6996:      "integrity": "sha512-7zBA1RThURTXdP4w65kBzZNbcSsfArqVd+p+ETAnPRWXO8J296Qd0YaCVyRpJ0HSwlCnGdvOnqO+NgSreHsOhA==", =>
+  mobile\package-lock.json:6997:      "license": "MIT",                                                                                               =>
+  mobile\package-lock.json:6998:      "peerDependencies": {                                                                                           =>
+  mobile\package-lock.json:6999:        "expo": "*"                                                                                                   =>
+> mobile\package-lock.json:7031:    "node_modules/expo/node_modules/@expo/cli": {                                                                     =>
+  mobile\package-lock.json:7032:      "version": "57.0.25",                                                                                           =>
+  mobile\package-lock.json:7033:      "resolved": "https://registry.npmjs.org/@expo/cli/-/cli-57.0.25.tgz",                                           =>
+  mobile\package-lock.json:7034:      "integrity": "sha512-G2FJfwClIPNPhH2sJlIFAkhQLYaKNGzSarIQUl6sVA8oGdrmBnhRvbtTzxDzjS6WzO2aDX8DY7y1aNbCFILodg==", =>
+  mobile\package-lock.json:7035:      "license": "MIT",                                                                                               =>
+  mobile\package-lock.json:7036:      "dependencies": {                                                                                               =>
+  mobile\package-lock.json:7037:        "@expo/code-signing-certificates": "^0.0.6",                                                                  =>
+  mobile\package-lock.json:7038:        "@expo/config": "~57.0.9",                                                                                    =>
+  mobile\package-lock.json:7039:        "@expo/config-plugins": "~57.0.9",                                                                            =>
+  mobile\package-lock.json:7040:        "@expo/devcert": "^1.2.1",                                                                                    =>
+  mobile\package-lock.json:7041:        "@expo/env": "~2.4.3",                                                                                        =>
+  mobile\package-lock.json:7042:        "@expo/image-utils": "^0.11.5",                                                                               =>
+  mobile\package-lock.json:7043:        "@expo/inline-modules": "^0.1.7",                                                                             =>
+  mobile\package-lock.json:7044:        "@expo/json-file": "^11.0.1",                                                                                 =>
+  mobile\package-lock.json:7045:        "@expo/log-box": "^57.0.4",                                                                                   =>
+  mobile\package-lock.json:7046:        "@expo/metro": "~56.0.2",                                                                                     =>
+  mobile\package-lock.json:7047:        "@expo/metro-config": "~57.0.12",                                                                             =>
+  mobile\package-lock.json:7048:        "@expo/metro-file-map": "^57.0.3",                                                                            =>
+  mobile\package-lock.json:7049:        "@expo/osascript": "^2.7.1",                                                                                  =>
+  mobile\package-lock.json:7050:        "@expo/package-manager": "^1.13.1",                                                                           =>
+  mobile\package-lock.json:7051:        "@expo/plist": "^0.8.1",                                                                                      =>
+  mobile\package-lock.json:7052:        "@expo/prebuild-config": "^57.0.16",                                                                          =>
+  mobile\package-lock.json:7053:        "@expo/require-utils": "^57.0.5",                                                                             =>
+  mobile\package-lock.json:7054:        "@expo/router-server": "^57.0.10",                                                                            =>
+  mobile\package-lock.json:7055:        "@expo/schema-utils": "^57.0.2",                                                                              =>
+> mobile\package-lock.json:6776:    "node_modules/expo": {                                                                                            <=
+  mobile\package-lock.json:6777:      "version": "57.0.22",                                                                                           <=
+  mobile\package-lock.json:6778:      "resolved": "https://registry.npmjs.org/expo/-/expo-57.0.22.tgz",                                               <=
+  mobile\package-lock.json:6779:      "integrity": "sha512-YWUGqWtchsRQzcbU+Iqqt/1kFbZ9Pp3/eg+UenINahNt2RIaDElFJFFWLD1Yfex6WnBm6ESSE8h0/ja28hRqZg==", <=
+  mobile\package-lock.json:6780:      "license": "MIT",                                                                                               <=
+  mobile\package-lock.json:6781:      "dependencies": {                                                                                               <=
+  mobile\package-lock.json:6782:        "@babel/runtime": "^7.20.0",                                                                                  <=
+  mobile\package-lock.json:6783:        "@expo/cli": "^57.0.24",                                                                                      <=
+  mobile\package-lock.json:6784:        "@expo/config": "~57.0.9",                                                                                    <=
+  mobile\package-lock.json:6785:        "@expo/config-plugins": "~57.0.9",                                                                            <=
+  mobile\package-lock.json:6786:        "@expo/devtools": "~57.0.1",                                                                                  <=
+  mobile\package-lock.json:6787:        "@expo/dom-webview": "~57.0.1",                                                                               <=
+  mobile\package-lock.json:6788:        "@expo/fingerprint": "^0.20.13",                                                                              <=
+  mobile\package-lock.json:6789:        "@expo/local-build-cache-provider": "^57.0.8",                                                                <=
+  mobile\package-lock.json:6790:        "@expo/log-box": "^57.0.4",                                                                                   <=
+  mobile\package-lock.json:6791:        "@expo/metro": "~56.0.2",                                                                                     <=
+  mobile\package-lock.json:6792:        "@expo/metro-config": "~57.0.12",                                                                             <=
+  mobile\package-lock.json:6793:        "@ungap/structured-clone": "^1.3.0",                                                                          <=
+  mobile\package-lock.json:6794:        "babel-preset-expo": "~57.0.11",                                                                              <=
+  mobile\package-lock.json:6795:        "expo-asset": "~57.0.17",                                                                                     <=
+  mobile\package-lock.json:6796:        "expo-constants": "~57.0.18",                                                                                 <=
+  mobile\package-lock.json:6797:        "expo-file-system": "~57.0.7",                                                                                <=
+  mobile\package-lock.json:6798:        "expo-font": "~57.0.4",                                                                                       <=
+  mobile\package-lock.json:6799:        "expo-keep-awake": "~57.0.2",                                                                                 <=
+  mobile\package-lock.json:6800:        "expo-modules-autolinking": "~57.0.13",                                                                       <=
+> mobile\package-lock.json:7005:    "node_modules/expo-notifications": {                                                                              <=
+  mobile\package-lock.json:7006:      "version": "57.0.18",                                                                                           <=
+  mobile\package-lock.json:7007:      "resolved": "https://registry.npmjs.org/expo-notifications/-/expo-notifications-57.0.18.tgz",                   <=
+  mobile\package-lock.json:7008:      "integrity": "sha512-EUyFHeP7pakTYO3UkxnK3CvzgrNSfe+IOxcCa8dX6DuSxSvIOcIzaQ2sNZ4XsvzmJzZPxl3MHKql2QVigDmg8A==", <=
+  mobile\package-lock.json:7009:      "license": "MIT",                                                                                               <=
+  mobile\package-lock.json:7010:      "dependencies": {                                                                                               <=
+  mobile\package-lock.json:7011:        "@expo/image-utils": "^0.11.5",                                                                               <=
+  mobile\package-lock.json:7012:        "abort-controller": "^3.0.0",                                                                                 <=
+  mobile\package-lock.json:7013:        "badgin": "^1.1.5",                                                                                           <=
+  mobile\package-lock.json:7014:        "expo-application": "~57.0.3",                                                                                <=
+  mobile\package-lock.json:7015:        "expo-constants": "~57.0.18"                                                                                  <=
+  mobile\package-lock.json:7016:      },                                                                                                              <=
+  mobile\package-lock.json:7017:      "peerDependencies": {                                                                                           <=
+  mobile\package-lock.json:7018:        "expo": "*",                                                                                                  <=
+  mobile\package-lock.json:7019:        "react": "*",                                                                                                 <=
+  mobile\package-lock.json:7020:        "react-native": "*"                                                                                           <=
+  mobile\package-lock.json:7021:      }                                                                                                               <=
+  mobile\package-lock.json:7022:    },                                                                                                                <=
+  mobile\package-lock.json:7023:    "node_modules/expo-secure-store": {                                                                               <=
+  mobile\package-lock.json:7024:      "version": "57.0.4",                                                                                            <=
+  mobile\package-lock.json:7025:      "resolved": "https://registry.npmjs.org/expo-secure-store/-/expo-secure-store-57.0.4.tgz",                      <=
+  mobile\package-lock.json:7026:      "integrity": "sha512-7zBA1RThURTXdP4w65kBzZNbcSsfArqVd+p+ETAnPRWXO8J296Qd0YaCVyRpJ0HSwlCnGdvOnqO+NgSreHsOhA==", <=
+  mobile\package-lock.json:7027:      "license": "MIT",                                                                                               <=
+  mobile\package-lock.json:7028:      "peerDependencies": {                                                                                           <=
+  mobile\package-lock.json:7029:        "expo": "*"                                                                                                   <=
+> mobile\package-lock.json:7061:    "node_modules/expo/node_modules/@expo/cli": {                                                                     <=
+  mobile\package-lock.json:7062:      "version": "57.0.24",                                                                                           <=
+  mobile\package-lock.json:7063:      "resolved": "https://registry.npmjs.org/@expo/cli/-/cli-57.0.24.tgz",                                           <=
+  mobile\package-lock.json:7064:      "integrity": "sha512-CCBkvhPgAcrzJQ3daYbyOD6YuqKKkvOIyUfAbsUIvlpLomIlocYxFHYdmaC/KHqfCsbGFYSV/QKTSYshhSFNEA==", <=
+  mobile\package-lock.json:7065:      "license": "MIT",                                                                                               <=
+  mobile\package-lock.json:7066:      "dependencies": {                                                                                               <=
+  mobile\package-lock.json:7067:        "@expo/code-signing-certificates": "^0.0.6",                                                                  <=
+  mobile\package-lock.json:7068:        "@expo/config": "~57.0.9",                                                                                    <=
+  mobile\package-lock.json:7069:        "@expo/config-plugins": "~57.0.9",                                                                            <=
+  mobile\package-lock.json:7070:        "@expo/devcert": "^1.2.1",                                                                                    <=
+  mobile\package-lock.json:7071:        "@expo/env": "~2.4.3",                                                                                        <=
+  mobile\package-lock.json:7072:        "@expo/image-utils": "^0.11.5",                                                                               <=
+  mobile\package-lock.json:7073:        "@expo/inline-modules": "^0.1.7",                                                                             <=
+  mobile\package-lock.json:7074:        "@expo/json-file": "^11.0.1",                                                                                 <=
+  mobile\package-lock.json:7075:        "@expo/log-box": "^57.0.4",                                                                                   <=
+  mobile\package-lock.json:7076:        "@expo/metro": "~56.0.2",                                                                                     <=
+  mobile\package-lock.json:7077:        "@expo/metro-config": "~57.0.12",                                                                             <=
+  mobile\package-lock.json:7078:        "@expo/metro-file-map": "^57.0.3",                                                                            <=
+  mobile\package-lock.json:7079:        "@expo/osascript": "^2.7.1",                                                                                  <=
+  mobile\package-lock.json:7080:        "@expo/package-manager": "^1.13.1",                                                                           <=
+  mobile\package-lock.json:7081:        "@expo/plist": "^0.8.1",                                                                                      <=
+  mobile\package-lock.json:7082:        "@expo/prebuild-config": "^57.0.16",                                                                          <=
+  mobile\package-lock.json:7083:        "@expo/require-utils": "^57.0.5",                                                                             <=
+  mobile\package-lock.json:7084:        "@expo/router-server": "^57.0.9",                                                                             <=
+  mobile\package-lock.json:7085:        "@expo/schema-utils": "^57.0.2",                                                                              <=
+
+
+SOURCE HASH COMPARISON:
+IDENTICAL

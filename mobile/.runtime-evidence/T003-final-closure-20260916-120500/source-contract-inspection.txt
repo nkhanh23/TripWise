@@ -1,0 +1,1241 @@
+MOBILE README
+# TripWise Mobile (Personal AI Travel Mobile App)
+
+React Native + TypeScript + Expo personal travel companion client for TripWise (theo [ADR-017](../DECISIONS.md#adr-017-react-native--typescript-as-primary-mobile-client) & [ADR-018](../DECISIONS.md#adr-018-simplify-tripwise-into-a-personal-mobile-app-using-supabase)).
+
+**Current implementation/runtime target: Android.** The architecture remains iOS-compatible, but iOS runtime is not currently verified on the Windows development environment. Active roadmap: [`../PHASES_FE.md`](../PHASES_FE.md).
+
+Kiến trúc mục tiêu tích hợp:
+- **Supabase** (Auth + PostgreSQL + Edge Functions proxy cho Gemini AI).
+- **Google Maps SDK** & **Google Places API** cho bản đồ và tra cứu địa điểm.
+- **Open-Meteo API** & **OSRM** cho dự báo thời tiết và định tuyến.
+- Không còn phụ thuộc vào Spring Boot monolith sau khi hoàn tất Phase P1.
+
+## Prerequisites
+
+- Node.js 24.x LTS and npm 11.x
+- Android Studio, Android SDK, and an Android emulator or device for Android development
+- macOS with Xcode is required only for future local iOS build/runtime verification
+
+## Install
+
+```powershell
+cd mobile
+npm install
+```
+
+## Environment
+
+Copy `.env.example` to `.env` and set the Supabase public client configuration. Do not put server secrets or tokens in this file.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Set these values from the Supabase project's Connect panel:
+
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+The publishable key is designed for client use only with RLS enabled. Never add a service-role key, Gemini key, Google server key, or database password to `mobile/.env`.
+
+## Authentication
+
+P2 uses Supabase Email/Password Auth. Sessions persist through Expo SecureStore
+and are restored before the app renders the authenticated tab navigator.
+
+Profiles are created by the database trigger in
+`supabase/migrations/20260819010000_auth_profile_foundation.sql`. The client
+also uses an idempotent, RLS-protected upsert only when a profile is missing.
+
+After confirming the intended linked Supabase project, apply the P2 migration
+from the repository root:
+
+```powershell
+npx supabase db push
+```
+
+## Start development server
+
+```powershell
+npm start
+```
+
+## Run Android
+
+Start an emulator or connect a device, then run:
+
+```powershell
+npm run android
+```
+
+## Future iOS verification
+
+The Expo config keeps iOS compatibility, but iOS is not the current implementation target. Local Simulator builds require macOS and Xcode. When an iOS verification task is explicitly scheduled:
+
+```bash
+npm run ios
+```
+
+## Quality checks
+
+```powershell
+npm run lint
+npm run typecheck
+npm test
+```
+
+## Project structure
+
+```text
+src/
+├── app/          # App bootstrap and providers
+├── api/          # Typed fetch client, config, and backend error mapping
+├── components/   # Minimal shared primitives
+├── features/     # End-user feature screens
+├── navigation/   # Typed bottom-tab navigation
+└── theme/        # TripWise design tokens
+tests/            # Foundation tests
+```
+
+Current navigation uses React Navigation (not Expo Router) with Home, Explore, Plan, Trips and Profile tabs.
+
+Legacy Dart/Flutter artifacts (`pubspec.*`, `lib/`, `test/`, `.dart_tool/`) may still be present in the shared worktree. They are not used by the Expo entry point or npm scripts and must only be removed by a separately approved cleanup task.
+
+P2 persists Supabase sessions through Expo SecureStore. P3 adds a typed
+`generateTrip` service under `src/features/planner/data/`; it invokes the
+authenticated Supabase `generate-trip` function through the existing singleton
+client. P3 intentionally does not add planner UI or persist generated trips.
+
+The schema, Edge Function, and deployment instructions are documented in
+[`../supabase/README.md`](../supabase/README.md).
+
+T003 POLICY
+import type { ReminderCandidate, ReminderType } from './reminderEngine';
+import { enTranslations } from '../i18n/en';
+import { viTranslations } from '../i18n/vi';
+import type { ReminderEligibility, ReminderPresentation } from './reminderScheduling';
+
+export type NotificationIntent = {
+  tripReminders: boolean;
+  itineraryReminders: boolean;
+};
+
+export const DEFAULT_NOTIFICATION_INTENT: NotificationIntent = Object.freeze({
+  tripReminders: false,
+  itineraryReminders: false,
+});
+
+export type NotificationPermissionState =
+  | 'unknown'
+  | 'granted'
+  | 'denied_requestable'
+  | 'denied_blocked'
+  | 'legacy_enabled'
+  | 'legacy_disabled';
+
+export type EffectiveReminderPolicyReason =
+  | 'enabled'
+  | 'no_authenticated_user'
+  | 'no_enabled_preferences'
+  | 'permission_unknown'
+  | 'permission_denied'
+  | 'permission_blocked'
+  | 'stale_session';
+
+export type EffectiveReminderPolicy = {
+  canSchedule: boolean;
+  allowedTypes: readonly ReminderType[];
+  reason: EffectiveReminderPolicyReason;
+  presentationFor(candidate: ReminderCandidate): ReminderPresentation | null;
+};
+
+export type NotificationLocale = 'en' | 'vi';
+
+const tripTypes: readonly ReminderType[] = ['TRIP_STARTING_SOON'];
+const itineraryTypes: readonly ReminderType[] = ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'];
+
+export function allowedReminderTypes(intent: NotificationIntent): readonly ReminderType[] {
+  return [
+    ...(intent.tripReminders === true ? tripTypes : []),
+    ...(intent.itineraryReminders === true ? itineraryTypes : []),
+  ];
+}
+
+function permissionReason(permission: NotificationPermissionState): EffectiveReminderPolicyReason {
+  if (permission === 'unknown') return 'permission_unknown';
+  if (permission === 'denied_blocked') return 'permission_blocked';
+  return 'permission_denied';
+}
+
+export function createEffectiveReminderPolicy(input: {
+  authenticated: boolean;
+  intent: NotificationIntent;
+  permission: NotificationPermissionState;
+  locale: NotificationLocale;
+  stale?: boolean;
+}): EffectiveReminderPolicy {
+  const allowedTypes = allowedReminderTypes(input.intent);
+  const permissionEnabled = input.permission === 'granted' || input.permission === 'legacy_enabled';
+  const reason: EffectiveReminderPolicyReason = input.stale
+    ? 'stale_session'
+    : !input.authenticated
+      ? 'no_authenticated_user'
+      : allowedTypes.length === 0
+        ? 'no_enabled_preferences'
+        : permissionEnabled
+          ? 'enabled'
+          : permissionReason(input.permission);
+  const canSchedule = reason === 'enabled';
+  const allowed = new Set(allowedTypes);
+  return {
+    canSchedule,
+    allowedTypes,
+    reason,
+    presentationFor(candidate) {
+      if (!canSchedule || !allowed.has(candidate.type)) return null;
+      const translations = input.locale === 'vi' ? viTranslations : enTranslations;
+      return { title: translations[`notifications.presentation.${candidate.type}`] };
+    },
+  };
+}
+
+/** Keeps T002 independent of preferences, UI, Expo and Android permission objects. */
+export function asReminderEligibility(policy: EffectiveReminderPolicy): ReminderEligibility {
+  return { canSchedule: policy.canSchedule, presentationFor: policy.presentationFor };
+}
+
+T003 CONTROLLER
+import type { AuthenticatedSession } from './contracts';
+import { IntegrationError } from './errors';
+import { createEffectiveReminderPolicy, DEFAULT_NOTIFICATION_INTENT, type EffectiveReminderPolicy, type NotificationIntent, type NotificationLocale, type NotificationPermissionState } from './notificationPolicy';
+import type { ReminderType } from './reminderEngine';
+
+export type NotificationCategory = keyof NotificationIntent;
+export interface NotificationPreferencesRepository {
+  getOwn(session: AuthenticatedSession, signal: AbortSignal): Promise<NotificationIntent>;
+  saveOwn(session: AuthenticatedSession, patch: Partial<NotificationIntent>, signal: AbortSignal): Promise<NotificationIntent>;
+}
+export interface NotificationPermissionAdapter {
+  get(): Promise<NotificationPermissionState>;
+  requestFromExplicitUserAction(isCurrent: () => boolean): Promise<NotificationPermissionState>;
+  openSettings(): Promise<void>;
+}
+export interface NotificationPolicyReconciler {
+  reconcile(policy: EffectiveReminderPolicy, session: AuthenticatedSession, signal: AbortSignal, revokeTypes?: readonly ReminderType[]): Promise<void>;
+}
+export type NotificationPolicySnapshot = {
+  session: AuthenticatedSession | null;
+  intent: NotificationIntent;
+  permission: NotificationPermissionState;
+  loading: boolean;
+  busy: boolean;
+  stale: boolean;
+  error: 'load' | 'sync' | 'permission' | 'reconcile' | null;
+};
+
+/** Session-owned policy state survives Settings unmounts. No lifecycle native cleanup. */
+export class NotificationPolicyController {
+  private state: NotificationPolicySnapshot = {
+    session: null, intent: { ...DEFAULT_NOTIFICATION_INTENT }, permission: 'unknown', loading: true, busy: false, stale: false, error: null,
+  };
+  private listeners = new Set<() => void>();
+  private operation = new AbortController();
+  private revoked = new Set<NotificationCategory>();
+  private pendingOff = new Set<NotificationCategory>();
+  private pendingNativeRevocation = false;
+  private writes: Promise<unknown> = Promise.resolve();
+  private settingsReturn: { session: AuthenticatedSession; departed: boolean } | null = null;
+  private locale: NotificationLocale = 'en';
+
+  constructor(private readonly repository: NotificationPreferencesRepository,
+    private readonly permissions: NotificationPermissionAdapter,
+    private readonly reconciler: NotificationPolicyReconciler) {}
+
+  getSnapshot = (): NotificationPolicySnapshot => this.state;
+  subscribe = (listener: () => void): (() => void) => { this.listeners.add(listener); return () => this.listeners.delete(listener); };
+  private publish(patch: Partial<NotificationPolicySnapshot>): void {
+    this.state = { ...this.state, ...patch };
+    const session = this.state.session;
+    this.state.stale = !!session && session.expiresAt !== null && session.expiresAt * 1000 <= Date.now();
+    this.listeners.forEach((listener) => listener());
+  }
+  setLocale(locale: NotificationLocale): void { this.locale = locale; }
+  private current(session: AuthenticatedSession, signal: AbortSignal): boolean {
+    return !signal.aborted && this.state.session === session
+      && (session.expiresAt === null || session.expiresAt * 1000 > Date.now());
+  }
+  private begin(): AbortSignal { this.operation.abort(); this.operation = new AbortController(); return this.operation.signal; }
+  private overlay(intent: NotificationIntent): NotificationIntent {
+    return { tripReminders: intent.tripReminders && !this.revoked.has('tripReminders'),
+      itineraryReminders: intent.itineraryReminders && !this.revoked.has('itineraryReminders') };
+  }
+  policy(): EffectiveReminderPolicy {
+    return createEffectiveReminderPolicy({ authenticated: !!this.state.session && !this.state.loading,
+      stale: !!this.state.session && !this.current(this.state.session, this.operation.signal),
+      intent: this.overlay(this.state.intent), permission: this.state.permission, locale: this.locale });
+  }
+  async bindSession(session: AuthenticatedSession | null): Promise<void> {
+    if (session === this.state.session && !this.state.loading) return;
+    const sameOwner = session !== null && session.user.id === this.state.session?.user.id;
+    this.begin();
+    this.settingsReturn = null;
+    if (!sameOwner) { this.revoked.clear(); this.pendingOff.clear(); this.pendingNativeRevocation = false; }
+    this.publish({ session, intent: { ...DEFAULT_NOTIFICATION_INTENT }, permission: 'unknown', loading: !!session, busy: false, error: null });
+    if (session) await this.load();
+  }
+  async load(): Promise<void> {
+    const session = this.state.session;
+    if (!session || this.state.busy) return;
+    const signal = this.begin();
+    this.publish({ loading: true, error: null });
+    try {
+      const [intent, permission] = await Promise.all([this.repository.getOwn(session, signal), this.permissions.get()]);
+      if (this.current(session, signal)) this.publish({ intent: this.overlay(intent), permission, loading: false,
+        error: this.pendingOff.size ? 'sync' : null });
+    } catch {
+      if (this.current(session, signal)) this.publish({ intent: { ...DEFAULT_NOTIFICATION_INTENT }, permission: 'unknown', loading: false, error: 'load' });
+    }
+  }
+  private write(session: AuthenticatedSession, patch: Partial<NotificationIntent>, signal: AbortSignal): Promise<NotificationIntent> {
+    // Serialize writes: an earlier enable cannot complete after a later OFF write.
+    const result = this.writes.catch(() => undefined).then(() => {
+      if (!this.current(session, signal)) throw new IntegrationError('cancelled');
+      return this.repository.saveOwn(session, patch, signal);
+    });
+    this.writes = result;
+    return result;
+  }
+  async setCategory(category: NotificationCategory, enabled: boolean): Promise<void> {
+    const session = this.state.session;
+    if (!session || (enabled && (this.state.loading || this.state.busy))) return;
+    const signal = this.begin();
+    this.publish({ busy: true, error: null });
+    if (!enabled) {
+      this.revoked.add(category);
+      this.pendingOff.add(category);
+      this.publish({ intent: { ...this.state.intent, [category]: false } });
+      const types: readonly ReminderType[] = [
+        ...(this.revoked.has('tripReminders') ? ['TRIP_STARTING_SOON' as const] : []),
+        ...(this.revoked.has('itineraryReminders') ? ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'] as const : []),
+      ];
+      // Start native cancellation before initiating persistence; neither waits for the network.
+      const cancellation = this.reconciler.reconcile(this.policy(), session, signal, types)
+        .then(() => { if (this.current(session, signal)) this.pendingNativeRevocation = false; })
+        .catch(() => { if (this.current(session, signal)) { this.pendingNativeRevocation = true; this.publish({ error: 'reconcile' }); } });
+      try {
+        const saved = await this.write(session, { [category]: false }, signal);
+        if (this.current(session, signal)) {
+          this.pendingOff.delete(category);
+          this.publish({ intent: this.overlay(saved), error: this.pendingOff.size ? 'sync' : this.state.error });
+        }
+      } catch { if (this.current(session, signal)) this.publish({ error: 'sync' }); }
+      await cancellation;
+    } else {
+      try {
+        const saved = await this.write(session, { [category]: true }, signal);
+        if (!this.current(session, signal)) return;
+        this.revoked.delete(category);
+        this.pendingOff.delete(category);
+        // Durable intent is visible even if the OS denies or its query fails.
+        this.publish({ intent: this.overlay(saved), permission: 'unknown' });
+        try {
+          let permission = await this.permissions.get();
+          if (!this.current(session, signal)) return;
+          if (permission === 'unknown' || permission === 'denied_requestable') {
+            permission = await this.permissions.requestFromExplicitUserAction(() => this.current(session, signal));
+          }
+          if (!this.current(session, signal)) return;
+          this.publish({ permission });
+        } catch {
+          if (this.current(session, signal)) this.publish({ permission: 'unknown', error: 'permission' });
+          return;
+        }
+        try { await this.reconciler.reconcile(this.policy(), session, signal); }
+        catch { if (this.current(session, signal)) this.publish({ error: 'reconcile' }); }
+      } catch { if (this.current(session, signal)) this.publish({ error: 'sync' }); }
+      finally { if (this.current(session, signal)) this.publish({ busy: false }); }
+    }
+    if (this.current(session, signal)) this.publish({ busy: false });
+  }
+  async retry(): Promise<void> {
+    if (this.state.busy) return;
+    if (this.pendingOff.size || this.pendingNativeRevocation) {
+      const categories = this.pendingNativeRevocation ? this.revoked : this.pendingOff;
+      for (const category of [...categories]) await this.setCategory(category, false);
+    } else if (this.state.error === 'reconcile') {
+      const session = this.state.session;
+      if (!session) return;
+      const signal = this.begin();
+      this.publish({ busy: true, error: null });
+      try { await this.reconciler.reconcile(this.policy(), session, signal); }
+      catch { if (this.current(session, signal)) this.publish({ error: 'reconcile' }); }
+      finally { if (this.current(session, signal)) this.publish({ busy: false }); }
+    } else await this.load();
+  }
+  async openSystemSettings(): Promise<void> {
+    const session = this.state.session;
+    if (!session || this.state.busy || this.settingsReturn) return;
+    this.settingsReturn = { session, departed: false };
+    try { await this.permissions.openSettings(); }
+    catch { if (this.settingsReturn?.session === session) { this.settingsReturn = null; this.publish({ error: 'permission' }); } }
+  }
+  async appStateChanged(state: string): Promise<void> {
+    const ticket = this.settingsReturn;
+    if (!ticket) return;
+    if (state !== 'active') { ticket.departed = true; return; }
+    if (!ticket.departed) return;
+    this.settingsReturn = null;
+    const signal = this.begin();
+    if (!this.current(ticket.session, signal)) return;
+    this.publish({ busy: true });
+    try {
+      const permission = await this.permissions.get();
+      if (!this.current(ticket.session, signal)) return;
+      this.publish({ permission });
+      await this.reconciler.reconcile(this.policy(), ticket.session, signal);
+    } catch { if (this.current(ticket.session, signal)) this.publish({ permission: 'unknown', error: 'permission' }); }
+    finally { if (this.current(ticket.session, signal)) this.publish({ busy: false }); }
+  }
+}
+
+T003 RUNTIME
+import type { Session } from '@supabase/supabase-js';
+import { AppState } from 'react-native';
+import { supabase } from '../lib/supabase/client';
+import type { AuthenticatedSession, SavedTripDetail } from './contracts';
+import { IntegrationError, mapPostgrestError } from './errors';
+import { mapAuthenticatedSession } from './mappers';
+import { asReminderEligibility } from './notificationPolicy';
+import { NotificationPolicyController, type NotificationPolicyReconciler } from './notificationPolicyController';
+import { ReminderScheduler, type ReminderNotificationRepository } from './reminderScheduling';
+import { ExpoNotificationPermissionAdapter } from './remote/expoNotificationPermissionAdapter';
+import { ExpoReminderNotificationRepository } from './remote/expoNotificationRepository';
+import { OsrmRouteRepository } from './remote/publicProviderRepositories';
+import { SupabaseNotificationPreferencesRepository } from './remote/supabaseNotificationPreferencesRepository';
+import { SupabaseSavedTripsRepository } from './remote/supabaseTripRepositories';
+import { asTripId } from './validation';
+import { executeWithReliability, supabaseMutationPolicy } from './reliability';
+
+let session: AuthenticatedSession | null = null;
+const getSession = () => session;
+
+export function createNotificationPolicyReconciler(
+  native: ReminderNotificationRepository,
+  currentSession: () => AuthenticatedSession | null,
+  loadTrips: (signal: AbortSignal) => Promise<readonly SavedTripDetail[]>,
+  routes = new OsrmRouteRepository(),
+): NotificationPolicyReconciler {
+  // Drain an already dispatched native mutation before a newer OFF enumeration.
+  // Network trip reads never hold this queue. Stale queued work is checked at dispatch.
+  let nativeWork: Promise<unknown> = Promise.resolve();
+  const serialized = <T>(operation: () => Promise<T>): Promise<T> => {
+    const result = nativeWork.catch(() => undefined).then(operation);
+    nativeWork = result;
+    return result;
+  };
+  return {
+    async reconcile(policy, expected, signal, revokeTypes) {
+      const guard = () => {
+        if (signal.aborted || currentSession() !== expected
+          || (expected.expiresAt !== null && expected.expiresAt * 1000 <= Date.now())) throw new IntegrationError('cancelled');
+      };
+      guard();
+      const revoked = revokeTypes ? new Set(revokeTypes) : null;
+      const scoped: ReminderNotificationRepository = {
+        list: () => serialized(async () => { guard(); const values = await native.list(); guard(); return revoked ? values.filter((value) => revoked.has(value.type)) : values; }),
+        prepare: () => serialized(async () => { guard(); await native.prepare(); guard(); }),
+        schedule: (request) => serialized(async () => { guard(); return native.schedule(request); }),
+        cancel: (id) => serialized(async () => { guard(); await native.cancel(id); }),
+      };
+      // A revocation needs only native enumeration, never a network trip read or route acquisition.
+      const trips = revoked || !policy.canSchedule ? [] : await loadTrips(signal);
+      guard();
+      const scheduler = new ReminderScheduler(routes, scoped, currentSession);
+      const result = await scheduler.reconcile(trips, revoked ? { canSchedule: false } : asReminderEligibility(policy), signal);
+      guard();
+      if (result.failureCount > 0 || result.status === 'partial_failure') throw new IntegrationError('providerUnavailable');
+    },
+  };
+}
+
+async function loadRelevantTrips(signal: AbortSignal): Promise<SavedTripDetail[]> {
+  const expected = session;
+  if (!expected) throw new IntegrationError('unauthorized');
+  const now = Date.now();
+  // Broad UTC date envelope includes every IANA local date in the locked seven-day T002 window.
+  const from = new Date(now - 2 * 86_400_000).toISOString().slice(0, 10);
+  const to = new Date(now + 9 * 86_400_000).toISOString().slice(0, 10);
+  const { data, error } = await executeWithReliability(async (bounded) => await supabase.from('trips').select('id').eq('user_id', expected.user.id)
+    .gte('end_date', from).lte('start_date', to).order('id').limit(61).abortSignal(bounded), supabaseMutationPolicy, signal);
+  if (signal.aborted || session !== expected) throw new IntegrationError('cancelled');
+  if (error) throw mapPostgrestError(error);
+  // Do not reconcile a truncated desired set: it could cancel reminders outside the loaded page.
+  if (!data || data.length > 60) throw new IntegrationError('invalidResponse');
+  const repository = new SupabaseSavedTripsRepository(supabase);
+  const details: SavedTripDetail[] = [];
+  for (const row of data) {
+    if (signal.aborted || session !== expected) throw new IntegrationError('cancelled');
+    const detail = await repository.getDetail(asTripId(row.id), signal);
+    if (!detail) throw new IntegrationError('notFound');
+    details.push(detail);
+  }
+  return details;
+}
+
+export const notificationPolicyController = new NotificationPolicyController(
+  new SupabaseNotificationPreferencesRepository(supabase, getSession),
+  new ExpoNotificationPermissionAdapter(),
+  createNotificationPolicyReconciler(new ExpoReminderNotificationRepository(), getSession, loadRelevantTrips),
+);
+
+/** Auth invalidation is policy isolation only. No sign-out native cleanup or generic resume reconciliation. */
+export function startNotificationPolicyRuntime(): () => void {
+  let eventVersion = 0;
+  let stopped = false;
+  const accept = (value: Session | null) => {
+    if (stopped) return;
+    try { session = value ? mapAuthenticatedSession(value) : null; } catch { session = null; }
+    void notificationPolicyController.bindSession(session);
+  };
+  const subscription = supabase.auth.onAuthStateChange((_event, value) => { eventVersion += 1; accept(value); }).data.subscription;
+  const version = eventVersion;
+  void supabase.auth.getSession().then(({ data, error }) => {
+    if (eventVersion === version) accept(error ? null : data.session);
+  }).catch(() => { if (eventVersion === version) accept(null); });
+  const appState = AppState.addEventListener('change', (state) => { void notificationPolicyController.appStateChanged(state); });
+  return () => {
+    stopped = true; subscription.unsubscribe(); appState.remove(); session = null;
+    void notificationPolicyController.bindSession(null);
+  };
+}
+
+T003 PERMISSION ADAPTER
+import * as Notifications from 'expo-notifications';
+import { Linking, Platform } from 'react-native';
+
+import { IntegrationError } from '../errors';
+import type { NotificationPermissionState } from '../notificationPolicy';
+import type { NotificationPermissionAdapter } from '../notificationPolicyController';
+import { ExpoReminderNotificationRepository } from './expoNotificationRepository';
+
+export function classifyNotificationPermission(response: unknown, platform: string, api: number): NotificationPermissionState {
+  if (platform !== 'android' || !Number.isInteger(api) || api < 1 || !response || typeof response !== 'object') return 'unknown';
+  const value = response as Record<string, unknown>;
+  if (typeof value.granted !== 'boolean' || typeof value.canAskAgain !== 'boolean'
+    || !['granted', 'denied', 'undetermined'].includes(value.status as string)) return 'unknown';
+  // SDK Android status also accounts for areNotificationsEnabled; granted alone does not.
+  if (value.granted && value.status === 'granted') return api < 33 ? 'legacy_enabled' : 'granted';
+  if (api < 33) return 'legacy_disabled';
+  if (value.status === 'undetermined') return value.canAskAgain ? 'unknown' : 'denied_blocked';
+  return value.canAskAgain ? 'denied_requestable' : 'denied_blocked';
+}
+
+export class ExpoNotificationPermissionAdapter implements NotificationPermissionAdapter {
+  async get(): Promise<NotificationPermissionState> {
+    return classifyNotificationPermission(await Notifications.getPermissionsAsync(), Platform.OS, Number(Platform.Version));
+  }
+  async requestFromExplicitUserAction(isCurrent: () => boolean): Promise<NotificationPermissionState> {
+    const current = await this.get();
+    if (!isCurrent()) throw new IntegrationError('cancelled');
+    if (Platform.OS !== 'android' || Number(Platform.Version) < 33
+      || !['unknown', 'denied_requestable'].includes(current)) return current;
+    // Recheck the SDK's actual canAskAgain before the one explicit prompt.
+    const response = await Notifications.getPermissionsAsync();
+    if (!isCurrent()) throw new IntegrationError('cancelled');
+    if (response.canAskAgain !== true || !['undetermined', 'denied'].includes(response.status)) {
+      return classifyNotificationPermission(response, Platform.OS, Number(Platform.Version));
+    }
+    // Android 13+ requires a channel before the permission dialog. Only on explicit opt-in.
+    await new ExpoReminderNotificationRepository().prepare();
+    if (!isCurrent()) throw new IntegrationError('cancelled');
+    const result = await Notifications.requestPermissionsAsync();
+    if (!isCurrent()) throw new IntegrationError('cancelled');
+    return classifyNotificationPermission(result, Platform.OS, Number(Platform.Version));
+  }
+  async openSettings(): Promise<void> { await Linking.openSettings(); }
+}
+
+T003 PREFERENCE REPOSITORY
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../../lib/supabase/database.types';
+import type { AuthenticatedSession } from '../contracts';
+import { IntegrationError, mapPostgrestError } from '../errors';
+import { DEFAULT_NOTIFICATION_INTENT, type NotificationIntent } from '../notificationPolicy';
+import type { NotificationPreferencesRepository } from '../notificationPolicyController';
+import { isRecord, isUuid } from '../validation';
+import { executeWithReliability, supabaseMutationPolicy } from '../reliability';
+
+export function parseNotificationIntent(value: unknown, ownerId: string): NotificationIntent {
+  if (!isRecord(value) || value.user_id !== ownerId || typeof value.trip_reminders !== 'boolean'
+    || typeof value.itinerary_reminders !== 'boolean') throw new IntegrationError('invalidResponse');
+  return { tripReminders: value.trip_reminders, itineraryReminders: value.itinerary_reminders };
+}
+
+export class SupabaseNotificationPreferencesRepository implements NotificationPreferencesRepository {
+  constructor(private readonly client: SupabaseClient<Database>, private readonly getSession: () => AuthenticatedSession | null) {}
+  private guard(session: AuthenticatedSession, signal: AbortSignal): void {
+    if (signal.aborted) throw new IntegrationError('cancelled');
+    if (this.getSession() !== session || !isUuid(session.user.id)
+      || (session.expiresAt !== null && session.expiresAt * 1000 <= Date.now())) throw new IntegrationError('sessionExpired');
+  }
+  async getOwn(session: AuthenticatedSession, signal: AbortSignal): Promise<NotificationIntent> {
+    return executeWithReliability((bounded) => this.read(session, bounded), supabaseMutationPolicy, signal);
+  }
+  private async read(session: AuthenticatedSession, signal: AbortSignal): Promise<NotificationIntent> {
+    this.guard(session, signal);
+    try {
+      const { data, error } = await this.client.from('notification_preferences')
+        .select('user_id,trip_reminders,itinerary_reminders').eq('user_id', session.user.id).abortSignal(signal).maybeSingle();
+      this.guard(session, signal);
+      if (error) throw mapPostgrestError(error);
+      return data === null ? { ...DEFAULT_NOTIFICATION_INTENT } : parseNotificationIntent(data, session.user.id);
+    } catch (error) { throw error instanceof IntegrationError ? error : new IntegrationError('network'); }
+  }
+  async saveOwn(session: AuthenticatedSession, patch: Partial<NotificationIntent>, signal: AbortSignal): Promise<NotificationIntent> {
+    return executeWithReliability((bounded) => this.save(session, patch, bounded), supabaseMutationPolicy, signal);
+  }
+  private async save(session: AuthenticatedSession, patch: Partial<NotificationIntent>, signal: AbortSignal): Promise<NotificationIntent> {
+    this.guard(session, signal);
+    if (!isRecord(patch) || Object.keys(patch).length === 0
+      || Object.entries(patch).some(([key, value]) => !['tripReminders', 'itineraryReminders'].includes(key) || typeof value !== 'boolean')) {
+      throw new IntegrationError('invalidRequest');
+    }
+    try {
+      // Server default auth.uid() supplies identity. Missing rows are created OFF; concurrent creation is harmless.
+      const created = await this.client.from('notification_preferences')
+        .upsert({}, { onConflict: 'user_id', ignoreDuplicates: true }).abortSignal(signal);
+      this.guard(session, signal);
+      if (created.error) throw mapPostgrestError(created.error);
+      const payload = {
+        ...(patch.tripReminders === undefined ? {} : { trip_reminders: patch.tripReminders }),
+        ...(patch.itineraryReminders === undefined ? {} : { itinerary_reminders: patch.itineraryReminders }),
+      };
+      const { data, error } = await this.client.from('notification_preferences').update(payload)
+        .eq('user_id', session.user.id).select('user_id,trip_reminders,itinerary_reminders').abortSignal(signal).single();
+      this.guard(session, signal);
+      if (error) throw mapPostgrestError(error);
+      return parseNotificationIntent(data, session.user.id);
+    } catch (error) { throw error instanceof IntegrationError ? error : new IntegrationError('network'); }
+  }
+}
+
+T003 SETTINGS HOOK
+import { useEffect, useSyncExternalStore } from 'react';
+import { useTranslation } from '../../../i18n';
+import { createEffectiveReminderPolicy } from '../../../integration/notificationPolicy';
+import { notificationPolicyController } from '../../../integration/notificationPolicyRuntime';
+
+export function useNotificationPolicyController() {
+  const { locale } = useTranslation();
+  const state = useSyncExternalStore(notificationPolicyController.subscribe, notificationPolicyController.getSnapshot);
+  useEffect(() => { notificationPolicyController.setLocale(locale); }, [locale]);
+  const policy = createEffectiveReminderPolicy({ authenticated: !!state.session && !state.loading,
+    intent: state.intent, permission: state.permission, locale,
+    stale: state.stale });
+  return {
+    ...state, policy,
+    setTripReminders: (enabled: boolean) => notificationPolicyController.setCategory('tripReminders', enabled),
+    setItineraryReminders: (enabled: boolean) => notificationPolicyController.setCategory('itineraryReminders', enabled),
+    openSystemSettings: () => notificationPolicyController.openSystemSettings(),
+    retry: () => notificationPolicyController.retry(),
+  };
+}
+
+T003 SETTINGS SCREEN
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { memo, useCallback, useState } from 'react';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useTranslation } from '../../../i18n';
+import type { RootStackParamList } from '../../../navigation/types';
+import { useTheme } from '../../../theme';
+import { radius, spacing, typography } from '../../../theme/tokens';
+import { useAuth } from '../../auth/AuthProvider';
+import { ProfileDestructiveDialog } from '../../profile/components/ProfileDestructiveDialog';
+import type { DestructiveActionType } from '../../profile/types';
+import { SettingsRow } from '../components/SettingsRow';
+import { SettingsSection } from '../components/SettingsSection';
+import { SettingsSwitchRow } from '../components/SettingsSwitchRow';
+import { useSettings } from '../hooks/useSettings';
+import { useNotificationPolicyController } from '../hooks/useNotificationPolicyController';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+
+export const SettingsScreen = memo(function SettingsScreen({
+  navigation,
+}: Props) {
+  const insets = useSafeAreaInsets();
+  const { colors, effectiveTheme } = useTheme();
+  const { t } = useTranslation();
+  const { signOut, deleteAccount } = useAuth();
+
+  const {
+    themePreference,
+    locale,
+    currency,
+    distanceUnit,
+    setDistanceUnit,
+  } = useSettings();
+  const notificationPolicy = useNotificationPolicyController();
+
+  const [activeDestructiveAction, setActiveDestructiveAction] =
+    useState<DestructiveActionType>(null);
+
+  // Derive display values
+  const themeLabel =
+    themePreference === 'system'
+      ? t('settings.theme.system')
+      : themePreference === 'light'
+        ? t('settings.theme.light')
+        : t('settings.theme.dark');
+
+  const languageLabel =
+    locale === 'vi'
+      ? t('settings.language.vi')
+      : t('settings.language.en');
+
+  const distanceLabel =
+    distanceUnit === 'km'
+      ? t('settings.general.distanceKilometers')
+      : t('settings.general.distanceMiles');
+
+  const handleToggleDistance = useCallback(() => {
+    setDistanceUnit(distanceUnit === 'km' ? 'mi' : 'km');
+  }, [distanceUnit, setDistanceUnit]);
+
+  const handleTripRemindersToggle = useCallback(
+    (val: boolean) => {
+      void notificationPolicy.setTripReminders(val);
+    },
+    [notificationPolicy]
+  );
+
+  const handleItineraryRemindersToggle = useCallback(
+    (val: boolean) => {
+      void notificationPolicy.setItineraryReminders(val);
+    },
+    [notificationPolicy]
+  );
+
+  const notificationDescription = (enabled: boolean) => t(`settings.notifications.status.${
+    notificationPolicy.loading ? 'loading' : !enabled ? 'disabled'
+      : notificationPolicy.permission === 'denied_blocked' || notificationPolicy.permission === 'legacy_disabled' ? 'blocked'
+        : notificationPolicy.permission === 'denied_requestable' ? 'denied'
+          : notificationPolicy.policy.canSchedule ? 'enabled' : 'unknown'}`);
+
+  const handleOpenDeleteAccountDialog = useCallback(() => {
+    setActiveDestructiveAction('deleteAccount');
+  }, []);
+
+  const handleUnavailableAction = useCallback(() => {
+    Alert.alert(t('common.unavailableTitle'), t('common.unavailableMessage'));
+  }, [t]);
+
+  const handleCloseDestructiveDialog = useCallback(() => {
+    setActiveDestructiveAction(null);
+  }, []);
+
+  const handleConfirmDestructiveAction = useCallback(() => {
+    const action = activeDestructiveAction;
+    setActiveDestructiveAction(null);
+    if (action === 'deleteAccount') {
+      void deleteAccount();
+    } else {
+      void signOut();
+    }
+  }, [activeDestructiveAction, deleteAccount, signOut]);
+
+  return (
+    <View
+      style={[
+        styles.screen,
+        {
+          backgroundColor: colors.background.canvas,
+          paddingTop: insets.top,
+        },
+      ]}>
+      {/* Top App Bar */}
+      <View
+        style={[
+          styles.topBar,
+          {
+            backgroundColor:
+              effectiveTheme === 'dark'
+                ? 'rgba(19, 20, 24, 0.95)'
+                : 'rgba(252, 249, 248, 0.95)',
+            borderBottomColor: colors.border.subtle,
+          },
+        ]}>
+        <Pressable
+          accessibilityHint="Go back to Profile"
+          accessibilityLabel="Back"
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={() => navigation.goBack()}
+          style={({ pressed }) => [
+            styles.backButton,
+            {
+              backgroundColor:
+                effectiveTheme === 'dark'
+                  ? 'rgba(30, 31, 36, 0.9)'
+                  : 'rgba(255, 255, 255, 0.9)',
+            },
+            pressed && styles.pressed,
+          ]}>
+          <MaterialIcons
+            color={colors.brand.primary}
+            name="arrow-back"
+            size={22}
+          />
+        </Pressable>
+
+        <Text style={[styles.title, { color: colors.text.primary }]}>
+          {t('settings.title')}
+        </Text>
+
+        <View style={styles.spacer} />
+      </View>
+
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + spacing.xxxl },
+        ]}
+        showsVerticalScrollIndicator={false}>
+        {/* 1. GENERAL Section */}
+        <SettingsSection title={t('settings.sections.general')}>
+          <SettingsRow
+            iconName="language"
+            onPress={() => navigation.navigate('LanguageSettings')}
+            title={t('settings.general.language')}
+            value={languageLabel}
+          />
+          <SettingsRow
+            iconName="payments"
+            onPress={() => navigation.navigate('CurrencySettings')}
+            title={t('settings.general.currency')}
+            value={currency}
+          />
+          <SettingsRow
+            iconName="straighten"
+            onPress={handleToggleDistance}
+            showDivider={false}
+            title={t('settings.general.distance')}
+            value={distanceLabel}
+          />
+        </SettingsSection>
+
+        {/* 2. APPEARANCE Section */}
+        <SettingsSection title={t('settings.sections.appearance')}>
+          <SettingsRow
+            iconName="palette"
+            onPress={() => navigation.navigate('AppearanceSettings')}
+            showDivider={false}
+            title={t('settings.appearance.theme')}
+            value={themeLabel}
+          />
+        </SettingsSection>
+
+        {/* 3. NOTIFICATIONS Section */}
+        <SettingsSection title={t('settings.sections.notifications')}>
+          <SettingsSwitchRow
+            description={`${t('settings.notifications.tripRemindersDesc')} ${notificationDescription(notificationPolicy.intent.tripReminders)}`}
+            disabled={notificationPolicy.loading || (!notificationPolicy.intent.tripReminders && notificationPolicy.busy) || !notificationPolicy.session}
+            iconName="notifications-active"
+            onValueChange={handleTripRemindersToggle}
+            title={t('settings.notifications.tripReminders')}
+            value={notificationPolicy.intent.tripReminders}
+          />
+          <SettingsSwitchRow
+            description={`${t('settings.notifications.itineraryRemindersDesc')} ${notificationDescription(notificationPolicy.intent.itineraryReminders)}`}
+            disabled={notificationPolicy.loading || (!notificationPolicy.intent.itineraryReminders && notificationPolicy.busy) || !notificationPolicy.session}
+            iconName="event-note"
+            onValueChange={handleItineraryRemindersToggle}
+            showDivider={false}
+            title={t('settings.notifications.itineraryReminders')}
+            value={notificationPolicy.intent.itineraryReminders}
+          />
+          {notificationPolicy.permission === 'denied_blocked' || notificationPolicy.permission === 'legacy_disabled' ? (
+            <SettingsRow iconName="settings" title={t('settings.notifications.openSystemSettings')}
+              onPress={() => { void notificationPolicy.openSystemSettings(); }} showDivider={false} />
+          ) : null}
+          {notificationPolicy.error ? (
+            <SettingsRow iconName="refresh" title={t('settings.notifications.retry')}
+              subtitle={t(`settings.notifications.error.${notificationPolicy.error}`)}
+              onPress={() => { void notificationPolicy.retry(); }} showDivider={false} />
+          ) : null}
+        </SettingsSection>
+
+        {/* 4. ACCOUNT Section */}
+        <SettingsSection title={t('settings.sections.account')}>
+          <SettingsRow
+            iconName="lock-reset"
+            onPress={handleUnavailableAction}
+            title={t('settings.account.changePassword')}
+          />
+          <SettingsRow
+            iconName="security"
+            onPress={() => navigation.navigate('HelpSupport')}
+            title={t('settings.account.privacy')}
+          />
+          <SettingsRow
+            iconName="delete-forever"
+            isDestructive
+            onPress={handleOpenDeleteAccountDialog}
+            showChevron={false}
+            showDivider={false}
+            title={t('settings.account.deleteAccount')}
+          />
+        </SettingsSection>
+      </ScrollView>
+
+      {/* Destructive Confirmation Modal for Delete Account */}
+      <ProfileDestructiveDialog
+        actionType={activeDestructiveAction}
+        onCancel={handleCloseDestructiveDialog}
+        onConfirm={handleConfirmDestructiveAction}
+        visible={activeDestructiveAction !== null}
+      />
+    </View>
+  );
+});
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  topBar: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    height: 56,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+  },
+  backButton: {
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    height: 38,
+    justifyContent: 'center',
+    width: 38,
+  },
+  title: {
+    fontSize: typography.titleSmall,
+    fontWeight: typography.fontWeight.bold,
+  },
+  spacer: {
+    height: 38,
+    width: 38,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+});
+
+T003 MIGRATION
+-- FEATURE-P6-T003: durable, owner-private notification intent. OS permission is device-local.
+create table public.notification_preferences (
+  user_id uuid primary key default auth.uid() references auth.users(id) on delete cascade,
+  trip_reminders boolean not null default false,
+  itinerary_reminders boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create trigger notification_preferences_set_updated_at
+before update on public.notification_preferences
+for each row execute function public.set_updated_at();
+
+alter table public.notification_preferences enable row level security;
+revoke all on public.notification_preferences from public, anon, authenticated;
+grant select, insert, update on public.notification_preferences to authenticated;
+
+create policy "notification_preferences_select_own"
+on public.notification_preferences for select to authenticated
+using ((select auth.uid()) = user_id);
+
+create policy "notification_preferences_insert_own"
+on public.notification_preferences for insert to authenticated
+with check ((select auth.uid()) = user_id);
+
+create policy "notification_preferences_update_own"
+on public.notification_preferences for update to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
+
+comment on table public.notification_preferences is
+  'FEATURE-P6-T003 durable owner intent only. Android notification permission remains device-local and is never persisted here.';
+
+T003 TEST SOURCES
+import { allowedReminderTypes, asReminderEligibility, createEffectiveReminderPolicy, DEFAULT_NOTIFICATION_INTENT, type NotificationPermissionState } from '../src/integration/notificationPolicy';
+import type { ReminderCandidate, ReminderType } from '../src/integration/reminderEngine';
+
+const types: ReminderType[] = ['TRIP_STARTING_SOON', 'DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'];
+const base = { authenticated: true, intent: { tripReminders: true, itineraryReminders: true }, permission: 'granted' as const, locale: 'en' as const };
+const candidate = (type: ReminderType): ReminderCandidate => new Proxy({ type } as ReminderCandidate, {
+  get(target, key) { if (key !== 'type') throw new Error('Private candidate fields must never be read'); return target.type; },
+});
+
+describe('T003 pure notification policy', () => {
+  it('defaults both off and fails closed even with OS grant', () => {
+    const policy = createEffectiveReminderPolicy({ ...base, intent: DEFAULT_NOTIFICATION_INTENT });
+    expect(policy.canSchedule).toBe(false);
+    expect(policy.reason).toBe('no_enabled_preferences');
+    expect(policy.allowedTypes).toEqual([]);
+  });
+  it.each([
+    [true, false, types.slice(0, 1)], [false, true, types.slice(1)], [true, true, types], [false, false, []],
+  ])('maps trip=%s itinerary=%s exactly', (tripReminders, itineraryReminders, expected) => {
+    const intent = { tripReminders: tripReminders as boolean, itineraryReminders: itineraryReminders as boolean };
+    expect(allowedReminderTypes(intent)).toEqual(expected);
+    const policy = createEffectiveReminderPolicy({ ...base, intent });
+    for (const type of types) expect(policy.presentationFor(candidate(type)) !== null).toBe((expected as ReminderType[]).includes(type));
+  });
+  it.each<NotificationPermissionState>(['unknown', 'denied_requestable', 'denied_blocked', 'legacy_disabled'])('fails closed with %s', (permission) => {
+    const policy = createEffectiveReminderPolicy({ ...base, permission });
+    expect(policy.canSchedule).toBe(false);
+    for (const type of types) expect(policy.presentationFor(candidate(type))).toBeNull();
+  });
+  it.each<NotificationPermissionState>(['granted', 'legacy_enabled'])('allows %s', (permission) => {
+    expect(createEffectiveReminderPolicy({ ...base, permission }).canSchedule).toBe(true);
+  });
+  it('fails closed without an authenticated owner and on stale sessions', () => {
+    expect(createEffectiveReminderPolicy({ ...base, authenticated: false }).reason).toBe('no_authenticated_user');
+    expect(createEffectiveReminderPolicy({ ...base, stale: true }).reason).toBe('stale_session');
+  });
+  it.each(['en', 'vi'] as const)('uses only approved static %s presentation without reading sensitive candidate fields', (locale) => {
+    const expected = locale === 'en' ? [
+      'Your trip reminder is ready.', 'You have an itinerary reminder today.', 'An itinerary activity is coming up.',
+      'It may be time to leave for your next activity.', 'Your next itinerary activity may need attention.',
+    ] : [
+      'Nhắc nhở chuyến đi của bạn đã sẵn sàng.', 'Bạn có một nhắc nhở lịch trình hôm nay.', 'Một hoạt động trong lịch trình sắp diễn ra.',
+      'Có thể đã đến lúc bạn nên đi đến hoạt động tiếp theo.', 'Hoạt động tiếp theo trong lịch trình có thể cần bạn chú ý.',
+    ];
+    const policy = createEffectiveReminderPolicy({ ...base, locale });
+    expect(types.map((type) => policy.presentationFor(candidate(type)))).toEqual(expected.map((title) => ({ title })));
+    expect(Object.keys(asReminderEligibility(policy)).sort()).toEqual(['canSchedule', 'presentationFor']);
+  });
+});
+
+import type { AuthenticatedSession } from '../src/integration/contracts';
+import { NotificationPolicyController, type NotificationPermissionAdapter, type NotificationPolicyReconciler, type NotificationPreferencesRepository } from '../src/integration/notificationPolicyController';
+import type { NotificationIntent } from '../src/integration/notificationPolicy';
+
+const a: AuthenticatedSession = { user: { id: '11111111-1111-4111-8111-111111111111' as never, email: null, displayName: null }, expiresAt: null };
+const b: AuthenticatedSession = { ...a, user: { ...a.user, id: '22222222-2222-4222-8222-222222222222' as never } };
+function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>((done) => { resolve = done; }); return { promise, resolve }; }
+function fixture(initial: NotificationIntent = { tripReminders: false, itineraryReminders: false }) {
+  let stored = { ...initial };
+  const repository = { getOwn: jest.fn(async () => ({ ...stored })), saveOwn: jest.fn(async (_session, patch) => { stored = { ...stored, ...patch }; return { ...stored }; }) } satisfies NotificationPreferencesRepository;
+  const permissions: jest.Mocked<NotificationPermissionAdapter> = { get: jest.fn().mockResolvedValue('granted'), requestFromExplicitUserAction: jest.fn().mockResolvedValue('granted'), openSettings: jest.fn().mockResolvedValue(undefined) };
+  const reconciler: jest.Mocked<NotificationPolicyReconciler> = { reconcile: jest.fn().mockResolvedValue(undefined) };
+  return { controller: new NotificationPolicyController(repository, permissions, reconciler), repository, permissions, reconciler };
+}
+
+describe('T003 owner/session controller', () => {
+  it('loads at bootstrap with no request or reconcile; ordinary resume does nothing', async () => {
+    const f = fixture(); await f.controller.bindSession(a); await f.controller.appStateChanged('active'); await f.controller.load();
+    expect(f.permissions.requestFromExplicitUserAction).not.toHaveBeenCalled(); expect(f.reconciler.reconcile).not.toHaveBeenCalled();
+  });
+  it('persists ON before asking and scheduling', async () => {
+    const f = fixture(); await f.controller.bindSession(a); f.permissions.get.mockResolvedValue('unknown');
+    await f.controller.setCategory('tripReminders', true);
+    expect(f.repository.saveOwn.mock.invocationCallOrder[0]).toBeLessThan(f.permissions.requestFromExplicitUserAction.mock.invocationCallOrder[0]);
+    expect(f.controller.policy().allowedTypes).toEqual(['TRIP_STARTING_SOON']); expect(f.controller.policy().canSchedule).toBe(true);
+    expect(f.reconciler.reconcile).toHaveBeenCalledTimes(1);
+  });
+  it('does not prompt or enable after failed persistence', async () => {
+    const f = fixture(); await f.controller.bindSession(a); f.repository.saveOwn.mockRejectedValue(new Error('private token'));
+    await f.controller.setCategory('tripReminders', true);
+    expect(f.controller.policy().canSchedule).toBe(false); expect(f.permissions.requestFromExplicitUserAction).not.toHaveBeenCalled();
+    expect(f.controller.getSnapshot().error).toBe('sync'); expect(JSON.stringify(f.controller.getSnapshot())).not.toContain('private token');
+  });
+  it('retains durable intent after denial, with no nag from load/resume/retry', async () => {
+    const f = fixture(); await f.controller.bindSession(a); f.permissions.get.mockResolvedValue('denied_requestable'); f.permissions.requestFromExplicitUserAction.mockResolvedValue('denied_requestable');
+    await f.controller.setCategory('tripReminders', true); await f.controller.load(); await f.controller.retry(); await f.controller.appStateChanged('active');
+    expect(f.controller.getSnapshot().intent.tripReminders).toBe(true); expect(f.controller.policy().canSchedule).toBe(false);
+    expect(f.permissions.requestFromExplicitUserAction).toHaveBeenCalledTimes(1);
+  });
+  it('blocked denial never prompts', async () => {
+    const f = fixture(); await f.controller.bindSession(a); f.permissions.get.mockResolvedValue('denied_blocked');
+    await f.controller.setCategory('tripReminders', true); expect(f.permissions.requestFromExplicitUserAction).not.toHaveBeenCalled();
+  });
+  it('OFF is immediate and cancellation starts before unresolved persistence', async () => {
+    const f = fixture({ tripReminders: true, itineraryReminders: true }); await f.controller.bindSession(a);
+    const wait = deferred<NotificationIntent>(); f.repository.saveOwn.mockReturnValueOnce(wait.promise);
+    const operation = f.controller.setCategory('tripReminders', false);
+    expect(f.controller.policy().allowedTypes).toEqual(['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK']);
+    expect(f.reconciler.reconcile).toHaveBeenCalledWith(expect.anything(), a, expect.anything(), ['TRIP_STARTING_SOON']);
+    expect(f.repository.saveOwn).not.toHaveBeenCalled();
+    wait.resolve({ tripReminders: false, itineraryReminders: true }); await operation;
+    expect(f.permissions.requestFromExplicitUserAction).not.toHaveBeenCalled();
+  });
+  it('OFF survives sync failure, stale remote true, load and same-owner token refresh; explicit retry persists OFF', async () => {
+    const f = fixture({ tripReminders: true, itineraryReminders: false }); await f.controller.bindSession(a);
+    f.repository.saveOwn.mockRejectedValueOnce(new Error('sql-secret'));
+    await f.controller.setCategory('tripReminders', false); expect(f.controller.getSnapshot().error).toBe('sync');
+    await f.controller.load(); expect(f.controller.policy().canSchedule).toBe(false);
+    await f.controller.bindSession({ ...a }); expect(f.controller.policy().canSchedule).toBe(false);
+    await f.controller.retry(); expect(f.controller.getSnapshot().intent.tripReminders).toBe(false);
+    expect(f.repository.saveOwn).toHaveBeenLastCalledWith(expect.anything(), { tripReminders: false }, expect.anything());
+  });
+  it('two immediate OFF actions cancel both revoked categories', async () => {
+    const f = fixture({ tripReminders: true, itineraryReminders: true }); await f.controller.bindSession(a);
+    await Promise.all([f.controller.setCategory('tripReminders', false), f.controller.setCategory('itineraryReminders', false)]);
+    expect(f.reconciler.reconcile.mock.calls[1][3]).toHaveLength(5); expect(f.controller.policy().canSchedule).toBe(false);
+  });
+  it('discards stale preference load on A -> B', async () => {
+    const f = fixture(); const wait = deferred<NotificationIntent>(); f.repository.getOwn.mockReturnValueOnce(wait.promise);
+    const loading = f.controller.bindSession(a); await f.controller.bindSession(b); wait.resolve({ tripReminders: true, itineraryReminders: true }); await loading;
+    expect(f.controller.getSnapshot().session).toBe(b); expect(f.controller.policy().canSchedule).toBe(false);
+  });
+  it('discards stale write and does not query permission or reconcile', async () => {
+    const f = fixture(); await f.controller.bindSession(a); const wait = deferred<NotificationIntent>(); f.repository.saveOwn.mockReturnValueOnce(wait.promise);
+    const operation = f.controller.setCategory('tripReminders', true); await Promise.resolve(); await Promise.resolve();
+    await f.controller.bindSession(b); wait.resolve({ tripReminders: true, itineraryReminders: false }); await operation;
+    expect(f.controller.policy().canSchedule).toBe(false); expect(f.reconciler.reconcile).not.toHaveBeenCalled();
+  });
+  it('sign-out during permission request discards grant and performs no native mutation', async () => {
+    const f = fixture(); await f.controller.bindSession(a); f.permissions.get.mockResolvedValue('unknown');
+    const wait = deferred<'granted'>(); f.permissions.requestFromExplicitUserAction.mockReturnValueOnce(wait.promise);
+    const operation = f.controller.setCategory('tripReminders', true);
+    for (let i = 0; i < 8; i++) await Promise.resolve();
+    expect(f.permissions.requestFromExplicitUserAction).toHaveBeenCalledTimes(1);
+    await f.controller.bindSession(null); wait.resolve('granted'); await operation;
+    expect(f.controller.policy().canSchedule).toBe(false); expect(f.reconciler.reconcile).not.toHaveBeenCalled();
+  });
+  it('explicit system-settings return refreshes permission and reconciles once, without requesting', async () => {
+    const f = fixture({ tripReminders: true, itineraryReminders: false }); await f.controller.bindSession(a);
+    await f.controller.openSystemSettings(); await f.controller.appStateChanged('active');
+    expect(f.reconciler.reconcile).not.toHaveBeenCalled();
+    await f.controller.appStateChanged('background'); await f.controller.appStateChanged('active'); await f.controller.appStateChanged('active');
+    expect(f.permissions.get).toHaveBeenCalledTimes(2); expect(f.reconciler.reconcile).toHaveBeenCalledTimes(1);
+    expect(f.permissions.requestFromExplicitUserAction).not.toHaveBeenCalled();
+  });
+  it('account switch invalidates the system-settings return ticket', async () => {
+    const f = fixture(); await f.controller.bindSession(a); await f.controller.openSystemSettings(); await f.controller.appStateChanged('background');
+    await f.controller.bindSession(b); await f.controller.appStateChanged('active'); expect(f.reconciler.reconcile).not.toHaveBeenCalled();
+  });
+  it('native OFF failure retries cancellation without fetching a desired trip set', async () => {
+    const f = fixture({ tripReminders: true, itineraryReminders: true }); await f.controller.bindSession(a);
+    f.reconciler.reconcile.mockRejectedValueOnce(new Error('native unavailable'));
+    await f.controller.setCategory('tripReminders', false); await f.controller.retry();
+    expect(f.reconciler.reconcile).toHaveBeenLastCalledWith(expect.anything(), a, expect.anything(), ['TRIP_STARTING_SOON']);
+  });
+  it('discards a stale permission read when account changes', async () => {
+    const f = fixture(); const wait = deferred<'granted'>(); f.permissions.get.mockReturnValueOnce(wait.promise);
+    const loadA = f.controller.bindSession(a); f.permissions.get.mockResolvedValue('denied_blocked');
+    await f.controller.bindSession(b); wait.resolve('granted'); await loadA;
+    expect(f.controller.getSnapshot().permission).toBe('denied_blocked');
+    expect(f.controller.getSnapshot().session).toBe(b);
+  });
+});
+
+jest.mock('expo-notifications', () => ({ getPermissionsAsync: jest.fn(), requestPermissionsAsync: jest.fn(), AndroidImportance: { DEFAULT: 3 }, setNotificationChannelAsync: jest.fn().mockResolvedValue(null) }));
+import * as Notifications from 'expo-notifications';
+import { Linking, Platform } from 'react-native';
+import { classifyNotificationPermission, ExpoNotificationPermissionAdapter } from '../src/integration/remote/expoNotificationPermissionAdapter';
+
+describe('installed Expo notification permission adapter', () => {
+  const originalVersion = Platform.Version;
+  beforeEach(() => { jest.clearAllMocks(); Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' }); Object.defineProperty(Platform, 'Version', { configurable: true, value: 33 }); });
+  afterAll(() => { Object.defineProperty(Platform, 'Version', { configurable: true, value: originalVersion }); });
+  it.each([
+    [32, 'granted', true, true, 'legacy_enabled'], [32, 'denied', false, false, 'legacy_disabled'],
+    [33, 'granted', true, true, 'granted'], [37, 'denied', false, true, 'denied_requestable'],
+    [37, 'denied', false, false, 'denied_blocked'], [33, 'undetermined', false, true, 'unknown'],
+    [33, 'denied', true, false, 'denied_blocked'],
+  ])('API %s status=%s validates platform semantics', (api, status, granted, canAskAgain, expected) => {
+    expect(classifyNotificationPermission({ status, granted, canAskAgain }, 'android', api as number)).toBe(expected);
+  });
+  it.each([null, {}, { granted: 'true', canAskAgain: true }, { status: 'invented', granted: true, canAskAgain: true }])('invalid response fails closed', (response) => {
+    expect(classifyNotificationPermission(response, 'android', 33)).toBe('unknown');
+  });
+  it('read has no request side effect', async () => {
+    jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({ status: 'undetermined', granted: false, canAskAgain: true } as never);
+    await new ExpoNotificationPermissionAdapter().get(); expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+  });
+  it('explicit >=33 request grants once', async () => {
+    jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({ status: 'undetermined', granted: false, canAskAgain: true } as never);
+    jest.mocked(Notifications.requestPermissionsAsync).mockResolvedValue({ status: 'granted', granted: true, canAskAgain: true } as never);
+    expect(await new ExpoNotificationPermissionAdapter().requestFromExplicitUserAction(() => true)).toBe('granted');
+    expect(Notifications.requestPermissionsAsync).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(Notifications.setNotificationChannelAsync).mock.invocationCallOrder[0]).toBeLessThan(jest.mocked(Notifications.requestPermissionsAsync).mock.invocationCallOrder[0]);
+  });
+  it('pre-33 never calls runtime request, including legacy disabled', async () => {
+    Object.defineProperty(Platform, 'Version', { configurable: true, value: 32 });
+    jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({ status: 'denied', granted: false, canAskAgain: false } as never);
+    expect(await new ExpoNotificationPermissionAdapter().requestFromExplicitUserAction(() => true)).toBe('legacy_disabled');
+    expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+  });
+  it('blocked does not request again; opening settings is explicit', async () => {
+    jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({ status: 'denied', granted: false, canAskAgain: false } as never);
+    const open = jest.spyOn(Linking, 'openSettings').mockResolvedValue(); const adapter = new ExpoNotificationPermissionAdapter();
+    await adapter.requestFromExplicitUserAction(() => true); expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled(); expect(open).not.toHaveBeenCalled();
+    await adapter.openSettings(); expect(open).toHaveBeenCalledTimes(1); open.mockRestore();
+  });
+  it('account changed before prompt is suppressed', async () => {
+    jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({ status: 'undetermined', granted: false, canAskAgain: true } as never);
+    await expect(new ExpoNotificationPermissionAdapter().requestFromExplicitUserAction(() => false)).rejects.toMatchObject({ code: 'cancelled' });
+    expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+  });
+});
+
+import type { AuthenticatedSession } from '../src/integration/contracts';
+import { SupabaseNotificationPreferencesRepository, parseNotificationIntent } from '../src/integration/remote/supabaseNotificationPreferencesRepository';
+
+const session: AuthenticatedSession = { user: { id: '11111111-1111-4111-8111-111111111111' as never, email: null, displayName: null }, expiresAt: null };
+const row = { user_id: session.user.id, trip_reminders: true, itinerary_reminders: false };
+function fixture() {
+  let current: AuthenticatedSession | null = session;
+  const query = { select: jest.fn(), eq: jest.fn(), abortSignal: jest.fn(), maybeSingle: jest.fn().mockResolvedValue({ data: row, error: null }), single: jest.fn().mockResolvedValue({ data: row, error: null }), upsert: jest.fn(), update: jest.fn() };
+  for (const method of ['select', 'eq', 'abortSignal', 'upsert', 'update'] as const) query[method].mockReturnValue(query);
+  const client = { from: jest.fn().mockReturnValue(query) };
+  return { query, client, switchUser: () => { current = null; }, repository: new SupabaseNotificationPreferencesRepository(client as never, () => current), signal: new AbortController().signal };
+}
+describe('T003 validated owner preference repository', () => {
+  it('defaults absent rows OFF with explicit owner filtering', async () => {
+    const f = fixture(); f.query.maybeSingle.mockResolvedValue({ data: null, error: null });
+    await expect(f.repository.getOwn(session, f.signal)).resolves.toEqual({ tripReminders: false, itineraryReminders: false });
+    expect(f.query.eq).toHaveBeenCalledWith('user_id', session.user.id);
+  });
+  it('sends no client owner override and updates only the selected category', async () => {
+    const f = fixture(); await f.repository.saveOwn(session, { tripReminders: true }, f.signal);
+    expect(f.query.upsert).toHaveBeenCalledWith({}, { onConflict: 'user_id', ignoreDuplicates: true });
+    expect(f.query.update).toHaveBeenCalledWith({ trip_reminders: true });
+  });
+  it.each([{}, { tripReminders: 'true' }, { user_id: session.user.id }, { permission: 'granted' }])('rejects untrusted patch %j', async (patch) => {
+    const f = fixture(); await expect(f.repository.saveOwn(session, patch as never, f.signal)).rejects.toMatchObject({ code: 'invalidRequest' });
+    expect(f.client.from).not.toHaveBeenCalled();
+  });
+  it.each([{ ...row, user_id: 'another-owner' }, { ...row, trip_reminders: 'true' }, null])('rejects malformed or cross-owner responses', (value) => {
+    expect(() => parseNotificationIntent(value, session.user.id)).toThrow();
+  });
+  it('stale owner is rejected before transport', async () => {
+    const f = fixture(); f.switchUser(); await expect(f.repository.getOwn(session, f.signal)).rejects.toMatchObject({ code: 'sessionExpired' });
+    expect(f.client.from).not.toHaveBeenCalled();
+  });
+  it('stale response cannot be consumed', async () => {
+    const f = fixture(); f.query.maybeSingle.mockImplementation(async () => { f.switchUser(); return { data: row, error: null }; });
+    await expect(f.repository.getOwn(session, f.signal)).rejects.toMatchObject({ code: 'sessionExpired' });
+  });
+  it('does not expose raw server errors', async () => {
+    const f = fixture(); f.query.maybeSingle.mockRejectedValue(new Error('private-secret'));
+    await expect(f.repository.getOwn(session, f.signal)).rejects.not.toThrow('private-secret');
+  });
+});
+

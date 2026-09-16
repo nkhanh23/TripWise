@@ -1,0 +1,83 @@
+T003 SOURCE CONTRACT — VERIFIED FROM SOURCE
+Approved mapping:
+ tripReminders -> TRIP_STARTING_SOON only
+ itineraryReminders -> DAY_STARTING, PLACE_UPCOMING, LEAVE_SOON, LATE_RISK
+Policy predicates / controller ordering / EN-VI presentation / stale-session guards:
+mobile/src/features/settings/hooks/useNotificationPolicyController.ts:12:    stale: state.stale });
+mobile/src/features/settings/screens/SettingsScreen.tsx:2:import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+mobile/src/features/settings/screens/SettingsScreen.tsx:15:import type { RootStackParamList } from '../../../navigation/types';
+mobile/src/features/settings/screens/SettingsScreen.tsx:18:import { useAuth } from '../../auth/AuthProvider';
+mobile/src/features/settings/screens/SettingsScreen.tsx:30:  navigation,
+mobile/src/features/settings/screens/SettingsScreen.tsx:58:    locale === 'vi'
+mobile/src/features/settings/screens/SettingsScreen.tsx:59:      ? t('settings.language.vi')
+mobile/src/features/settings/screens/SettingsScreen.tsx:89:          : notificationPolicy.policy.canSchedule ? 'enabled' : 'unknown'}`);
+mobile/src/features/settings/screens/SettingsScreen.tsx:139:          onPress={() => navigation.goBack()}
+mobile/src/features/settings/screens/SettingsScreen.tsx:174:            onPress={() => navigation.navigate('LanguageSettings')}
+mobile/src/features/settings/screens/SettingsScreen.tsx:180:            onPress={() => navigation.navigate('CurrencySettings')}
+mobile/src/features/settings/screens/SettingsScreen.tsx:187:            showDivider={false}
+mobile/src/features/settings/screens/SettingsScreen.tsx:197:            onPress={() => navigation.navigate('AppearanceSettings')}
+mobile/src/features/settings/screens/SettingsScreen.tsx:198:            showDivider={false}
+mobile/src/features/settings/screens/SettingsScreen.tsx:219:            showDivider={false}
+mobile/src/features/settings/screens/SettingsScreen.tsx:225:              onPress={() => { void notificationPolicy.openSystemSettings(); }} showDivider={false} />
+mobile/src/features/settings/screens/SettingsScreen.tsx:230:              onPress={() => { void notificationPolicy.retry(); }} showDivider={false} />
+mobile/src/features/settings/screens/SettingsScreen.tsx:243:            onPress={() => navigation.navigate('HelpSupport')}
+mobile/src/features/settings/screens/SettingsScreen.tsx:251:            showDivider={false}
+mobile/src/features/settings/screens/SettingsScreen.tsx:262:        visible={activeDestructiveAction !== null}
+mobile/src/integration/remote/expoNotificationPermissionAdapter.ts:39:    const result = await Notifications.requestPermissionsAsync();
+mobile/src/integration/notificationPolicyRuntime.ts:12:import { OsrmRouteRepository } from './remote/publicProviderRepositories';
+mobile/src/integration/notificationPolicyRuntime.ts:36:    async reconcile(policy, expected, signal, revokeTypes) {
+mobile/src/integration/notificationPolicyRuntime.ts:42:      const revoked = revokeTypes ? new Set(revokeTypes) : null;
+mobile/src/integration/notificationPolicyRuntime.ts:44:        list: () => serialized(async () => { guard(); const values = await native.list(); guard(); return revoked ? values.filter((value) => revoked.has(value.type)) : values; }),
+mobile/src/integration/notificationPolicyRuntime.ts:50:      const trips = revoked || !policy.canSchedule ? [] : await loadTrips(signal);
+mobile/src/integration/notificationPolicyRuntime.ts:53:      const result = await scheduler.reconcile(trips, revoked ? { canSchedule: false } : asReminderEligibility(policy), signal);
+mobile/src/integration/notificationPolicyRuntime.ts:55:      if (result.failureCount > 0 || result.status === 'partial_failure') throw new IntegrationError('providerUnavailable');
+mobile/src/integration/notificationPolicyRuntime.ts:71:  // Do not reconcile a truncated desired set: it could cancel reminders outside the loaded page.
+mobile/src/integration/notificationPolicy.ts:3:import { viTranslations } from '../i18n/vi';
+mobile/src/integration/notificationPolicy.ts:31:  | 'stale_session';
+mobile/src/integration/notificationPolicy.ts:34:  canSchedule: boolean;
+mobile/src/integration/notificationPolicy.ts:37:  presentationFor(candidate: ReminderCandidate): ReminderPresentation | null;
+mobile/src/integration/notificationPolicy.ts:40:export type NotificationLocale = 'en' | 'vi';
+mobile/src/integration/notificationPolicy.ts:42:const tripTypes: readonly ReminderType[] = ['TRIP_STARTING_SOON'];
+mobile/src/integration/notificationPolicy.ts:43:const itineraryTypes: readonly ReminderType[] = ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'];
+mobile/src/integration/notificationPolicy.ts:47:    ...(intent.tripReminders === true ? tripTypes : []),
+mobile/src/integration/notificationPolicy.ts:48:    ...(intent.itineraryReminders === true ? itineraryTypes : []),
+mobile/src/integration/notificationPolicy.ts:63:  stale?: boolean;
+mobile/src/integration/notificationPolicy.ts:67:  const reason: EffectiveReminderPolicyReason = input.stale
+mobile/src/integration/notificationPolicy.ts:68:    ? 'stale_session'
+mobile/src/integration/notificationPolicy.ts:76:  const canSchedule = reason === 'enabled';
+mobile/src/integration/notificationPolicy.ts:79:    canSchedule,
+mobile/src/integration/notificationPolicy.ts:82:    presentationFor(candidate) {
+mobile/src/integration/notificationPolicy.ts:83:      if (!canSchedule || !allowed.has(candidate.type)) return null;
+mobile/src/integration/notificationPolicy.ts:84:      const translations = input.locale === 'vi' ? viTranslations : enTranslations;
+mobile/src/integration/notificationPolicy.ts:92:  return { canSchedule: policy.canSchedule, presentationFor: policy.presentationFor };
+mobile/src/integration/notificationPolicyController.ts:17:  reconcile(policy: EffectiveReminderPolicy, session: AuthenticatedSession, signal: AbortSignal, revokeTypes?: readonly ReminderType[]): Promise<void>;
+mobile/src/integration/notificationPolicyController.ts:25:  stale: boolean;
+mobile/src/integration/notificationPolicyController.ts:26:  error: 'load' | 'sync' | 'permission' | 'reconcile' | null;
+mobile/src/integration/notificationPolicyController.ts:29:/** Session-owned policy state survives Settings unmounts. No lifecycle native cleanup. */
+mobile/src/integration/notificationPolicyController.ts:32:    session: null, intent: { ...DEFAULT_NOTIFICATION_INTENT }, permission: 'unknown', loading: true, busy: false, stale: false, error: null,
+mobile/src/integration/notificationPolicyController.ts:36:  private revoked = new Set<NotificationCategory>();
+mobile/src/integration/notificationPolicyController.ts:45:    private readonly reconciler: NotificationPolicyReconciler) {}
+mobile/src/integration/notificationPolicyController.ts:52:    this.state.stale = !!session && session.expiresAt !== null && session.expiresAt * 1000 <= Date.now();
+mobile/src/integration/notificationPolicyController.ts:62:    return { tripReminders: intent.tripReminders && !this.revoked.has('tripReminders'),
+mobile/src/integration/notificationPolicyController.ts:63:      itineraryReminders: intent.itineraryReminders && !this.revoked.has('itineraryReminders') };
+mobile/src/integration/notificationPolicyController.ts:67:      stale: !!this.state.session && !this.current(this.state.session, this.operation.signal),
+mobile/src/integration/notificationPolicyController.ts:75:    if (!sameOwner) { this.revoked.clear(); this.pendingOff.clear(); this.pendingNativeRevocation = false; }
+mobile/src/integration/notificationPolicyController.ts:107:      this.revoked.add(category);
+mobile/src/integration/notificationPolicyController.ts:111:        ...(this.revoked.has('tripReminders') ? ['TRIP_STARTING_SOON' as const] : []),
+mobile/src/integration/notificationPolicyController.ts:112:        ...(this.revoked.has('itineraryReminders') ? ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'] as const : []),
+mobile/src/integration/notificationPolicyController.ts:114:      // Start native cancellation before initiating persistence; neither waits for the network.
+mobile/src/integration/notificationPolicyController.ts:115:      const cancellation = this.reconciler.reconcile(this.policy(), session, signal, types)
+mobile/src/integration/notificationPolicyController.ts:117:        .catch(() => { if (this.current(session, signal)) { this.pendingNativeRevocation = true; this.publish({ error: 'reconcile' }); } });
+mobile/src/integration/notificationPolicyController.ts:130:        this.revoked.delete(category);
+mobile/src/integration/notificationPolicyController.ts:132:        // Durable intent is visible even if the OS denies or its query fails.
+mobile/src/integration/notificationPolicyController.ts:146:        try { await this.reconciler.reconcile(this.policy(), session, signal); }
+mobile/src/integration/notificationPolicyController.ts:147:        catch { if (this.current(session, signal)) this.publish({ error: 'reconcile' }); }
+mobile/src/integration/notificationPolicyController.ts:156:      const categories = this.pendingNativeRevocation ? this.revoked : this.pendingOff;
+mobile/src/integration/notificationPolicyController.ts:158:    } else if (this.state.error === 'reconcile') {
+mobile/src/integration/notificationPolicyController.ts:163:      try { await this.reconciler.reconcile(this.policy(), session, signal); }
+mobile/src/integration/notificationPolicyController.ts:164:      catch { if (this.current(session, signal)) this.publish({ error: 'reconcile' }); }
+mobile/src/integration/notificationPolicyController.ts:188:      await this.reconciler.reconcile(this.policy(), ticket.session, signal);
+
+Out-of-scope behavior scan (no result is expected):
+
+RESULT: source matches approved T003 mapping/policy boundaries; no T004/P7/exact-alarm indicator found in inspected T003 surface.

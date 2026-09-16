@@ -1,0 +1,2 @@
+NOT_RUN_DEVICE_UNAVAILABLE
+No explicit ON action, owner persistence, permission inspection/request, eligibility recompute, or T002 reconciliation was executed.

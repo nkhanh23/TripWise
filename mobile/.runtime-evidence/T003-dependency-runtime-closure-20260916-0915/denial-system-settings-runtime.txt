@@ -1,0 +1,2 @@
+NOT_REPRODUCIBLE_ON_CURRENT_DEVICE_STATE
+No connected device exists. Deterministic adapter/controller tests cover denial, blocked denial, no nag and explicit settings-return ticket behavior; no runtime claim is made.

@@ -1,0 +1,10 @@
+
+> node_modules\expo\bundledNativeModules.json:16:  "eslint-config-expo": "~57.0.2",
+  node_modules\expo\bundledNativeModules.json:17:  "expo-analytics-amplitude": "~11.3.0",
+> node_modules\expo\bundledNativeModules.json:73:  "expo-notifications": "~57.0.18",
+  node_modules\expo\bundledNativeModules.json:74:  "expo-observe": "~57.0.21",
+> node_modules\expo\bundledNativeModules.json:99:  "jest-expo": "~57.0.5",
+  node_modules\expo\bundledNativeModules.json:100:  "lottie-react-native": "~7.3.8",
+> node_modules\expo\bundledNativeModules.json:118:  "sentry-expo": "~7.0.0",
+  node_modules\expo\bundledNativeModules.json:119:  "unimodules-app-loader": "~57.0.2",
+

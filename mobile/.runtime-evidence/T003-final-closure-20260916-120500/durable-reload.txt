@@ -1,0 +1,1 @@
+BLOCKED_DURABLE_BACKEND: local Docker/Supabase is unavailable; no authorized remote backend used.

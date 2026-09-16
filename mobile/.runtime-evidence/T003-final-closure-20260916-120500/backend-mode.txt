@@ -1,0 +1,5 @@
+BACKEND MODE
+BLOCKED: no explicitly authorized remote dev/test Supabase deployment was used.
+BLOCKED: local established Docker-based migration/RLS runner cannot connect to Docker daemon at localhost:2375.
+No remote migration deployment was attempted.
+No in-memory repository was substituted for durable backend evidence.

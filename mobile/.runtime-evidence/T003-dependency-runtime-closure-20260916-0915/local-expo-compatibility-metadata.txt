@@ -1,0 +1,4 @@
+node_modules/expo\bundledNativeModules.json:31:  "expo-brownfield": "~57.0.19",
+node_modules/expo\bundledNativeModules.json:41:  "expo-dev-client": "~57.0.19",
+node_modules/expo\bundledNativeModules.json:83:  "expo-sharing": "~57.0.19",
+node_modules/expo\bundledNativeModules.json:98:  "expo-widgets": "~57.0.19",

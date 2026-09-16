@@ -1,0 +1,38 @@
+ROADMAP EXCERPT — READ ONLY
+
+  phase_doc\PHASES_FEATURES.md:323:
+> phase_doc\PHASES_FEATURES.md:324:### [ ] FEATURE-P6 — Engine tiến độ chuyến đi và nhắc nhở
+  phase_doc\PHASES_FEATURES.md:325:
+  phase_doc\PHASES_FEATURES.md:326:**Mục tiêu / lý do:** tạo state machine và notification policy có giới hạn trước behavior được kích hoạt bởi location.
+  phase_doc\PHASES_FEATURES.md:327:
+  phase_doc\PHASES_FEATURES.md:339:
+> phase_doc\PHASES_FEATURES.md:340:**Phụ thuộc:** P2, P5, P6. **Phạm vi/task:** `FEATURE-P7-T001` consent location explicit và lifecycle geofence; `T002` capture `ARRIVED`/actual visit; `T003` phát hiện weather risk và 
+skip/delay; `T004` context engine có giới hạn. **Ngoài phạm vi:** theo dõi liên tục, chia sẻ location lên social, replanning tự động.
+  phase_doc\PHASES_FEATURES.md:341:
+  phase_doc\PHASES_FEATURES.md:342:**Domain/schema:** consent, đăng ký geofence, dữ liệu event/actual-visit tối thiểu kèm policy retention/deletion. **Supabase:** đồng bộ event chỉ cho owner; event local-first chỉ 
+upload theo contract explicit. **Mobile:** permission của OS, giới hạn background, thay thế/dọn dẹp geofence và UI battery. **Provider:** chỉ dùng OSRM/Open-Meteo đã được chấp nhận; không có tọa độ giả.
+  phase_doc\PHASES_FEATURES.md:343:
+  phase_doc\PHASES_FEATURES.md:647:
+> phase_doc\PHASES_FEATURES.md:648:#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+  phase_doc\PHASES_FEATURES.md:649:
+> phase_doc\PHASES_FEATURES.md:650:- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+  phase_doc\PHASES_FEATURES.md:651:
+  phase_doc\PHASES_FEATURES.md:652:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:653:
+  phase_doc\PHASES_FEATURES.md:655:
+> phase_doc\PHASES_FEATURES.md:656:#### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
+  phase_doc\PHASES_FEATURES.md:657:
+> phase_doc\PHASES_FEATURES.md:658:- [ ] FEATURE-P6-T004-S001 — Xác minh lifecycle notification khi edit/sign-out/reboot/background.
+  phase_doc\PHASES_FEATURES.md:659:
+  phase_doc\PHASES_FEATURES.md:660:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:661:
+  phase_doc\PHASES_FEATURES.md:663:
+> phase_doc\PHASES_FEATURES.md:664:#### [ ] FEATURE-P7-T001 — Consent và geofence lifecycle
+  phase_doc\PHASES_FEATURES.md:665:
+> phase_doc\PHASES_FEATURES.md:666:- [ ] FEATURE-P7-T001-S001 — Triển khai consent, geofence registration/replacement/cleanup bounded.
+  phase_doc\PHASES_FEATURES.md:667:
+  phase_doc\PHASES_FEATURES.md:668:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:669:
+
+
+RESULT: no roadmap mutation performed; T003 remains unchecked.

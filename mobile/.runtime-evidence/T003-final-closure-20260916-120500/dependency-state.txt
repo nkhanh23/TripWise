@@ -1,0 +1,104 @@
+DEPENDENCY STATE
+node=v22.23.2
+npm=10.9.8
+npx-expo=57.0.25
+registry=https://registry.npmjs.org/
+PACKAGE JSON:
+{
+  "name": "tripwise-mobile",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-navigation/bottom-tabs": "^7.18.16",
+    "@react-navigation/native": "^7.3.16",
+    "@react-navigation/native-stack": "^7.18.8",
+    "@supabase/supabase-js": "^2.112.3",
+    "expo": "~57.0.23",
+    "expo-asset": "~57.0.17",
+    "expo-dev-client": "~57.0.19",
+    "expo-font": "~57.0.4",
+    "expo-notifications": "~57.0.19",
+    "expo-secure-store": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-maps": "1.27.2",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-url-polyfill": "^4.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "~29.5.14",
+    "@types/react": "~19.2.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
+    "jest-expo": "~57.0.5",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.ts",
+      "<rootDir>/tests/**/*.test.tsx"
+    ]
+  },
+  "private": true
+}
+
+INSTALLED TREE:
+tripwise-mobile@1.0.0 D:\Dev\TripWise\mobile
+├─┬ expo-asset@57.0.17
+│ ├─┬ expo-constants@57.0.18
+│ │ └── expo@57.0.23 deduped
+│ └── expo@57.0.23 deduped
+├─┬ expo-dev-client@57.0.19
+│ ├─┬ expo-dev-launcher@57.0.20
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-dev-menu-interface@57.0.0
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-dev-menu@57.0.18
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-manifests@57.0.2
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-updates-interface@57.0.2
+│ │ └── expo@57.0.23 deduped
+│ └── expo@57.0.23 deduped
+├─┬ expo-font@57.0.4
+│ └── expo@57.0.23 deduped
+├─┬ expo-notifications@57.0.19
+│ ├─┬ expo-application@57.0.3
+│ │ └── expo@57.0.23 deduped
+│ └── expo@57.0.23 deduped
+├─┬ expo-secure-store@57.0.4
+│ └── expo@57.0.23 deduped
+├─┬ expo-status-bar@57.0.1
+│ └── expo@57.0.23 deduped
+├─┬ expo@57.0.23
+│ ├─┬ @expo/cli@57.0.25
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ @expo/dom-webview@57.0.1
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ @expo/log-box@57.0.4
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ @expo/metro-config@57.0.12
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ babel-preset-expo@57.0.12
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-file-system@57.0.7
+│ │ └── expo@57.0.23 deduped
+│ └─┬ expo-keep-awake@57.0.2
+│   └── expo@57.0.23 deduped
+└─┬ jest-expo@57.0.5
+  └── expo@57.0.23 deduped
+

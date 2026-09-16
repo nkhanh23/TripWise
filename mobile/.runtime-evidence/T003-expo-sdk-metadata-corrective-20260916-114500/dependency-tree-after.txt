@@ -1,0 +1,47 @@
+tripwise-mobile@1.0.0 D:\Dev\TripWise\mobile
+├─┬ expo-asset@57.0.17
+│ ├─┬ expo-constants@57.0.18
+│ │ └── expo@57.0.23 deduped
+│ └── expo@57.0.23 deduped
+├─┬ expo-dev-client@57.0.19
+│ ├─┬ expo-dev-launcher@57.0.20
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-dev-menu-interface@57.0.0
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-dev-menu@57.0.18
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-manifests@57.0.2
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-updates-interface@57.0.2
+│ │ └── expo@57.0.23 deduped
+│ └── expo@57.0.23 deduped
+├─┬ expo-font@57.0.4
+│ └── expo@57.0.23 deduped
+├─┬ expo-notifications@57.0.19
+│ ├─┬ expo-application@57.0.3
+│ │ └── expo@57.0.23 deduped
+│ └── expo@57.0.23 deduped
+├─┬ expo-secure-store@57.0.4
+│ └── expo@57.0.23 deduped
+├─┬ expo-status-bar@57.0.1
+│ └── expo@57.0.23 deduped
+├─┬ expo@57.0.23
+│ ├─┬ @expo/cli@57.0.25
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ @expo/dom-webview@57.0.1
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ @expo/log-box@57.0.4
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ @expo/metro-config@57.0.12
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ babel-preset-expo@57.0.12
+│ │ └── expo@57.0.23 deduped
+│ ├─┬ expo-file-system@57.0.7
+│ │ └── expo@57.0.23 deduped
+│ └─┬ expo-keep-awake@57.0.2
+│   └── expo@57.0.23 deduped
+└─┬ jest-expo@57.0.5
+  └── expo@57.0.23 deduped
+
+
+EXIT_CODE=0
