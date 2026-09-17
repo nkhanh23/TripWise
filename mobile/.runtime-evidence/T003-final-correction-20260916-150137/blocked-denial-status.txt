@@ -1,0 +1,4 @@
+NOT_REPRODUCIBLE_ON_CURRENT_DEVICE_STATE
+Android 37 installed package currently has POST_NOTIFICATIONS granted. Emulator was not reset/wiped.
+VERIFIED FROM TEST EVIDENCE: mobile/tests/notification-policy-controller.test.ts :: "blocked denial never prompts".
+VERIFIED FROM TEST EVIDENCE: mobile/tests/notification-permission.test.ts :: "blocked does not request again; opening settings is explicit".

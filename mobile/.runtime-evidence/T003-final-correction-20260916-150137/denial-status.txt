@@ -1,0 +1,4 @@
+NOT_REPRODUCIBLE_ON_CURRENT_DEVICE_STATE
+Android 37 installed package currently has POST_NOTIFICATIONS granted. Emulator was not reset/wiped.
+VERIFIED FROM TEST EVIDENCE: mobile/tests/notification-policy-controller.test.ts :: "retains durable intent after denial, with no nag from load/resume/retry".
+VERIFIED FROM TEST EVIDENCE: mobile/tests/notification-policy.test.ts :: "fails closed with denied_requestable".

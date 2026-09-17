@@ -1,0 +1,14 @@
+Command (using the available bundled Node runtime because NVM had no active Node version):
+node node_modules/jest/bin/jest.js --runInBand tests/notification-permission.test.ts tests/notification-policy-controller.test.ts tests/notification-policy.test.ts
+
+PASS tests/notification-permission.test.ts
+PASS tests/notification-policy-controller.test.ts
+PASS tests/notification-policy.test.ts
+Test Suites: 3 passed, 3 total
+Tests: 45 passed, 45 total
+Snapshots: 0 total
+
+Relevant real paths/cases include:
+- mobile/tests/notification-permission.test.ts :: "read has no request side effect"; "blocked does not request again; opening settings is explicit"
+- mobile/tests/notification-policy-controller.test.ts :: "loads at bootstrap with no request or reconcile; ordinary resume does nothing"; "retains durable intent after denial, with no nag from load/resume/retry"; "blocked denial never prompts"; stale/account-switch cases
+- mobile/tests/notification-policy.test.ts :: fail-closed permission and stale-session cases

@@ -1,0 +1,5 @@
+MERGED MANIFEST INSPECTION (fresh 2026-09-16)
+Merged manifests inspected: 2
+android.permission.SCHEDULE_EXACT_ALARM = ABSENT
+android.permission.USE_EXACT_ALARM = ABSENT
+Result: ABSENT_BOTH

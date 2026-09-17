@@ -4,18 +4,45 @@ import { supabase } from '../../lib/supabase/client';
 import type { Database } from '../../lib/supabase/database.types';
 import type { AuthenticatedSession } from '../contracts';
 import { IntegrationError, mapAuthError } from '../errors';
-import { mapAuthenticatedSession } from '../mappers';
+import { mapAuthenticatedSession, mapAuthenticatedUser } from '../mappers';
 import { authOperationPolicy, executeWithReliability, raceWithAbort } from '../reliability';
 import type { AuthRepository, SignUpResult } from '../repositories';
 
 export class SupabaseAuthRepository implements AuthRepository {
   constructor(private readonly client: SupabaseClient<Database> = supabase) {}
 
+  private async validateServerIdentity(session: Session, signal?: AbortSignal): Promise<AuthenticatedSession> {
+    const { data, error } = await raceWithAbort(
+      this.client.auth.getUser(session.access_token),
+      signal ?? new AbortController().signal,
+    );
+    if (error || !data.user || data.user.id !== session.user.id) {
+      if (error) throw mapAuthError(error);
+      throw new IntegrationError('unauthorized');
+    }
+    return {
+      user: mapAuthenticatedUser(data.user),
+      expiresAt: session.expires_at ?? null,
+    };
+  }
+
+  private async clearInvalidLocalSession(): Promise<void> {
+    await this.client.auth.signOut({ scope: 'local' }).catch(() => undefined);
+  }
+
   async restoreSession(signal?: AbortSignal): Promise<AuthenticatedSession | null> {
     return executeWithReliability(async (attemptSignal) => {
       const { data, error } = await raceWithAbort(this.client.auth.getSession(), attemptSignal);
       if (error) throw mapAuthError(error);
-      return data.session ? mapAuthenticatedSession(data.session) : null;
+      if (!data.session) return null;
+      try {
+        return await this.validateServerIdentity(data.session, attemptSignal);
+      } catch (error: unknown) {
+        if (error instanceof IntegrationError && (error.code === 'unauthorized' || error.code === 'sessionExpired')) {
+          await this.clearInvalidLocalSession();
+        }
+        throw error;
+      }
     }, authOperationPolicy, signal);
   }
 
@@ -76,9 +103,32 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   subscribe(listener: (session: AuthenticatedSession | null) => void): () => void {
+    let validationSequence = 0;
+    let active = true;
     const subscription = this.client.auth.onAuthStateChange(
-      (_event: AuthChangeEvent, session: Session | null) => listener(session ? mapAuthenticatedSession(session) : null),
+      (_event: AuthChangeEvent, session: Session | null) => {
+        const sequence = ++validationSequence;
+        if (!session) {
+          listener(null);
+          return;
+        }
+        void this.validateServerIdentity(session).then(
+          (validated) => {
+            if (active && sequence === validationSequence) listener(validated);
+          },
+          async (error: unknown) => {
+            if (error instanceof IntegrationError && (error.code === 'unauthorized' || error.code === 'sessionExpired')) {
+              await this.clearInvalidLocalSession();
+            }
+            if (active && sequence === validationSequence) listener(null);
+          },
+        );
+      },
     ).data.subscription;
-    return () => subscription.unsubscribe();
+    return () => {
+      active = false;
+      validationSequence += 1;
+      subscription.unsubscribe();
+    };
   }
 }

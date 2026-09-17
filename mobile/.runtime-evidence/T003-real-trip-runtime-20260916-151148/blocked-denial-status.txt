@@ -1,0 +1,3 @@
+NOT_REPRODUCIBLE_ON_CURRENT_DEVICE_STATE
+Focused test PASS: mobile/tests/notification-policy-controller.test.ts :: blocked denial never prompts.
+Focused test PASS: mobile/tests/notification-permission.test.ts :: blocked does not request again; opening settings is explicit.

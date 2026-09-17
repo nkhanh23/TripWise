@@ -1,0 +1,5 @@
+Created by this evidence-only correction:
+mobile/.runtime-evidence/T003-final-correction-20260916-150137/ (all files listed in artifact-manifest-sha256.txt)
+
+No production source, test, migration, Edge Function, dependency, Android manifest, or roadmap file was changed by this task.
+Pre-existing dirty files were preserved unchanged.

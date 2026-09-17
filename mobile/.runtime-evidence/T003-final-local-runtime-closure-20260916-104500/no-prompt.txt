@@ -1,0 +1,1 @@
+NOT RUN — mandatory environment precheck failed: local Docker/Supabase daemon is unavailable to the current task account. No runtime, migration, source-freeze, or static-gate step was continued.

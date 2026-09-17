@@ -1,0 +1,8 @@
+PASS tests/notification-permission.test.ts
+PASS tests/notification-policy-controller.test.ts
+PASS tests/notification-policy.test.ts
+Test Suites: 3 passed, 3 total
+Tests: 45 passed, 45 total
+Snapshots: 0 total
+
+The run used the installed bundled Node runtime because NVM has no active Node version.

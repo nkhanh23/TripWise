@@ -1,0 +1,3 @@
+BACKEND MODE
+Local Supabase only; HTTP://127.0.0.1:54321 established.
+No remote deployment or remote backend was used.

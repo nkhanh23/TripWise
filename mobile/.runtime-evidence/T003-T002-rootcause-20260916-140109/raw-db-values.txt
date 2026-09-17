@@ -1,0 +1,38 @@
+{
+  "trip": {
+    "id": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+    "user_id": "700b0fcd-9752-4ea8-990e-4b45ef871da8",
+    "title": "Prod Evidence Trip",
+    "destination": "{\"name\":\"London\"}",
+    "start_date": "2026-09-17",
+    "end_date": "2026-09-18",
+    "estimated_budget": null,
+    "currency": null,
+    "created_at": "2026-09-16T07:02:08.138143+00:00",
+    "updated_at": "2026-09-16T07:02:14.099308+00:00",
+    "idempotency_key": null,
+    "idempotency_request_hash": null,
+    "workspace_revision": 3,
+    "schedule_timezone": "Europe/London",
+    "timezone_provenance": "USER_CONFIRMED",
+    "timezone_confirmed_at": "2026-09-16T07:02:08.138143+00:00"
+  },
+  "days": [
+    {
+      "id": "084ff277-94f7-4848-9247-526efeea28a9",
+      "trip_id": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+      "day_number": 1,
+      "date": "2026-09-17",
+      "summary": null,
+      "created_at": "2026-09-16T07:02:11.346425+00:00"
+    },
+    {
+      "id": "0089faaf-42b8-4f85-8608-cf5a07e29038",
+      "trip_id": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+      "day_number": 2,
+      "date": "2026-09-18",
+      "summary": null,
+      "created_at": "2026-09-16T07:02:14.099308+00:00"
+    }
+  ]
+}

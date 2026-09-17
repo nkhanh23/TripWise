@@ -1,0 +1,4 @@
+NOT_RUN
+Production supported path inspected: SupabaseTripPersistenceRepository.persist -> authenticated public.create_trip_graph(text,jsonb).
+No authenticated owner session could be proven against current local Supabase DEV Auth, so no trip was created.
+Trip UUID: NOT_AVAILABLE.

@@ -1,0 +1,4 @@
+AUTH CONTAINER DIAGNOSTICS
+Raw local Auth /auth/v1/signup returned HTTP 200 application/json with standard session/user response shape.
+Standalone supabase-js signUp returned error=null with session and user.
+No credentials or emails retained.

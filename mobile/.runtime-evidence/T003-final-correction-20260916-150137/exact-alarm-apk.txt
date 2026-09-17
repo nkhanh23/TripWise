@@ -1,0 +1,6 @@
+VERIFIED FROM APK
+APK: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+Tool: D:\Dev\Android\Sdk\build-tools\37.0.0\aapt2.exe dump permissions
+Result: APK_EXACT_ALARM_MATCHES=0
+android.permission.SCHEDULE_EXACT_ALARM = ABSENT
+android.permission.USE_EXACT_ALARM = ABSENT

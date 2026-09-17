@@ -1,0 +1,1 @@
+DELETE FROM public.trips WHERE title = 'Prod Evidence Trip';

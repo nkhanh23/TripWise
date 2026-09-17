@@ -1,0 +1,8 @@
+Fresh read: phase_doc/PHASES_FEATURES.md
+[x] FEATURE-P6-T003 — Smart Notification Policy
+[x] FEATURE-P6-T003-S001
+[x] Permission privacy va policy khong chua content nhay cam PASS.
+[ ] FEATURE-P6-T004
+[ ] FEATURE-P6 parent remains unclosed because T004 is unchecked.
+[ ] FEATURE-P7
+Roadmap not edited by this task. FEATURE-P6-T004 was not started.

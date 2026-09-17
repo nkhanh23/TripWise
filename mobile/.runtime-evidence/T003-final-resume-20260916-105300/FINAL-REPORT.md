@@ -1,0 +1,1 @@
+# T003 Resume Evidence`n`nFinal status: BLOCKED_DURABLE_BACKEND. Fresh gates/build/RLS PASS, but real local Supabase Auth signup failed before durable repository reload or Android runtime could be exercised. Temporary test removed; source hashes identical.

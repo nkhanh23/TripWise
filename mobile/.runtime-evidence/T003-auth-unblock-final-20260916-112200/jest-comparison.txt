@@ -1,0 +1,4 @@
+JEST COMPARISON
+Previous Jest-expo test used generated @local.invalid address and returned AuthUnknownError JSON parsing failure.
+Current raw HTTP and standalone Node probes using @example.com both PASS.
+CLASSIFICATION: prior harness input/runtime incompatibility; not a demonstrated local Auth, Supabase-js, T003 repository, migration, or RLS defect.

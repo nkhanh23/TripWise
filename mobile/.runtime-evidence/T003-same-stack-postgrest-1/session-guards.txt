@@ -1,0 +1,5 @@
+{
+  "identical": "IntegrationError: The session has expired.",
+  "expired": "IntegrationError: The session has expired.",
+  "aborted": "IntegrationError: The request was cancelled."
+}

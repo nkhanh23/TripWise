@@ -20,9 +20,13 @@ export function classifyNotificationPermission(response: unknown, platform: stri
 
 export class ExpoNotificationPermissionAdapter implements NotificationPermissionAdapter {
   async get(): Promise<NotificationPermissionState> {
-    return classifyNotificationPermission(await Notifications.getPermissionsAsync(), Platform.OS, Number(Platform.Version));
+    const response = await Notifications.getPermissionsAsync();
+    const result = classifyNotificationPermission(response, Platform.OS, Number(Platform.Version));
+    console.log('DIAGNOSTIC: adapter.get() called', JSON.stringify({ response, result }));
+    return result;
   }
   async requestFromExplicitUserAction(isCurrent: () => boolean): Promise<NotificationPermissionState> {
+    console.log('DIAGNOSTIC: requestFromExplicitUserAction CALLED');
     const current = await this.get();
     if (!isCurrent()) throw new IntegrationError('cancelled');
     if (Platform.OS !== 'android' || Number(Platform.Version) < 33
@@ -36,7 +40,9 @@ export class ExpoNotificationPermissionAdapter implements NotificationPermission
     // Android 13+ requires a channel before the permission dialog. Only on explicit opt-in.
     await new ExpoReminderNotificationRepository().prepare();
     if (!isCurrent()) throw new IntegrationError('cancelled');
+    console.log('DIAGNOSTIC: About to call Notifications.requestPermissionsAsync');
     const result = await Notifications.requestPermissionsAsync();
+    console.log('DIAGNOSTIC: Notifications.requestPermissionsAsync returned', JSON.stringify(result));
     if (!isCurrent()) throw new IntegrationError('cancelled');
     return classifyNotificationPermission(result, Platform.OS, Number(Platform.Version));
   }

@@ -1,0 +1,4 @@
+Historical reuse only; current production scope hashes match the referenced bundle.
+Source artifact: mobile/.runtime-evidence/T003-valid-fixture-native-final-20260916-141421/explicit-off-events.txt
+Required source evidence: T3=1789543596827; T5=1789543596874; T3 < T5.
+This correction did not rerun OFF because no new valid fixture/ON provenance was available.

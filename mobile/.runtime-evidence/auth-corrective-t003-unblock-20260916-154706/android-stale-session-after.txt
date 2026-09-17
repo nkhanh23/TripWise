@@ -1,0 +1,13 @@
+Device: emulator-5554
+Package: com.anonymous.tripwisemobile
+Action: force-stop, cold launch, wait for Auth bootstrap, inspect UI hierarchy
+Result: VERIFIED FROM ANDROID RUNTIME
+Signed-out Welcome screen present:
+- Get started
+- I already have an account
+Authenticated wizard markers absent:
+- Create Trip absent
+- prior trip title absent
+- prior destination absent
+- generic generation error absent
+No credentials, email, JWT, refresh token, API key, or secret captured.

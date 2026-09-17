@@ -1,0 +1,3 @@
+List of devices attached
+
+RESULT: no existing authorized Android emulator/device attached during precheck.

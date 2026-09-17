@@ -1,0 +1,5 @@
+VERIFIED FROM ANDROID RUNTIME
+Local Supabase-authenticated application session was present in the running production development client.
+Account identifier/email intentionally redacted.
+No manually fabricated AuthenticatedSession object was used.
+The account's Profile runtime displayed 0 Trips, so it cannot establish the required valid saved-trip provenance for an ON run.

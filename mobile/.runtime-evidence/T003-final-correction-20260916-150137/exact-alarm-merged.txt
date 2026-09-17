@@ -1,0 +1,5 @@
+VERIFIED FROM BUILD ARTIFACT
+Merged AndroidManifest.xml files inspected: 2
+Result: MERGED_EXACT_ALARM_MATCHES=0
+android.permission.SCHEDULE_EXACT_ALARM = ABSENT
+android.permission.USE_EXACT_ALARM = ABSENT

@@ -1,0 +1,1 @@
+NOT RUN or not completed in this auth-diagnosis resume; no PASS claim.

@@ -19,6 +19,11 @@ const profile: Profile = {
       homeCountry: '',
   createdAt: '2026-08-20T00:00:00.000Z', updatedAt: '2026-08-20T00:00:00.000Z',
 };
+const userBId = asUserId('22222222-2222-4222-8222-222222222222');
+const sessionB: AuthenticatedSession = {
+  user: { id: userBId, email: 'owner-b@example.com', displayName: 'Owner B' }, expiresAt: null,
+};
+const profileB: Profile = { ...profile, id: userBId, displayName: 'Remote Owner B' };
 
 type Deferred<T> = { promise: Promise<T>; resolve: (value: T) => void; reject: (error: unknown) => void };
 
@@ -76,6 +81,35 @@ describe('AuthProvider session lifecycle', () => {
     expect(screen.getByTestId('status').props.children).toBe('signedOut');
   });
 
+  it('keeps a later signed-out auth event when a delayed restore for account A resolves', async () => {
+    const restore = deferred<AuthenticatedSession | null>();
+    const repositories = createRepositories(restore.promise);
+    await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
+
+    await act(async () => repositories.emit(null));
+    expect(screen.getByTestId('status').props.children).toBe('signedOut');
+    await act(async () => restore.resolve(session));
+
+    expect(screen.getByTestId('status').props.children).toBe('signedOut');
+    expect(screen.getByTestId('email').props.children).toBe('none');
+    expect(repositories.profiles.getOwnProfile).not.toHaveBeenCalled();
+  });
+
+  it('keeps a later account B auth event when a delayed restore for account A resolves', async () => {
+    const restore = deferred<AuthenticatedSession | null>();
+    const repositories = createRepositories(restore.promise);
+    jest.mocked(repositories.profiles.getOwnProfile).mockResolvedValueOnce(profileB);
+    await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
+
+    await act(async () => repositories.emit(sessionB));
+    await waitFor(() => expect(screen.getByTestId('email').props.children).toBe('owner-b@example.com'));
+    await act(async () => restore.resolve(session));
+
+    expect(screen.getByTestId('email').props.children).toBe('owner-b@example.com');
+    expect(repositories.profiles.getOwnProfile).toHaveBeenCalledTimes(1);
+    expect(repositories.profiles.getOwnProfile).toHaveBeenCalledWith(userBId);
+  });
+
   it('restores a valid session and fetches the RLS-owned profile', async () => {
     const repositories = createRepositories(Promise.resolve(session));
     await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
@@ -83,6 +117,15 @@ describe('AuthProvider session lifecycle', () => {
     expect(screen.getByTestId('profile-status').props.children).toBe('ready');
     expect(screen.getByTestId('email').props.children).toBe('owner@example.com');
     expect(repositories.profiles.getOwnProfile).toHaveBeenCalledWith(userId);
+  });
+
+  it('keeps a valid Auth identity signed in when its profile row is absent', async () => {
+    const repositories = createRepositories(Promise.resolve(session));
+    jest.mocked(repositories.profiles.getOwnProfile).mockResolvedValueOnce(null);
+    await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
+    await waitFor(() => expect(screen.getByTestId('status').props.children).toBe('signedIn'));
+    await waitFor(() => expect(screen.getByTestId('profile-status').props.children).toBe('absent'));
+    expect(screen.getByTestId('email').props.children).toBe('owner@example.com');
   });
 
   it('treats an invalid restored session as signed out and responds to later auth events', async () => {
@@ -116,5 +159,46 @@ describe('AuthProvider session lifecycle', () => {
     await view.unmount();
     await act(async () => pendingProfile.resolve(profile));
     expect(repositories.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a pending bootstrap restore after unmount', async () => {
+    const restore = deferred<AuthenticatedSession | null>();
+    const repositories = createRepositories(restore.promise);
+    const view = await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
+
+    await view.unmount();
+    await act(async () => restore.resolve(session));
+
+    expect(repositories.profiles.getOwnProfile).not.toHaveBeenCalled();
+    expect(repositories.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  it('purges account A state on sign-out and does not retain it when account B signs in', async () => {
+    const repositories = createRepositories(Promise.resolve(session));
+    jest.mocked(repositories.auth.signIn).mockResolvedValueOnce(sessionB);
+    jest.mocked(repositories.profiles.getOwnProfile).mockImplementation(async (id) => id === userBId ? profileB : profile);
+    const user = userEvent.setup();
+    await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
+    await waitFor(() => expect(screen.getByTestId('email').props.children).toBe('owner@example.com'));
+    await user.press(screen.getByText('sign-out'));
+    await waitFor(() => expect(screen.getByTestId('status').props.children).toBe('signedOut'));
+    expect(screen.getByTestId('email').props.children).toBe('none');
+    await user.press(screen.getByText('sign-in'));
+    await waitFor(() => expect(screen.getByTestId('email').props.children).toBe('owner-b@example.com'));
+  });
+
+  it('prevents a pending profile read from account A repopulating after account B arrives', async () => {
+    const pendingA = deferred<Profile | null>();
+    const repositories = createRepositories(Promise.resolve(session));
+    jest.mocked(repositories.profiles.getOwnProfile)
+      .mockReturnValueOnce(pendingA.promise)
+      .mockResolvedValueOnce(profileB);
+    await render(<AuthProvider authRepository={repositories.auth} profileRepository={repositories.profiles}><Probe /></AuthProvider>);
+    await waitFor(() => expect(screen.getByTestId('email').props.children).toBe('owner@example.com'));
+    await act(async () => repositories.emit(sessionB));
+    await waitFor(() => expect(screen.getByTestId('email').props.children).toBe('owner-b@example.com'));
+    await act(async () => pendingA.resolve(profile));
+    expect(screen.getByTestId('email').props.children).toBe('owner-b@example.com');
+    expect(screen.getByTestId('profile-status').props.children).toBe('ready');
   });
 });

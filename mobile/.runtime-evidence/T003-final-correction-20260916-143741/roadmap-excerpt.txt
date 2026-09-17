@@ -1,0 +1,4 @@
+[x] FEATURE-P6-T003 — Smart Notification Policy
+[x] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+[x] Permission privacy và policy không chứa content nhạy cảm PASS.
+[ ] FEATURE-P6-T004

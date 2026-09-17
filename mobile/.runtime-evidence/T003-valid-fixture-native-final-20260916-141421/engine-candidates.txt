@@ -1,0 +1,28 @@
+[
+  {
+    "logicalId": "tw-r1-92df343900aab93818d08e83e9292312",
+    "fingerprint": "56990cf77630dceac8842aed4c8a1cec",
+    "ownerScope": "tw-owner-4a04a50a7416527a4e25e7aa2e24e3b6",
+    "tripId": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+    "type": "TRIP_STARTING_SOON",
+    "triggerAt": 1789578000000
+  },
+  {
+    "logicalId": "tw-r1-183ab39ed1eb654df9c7ac84796b4497",
+    "fingerprint": "17583fa6eb3c4fab819895e6da2b7551",
+    "ownerScope": "tw-owner-4a04a50a7416527a4e25e7aa2e24e3b6",
+    "tripId": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+    "type": "DAY_STARTING",
+    "triggerAt": 1789624800000,
+    "dayId": "dbb216a8-de4d-4e3d-be75-56db17c5f36e"
+  },
+  {
+    "logicalId": "tw-r1-78e8fcd97a7c7cfc15f55d0f1e3ce2e6",
+    "fingerprint": "1d3aea0aed840eb9b14abfd07911c203",
+    "ownerScope": "tw-owner-4a04a50a7416527a4e25e7aa2e24e3b6",
+    "tripId": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+    "type": "DAY_STARTING",
+    "triggerAt": 1789711200000,
+    "dayId": "d5d8f1fd-629e-43d8-a5f6-06f41ebe5975"
+  }
+]

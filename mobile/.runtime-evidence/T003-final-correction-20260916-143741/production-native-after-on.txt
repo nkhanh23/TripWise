@@ -1,0 +1,1 @@
+[{"nativeId":"tw-r1-dac69a54ee20a6711d258facbed24f3f","logicalId":"tw-r1-dac69a54ee20a6711d258facbed24f3f","fingerprint":"2abeb3f6cd1aebe3a9c30d661d238921","ownerScope":"tw-owner-b2aa325f5ede8a1b4716e525c2d8193b","tripId":"14008a24-f3e6-4cbd-90b8-ff38588072c7","type":"TRIP_STARTING_SOON","triggerAt":1789578000000}]

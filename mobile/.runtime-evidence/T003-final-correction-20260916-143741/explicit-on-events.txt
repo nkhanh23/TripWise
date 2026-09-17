@@ -1,0 +1,5 @@
+ACTION: Toggling Trip ON
+SET_CATEGORY_ON: RESOLVED
+{"session":{"user":{"id":"36bad7fc-13cb-416b-b84e-28a3bac07429","email":"prod_evid@example.com","displayName":null},"expiresAt":1789548039},"intent":{"tripReminders":true,"itineraryReminders":false},"permission":"granted","loading":false,"busy":false,"stale":false,"error":null}
+canSchedule=true
+allowedTypes=["TRIP_STARTING_SOON"]

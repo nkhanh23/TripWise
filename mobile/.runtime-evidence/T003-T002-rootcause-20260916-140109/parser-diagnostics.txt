@@ -1,0 +1,10 @@
+isUuid(id): true
+isIsoDate(startDate): true
+isIsoDate(endDate): true
+isIsoTimestamp(createdAt): true
+isIsoTimestamp(updatedAt): true
+workspaceRevision: true
+Array.isArray(days): true
+duration vs days.length: 2 vs 2
+timezone.confirmedAt regex: true
+parseTripTimezone result: {"timezone":"Europe/London","provenance":"USER_CONFIRMED","confirmedAt":"2026-09-16T07:02:08.138143+00:00"}

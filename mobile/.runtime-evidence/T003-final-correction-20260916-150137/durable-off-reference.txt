@@ -1,0 +1,3 @@
+Historical reuse only; current production scope hashes match the referenced bundle.
+Source artifact: mobile/.runtime-evidence/T003-valid-fixture-native-final-20260916-141421/production-native-after-off.txt = []
+Source artifact: mobile/.runtime-evidence/T003-valid-fixture-native-final-20260916-141421/durable-off-reload.txt = Reloaded, list empty, intent tripReminders:false

@@ -1,0 +1,3 @@
+DELETE FROM auth.users WHERE email = 'diag_evid@example.com';
+INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token) 
+VALUES (gen_random_uuid(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'diag_evid@example.com', crypt('Password123!', gen_salt('bf', 10)), now(), '{"provider":"email","providers":["email"]}', '{"email_verified":true}', now(), now(), '', '', '', '');

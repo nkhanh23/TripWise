@@ -1,0 +1,1 @@
+Final status: BLOCKED_DURABLE_BACKEND. Raw local Auth and standalone Node supabase-js signup PASS; prior failure is not reproduced and is not a T003 defect. Controlled users cleaned. Exact production repository durable reload and Android runtime acceptance remain unexecuted.

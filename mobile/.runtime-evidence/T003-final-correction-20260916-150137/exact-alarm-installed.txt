@@ -1,0 +1,6 @@
+VERIFIED FROM ANDROID RUNTIME
+Command: adb shell dumpsys package com.anonymous.tripwisemobile
+Android API: 37
+Result: INSTALLED_EXACT_ALARM_MATCHES=0
+android.permission.SCHEDULE_EXACT_ALARM = ABSENT
+android.permission.USE_EXACT_ALARM = ABSENT

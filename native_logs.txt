@@ -1,0 +1,12 @@
+BOOTSTRAP: "Starting"
+AUTH: "Complete"
+BOOTSTRAP: "Starting"
+AUTH: "Complete"
+INITIAL_CONTROLLER: {"session":{"user":{"id":"36bad7fc-13cb-416b-b84e-28a3bac07429","email":"prod_evid@example.com","displayName":null},"expiresAt":1789548039},"intent":{"tripReminders":false,"itineraryReminders":false},"permission":"granted","loading":false,"busy":false,"stale":false,"error":null}
+NATIVE_BEFORE: []
+ACTION: "Toggling Trip ON"
+SET_CATEGORY_ON: "RESOLVED"
+CONTROLLER_AFTER_ON: {"session":{"user":{"id":"36bad7fc-13cb-416b-b84e-28a3bac07429","email":"prod_evid@example.com","displayName":null},"expiresAt":1789548039},"intent":{"tripReminders":true,"itineraryReminders":false},"permission":"granted","loading":false,"busy":false,"stale":false,"error":null}
+NATIVE_AFTER_ON: [{"nativeId":"tw-r1-dac69a54ee20a6711d258facbed24f3f","logicalId":"tw-r1-dac69a54ee20a6711d258facbed24f3f","fingerprint":"2abeb3f6cd1aebe3a9c30d661d238921","ownerScope":"tw-owner-b2aa325f5ede8a1b4716e525c2d8193b","tripId":"14008a24-f3e6-4cbd-90b8-ff38588072c7","type":"TRIP_STARTING_SOON","triggerAt":1789578000000}]
+RAW_EXPO_CROSSCHECK: [{"trigger":{"channelId":"tripwise-reminders-v1","value":1789578000000,"repeats":false,"type":"date"},"content":{"dataString":"{\"logicalId\":\"tw-r1-dac69a54ee20a6711d258facbed24f3f\",\"marker\":\"TRIPWISE_REMINDER_V1\",\"ownerScope\":\"tw-owner-b2aa325f5ede8a1b4716e525c2d8193b\",\"fingerprint\":\"2abeb3f6cd1aebe3a9c30d661d238921\",\"tripId\":\"14008a24-f3e6-4cbd-90b8-ff38588072c7\",\"type\":\"TRIP_STARTING_SOON\",\"triggerAt\":1789578000000}","autoDismiss":true,"title":"Your trip reminder is ready.","badge":null,"sticky":false,"sound":"default","body":null,"subtitle":null,"data":{"logicalId":"tw-r1-dac69a54ee20a6711d258facbed24f3f","marker":"TRIPWISE_REMINDER_V1","ownerScope":"tw-owner-b2aa325f5ede8a1b4716e525c2d8193b","fingerprint":"2abeb3f6cd1aebe3a9c30d661d238921","tripId":"14008a24-f3e6-4cbd-90b8-ff38588072c7","type":"TRIP_STARTING_SOON","triggerAt":1789578000000}},"identifier":"tw-r1-dac69a54ee20a6711d258facbed24f3f"}]
+FINISHED: "DONE"

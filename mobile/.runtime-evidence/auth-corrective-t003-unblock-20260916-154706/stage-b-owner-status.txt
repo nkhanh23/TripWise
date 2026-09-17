@@ -1,0 +1,5 @@
+VALID_DEV_AUTH_OWNER_NOT_AVAILABLE
+
+Existing repository DEV credential mechanisms were attempted against the currently configured local Supabase Auth service without printing credentials or tokens. No valid existing non-privileged owner could be established.
+
+No Auth user created. No trip created. T003 runtime closure stopped.

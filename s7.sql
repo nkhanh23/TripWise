@@ -1,0 +1,1 @@
+UPDATE public.notification_preferences SET trip_reminders=false WHERE user_id=(SELECT id FROM auth.users WHERE email='prod_evid@example.com');

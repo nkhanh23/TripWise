@@ -1,0 +1,4 @@
+INSUFFICIENT_EVIDENCE
+No same-run explicit-ON production controller snapshot exists.
+The current production Settings UI does not surface intent.tripReminders, intent.itineraryReminders, permission, stale, canSchedule, and allowedTypes together; Metro inspector read-only evaluation was rejected (HTTP 401 / socket closed).
+Accordingly this file does not infer or fabricate the required values.

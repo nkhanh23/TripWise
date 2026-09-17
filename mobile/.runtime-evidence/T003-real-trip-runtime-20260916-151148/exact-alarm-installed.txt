@@ -1,0 +1,7 @@
+INSTALLED PACKAGE INSPECTION (fresh 2026-09-16)
+Device: emulator-5554
+Package: com.anonymous.tripwisemobile
+Tool: adb shell dumpsys package
+android.permission.SCHEDULE_EXACT_ALARM = ABSENT
+android.permission.USE_EXACT_ALARM = ABSENT
+Result: ABSENT_BOTH

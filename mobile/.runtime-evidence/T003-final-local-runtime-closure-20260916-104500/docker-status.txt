@@ -1,0 +1,8 @@
+ENVIRONMENT PRECHECK
+Docker CLI: installed (Docker 29.5.3 client).
+Docker Desktop: existing application launch requested; backend processes appeared.
+Configured DOCKER_HOST: tcp://localhost:2375.
+TCP daemon check: connection refused at localhost:2375.
+Default npipe check after temporarily unsetting DOCKER_HOST: permission denied at npipe:////./pipe/docker_engine.
+Service com.docker.service: Stopped/Manual. Attempted Start-Service under elevated execution; failed: Cannot open com.docker.service on computer '.'.
+Conclusion: Docker daemon is not usable by the current task account. Established local Supabase/Docker migration runner cannot run.

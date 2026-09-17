@@ -1,0 +1,32 @@
+
+> tripwise-mobile@1.0.0 test
+> jest --runInBand tests/t003-local-durable-evidence.test.ts
+
+FAIL tests/t003-local-durable-evidence.test.ts
+  × T003 local durable preference repository reloads owner intent through real auth and RLS (257 ms)
+
+  ● T003 local durable preference repository reloads owner intent through real auth and RLS
+
+    expect(received).toBeNull()
+
+    Received: [AuthUnknownError: "undefined" is not valid JSON]
+
+      22 |   const signedA = await a.auth.signUp({ email: email('a'), password });
+      23 |   const signedB = await b.auth.signUp({ email: email('b'), password });
+    > 24 |   expect(signedA.error).toBeNull(); expect(signedB.error).toBeNull();
+         |                         ^
+      25 |   expect(signedA.data.session).not.toBeNull(); expect(signedB.data.session).not.toBeNull();
+      26 |   const authA = sessionFor(signedA.data.user!.id, signedA.data.session!.expires_at);
+      27 |   const authB = sessionFor(signedB.data.user!.id, signedB.data.session!.expires_at);
+
+      at Object.toBeNull (tests/t003-local-durable-evidence.test.ts:24:25)
+      at asyncGeneratorStep (node_modules/@babel/runtime/helpers/asyncToGenerator.js:3:17)
+      at _next (node_modules/@babel/runtime/helpers/asyncToGenerator.js:17:9)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 total
+Snapshots:   0 total
+Time:        1.786 s
+Ran all test suites matching /tests\\t003-local-durable-evidence.test.ts/i.
+
+EXIT_CODE=1

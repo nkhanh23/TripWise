@@ -1,0 +1,6 @@
+APK INSPECTION (fresh 2026-09-16)
+APK: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+Tool: D:\Dev\Android\Sdk\build-tools\37.0.0\aapt2.exe dump permissions
+android.permission.SCHEDULE_EXACT_ALARM = ABSENT
+android.permission.USE_EXACT_ALARM = ABSENT
+Result: ABSENT_BOTH

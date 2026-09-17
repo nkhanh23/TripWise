@@ -1,0 +1,13 @@
+NOW: 1789542469473
+Type: TRIP_STARTING_SOON
+TriggerAt: 1789578000000
+Is > now? true
+Is <= horizon? true
+Type: DAY_STARTING
+TriggerAt: 1789624800000
+Is > now? true
+Is <= horizon? true
+Type: DAY_STARTING
+TriggerAt: 1789711200000
+Is > now? true
+Is <= horizon? true

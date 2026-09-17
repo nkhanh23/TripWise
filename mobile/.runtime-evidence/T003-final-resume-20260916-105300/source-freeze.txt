@@ -1,0 +1,5 @@
+SOURCE FREEZE SUMMARY
+reminderScheduling=be6441a4643f2a0f33020ec55016639baf8deb42b2341bc165295a6e423fbd3e
+expected=be6441a4643f2a0f33020ec55016639baf8deb42b2341bc165295a6e423fbd3e
+expo=~57.0.23; expo-notifications=~57.0.19
+roadmap T003 initially unchecked

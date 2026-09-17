@@ -1,0 +1,6 @@
+LAUNCH -> permission requests = NOT_SEPARATELY_CAPTURED
+AUTH_BOOTSTRAP -> permission requests = NOT_SEPARATELY_CAPTURED
+SETTINGS_MOUNT -> permission requests = NOT_SEPARATELY_CAPTURED
+NAVIGATION_REMOUNT -> permission requests = NOT_SEPARATELY_CAPTURED
+
+VERIFIED FROM TEST EVIDENCE only: focused controller/permission tests passed and cover non-requesting reads/bootstrap/resume. This is not substituted for four separate Android runtime results.

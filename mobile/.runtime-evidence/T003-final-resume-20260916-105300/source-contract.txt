@@ -1,0 +1,82 @@
+SOURCE CONTRACT SEARCH:
+mobile/src/features/settings/screens/SettingsScreen.tsx:89:          : notificationPolicy.policy.canSchedule ? 'enabled' : 'unknown'}`);
+mobile/src/features/settings/hooks/useNotificationPolicyController.ts:12:    stale: state.stale });
+mobile/src/integration/remote/expoNotificationPermissionAdapter.ts:39:    const result = await Notifications.requestPermissionsAsync();
+mobile/src/integration/notificationPolicyRuntime.ts:36:    async reconcile(policy, expected, signal, revokeTypes) {
+mobile/src/integration/notificationPolicyRuntime.ts:42:      const revoked = revokeTypes ? new Set(revokeTypes) : null;
+mobile/src/integration/notificationPolicyRuntime.ts:44:        list: () => serialized(async () => { guard(); const values = await native.list(); guard(); return revoked ? values.filter((value) => revoked.has(value.type)) : values; }),
+mobile/src/integration/notificationPolicyRuntime.ts:50:      const trips = revoked || !policy.canSchedule ? [] : await loadTrips(signal);
+mobile/src/integration/notificationPolicyRuntime.ts:53:      const result = await scheduler.reconcile(trips, revoked ? { canSchedule: false } : asReminderEligibility(policy), signal);
+mobile/src/integration/notificationPolicyRuntime.ts:71:  // Do not reconcile a truncated desired set: it could cancel reminders outside the loaded page.
+mobile/src/integration/notificationPolicyController.ts:17:  reconcile(policy: EffectiveReminderPolicy, session: AuthenticatedSession, signal: AbortSignal, revokeTypes?: readonly ReminderType[]): Promise<void>;
+mobile/src/integration/notificationPolicyController.ts:25:  stale: boolean;
+mobile/src/integration/notificationPolicyController.ts:26:  error: 'load' | 'sync' | 'permission' | 'reconcile' | null;
+mobile/src/integration/notificationPolicyController.ts:32:    session: null, intent: { ...DEFAULT_NOTIFICATION_INTENT }, permission: 'unknown', loading: true, busy: false, stale: false, error: null,
+mobile/src/integration/notificationPolicyController.ts:36:  private revoked = new Set<NotificationCategory>();
+mobile/src/integration/notificationPolicyController.ts:45:    private readonly reconciler: NotificationPolicyReconciler) {}
+mobile/src/integration/notificationPolicyController.ts:52:    this.state.stale = !!session && session.expiresAt !== null && session.expiresAt * 1000 <= Date.now();
+mobile/src/integration/notificationPolicyController.ts:62:    return { tripReminders: intent.tripReminders && !this.revoked.has('tripReminders'),
+mobile/src/integration/notificationPolicyController.ts:63:      itineraryReminders: intent.itineraryReminders && !this.revoked.has('itineraryReminders') };
+mobile/src/integration/notificationPolicyController.ts:67:      stale: !!this.state.session && !this.current(this.state.session, this.operation.signal),
+mobile/src/integration/notificationPolicyController.ts:75:    if (!sameOwner) { this.revoked.clear(); this.pendingOff.clear(); this.pendingNativeRevocation = false; }
+mobile/src/integration/notificationPolicyController.ts:107:      this.revoked.add(category);
+mobile/src/integration/notificationPolicyController.ts:111:        ...(this.revoked.has('tripReminders') ? ['TRIP_STARTING_SOON' as const] : []),
+mobile/src/integration/notificationPolicyController.ts:112:        ...(this.revoked.has('itineraryReminders') ? ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'] as const : []),
+mobile/src/integration/notificationPolicyController.ts:115:      const cancellation = this.reconciler.reconcile(this.policy(), session, signal, types)
+mobile/src/integration/notificationPolicyController.ts:117:        .catch(() => { if (this.current(session, signal)) { this.pendingNativeRevocation = true; this.publish({ error: 'reconcile' }); } });
+mobile/src/integration/notificationPolicyController.ts:130:        this.revoked.delete(category);
+mobile/src/integration/notificationPolicyController.ts:146:        try { await this.reconciler.reconcile(this.policy(), session, signal); }
+mobile/src/integration/notificationPolicyController.ts:147:        catch { if (this.current(session, signal)) this.publish({ error: 'reconcile' }); }
+mobile/src/integration/notificationPolicyController.ts:156:      const categories = this.pendingNativeRevocation ? this.revoked : this.pendingOff;
+mobile/src/integration/notificationPolicyController.ts:158:    } else if (this.state.error === 'reconcile') {
+mobile/src/integration/notificationPolicyController.ts:163:      try { await this.reconciler.reconcile(this.policy(), session, signal); }
+mobile/src/integration/notificationPolicyController.ts:164:      catch { if (this.current(session, signal)) this.publish({ error: 'reconcile' }); }
+mobile/src/integration/notificationPolicyController.ts:188:      await this.reconciler.reconcile(this.policy(), ticket.session, signal);
+mobile/src/integration/notificationPolicy.ts:31:  | 'stale_session';
+mobile/src/integration/notificationPolicy.ts:34:  canSchedule: boolean;
+mobile/src/integration/notificationPolicy.ts:37:  presentationFor(candidate: ReminderCandidate): ReminderPresentation | null;
+mobile/src/integration/notificationPolicy.ts:42:const tripTypes: readonly ReminderType[] = ['TRIP_STARTING_SOON'];
+mobile/src/integration/notificationPolicy.ts:43:const itineraryTypes: readonly ReminderType[] = ['DAY_STARTING', 'PLACE_UPCOMING', 'LEAVE_SOON', 'LATE_RISK'];
+mobile/src/integration/notificationPolicy.ts:47:    ...(intent.tripReminders === true ? tripTypes : []),
+mobile/src/integration/notificationPolicy.ts:48:    ...(intent.itineraryReminders === true ? itineraryTypes : []),
+mobile/src/integration/notificationPolicy.ts:63:  stale?: boolean;
+mobile/src/integration/notificationPolicy.ts:67:  const reason: EffectiveReminderPolicyReason = input.stale
+mobile/src/integration/notificationPolicy.ts:68:    ? 'stale_session'
+mobile/src/integration/notificationPolicy.ts:76:  const canSchedule = reason === 'enabled';
+mobile/src/integration/notificationPolicy.ts:79:    canSchedule,
+mobile/src/integration/notificationPolicy.ts:82:    presentationFor(candidate) {
+mobile/src/integration/notificationPolicy.ts:83:      if (!canSchedule || !allowed.has(candidate.type)) return null;
+mobile/src/integration/notificationPolicy.ts:92:  return { canSchedule: policy.canSchedule, presentationFor: policy.presentationFor };
+
+ROADMAP:
+
+  phase_doc\PHASES_FEATURES.md:339:
+> phase_doc\PHASES_FEATURES.md:340:**Phụ thuộc:** P2, P5, P6. **Phạm vi/task:** `FEATURE-P7-T001` consent location explicit và lifecycle geofence; `T002` capture `ARRIVED`/actual visit; `T003` phát hiện weather risk và 
+skip/delay; `T004` context engine có giới hạn. **Ngoài phạm vi:** theo dõi liên tục, chia sẻ location lên social, replanning tự động.
+  phase_doc\PHASES_FEATURES.md:341:
+  phase_doc\PHASES_FEATURES.md:342:**Domain/schema:** consent, đăng ký geofence, dữ liệu event/actual-visit tối thiểu kèm policy retention/deletion. **Supabase:** đồng bộ event chỉ cho owner; event local-first chỉ 
+upload theo contract explicit. **Mobile:** permission của OS, giới hạn background, thay thế/dọn dẹp geofence và UI battery. **Provider:** chỉ dùng OSRM/Open-Meteo đã được chấp nhận; không có tọa độ giả.
+  phase_doc\PHASES_FEATURES.md:343:
+  phase_doc\PHASES_FEATURES.md:647:
+> phase_doc\PHASES_FEATURES.md:648:#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+  phase_doc\PHASES_FEATURES.md:649:
+> phase_doc\PHASES_FEATURES.md:650:- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+  phase_doc\PHASES_FEATURES.md:651:
+  phase_doc\PHASES_FEATURES.md:652:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:653:
+  phase_doc\PHASES_FEATURES.md:655:
+> phase_doc\PHASES_FEATURES.md:656:#### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
+  phase_doc\PHASES_FEATURES.md:657:
+> phase_doc\PHASES_FEATURES.md:658:- [ ] FEATURE-P6-T004-S001 — Xác minh lifecycle notification khi edit/sign-out/reboot/background.
+  phase_doc\PHASES_FEATURES.md:659:
+  phase_doc\PHASES_FEATURES.md:660:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:661:
+  phase_doc\PHASES_FEATURES.md:663:
+> phase_doc\PHASES_FEATURES.md:664:#### [ ] FEATURE-P7-T001 — Consent và geofence lifecycle
+  phase_doc\PHASES_FEATURES.md:665:
+> phase_doc\PHASES_FEATURES.md:666:- [ ] FEATURE-P7-T001-S001 — Triển khai consent, geofence registration/replacement/cleanup bounded.
+  phase_doc\PHASES_FEATURES.md:667:
+  phase_doc\PHASES_FEATURES.md:668:##### Checklist hoàn thành
+  phase_doc\PHASES_FEATURES.md:669:
+
+

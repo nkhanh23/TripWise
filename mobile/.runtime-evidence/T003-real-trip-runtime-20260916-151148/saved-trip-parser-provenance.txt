@@ -1,0 +1,2 @@
+NOT_RUN — no newly persisted owner-scoped SavedTripDetail exists to parse.
+No timezone, workspace revision, or inclusive day graph PASS is claimed.

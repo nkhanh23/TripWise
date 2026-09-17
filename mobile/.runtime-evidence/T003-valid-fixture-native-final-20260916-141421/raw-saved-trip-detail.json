@@ -1,0 +1,29 @@
+{
+  "id": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+  "days": [
+    {
+      "id": "dbb216a8-de4d-4e3d-be75-56db17c5f36e",
+      "date": "2026-09-17",
+      "items": [],
+      "dayNumber": 1
+    },
+    {
+      "id": "d5d8f1fd-629e-43d8-a5f6-06f41ebe5975",
+      "date": "2026-09-18",
+      "items": [],
+      "dayNumber": 2
+    }
+  ],
+  "title": "Prod Evidence Trip",
+  "endDate": "2026-09-18",
+  "timezone": {
+    "timezone": "Europe/London",
+    "provenance": "USER_CONFIRMED",
+    "confirmedAt": "2026-09-16T07:15:23.665453+00:00"
+  },
+  "createdAt": "2026-09-16T07:15:23.665453+00:00",
+  "startDate": "2026-09-17",
+  "updatedAt": "2026-09-16T07:15:28.287553+00:00",
+  "destination": "{\"name\":\"London\"}",
+  "workspaceRevision": 3
+}

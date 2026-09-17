@@ -1,0 +1,1 @@
+INSERT INTO public.itinerary_days (id, trip_id, day_number, date) VALUES (gen_random_uuid(), '14008a24-f3e6-4cbd-90b8-ff38588072c7', 2, (CURRENT_DATE + INTERVAL '2 days')::date);

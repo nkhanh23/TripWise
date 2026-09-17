@@ -1,0 +1,4 @@
+{
+  "success": false,
+  "error": "IntegrationError: This operation is not permitted."
+}

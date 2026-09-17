@@ -1,0 +1,37 @@
+{
+  "ownerId": "700b0fcd-9752-4ea8-990e-4b45ef871da8",
+  "trips": [
+    {
+      "timezone": {
+        "timezone": "Europe/London",
+        "provenance": "USER_CONFIRMED",
+        "confirmedAt": "2026-09-16T07:02:08.138143+00:00"
+      },
+      "id": "14008a24-f3e6-4cbd-90b8-ff38588072c7",
+      "title": "Prod Evidence Trip",
+      "destination": "{\"name\":\"London\"}",
+      "startDate": "2026-09-17",
+      "endDate": "2026-09-18",
+      "estimatedBudget": null,
+      "currency": null,
+      "createdAt": "2026-09-16T07:02:08.138143+00:00",
+      "updatedAt": "2026-09-16T07:02:14.099308+00:00",
+      "workspaceRevision": 3,
+      "days": [
+        {
+          "id": "084ff277-94f7-4848-9247-526efeea28a9",
+          "dayNumber": 1,
+          "date": "2026-09-17",
+          "items": []
+        },
+        {
+          "id": "0089faaf-42b8-4f85-8608-cf5a07e29038",
+          "dayNumber": 2,
+          "date": "2026-09-18",
+          "items": []
+        }
+      ]
+    }
+  ],
+  "now": 1789542469473
+}

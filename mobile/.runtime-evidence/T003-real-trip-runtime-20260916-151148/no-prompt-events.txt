@@ -1,0 +1,6 @@
+LAUNCH -> Notifications.requestPermissionsAsync calls = NOT_CAPTURED
+AUTH_BOOTSTRAP -> Notifications.requestPermissionsAsync calls = NOT_CAPTURED
+SETTINGS_MOUNT -> Notifications.requestPermissionsAsync calls = NOT_CAPTURED
+NAVIGATION_REMOUNT -> Notifications.requestPermissionsAsync calls = NOT_CAPTURED
+
+No generic test PASS is substituted for these blocked Android runtime proofs.

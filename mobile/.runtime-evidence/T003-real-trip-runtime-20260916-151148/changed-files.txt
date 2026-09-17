@@ -1,0 +1,6 @@
+Created by this evidence attempt only:
+- mobile/.runtime-evidence/T003-real-trip-runtime-20260916-151148/ (evidence files and read-only harness)
+
+Production source, tests, migrations, Edge Functions, dependencies, manifests, and roadmap: NOT MODIFIED BY THIS TASK.
+No saved trip, notification preference, native scheduled notification, or user account was created or deleted.
+Pre-existing dirty worktree entries were preserved.

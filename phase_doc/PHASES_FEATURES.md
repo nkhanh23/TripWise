@@ -645,13 +645,13 @@ Registry này materialize các task ID đã được mô tả trong từng phase
 
 - [x] Dedupe, cancel/reconcile và bằng chứng Android native PASS.
 
-#### [ ] FEATURE-P6-T003 — Smart Notification Policy
+#### [x] FEATURE-P6-T003 — Smart Notification Policy
 
-- [ ] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
+- [x] FEATURE-P6-T003-S001 — Triển khai consent/preferences/revocation policy private.
 
 ##### Checklist hoàn thành
 
-- [ ] Permission privacy và policy không chứa content nhạy cảm PASS.
+- [x] Permission privacy và policy không chứa content nhạy cảm PASS.
 
 #### [ ] FEATURE-P6-T004 — Runtime lifecycle notification
 

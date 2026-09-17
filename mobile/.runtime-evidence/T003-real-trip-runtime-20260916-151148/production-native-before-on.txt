@@ -1,0 +1,1 @@
+NOT_CAPTURED — no authenticated real-trip run was possible.

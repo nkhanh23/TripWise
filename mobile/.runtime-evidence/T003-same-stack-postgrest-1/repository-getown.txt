@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "data": {
+    "tripReminders": true,
+    "itineraryReminders": false
+  },
+  "getSessionIdentical": true
+}

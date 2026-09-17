@@ -1,0 +1,1 @@
+{"session":{"user":{"id":"2a26ecb1-df22-4877-8d13-45962bcf774c","email":"prod_evid@example.com","displayName":null},"expiresAt":1789547181},"intent":{"tripReminders":true,"itineraryReminders":false},"permission":"granted","loading":false,"busy":false,"stale":false,"error":null}

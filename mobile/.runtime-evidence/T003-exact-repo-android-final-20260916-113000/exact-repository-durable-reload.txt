@@ -1,0 +1,4 @@
+.t003-exact-repo-harness.ts(6,13): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+.t003-exact-repo-harness.ts(6,48): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+.t003-exact-repo-harness.ts(11,67): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+COMPILE_EXIT=2 RUNTIME_EXIT=2

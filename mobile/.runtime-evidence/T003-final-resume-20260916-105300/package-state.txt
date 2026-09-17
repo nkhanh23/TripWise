@@ -1,0 +1,69 @@
+PACKAGE JSON:
+{
+  "name": "tripwise-mobile",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-navigation/bottom-tabs": "^7.18.16",
+    "@react-navigation/native": "^7.3.16",
+    "@react-navigation/native-stack": "^7.18.8",
+    "@supabase/supabase-js": "^2.112.3",
+    "expo": "~57.0.23",
+    "expo-asset": "~57.0.17",
+    "expo-dev-client": "~57.0.19",
+    "expo-font": "~57.0.4",
+    "expo-notifications": "~57.0.19",
+    "expo-secure-store": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-maps": "1.27.2",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-url-polyfill": "^4.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "~29.5.14",
+    "@types/react": "~19.2.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
+    "jest-expo": "~57.0.5",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.ts",
+      "<rootDir>/tests/**/*.test.tsx"
+    ]
+  },
+  "private": true
+}
+
+PACKAGE LOCK RESOLUTION:
+
+> mobile\package-lock.json:6746:    "node_modules/expo": {
+  mobile\package-lock.json:6747:      "version": "57.0.23",
+  mobile\package-lock.json:6748:      "resolved": "https://registry.npmjs.org/expo/-/expo-57.0.23.tgz",
+  mobile\package-lock.json:6749:      "integrity": "sha512-/aBLZFTD7+BNHWV/q5XbNRFqMhW/CrHsYeq8CcS/iGz6lJHYwEMm4XFcdoaeliuMdo6ZjNrsTHkBIdGB8VMHTg==",
+  mobile\package-lock.json:6750:      "license": "MIT",
+  mobile\package-lock.json:6751:      "dependencies": {
+> mobile\package-lock.json:6975:    "node_modules/expo-notifications": {
+  mobile\package-lock.json:6976:      "version": "57.0.19",
+  mobile\package-lock.json:6977:      "resolved": "https://registry.npmjs.org/expo-notifications/-/expo-notifications-57.0.19.tgz",
+  mobile\package-lock.json:6978:      "integrity": "sha512-JW/usGEwOxWzN8s0L7+j3FAoB39GtaZtpUGye2lPvcqYSkvewpZYkrC16P1JaCP09YRx0Q+qXPx5NUoUU8NsBA==",
+  mobile\package-lock.json:6979:      "license": "MIT",
+  mobile\package-lock.json:6980:      "dependencies": {
+
+

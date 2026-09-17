@@ -1,0 +1,3 @@
+RAW {"status":200,"contentType":"application/json","shape":{"json":true,"keys":["access_token","expires_at","expires_in","refresh_token","token_type","user"],"hasAccessToken":true,"hasUser":true,"errorCode":null,"errorMessage":null}}
+NODE {"error":null,"hasSession":true,"hasUser":true}
+EXIT_CODE=0

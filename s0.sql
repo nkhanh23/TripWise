@@ -1,0 +1,1 @@
+DELETE FROM public.itinerary_days WHERE trip_id IN (SELECT id FROM public.trips WHERE title = 'Prod Evidence Trip');

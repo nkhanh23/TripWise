@@ -1,0 +1,4 @@
+NOT_REPRODUCIBLE_ON_CURRENT_DEVICE_STATE
+Current installed Android notification permission is granted; emulator was not wiped/reset.
+Focused test PASS: mobile/tests/notification-policy-controller.test.ts :: retains durable intent after denial, with no nag from load/resume/retry.
+Focused fail-closed policy tests PASS: mobile/tests/notification-policy.test.ts.

@@ -1,0 +1,3 @@
+RLS PROOF
+Previous fresh current local established runner: NOTIFICATION_PREFERENCES_RLS_PASS.
+No migration/schema changes in this task.

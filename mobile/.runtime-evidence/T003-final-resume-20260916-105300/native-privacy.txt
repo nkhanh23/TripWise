@@ -1,0 +1,1 @@
+NOT RUN — durable local Supabase Auth signup failed before Android runtime acceptance; no native/runtime branch is claimed.

@@ -1,0 +1,4 @@
+BACKEND MODE
+Local Supabase Docker stack healthy. Fresh isolated migration/RLS PASS.
+BLOCKED_DURABLE_BACKEND: actual local Auth signup returned AuthUnknownError: "undefined" is not valid JSON; real repository durable reload cannot proceed.
+No remote backend/deployment used.

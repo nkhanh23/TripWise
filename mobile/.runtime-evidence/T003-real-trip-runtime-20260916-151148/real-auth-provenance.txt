@@ -1,0 +1,5 @@
+INSUFFICIENT_EVIDENCE
+Android production development client rendered a cached authenticated identity (identifier redacted), but Profile reported its record unavailable.
+Host-side real local Supabase Auth signInWithPassword against the same configured DEV gateway failed; no session/JWT was fabricated.
+Local Auth database inspection found no matching current owner record.
+No new user account was created because authorization covered a disposable trip, not account creation.

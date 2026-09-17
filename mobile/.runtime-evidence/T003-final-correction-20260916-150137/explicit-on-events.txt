@@ -1,0 +1,2 @@
+NOT_RUN
+Explicit Trip Reminders OFF -> ON was not performed because the required real authenticated valid saved-trip/parser provenance was unavailable and no data fabrication/restoration is permitted in this evidence-only correction.

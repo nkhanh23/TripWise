@@ -44,6 +44,7 @@ export function AuthProvider({
 }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>(initialState);
   const mountedRef = useRef(true);
+  const authEpochRef = useRef(0);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -51,6 +52,7 @@ export function AuthProvider({
   }, []);
 
   const applyUser = useCallback(async (user: AuthenticatedUser | null) => {
+    const epoch = ++authEpochRef.current;
     if (!user) {
       if (mountedRef.current) {
         setState({ status: 'signedOut', user: null, profile: null, profileStatus: 'idle', profileError: null });
@@ -64,9 +66,11 @@ export function AuthProvider({
 
     try {
       const profile = await profileRepository.getOwnProfile(user.id);
-      if (mountedRef.current) {
+      if (mountedRef.current && authEpochRef.current === epoch) {
         setState((prev) => ({
-          ...prev,
+          ...(prev.status === 'signedIn' && prev.user?.id === user.id ? prev : {
+            status: 'signedIn' as const, user, profile: null, profileStatus: 'loading' as const, profileError: null,
+          }),
           profile: profile ?? null,
           profileStatus: profile ? 'ready' : 'absent',
           profileError: null,
@@ -74,18 +78,25 @@ export function AuthProvider({
       }
     } catch (err: unknown) {
       const code = (err as { code?: IntegrationErrorCode })?.code;
-      if (mountedRef.current) {
+      if (mountedRef.current && authEpochRef.current === epoch) {
         setState((prev) => ({ ...prev, profileStatus: 'error', profileError: code ?? 'unknown' }));
       }
     }
   }, [profileRepository]);
 
   useEffect(() => {
+    // A restore is only the initial snapshot. An auth event that arrives while
+    // it is pending is newer authority and must not be overwritten by it.
+    const bootstrapEpoch = authEpochRef.current;
     // Bootstrap: restore existing session
     authRepository.restoreSession().then((session: AuthenticatedSession | null) => {
-      void applyUser(session?.user ?? null);
+      if (mountedRef.current && authEpochRef.current === bootstrapEpoch) {
+        void applyUser(session?.user ?? null);
+      }
     }).catch(() => {
-      void applyUser(null);
+      if (mountedRef.current && authEpochRef.current === bootstrapEpoch) {
+        void applyUser(null);
+      }
     });
 
     const unsubscribe = authRepository.subscribe((session: AuthenticatedSession | null) => {
@@ -124,12 +135,13 @@ export function AuthProvider({
   const refreshProfile = useCallback(async () => {
     const current = state;
     if (current.status !== 'signedIn' || !current.user) return;
+    const epoch = authEpochRef.current;
     if (mountedRef.current) {
       setState((prev) => ({ ...prev, profileStatus: 'loading' }));
     }
     try {
       const profile = await profileRepository.getOwnProfile(current.user.id);
-      if (mountedRef.current) {
+      if (mountedRef.current && authEpochRef.current === epoch) {
         setState((prev) => ({
           ...prev,
           profile: profile ?? null,
@@ -139,7 +151,7 @@ export function AuthProvider({
       }
     } catch (err: unknown) {
       const code = (err as { code?: IntegrationErrorCode })?.code;
-      if (mountedRef.current) {
+      if (mountedRef.current && authEpochRef.current === epoch) {
         setState((prev) => ({ ...prev, profileStatus: 'error', profileError: code ?? 'unknown' }));
       }
     }
@@ -148,8 +160,9 @@ export function AuthProvider({
   const updateProfile = useCallback(async (update: ProfileUpdate) => {
     const current = state;
     if (current.status !== 'signedIn' || !current.user) throw new Error('Not signed in');
+    const epoch = authEpochRef.current;
     const profile = await profileRepository.updateOwnProfile(current.user.id, update);
-    if (mountedRef.current) {
+    if (mountedRef.current && authEpochRef.current === epoch) {
       setState((prev) => ({ ...prev, profile, profileStatus: 'ready', profileError: null }));
     }
   }, [profileRepository, state]);
